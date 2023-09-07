@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('phone_cn')->nullable();
             $table->string('folder_path')->nullable();
             $table->string('avata')->nullable();
-            $table -> tinyInteger('kind_worker')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: xây dựng; 3 đồ gỗ; 4: cơ khí; 5: Tài Xế; 6: Khác');
+            $table -> tinyInteger('kind_worker')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: Đồ gỗ ; 3: NLMT; 4: Xây dựng; 5: Tài Xế; 6: Cơ Khí');
             $table -> tinyInteger('has_work')->default(0);
             $table -> tinyInteger('status_worker')->default(0)->comment('0: Đang làm; 1: Nghỉ Phép; 2: Nghỉ luôn ');
             $table-> tinyInteger('check_acc')->default('0');

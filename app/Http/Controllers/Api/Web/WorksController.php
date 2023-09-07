@@ -14,7 +14,6 @@ class WorksController extends Controller
 
     public function index ()
     {
-
         return response()->json( Work::all());
     }
     public function store (StoreWorkRequest $request)

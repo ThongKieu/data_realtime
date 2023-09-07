@@ -34,7 +34,7 @@ const profileMenuItems = [
     {
         label: "Sign Out",
         icon: PowerIcon,
-        href: "/login",
+        href: "/logout",
     },
 ];
 
@@ -42,7 +42,7 @@ function ProfileMenu({ propAuthProfile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
 
-    console.log("xin chào", propAuthProfile);
+    // console.log("xin chào", propAuthProfile);
     return (
         <div className="flex">
             <NavLink

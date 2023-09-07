@@ -29,7 +29,7 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import { url_API, url_API_District } from "@/data/urlAPI/UrlApi";
+import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -266,7 +266,8 @@ function FloatingButton() {
                                     onChange={handleDateChange}
                                 />
                             </div>
-                            <div className="items-center justify-center gap-4 my-4 text-xs lg:flex">
+                            <div className="items-center justify-center gap-4 my-4 text-xs ">
+                                <div className="flex justify-between w-full">
                                 <Radio
                                     id="DN"
                                     name="kind_work"
@@ -292,21 +293,41 @@ function FloatingButton() {
                                     onChange={handleChange}
                                 />
                                 <Radio
-                                    id="XD"
+                                    id="NLMT"
                                     name="kind_work"
-                                    label="Xây Dựng"
+                                    label="Năng Lượng"
                                     value="3"
                                     checked={formData.kind_work === "3"}
                                     onChange={handleChange}
                                 />
+                                </div>
+                                <div className="flex justify-between w-full">
                                 <Radio
-                                    id="Khac"
-                                    name="kind_work"
-                                    label="Năng Lượng Và Khác"
-                                    value="4"
-                                    checked={formData.kind_work === "4"}
-                                    onChange={handleChange}
-                                />
+                                id="XD"
+                                name="kind_work"
+                                label="Xây Dựng"
+                                value="4"
+                                checked={formData.kind_work === "4"}
+                                onChange={handleChange}
+                            />
+                            <Radio
+                                id="TX"
+                                name="kind_work"
+                                label="Tài Xế"
+                                value="5"
+                                checked={formData.kind_work === "5"}
+                                onChange={handleChange}
+                            />
+                            <Radio
+                                id="HX"
+                                name="kind_work"
+                                label="Cơ Khí"
+                                value="6"
+                                checked={formData.kind_work === "6"}
+                                onChange={handleChange}
+                            />
+                                </div>
+
                             </div>
                             <div className="flex items-center justify-center ">
                                 <span className="sr-only">

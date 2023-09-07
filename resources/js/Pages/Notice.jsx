@@ -17,13 +17,13 @@ import {
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import TableDataTV from "@/core/TableDataTV";
-import { TABLE_HEAD_NOTICE_NEW_ORDER } from "@/data/table/DesignTable";
-import { TABLE_HEAD_NOTICE_THO_BAO_LICH } from "@/data/table/DesignTable";
-import { TABLE_HEAD_NOTICE_FEEDBACK } from "@/data/table/DesignTable";
-import { TABLE_HEAD_NOTICE_INFO_WORKER } from "@/data/table/DesignTable";
-import { TABLE_ROWS_NOTICE_FEEDBACK } from "@/data/table/DesignTable";
-import { TABLE_ROWS_NOTICE_NEW_ORDER } from "@/data/table/DesignTable";
+import TableDataTV from "@/Core/TableDataTV";
+import { TABLE_HEAD_NOTICE_NEW_ORDER } from "@/Data/Table/DesignTable";
+import { TABLE_HEAD_NOTICE_THO_BAO_LICH } from "@/Data/Table/DesignTable";
+import { TABLE_HEAD_NOTICE_FEEDBACK } from "@/Data/Table/DesignTable";
+import { TABLE_HEAD_NOTICE_INFO_WORKER } from "@/Data/Table/DesignTable";
+import { TABLE_ROWS_NOTICE_FEEDBACK } from "@/Data/Table/DesignTable";
+import { TABLE_ROWS_NOTICE_NEW_ORDER } from "@/Data/Table/DesignTable";
 const data = [
     {
         label: "Lịch Từ App Khách",

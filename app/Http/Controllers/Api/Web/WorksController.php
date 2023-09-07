@@ -18,8 +18,8 @@ class WorksController extends Controller
     }
     public function store (StoreWorkRequest $request)
     {
-        // Work::create($request->validated());
-        dd($request->all());
+        Work::create($request->validated());
+        // dd($request->all());
 
         $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
         $files = '';

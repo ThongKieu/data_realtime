@@ -266,7 +266,8 @@ function FloatingButton() {
                                     onChange={handleDateChange}
                                 />
                             </div>
-                            <div className="items-center justify-center gap-4 my-4 text-xs lg:flex">
+                            <div className="items-center justify-center gap-4 my-4 text-xs ">
+                                <div className="flex justify-between w-full">
                                 <Radio
                                     id="DN"
                                     name="kind_work"
@@ -298,7 +299,10 @@ function FloatingButton() {
                                     value="3"
                                     checked={formData.kind_work === "3"}
                                     onChange={handleChange}
-                                /><Radio
+                                />
+                                </div>
+                                <div className="flex justify-between w-full">
+                                <Radio
                                 id="XD"
                                 name="kind_work"
                                 label="Xây Dựng"
@@ -309,35 +313,21 @@ function FloatingButton() {
                             <Radio
                                 id="TX"
                                 name="kind_work"
-                                label="Điện Lạnh"
+                                label="Tài Xế"
                                 value="5"
                                 checked={formData.kind_work === "5"}
                                 onChange={handleChange}
                             />
                             <Radio
-                                id="DG"
+                                id="HX"
                                 name="kind_work"
-                                label="Đồ Gỗ"
-                                value="2"
-                                checked={formData.kind_work === "2"}
+                                label="Cơ Khí"
+                                value="6"
+                                checked={formData.kind_work === "6"}
                                 onChange={handleChange}
                             />
-                            <Radio
-                                id="XD"
-                                name="kind_work"
-                                label="Xây Dựng"
-                                value="3"
-                                checked={formData.kind_work === "3"}
-                                onChange={handleChange}
-                            />
-                                <Radio
-                                    id="Khac"
-                                    name="kind_work"
-                                    label="Năng Lượng Và Khác"
-                                    value="4"
-                                    checked={formData.kind_work === "4"}
-                                    onChange={handleChange}
-                                />
+                                </div>
+
                             </div>
                             <div className="flex items-center justify-center ">
                                 <span className="sr-only">

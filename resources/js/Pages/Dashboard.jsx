@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
 import newSocket from "@/utils/socket";
+import TableOrder from "@/core/TableOrder";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",
@@ -328,7 +329,19 @@ function Dashboard({ auth }) {
         setOpenDialogIndex(null);
     };
     // ----------------------------------- list table left body  -------------------------------------
-
+    const tableHeaders = [ "Yêu Cầu Công Việc",
+    "Ngày Làm",
+    "Địa Chỉ",
+    "Quận",
+    "Số Điện Thoại",
+    "Thợ",
+    "Hình Ảnh",
+    "Chức Năng",];
+    const tableData = [
+      ['Alice', 25, 'New York'],
+      ['Bob', 30, 'Los Angeles'],
+      ['Charlie', 28, 'Chicago'],
+    ];
     const ListTrTableLeft = workData.map(
         (
             {
@@ -651,12 +664,12 @@ function Dashboard({ auth }) {
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
-
             <div
                 className={
                     "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
                 }
             >
+                <TableOrder headers={tableHeaders} data={tableData}/>
                 <Card
                     className={
                         "grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"

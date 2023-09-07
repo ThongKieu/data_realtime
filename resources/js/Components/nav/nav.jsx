@@ -152,26 +152,23 @@ function ProfileMenu({ propAuthProfile }) {
                 <MenuList className="p-1">
                     <OnlineList />
                     <NavLink
-                        href={route("profile")}
+                        href={route("profile.edit")}
                         className="w-full font-normal"
                     >
-                    <MenuItem
-                        onClick={closeMenu}
-                        className={`flex items-center gap-2 rounded `}
-
-                    >
-                        {" "}
-                        <UserCircleIcon className="`h-4 w-4" />
-                        <Typography
-                            as="span"
-                            variant="small"
-                            className="font-normal"
-                            // color={isLastItem ? "red" : "inherit"}
+                        <MenuItem
+                            onClick={closeMenu}
+                            className={`flex items-center gap-2 rounded `}
                         >
-                            {" "}
-                            Thông Tin Tài Khoản
-                        </Typography>
-                    </MenuItem>
+                            <UserCircleIcon className="`h-4 w-4" />
+                            <Typography
+                                as="span"
+                                variant="small"
+                                className="font-normal"
+                                // color={isLastItem ? "red" : "inherit"}
+                            >
+                                Thông Tin Tài Khoản
+                            </Typography>
+                        </MenuItem>
                     </NavLink>
                     <NavLink
                         href={route("logout")}
@@ -187,7 +184,6 @@ function ProfileMenu({ propAuthProfile }) {
                             //         : ""
                             // }`}
                         >
-                            {" "}
                             <PowerIcon className="`h-4 w-4" />
                             <Typography
                                 as="span"

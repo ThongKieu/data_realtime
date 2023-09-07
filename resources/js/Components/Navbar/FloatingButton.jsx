@@ -292,13 +292,44 @@ function FloatingButton() {
                                     onChange={handleChange}
                                 />
                                 <Radio
-                                    id="XD"
+                                    id="NLMT"
                                     name="kind_work"
-                                    label="Xây Dựng"
+                                    label="Năng Lượng"
                                     value="3"
                                     checked={formData.kind_work === "3"}
                                     onChange={handleChange}
-                                />
+                                /><Radio
+                                id="XD"
+                                name="kind_work"
+                                label="Xây Dựng"
+                                value="4"
+                                checked={formData.kind_work === "4"}
+                                onChange={handleChange}
+                            />
+                            <Radio
+                                id="TX"
+                                name="kind_work"
+                                label="Điện Lạnh"
+                                value="5"
+                                checked={formData.kind_work === "5"}
+                                onChange={handleChange}
+                            />
+                            <Radio
+                                id="DG"
+                                name="kind_work"
+                                label="Đồ Gỗ"
+                                value="2"
+                                checked={formData.kind_work === "2"}
+                                onChange={handleChange}
+                            />
+                            <Radio
+                                id="XD"
+                                name="kind_work"
+                                label="Xây Dựng"
+                                value="3"
+                                checked={formData.kind_work === "3"}
+                                onChange={handleChange}
+                            />
                                 <Radio
                                     id="Khac"
                                     name="kind_work"

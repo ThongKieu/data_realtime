@@ -1,5 +1,5 @@
-import FloatingButton from "@/Components/nav/floatingButton";
-import NavbarDefault from "@/Components/nav/nav";
+import FloatingButton from "@/Components/Navbar/FloatingButton";
+import NavbarDefault from "@/Components/Navbar/Navbar";
 
 
 function Authenticated({ children, user}) {

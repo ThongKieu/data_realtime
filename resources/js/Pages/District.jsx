@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import FloatingButton from '@/Components/nav/floatingButton';
+import FloatingButton from '@/Components/Navbar/FloatingButton';
 import React, { useState, useEffect } from 'react'
 import {
     Button,

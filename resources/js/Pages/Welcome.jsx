@@ -1,4 +1,4 @@
-import NavbarDefault from '@/Components/nav/nav';
+import NavbarDefault from '@/Components/Navbar/Navbar';
 import { Link, Head } from '@inertiajs/react';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {

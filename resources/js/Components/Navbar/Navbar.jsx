@@ -18,7 +18,7 @@ import {
     PowerIcon,
     Bars2Icon,
 } from "@heroicons/react/24/outline";
-import CardMain from "./card";
+import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
@@ -42,7 +42,7 @@ function ProfileMenu({ propAuthProfile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
 
-    // console.log("xin chào", propAuthProfile);
+    console.log("xin chào", propAuthProfile);
     return (
         <div className="flex">
             <NavLink

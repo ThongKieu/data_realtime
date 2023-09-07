@@ -29,7 +29,7 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import { url_API, url_API_District } from "@/data/urlAPI/UrlApi";
+import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")

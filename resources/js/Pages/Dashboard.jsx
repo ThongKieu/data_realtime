@@ -1,8 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import FloatingButton from "@/Components/nav/floatingButton";
 import React, { useEffect, useState } from "react";
-import NavbarDefault from "@/Components/nav/nav";
+
 import {
     Button,
     Dialog,
@@ -16,7 +15,7 @@ import {
     PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",

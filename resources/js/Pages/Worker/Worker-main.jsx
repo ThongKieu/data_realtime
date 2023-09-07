@@ -2,6 +2,7 @@ import {
     React,
     useState,
     useEffect,
+    useMemo,
 
 } from 'react'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -20,9 +21,23 @@ import {
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
-   
+    TrashIcon,
+    PencilSquareIcon,
 } from "@heroicons/react/24/outline";
+   
+import Box from '@mui/material/Box';
 
+import {
+  GridRowModes,
+  DataGrid,
+  GridToolbarContainer,
+  GridActionsCellItem,
+  GridRowEditStopReasons,
+  
+} from '@mui/x-data-grid';
+
+const VISIBLE_FIELDS = ['id', 'worker_firstname', 'worker_name', 'add_woker', 'phone_cty'];
+// const VISIBLE_FIELDS = ['name', 'rating', 'country', 'dateCreated', 'isAdmin'];
 function WorkersMain({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
@@ -75,7 +90,49 @@ function WorkersMain({ auth }) {
 
     };
     //lấy dữ liệu thợ
-    const [data, setData] = useState([]);
+    // const [rows, setRows] = React.useState(initialRows);
+    const [rowModesModel, setRowModesModel] = useState({});
+  
+    const handleRowEditStop = (params, event) => {
+      if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+        event.defaultMuiPrevented = true;
+      }
+    };
+  
+    const handleEditClick = (id) => () => {
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    };
+  
+    const handleSaveClick = (id) => () => {
+      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    };
+  
+    const handleDeleteClick = (id) => () => {
+      setRows(rows.filter((row) => row.id !== id));
+    };
+  
+    const handleCancelClick = (id) => () => {
+      setRowModesModel({
+        ...rowModesModel,
+        [id]: { mode: GridRowModes.View, ignoreModifications: true },
+      });
+  
+      const editedRow = rows.find((row) => row.id === id);
+      if (editedRow.isNew) {
+        setRows(rows.filter((row) => row.id !== id));
+      }
+    };
+  
+    const processRowUpdate = (newRow) => {
+      const updatedRow = { ...newRow, isNew: false };
+      setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+      return updatedRow;
+    };
+  
+    const handleRowModesModelChange = (newRowModesModel) => {
+      setRowModesModel(newRowModesModel);
+    };
+    const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -96,6 +153,84 @@ function WorkersMain({ auth }) {
             console.error('Lỗi khi lấy dữ liệu từ API:', error);
         });
     }, []); // useEffect chỉ chạy một lần sau khi render đầu tiên
+    
+    
+      // Otherwise filter will be applied on fields such as the hidden column id
+      const columns = [
+        { field: 'id', headerName: 'ID', width: 90 },
+        {
+            field: 'fullName',
+            headerName: 'Họ Tên',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: true,
+            width: 160,
+            editable: true,
+            valueGetter: (params) =>
+              `${params.row.worker_firstname || ''} ${params.row.worker_name || ''}`,
+          },
+        {
+          field: 'phone_ct',
+          headerName: 'Số Công ty',
+          width: 150,
+          editable: true,
+        },
+        {
+          field: 'phone_cn',
+          headerName: 'Số cá nhân',
+          width: 150,
+          editable: true,
+        },
+        {
+          field: 'kind_worker',
+          headerName: 'Tình Trang',
+          type: 'actions',
+          width: 110,
+          editable: false,
+          getActions: ({ id }) => {
+            const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+    
+            if (isInEditMode) {
+              return [
+                <GridActionsCellItem
+                  icon={<PlusCircleIcon className='w-6 h-6' />}
+                  label="Save"
+                  sx={{
+                    color: 'primary.main',
+                  }}
+                  onClick={handleSaveClick(id)}
+                />,
+                <GridActionsCellItem
+                  icon={<TrashIcon className='w-6 h-6'  />}
+                  label="Cancel"
+                  className="textPrimary"
+                  onClick={handleCancelClick(id)}
+                  color="inherit"
+                />,
+              ];
+            }
+    
+            return [
+              <GridActionsCellItem
+                icon={<PencilSquareIcon className='w-6 h-6'  />}
+                label="Edit"
+                className="textPrimary"
+                onClick={handleEditClick(id)}
+                color="inherit"
+              />,
+              <GridActionsCellItem
+                icon={<PlusCircleIcon className='w-6 h-6'  />}
+                label="Delete"
+                onClick={handleDeleteClick(id)}
+                color="inherit"
+              />,
+            ];
+         },
+        },
+        
+      ];
+      
+  
+      
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang quản lý thông tin thợ" />
@@ -205,43 +340,22 @@ function WorkersMain({ auth }) {
                 </form>
             </Dialog>
             {/* -Đổ dữ liệu thợ- */}
-        <Card>
-        {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="table-fixed">
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Họ Tên</th>
-              <th>Mã Nhân Viên</th>
-              <th>Địa Chỉ</th>
-              <th>Điện Thoại Cty</th>
-              <th>Điện Thoại CNhan</th>
-              <th>Thiếu Lịch</th>
-              <th>Làm/ Nghỉ</th>
-              <th>Tài Khoản</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.worker_firstname} - {item.worker_name}</td>
-                <td>{item.sort_name}</td>
-                <td>{item.add_woker}</td>
-                <td>{item.phone_ct}</td>
-                <td>{item.phone_cn}</td>
-                <td>{item.has_work}</td>
-                <td>{item.status_worker}</td>
-                <td>{item.check_acc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+       <Card>
+        <Box sx={{ height: 400, width: 1 }}>
+        <DataGrid
+            rows={rows}
+            columns={columns}
+            rowModesModel={rowModesModel}
+            onRowModesModelChange={handleRowModesModelChange}
+            // slots={{ toolbar: GridToolbar }}
+            slotProps={{
+            toolbar: {
+                showQuickFilter: true,
+            },
+            }}
+        />
+        </Box>
         </Card>
-
         </AuthenticatedLayout>
 
     )

@@ -15,7 +15,7 @@ import {
     PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",
@@ -667,7 +667,6 @@ function Dashboard({ auth }) {
                     "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
                 }
             >
-                <TableOrder headers={tableHeaders} data={tableData}/>
                 <Card
                     className={
                         "grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"

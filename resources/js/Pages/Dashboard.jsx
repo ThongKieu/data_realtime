@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
 import newSocket from "@/utils/socket";
-import TableOrder from "@/Core/TableOrder";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",
@@ -506,6 +505,32 @@ function Dashboard({ auth }) {
                 }
             >
                 <TableOrder headers={tableHeaders} data={tableData}/>
+                <Card
+                    className={
+                        "grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
+                    }
+                >
+                    {/* bang ben trai  */}
+                    <table
+                        className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`}
+                        style={{ height: `300px` }}
+                    >
+                        <thead>
+                            <tr>
+                                {TABLE_HEAD.map((head, index) => (
+                                    <th
+                                        key={index}
+                                        id={index}
+                                        className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit"
+                                    >
+                                        {head}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>{ListTrTableLeft}</tbody>
+                    </table>
+                </Card>
                 <Card
                     className={
                         "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"

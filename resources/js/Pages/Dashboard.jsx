@@ -15,7 +15,8 @@ import {
     PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
+import TableOrder from "@/Core/TableOrder";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",
@@ -340,170 +341,7 @@ function Dashboard({ auth }) {
       ['Bob', 30, 'Los Angeles'],
       ['Charlie', 28, 'Chicago'],
     ];
-    const ListTrTableLeft = workData.map(
-        (
-            {
-                work_content,
-                date_book,
-                street,
-                phone_number,
-                district,
-                idCV,
-                idQuan,
-                image_work_path,
-            },
-            index
-        ) => {
-            const isLast = index === data.length - 1;
-            const idTable = Math.random() * 1000;
-            const classes = isLast
-                ? "w-fit "
-                : "border-b border-blue-gray-50 w-fit";
-            const classGeneral1 =
-                "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none ";
-            // convert string to obj -------------------
-            if (typeof image_work_path !== "undefined") {
-                var url_img = image_work_path?.split(",");
-            }
-            return (
-                <tr key={idTable} id={idCV}>
-                    <td className={classes}>
-                        <input
-                            name="yccv"
-                            value={work_content}
-                            type="text"
-                            onChange={(e) => onChangeInput(e, idCV)}
-                            placeholder="Yêu Cầu Công Việc"
-                            className={classGeneral1}
-                        />
-                    </td>
-                    <td className={`${classes} bg-blue-gray-50/50`}>
-                        <input
-                            name="date_book"
-                            type="text"
-                            placeholder="Ngày Làm"
-                            className={classGeneral1}
-                            value={date_book}
-                            onChange={(e) => onChangeInput(e, idCV)}
-                        />
-                    </td>
-                    <td className={`${classes} bg-blue-gray-50/50`}>
-                        <input
-                            name="diaChi"
-                            type="text"
-                            placeholder="Địa Chỉ"
-                            className={classGeneral1}
-                            value={street}
-                            onChange={(e) => onChangeInput(e, idCV)}
-                        />
-                    </td>
-                    <td className={classes}>
-                        <input
-                            name="quan"
-                            type="text"
-                            placeholder="Quận"
-                            className={`${classGeneral1} text-center w-12`}
-                            value={district}
-                            onChange={(e) => onChangeInput(e, idCV)}
-                        />
-                    </td>
-                    <td className={classes}>
-                        <input
-                            name="sdt"
-                            type="text"
-                            placeholder="Số Điện Thoại"
-                            className={`${classGeneral1} w-28 text-center`}
-                            value={phone_number}
-                            onChange={(e) => onChangeInput(e, idCV)}
-                        />
-                    </td>
-                    <td className={`${classes} bg-blue-gray-50/50 w-20  `}>
-                        <select
-                            id={idCV}
-                            value={selectedOptionDistrict}
-                            onChange={(e) => {
-                                if (typeof idQuan !== "undefined") {
-                                    handleOptionChangeDistrict(e, idQuan);
-                                }
-                            }}
-                            className={classGeneral1}
-                        >
-                            <option value="">Chọn</option>
-                            {optionsDistrict.map((optionDistrict, index) => (
-                                <option
-                                    key={index}
-                                    value={optionDistrict.tenQuan}
-                                >
-                                    {optionDistrict.tenQuan}
-                                </option>
-                            ))}
-                        </select>
-                    </td>
-                    <td className={classes}>
-                        {url_img?.map((item, index) => {
-                            if (item !== "") {
-                                return (
-                                    <div key={index} id={index}>
-                                        <Avatar
-                                            className="mr-1 overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90"
-                                            alt="avatar"
-                                            src={item}
-                                            variant="rounded"
-                                            onClick={() =>
-                                                handleOpenDialog(index)
-                                            } // Mở dialog tại index
-                                        />
-                                        <Dialog
-                                            key={index}
-                                            size="xl"
-                                            open={openDialogIndex === index} // Kiểm tra xem dialog có nên mở hay không
-                                            handler={handleCloseDialog} // Đóng dialog
-                                            className="w-1/2"
-                                        >
-                                            <DialogBody
-                                                divider={true}
-                                                className="p-2 text-center "
-                                                id={index}
-                                            >
-                                                <img
-                                                    id={index}
-                                                    key={index}
-                                                    src={item}
-                                                    alt="avatar"
-                                                    className="inline-block w-1/2"
-                                                />
-                                            </DialogBody>
-                                        </Dialog>
-                                    </div>
-                                );
-                            }
-                        })}
-                    </td>
-                    <td
-                        className={`w-32 ${classes}`}
-                        style={{ height: "10px" }}
-                    >
-                        <Button
-                            variant="outlined"
-                            className="p-1 mr-1 text-red-500 border-red-500 border-none"
-                            onClick={(e) => {
-                                handleDeleteRow(e, idCV);
-                            }}
-                        >
-                            <TrashIcon className="w-4 h-4" />{" "}
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            className="p-1 text-blue-500 border-blue-500 border-none "
-                            onClick={(e) => handleSubmitAddWork(e, idCV)}
-                        >
-                            <PaperAirplaneIcon className="w-4 h-4" />
-                        </Button>
-                    </td>
-                </tr>
-            );
-        }
-    );
+
     // ------------------------ List Tr Table Right --------------------------------------
     const [worksData, setWorksData] = useState(data);
     const ListTrTableRight = worksData.map(
@@ -668,32 +506,6 @@ function Dashboard({ auth }) {
                 }
             >
                 <TableOrder headers={tableHeaders} data={tableData}/>
-                <Card
-                    className={
-                        "grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
-                    }
-                >
-                    {/* bang ben trai  */}
-                    <table
-                        className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`}
-                        style={{ height: `300px` }}
-                    >
-                        <thead>
-                            <tr>
-                                {TABLE_HEAD.map((head, index) => (
-                                    <th
-                                        key={index}
-                                        id={index}
-                                        className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit"
-                                    >
-                                        {head}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>{ListTrTableLeft}</tbody>
-                    </table>
-                </Card>
                 <Card
                     className={
                         "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"

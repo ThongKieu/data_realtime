@@ -138,13 +138,6 @@ function WorkersMain({ auth }) {
       setRows(rows.filter((row) => row.id !== id));
     }
   };
-
-  // const processRowUpdate = (newRow) => {
-  //   const updatedRow = { ...newRow, isNew: false };
-  //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-  //   return updatedRow;
-  // };
-
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
@@ -235,7 +228,7 @@ function WorkersMain({ auth }) {
         const handleChangeva = (event) => {
           // Xử lý sự thay đổi của lựa chọn ở đây
           console.log(params.id);
-          const data_set = { 'action': 'status_change', 'id': params.id };
+          const data_set = { 'action': 'status_change_worker', 'id': params.id };
           updateWorkers(data_set);
         };
 

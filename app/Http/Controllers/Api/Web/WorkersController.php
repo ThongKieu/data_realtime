@@ -97,6 +97,13 @@ class WorkersController extends Controller
         }
     }
     public function updateWorker(Request $re){
-        dd($re->all());
+       $action = $re->action;
+       switch($action)
+       {
+        case 'status_change_worker':
+            return 1;
+        default :
+            return 'hihih';
+       }
     }
 }

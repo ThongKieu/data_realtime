@@ -90,7 +90,7 @@ class WorkersController extends Controller
             {
                 return 'Update Done!';
             }
-            else 
+            else
             {
                 return 'Failse Update';
             }

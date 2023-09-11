@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, memo } from "react";
 import {
     Button,
     Dialog,
@@ -369,4 +369,4 @@ function FloatingButton() {
         </Fragment>
     );
 }
-export default FloatingButton;
+export default memo(FloatingButton);

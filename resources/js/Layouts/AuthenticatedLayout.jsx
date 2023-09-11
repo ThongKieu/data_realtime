@@ -1,5 +1,6 @@
 import FloatingButton from "@/Components/Navbar/FloatingButton";
 import NavbarDefault from "@/Components/Navbar/Navbar";
+import { memo } from "react";
 
 
 function Authenticated({ children, user}) {
@@ -13,4 +14,4 @@ function Authenticated({ children, user}) {
         </div>
     );
 }
-export default  Authenticated;
+export default  memo(Authenticated);

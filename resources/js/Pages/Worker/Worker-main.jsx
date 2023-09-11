@@ -170,32 +170,7 @@ function WorkersMain({ auth }) {
       });
   }, []);
   // useEffect chỉ chạy một lần sau khi render đầu tiên
-  const [updateWorkers, setUpdateWorker] = useState([]);
-//   const updateWorker = async (data) => {
-//   try {
-//     console.log('----------',data);
-    // const response = await fetch('api/web/update/worker', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-
-    // if (response.ok) {
-    //   const responseData = await response.json();
-    //   console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-    //   window.location.reload();
-    // } else {
-    //   console.error('Lỗi khi gửi dữ liệu:', response.statusText);
-    // }
-//   } catch (error) {
-//     console.error('Lỗi khi gửi dữ liệu:', error);
-//   }
-//   console.log(`Selected value: ${data}`);
-//   };
   const fetchData = async (data1) => {
-    console.log('xaiiii',data1);
     try {
         const response = await fetch('api/web/update/worker', {
             method: 'POST',
@@ -254,10 +229,8 @@ function WorkersMain({ auth }) {
       renderCell: (params) => {
         const handleChangeva = (event) => {
           // Xử lý sự thay đổi của lựa chọn ở đây
-          console.log(params.id);
           const data_set = { 'action': 'status_change', 'id': params.id };
           fetchData(data_set);
-          console.log('data_set',data_set);
         };
         return (
           <select
@@ -336,7 +309,6 @@ function WorkersMain({ auth }) {
             />,
           ];
         }
-
         return [
           <GridActionsCellItem
             icon={<PencilSquareIcon className='w-6 h-6' />}
@@ -354,11 +326,7 @@ function WorkersMain({ auth }) {
         ];
       },
     },
-
   ];
-
-
-
   return (
     <AuthenticatedLayout children={auth.user} user={auth.user} >
       <Head title="Trang quản lý thông tin thợ" />
@@ -374,7 +342,6 @@ function WorkersMain({ auth }) {
           </div>
         </div>
       </Card>
-
       <Dialog open={open} handler={handleOpen}>
         <form onSubmit={handleSubmit}>
           <DialogHeader >

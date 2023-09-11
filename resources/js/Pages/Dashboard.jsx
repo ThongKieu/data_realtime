@@ -668,7 +668,6 @@ function Dashboard({ auth }) {
                     "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
                 }
             >
-                <TableOrder headers={tableHeaders} data={tableData}/>
                 <Card
                     className={
                         "grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"

@@ -90,13 +90,14 @@ class WorkersController extends Controller
             {
                 return 'Update Done!';
             }
-            else 
+            else
             {
                 return 'Failse Update';
             }
         }
     }
     public function updateWorker(Request $re){
-        dd($re->all());
+        // dd($re->all());
+        return '11111123445';
     }
 }

@@ -168,34 +168,54 @@ function WorkersMain({ auth }) {
       .catch((error) => {
         console.error('Lỗi khi lấy dữ liệu từ API:', error);
       });
-  }, []); 
+  }, []);
   // useEffect chỉ chạy một lần sau khi render đầu tiên
   const [updateWorkers, setUpdateWorker] = useState([]);
-  const updateWorker = async (data) => {
-  try {
-    console.log('----------',data);
-    const response = await fetch('api/web/update/worker', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body:setUpdateWorker,
-    });
+//   const updateWorker = async (data) => {
+//   try {
+//     console.log('----------',data);
+    // const response = await fetch('api/web/update/worker', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(data),
+    // });
 
-    if (response.ok) {
-      const responseData = await response.json();
-      console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-      window.location.reload();
-    } else {
-      console.error('Lỗi khi gửi dữ liệu:', response.statusText);
+    // if (response.ok) {
+    //   const responseData = await response.json();
+    //   console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
+    //   window.location.reload();
+    // } else {
+    //   console.error('Lỗi khi gửi dữ liệu:', response.statusText);
+    // }
+//   } catch (error) {
+//     console.error('Lỗi khi gửi dữ liệu:', error);
+//   }
+//   console.log(`Selected value: ${data}`);
+//   };
+  const fetchData = async (data1) => {
+    console.log('xaiiii',data1);
+    try {
+        const response = await fetch('api/web/update/worker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: data1,
+          });
+        console.log('xian chaoaooa',data1);
+        if (response.ok) {
+            console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', response);
+            // window.location.reload();
+          } else {
+            console.error('Lỗi khi gửi dữ liệu:', response.statusText);
+          }
+    } catch (error) {
+        console.error("Error fetching data:", error);
     }
-  } catch (error) {
-    console.error('Lỗi khi gửi dữ liệu:', error);
-  }
-  console.log(`Selected value: ${data}`);
-  };
-  
-  // Hiển thị dữ liệu bảng  
+};
+  // Hiển thị dữ liệu bảng
   const columns = [
     { field: 'id', headerName: 'ID', width: 30 },
     {
@@ -236,9 +256,9 @@ function WorkersMain({ auth }) {
           // Xử lý sự thay đổi của lựa chọn ở đây
           console.log(params.id);
           const data_set = { 'action': 'status_change', 'id': params.id };
-          updateWorkers(data_set);
+          fetchData(data_set);
+          console.log('data_set',data_set);
         };
-
         return (
           <select
             defaultValue={params.value}
@@ -344,7 +364,7 @@ function WorkersMain({ auth }) {
       <Head title="Trang quản lý thông tin thợ" />
 
       <Card className='mt-2'>
-        <div className="grid justify-items-stretch m-2 ">
+        <div className="grid m-2 justify-items-stretch ">
           <div className="justify-self-end">
             <Tooltip
               content='Thêm Thợ Mới'
@@ -361,7 +381,7 @@ function WorkersMain({ auth }) {
             <div className='m-auto'>Nhập thông tin thợ mới</div></DialogHeader>
           <DialogBody divider>
 
-            <div className=" grid grid-cols-2 m-1 gap-2">
+            <div className="grid grid-cols-2 gap-2 m-1 ">
               <Input
                 type="text"
                 className='shadow-none'
@@ -410,7 +430,7 @@ function WorkersMain({ auth }) {
               />
 
             </div>
-            <div className=" grid grid-cols-2 m-1 gap-2">
+            <div className="grid grid-cols-2 gap-2 m-1 ">
 
             </div>
             <div className="m-1">
@@ -420,7 +440,7 @@ function WorkersMain({ auth }) {
                 name="kind_worker"
                 value={info_worker.kind_worker}
                 onChange={handleSelectChange}
-                className='border rounded-lg w-full'>
+                className='w-full border rounded-lg'>
                 <option value=''>Vui lòng chọn loại thợ</option>
                 <option value={0}>Điện Nước</option>
                 <option value={1}>Điện Lạnh</option>
@@ -477,4 +497,4 @@ function WorkersMain({ auth }) {
   )
 }
 
-export default WorkersMain  
+export default WorkersMain

@@ -1,10 +1,10 @@
-import NavbarDefault from '@/Components/Navbar/Admin/NavAdmin';
+import SidebarAdmin from '@/Components/Sidebar/SidebarAdmin';
 
 export default function Authenticated({children }) {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <NavbarDefault />
-            <main>{children}</main>
+        <div className="min-h-screen bg-gray-100 flex">
+            <SidebarAdmin />
+            <main className='w-full'>{children}</main>
 
         </div>
     );

@@ -96,7 +96,7 @@ function WorkersMain({ auth }) {
       if (response.ok) {
         const responseData = await response.json();
         console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-        window.location.reload();
+        // window.location.reload();
       } else {
         console.error('Lỗi khi gửi dữ liệu:', response.statusText);
       }
@@ -170,44 +170,23 @@ function WorkersMain({ auth }) {
       });
   }, []);
   // useEffect chỉ chạy một lần sau khi render đầu tiên
-  const [updateWorkers, setUpdateWorker] = useState([]);
-//   const updateWorker = async (data) => {
-//   try {
-//     console.log('----------',data);
-    // const response = await fetch('api/web/update/worker', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-
-    // if (response.ok) {
-    //   const responseData = await response.json();
-    //   console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-    //   window.location.reload();
-    // } else {
-    //   console.error('Lỗi khi gửi dữ liệu:', response.statusText);
-    // }
-//   } catch (error) {
-//     console.error('Lỗi khi gửi dữ liệu:', error);
-//   }
-//   console.log(`Selected value: ${data}`);
-//   };
   const fetchData = async (data1) => {
-    console.log('xaiiii',data1);
+    console.log('data1',data1);
     try {
         const response = await fetch('api/web/update/worker', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: data1,
+            body: JSON.stringify(data1),
           });
-        console.log('xian chaoaooa',data1);
+        console.log('xian chaoaooa',response);
+        // if (response.ok) {
+        //     console.log('Yes, I do',response);
+        // }
         if (response.ok) {
             console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', response);
-            // window.location.reload();
+            window.location.reload();
           } else {
             console.error('Lỗi khi gửi dữ liệu:', response.statusText);
           }
@@ -254,11 +233,12 @@ function WorkersMain({ auth }) {
       renderCell: (params) => {
         const handleChangeva = (event) => {
           // Xử lý sự thay đổi của lựa chọn ở đây
-          console.log(params.id);
-          const data_set = { 'action': 'status_change', 'id': params.id };
+          const selectedValue = event.target.value;
+          const data_set = {'action': 'status_change_worker', 'id': params.id , 'status': selectedValue};
           fetchData(data_set);
-          console.log('data_set',data_set);
+          console.log(data_set);
         };
+        console.log('params1',params.value);
         return (
           <select
             defaultValue={params.value}
@@ -269,7 +249,6 @@ function WorkersMain({ auth }) {
             <option value="1">Nghỉ Phép</option>
             <option value="2">Đã Nghỉ</option>
           </select>);
-
       }
     },
     {
@@ -336,7 +315,6 @@ function WorkersMain({ auth }) {
             />,
           ];
         }
-
         return [
           <GridActionsCellItem
             icon={<PencilSquareIcon className='w-6 h-6' />}
@@ -354,11 +332,7 @@ function WorkersMain({ auth }) {
         ];
       },
     },
-
   ];
-
-
-
   return (
     <AuthenticatedLayout children={auth.user} user={auth.user} >
       <Head title="Trang quản lý thông tin thợ" />
@@ -374,7 +348,6 @@ function WorkersMain({ auth }) {
           </div>
         </div>
       </Card>
-
       <Dialog open={open} handler={handleOpen}>
         <form onSubmit={handleSubmit}>
           <DialogHeader >

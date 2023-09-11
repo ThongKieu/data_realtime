@@ -96,8 +96,32 @@ class WorkersController extends Controller
             }
         }
     }
-    public function updateWorker(Request $re){
-        // dd($re->all());
-        return '11111123445';
+    public function updateWorker(Request $re)
+    {
+        $action = $re->action;
+        //    dd($re->all());
+        switch ($action) {
+            case 'status_change_worker':
+                Worker::where('id', '=', $re->id)->update(['status_worker' => $re->status]);
+                return response()->json(['data' => 'Change Status']);
+            case 'avata_change_worker':
+                // $ra = time();
+                if ($re->hasFile('avata_new')) {
+                    $file = $re->file('avata_new');
+                    $name = $re->sort_name.'-'.time() .'.'. $file->extension();
+                    $file->move('assets/avata/', $name);
+                    // $files = $files.'assets/avata/'.$name.',';
+                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avata' => $file]);
+
+                    if ($up) {
+                        return 'Update Done!';
+                    } else {
+                        return 'Failse Update';
+                    }
+                }
+                return response()->json(['data' => 'Change Avata']);
+            default:
+                return response()->json(['data' => '11111111232321111111']);
+        }
     }
 }

@@ -96,7 +96,7 @@ function WorkersMain({ auth }) {
       if (response.ok) {
         const responseData = await response.json();
         console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-        window.location.reload();
+        // window.location.reload();
       } else {
         console.error('Lỗi khi gửi dữ liệu:', response.statusText);
       }
@@ -171,18 +171,22 @@ function WorkersMain({ auth }) {
   }, []);
   // useEffect chỉ chạy một lần sau khi render đầu tiên
   const fetchData = async (data1) => {
+    console.log('data1',data1);
     try {
         const response = await fetch('api/web/update/worker', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: data1,
+            body: JSON.stringify(data1),
           });
-        console.log('xian chaoaooa',data1);
+        console.log('xian chaoaooa',response);
+        // if (response.ok) {
+        //     console.log('Yes, I do',response);
+        // }
         if (response.ok) {
             console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', response);
-            // window.location.reload();
+            window.location.reload();
           } else {
             console.error('Lỗi khi gửi dữ liệu:', response.statusText);
           }
@@ -229,9 +233,12 @@ function WorkersMain({ auth }) {
       renderCell: (params) => {
         const handleChangeva = (event) => {
           // Xử lý sự thay đổi của lựa chọn ở đây
-          const data_set = { 'action': 'status_change', 'id': params.id };
+          const selectedValue = event.target.value;
+          const data_set = {'action': 'status_change_worker', 'id': params.id , 'status': selectedValue};
           fetchData(data_set);
+          console.log(data_set);
         };
+        console.log('params1',params.value);
         return (
           <select
             defaultValue={params.value}
@@ -242,7 +249,6 @@ function WorkersMain({ auth }) {
             <option value="1">Nghỉ Phép</option>
             <option value="2">Đã Nghỉ</option>
           </select>);
-
       }
     },
     {

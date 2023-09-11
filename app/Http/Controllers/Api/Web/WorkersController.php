@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class WorkersController extends Controller
 {
     //
+    public function __invoke(){}
     public function index()
     {
         return response()->json(Worker::all());
@@ -17,6 +18,14 @@ class WorkersController extends Controller
     {
 
         $sort = WorkersController::getSortName($request->kind_worker);
+
+        if($request->hasFile('avata_new'))
+        {
+            $file = $request->file('avata_new');
+            $name = $sort.'.'.$file->extension();
+            $file->move('assets/avata/', $name);
+            // $files = $files.'assets/avata/'.$name.',';
+        }
         // dd($request->all());
         $new = new Worker([
             'worker_firstname' => $request->worker_firstname,
@@ -27,7 +36,6 @@ class WorkersController extends Controller
             'phone_cn' => $request->phone_cn,
             'folder_path' => 'assets/images/work/' . $sort,
             'kind_worker' => $request->kind_worker,
-
             'avata' => 'assets/avata/' . $sort . '.png',
         ]);
         $new->save();
@@ -67,5 +75,28 @@ class WorkersController extends Controller
                 return $sort;
         }
         // return $p = substr(sprintf('%02d', '9'),0,8);
+    }
+    public function addAvata(Request $req)
+    {
+        if($req->hasFile('avata_new'))
+        {
+            $file = $req->file('avata_new');
+            $name = $req->sort_name.$file->extension();
+            $file->move('assets/avata/', $name);
+            // $files = $files.'assets/avata/'.$name.',';
+            $up = Worker::where('sort_name','=',$req->sort_name)-> update(['avata'=>$file]);
+
+            if($up)
+            {
+                return 'Update Done!';
+            }
+            else 
+            {
+                return 'Failse Update';
+            }
+        }
+    }
+    public function updateWorker(Request $re){
+        dd($re->all());
     }
 }

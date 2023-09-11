@@ -25,7 +25,7 @@ import {
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
 import newSocket from "@/utils/socket";
-import CardMain from "@/Components/Navbar/Card";
+import TableOrder from "@/Core/TableOrder";
 
 const TABLE_HEAD = [
     "Yêu Cầu Công Việc",

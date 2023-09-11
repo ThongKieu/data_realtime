@@ -317,3 +317,13 @@
             );
         }
     );
+  id: Math.floor(Math.random() * 1000),
+        yccv: "Sửa Nhà",
+        diaChi: "Trần Hưng Đạo",
+        quan: "q1",
+        sdt: "0947613923",
+        BH: "1 t",
+        dsThu: "1.500.000đ",
+        dsChi: "500.000đ",
+        soPhieuThu: "17.1717",
+        tinhTrangTT: "chua tt",

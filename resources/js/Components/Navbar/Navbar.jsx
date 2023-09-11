@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,memo } from "react";
 import {
     Navbar,
     Collapse,
@@ -293,8 +293,8 @@ function NavbarDefault({ propAuth }) {
         );
     }, []);
     return (
-        <Navbar className="w-full max-w-full p-2 mx-auto mt-2 text-black-400 lg:pl-6 bg-blue-gray-200">
-            <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900">
+        <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200">
+            <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
                 <IconButton
                     size="sm"
                     color="blue-gray"
@@ -326,4 +326,4 @@ function NavbarDefault({ propAuth }) {
         </Navbar>
     );
 }
-export default NavbarDefault;
+export default memo(NavbarDefault);

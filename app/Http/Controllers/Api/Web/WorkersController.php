@@ -19,12 +19,16 @@ class WorkersController extends Controller
 
         $sort = WorkersController::getSortName($request->kind_worker);
 
-        if($request->hasFile('avata_new'))
-        {
+        if ($request->hasFile('avata_new')) {
             $file = $request->file('avata_new');
-            $name = $sort.'.'.$file->extension();
+            $name = $sort . '.' . $file->extension();
             $file->move('assets/avata/', $name);
             // $files = $files.'assets/avata/'.$name.',';
+            $path = 'assets/avata/'.$name;
+        }
+        else
+        {
+            $path = 'assets/avata/avata1.png';
         }
         // dd($request->all());
         $new = new Worker([
@@ -36,7 +40,7 @@ class WorkersController extends Controller
             'phone_cn' => $request->phone_cn,
             'folder_path' => 'assets/images/work/' . $sort,
             'kind_worker' => $request->kind_worker,
-            'avata' => 'assets/avata/' . $sort . '.png',
+            'avata' => $path,
         ]);
         $new->save();
         return response()->json('Worker create');
@@ -102,24 +106,21 @@ class WorkersController extends Controller
         //    dd($re->all());
         switch ($action) {
             case 'status_change_worker':
+                // dd($re->id);
                 Worker::where('id', '=', $re->id)->update(['status_worker' => $re->status]);
                 return response()->json(['data' => 'Change Status']);
             case 'avata_change_worker':
-                // $ra = time();
                 if ($re->hasFile('avata_new')) {
                     $file = $re->file('avata_new');
-                    $name = $re->sort_name.'-'.time() .'.'. $file->extension();
+                    $name = $re->sort_name . '-' . time() . '.' . $file->extension();
                     $file->move('assets/avata/', $name);
-                    // $files = $files.'assets/avata/'.$name.',';
-                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avata' => $file]);
-
-                    if ($up) {
-                        return 'Update Done!';
-                    } else {
-                        return 'Failse Update';
-                    }
+                    $path = 'assets/avata/'.$name;
+                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avata' => $path]);
                 }
                 return response()->json(['data' => 'Change Avata']);
+            case 'phone_change_worker':
+                Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
+                return response()->json(['data' => 'Change Phone']);
             default:
                 return response()->json(['data' => '11111111232321111111']);
         }

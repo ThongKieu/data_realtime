@@ -173,16 +173,12 @@ function ProfileMenu({ propAuthProfile }) {
                     <NavLink
                         href={route("logout")}
                         method="POST"
+                        as="button"
                         className="w-full font-normal"
                     >
                         <MenuItem
                             onClick={closeMenu}
                             className={`flex items-center gap-2 rounded  hover:bg-red-500/10 focus:bg-red-500/10 bg-red-500/10`}
-                            // ${
-                            //     isLastItem
-                            //         ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                            //         : ""
-                            // }`}
                         >
                             <PowerIcon className="`h-4 w-4" />
                             <Typography
@@ -195,51 +191,6 @@ function ProfileMenu({ propAuthProfile }) {
                             </Typography>
                         </MenuItem>
                     </NavLink>
-
-                    {/* {profileMenuItems.map(
-                        ({ label, icon, href }, key, index) => {
-                            const isLastItem =
-                                key === profileMenuItems.length - 1;
-                            return (
-                                <MenuItem
-                                    key={label}
-                                    onClick={closeMenu}
-                                    className={`flex items-center gap-2 rounded ${
-                                        isLastItem
-                                            ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                                            : ""
-                                    }`}
-                                >
-                                    {React.createElement(icon, {
-                                        className: `h-4 w-4 ${
-                                            isLastItem ? "text-red-500" : ""
-                                        }`,
-                                        strokeWidth: 2,
-                                    })}
-                                    {/* <NavLink
-                                        key={index}
-                                        href={route(`${href}`)}
-                                        className="font-normal"
-                                    >
-                                        <MenuItem className="flex items-center gap-2 text-black lg:rounded-full">
-                                            {React.createElement(icon, {
-                                                className: "h-[18px] w-[18px]",
-                                            })}{" "}
-                                            {label}
-                                        </MenuItem>
-                                    </NavLink> */}
-                    {/* <Typography
-                                        as="span"
-                                        variant="small"
-                                        className="font-normal"
-                                        color={isLastItem ? "red" : "inherit"}
-                                    >
-                                        {label}
-                                    </Typography>
-                                </MenuItem>
-                            );
-                        } */}
-                    {/* )} */}
                 </MenuList>
             </Menu>
         </div>

@@ -106,7 +106,7 @@ const TABLE_ROWS = [
 function Home() {
   return (
     <Card className="h-full w-full overflow-scroll">
-      <table className="w-full min-w-max table-auto text-left">
+      <table className="w-full table-auto text-left">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (

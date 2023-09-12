@@ -581,4 +581,4 @@ function WorkersMain({ auth }) {
     );
 }
 
-export default WorkersMain;
+export default WorkersMain

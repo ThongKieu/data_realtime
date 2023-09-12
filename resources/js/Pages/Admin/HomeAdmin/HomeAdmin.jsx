@@ -5,10 +5,8 @@ import React from 'react'
 
 export default function HomeAdmin({ auth }) {
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-        >
-            <Head title="Home Admin" />
+        <AuthenticatedLayout user={auth.user}>
+            <Head title="Home Adminsss" />
             <Home />
         </AuthenticatedLayout>
     );

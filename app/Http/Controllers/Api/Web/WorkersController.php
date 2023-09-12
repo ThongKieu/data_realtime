@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 class WorkersController extends Controller
 {
     //
-    public function __invoke(){}
+    public function __invoke()
+    {
+    }
     public function index()
     {
         return response()->json(Worker::all());
@@ -82,20 +84,15 @@ class WorkersController extends Controller
     }
     public function addAvata(Request $req)
     {
-        if($req->hasFile('avata_new'))
-        {
+        if ($req->hasFile('avata_new')) {
             $file = $req->file('avata_new');
-            $name = $req->sort_name.$file->extension();
+            $name = $req->sort_name . '.' . $file->extension();
             $file->move('assets/avata/', $name);
-            // $files = $files.'assets/avata/'.$name.',';
-            $up = Worker::where('sort_name','=',$req->sort_name)-> update(['avata'=>$file]);
+            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avata' => $file]);
 
-            if($up)
-            {
+            if ($up) {
                 return 'Update Done!';
-            }
-            else
-            {
+            } else {
                 return 'Failse Update';
             }
         }
@@ -111,6 +108,7 @@ class WorkersController extends Controller
                 return response()->json(['data' => 'Change Status']);
             case 'avata_change_worker':
                 if ($re->hasFile('avata_new')) {
+
                     $file = $re->file('avata_new');
                     $name = $re->sort_name . '-' . time() . '.' . $file->extension();
                     $file->move('assets/avata/', $name);
@@ -122,7 +120,7 @@ class WorkersController extends Controller
                 Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
             default:
-                return response()->json(['data' => '11111111232321111111']);
+                return response()->json(['data' => 'Lỗi cập nhật']);
         }
     }
 }

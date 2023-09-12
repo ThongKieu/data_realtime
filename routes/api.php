@@ -21,7 +21,7 @@ Route::prefix('web')->group(function () {
     Route::apiResource('works',WorksController::class);
     Route::apiResource('workers',WorkersController::class);
     Route::apiResource('district',DistrictController::class);
-    Route::get('push-online','App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
+    Route::post('push-online','App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
     Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');

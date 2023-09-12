@@ -28,7 +28,11 @@ io.on("connection", (socket) => {
         });
     });
     socket.on("pushOnline", (message) => {
-        console.log('id người dùng:',message);
+        console.log('User:',message,' is online');
+        io.sockets.emit('sentListOnline_Client',message);
+        socket.on("disconnect", () => {
+            console.log('User:',message,' is disconnect');
+        });
     });
     socket.on("addWorkTo_Server", async (formData1) => {
         console.log("Received form data:", formData1);

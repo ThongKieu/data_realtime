@@ -137,8 +137,24 @@ function Dashboard({ auth }) {
     useEffect(() => {
         if (socketD) {
             socketD.emit("pushOnline", message);
+            pushOn();
+            console.log('User is online');
         }
     }, [socketD]);
+    const pushOn = async(data)=>{
+        try {
+            let data = {'id':auth.user.id};
+            const response = await fetch('api/web/push-online', {
+                method: 'POST',
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    'Content-Type': 'application/json', // Xác định loại dữ liệu gửi đi
+                },
+            });
+        } catch (error) {
+            
+        }
+    }
     // ----------------
     const fetchData = async () => {
         try {

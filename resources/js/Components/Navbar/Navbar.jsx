@@ -41,8 +41,28 @@ const profileMenuItems = [
 function ProfileMenu({ propAuthProfile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
-
-    console.log("xin chào", propAuthProfile);
+    const [number,setNumberOnline] = useState('');
+    const numberOnline = async () => {
+        try {
+        const response = await fetch("api/web/list-online",{
+            method:'get',
+            headers: {
+                'Content-Type': 'application/json', // Xác định loại dữ liệu gửi đi
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Fetch không thành công');
+        }
+        const jsonData = await response.json();
+        // Xử lý dữ liệu lấy được từ API
+        // console.log('1111111111111111111',jsonData);
+        setNumberOnline(jsonData);
+        } catch (error) {
+        console.error("Error fetching data:", error);
+        }
+    };
+    numberOnline()
+    // console.log("xin chào", propAuthProfile);
     return (
         <div className="flex">
             <NavLink
@@ -127,6 +147,7 @@ function ProfileMenu({ propAuthProfile }) {
                 open={isMenuOpen}
                 handler={setIsMenuOpen}
                 placement="bottom-end"
+                onClick ={numberOnline}
             >
                 <MenuHandler>
                     <Button
@@ -139,7 +160,7 @@ function ProfileMenu({ propAuthProfile }) {
                             size="sm"
                             alt="tania andrew"
                             className="border border-gray-900 p-0.5"
-                            src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+                            src={propAuthProfile.avata}
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
@@ -150,7 +171,7 @@ function ProfileMenu({ propAuthProfile }) {
                     </Button>
                 </MenuHandler>
                 <MenuList className="p-1">
-                    <OnlineList />
+                    <OnlineList  numberOnline={number} />
                     <NavLink
                         href={route("profile.edit")}
                         className="w-full font-normal"
@@ -178,11 +199,7 @@ function ProfileMenu({ propAuthProfile }) {
                         <MenuItem
                             onClick={closeMenu}
                             className={`flex items-center gap-2 rounded  hover:bg-red-500/10 focus:bg-red-500/10 bg-red-500/10`}
-                            // ${
-                            //     isLastItem
-                            //         ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                            //         : ""
-                            // }`}
+                           
                         >
                             <PowerIcon className="`h-4 w-4" />
                             <Typography
@@ -195,51 +212,6 @@ function ProfileMenu({ propAuthProfile }) {
                             </Typography>
                         </MenuItem>
                     </NavLink>
-
-                    {/* {profileMenuItems.map(
-                        ({ label, icon, href }, key, index) => {
-                            const isLastItem =
-                                key === profileMenuItems.length - 1;
-                            return (
-                                <MenuItem
-                                    key={label}
-                                    onClick={closeMenu}
-                                    className={`flex items-center gap-2 rounded ${
-                                        isLastItem
-                                            ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                                            : ""
-                                    }`}
-                                >
-                                    {React.createElement(icon, {
-                                        className: `h-4 w-4 ${
-                                            isLastItem ? "text-red-500" : ""
-                                        }`,
-                                        strokeWidth: 2,
-                                    })}
-                                    {/* <NavLink
-                                        key={index}
-                                        href={route(`${href}`)}
-                                        className="font-normal"
-                                    >
-                                        <MenuItem className="flex items-center gap-2 text-black lg:rounded-full">
-                                            {React.createElement(icon, {
-                                                className: "h-[18px] w-[18px]",
-                                            })}{" "}
-                                            {label}
-                                        </MenuItem>
-                                    </NavLink> */}
-                    {/* <Typography
-                                        as="span"
-                                        variant="small"
-                                        className="font-normal"
-                                        color={isLastItem ? "red" : "inherit"}
-                                    >
-                                        {label}
-                                    </Typography>
-                                </MenuItem>
-                            );
-                        } */}
-                    {/* )} */}
                 </MenuList>
             </Menu>
         </div>

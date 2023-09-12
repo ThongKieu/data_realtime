@@ -96,7 +96,7 @@ function WorkersMain({ auth }) {
       if (response.ok) {
         const responseData = await response.json();
         console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', responseData);
-        window.location.reload();
+        // window.location.reload();
       } else {
         console.error('Lỗi khi gửi dữ liệu:', response.statusText);
       }
@@ -165,6 +165,7 @@ function WorkersMain({ auth }) {
   // useEffect chỉ chạy một lần sau khi render đầu tiên
  
   const fetchData = async (data1) => {
+    console.log('xaiiii',data1);
     try {
         const response = await fetch('api/web/update/worker', {
             method: 'POST',
@@ -172,8 +173,8 @@ function WorkersMain({ auth }) {
               'Content-Type': 'application/json',
             },
             body: data1,
-            // window.location
           });
+        console.log('xian chaoaooa',data1);
         if (response.ok) {
             console.log('Dữ liệu đã được gửi và phản hồi từ máy chủ:', response);
             window.location.reload();
@@ -239,7 +240,6 @@ function WorkersMain({ auth }) {
             <option value="1">Nghỉ Phép</option>
             <option value="2">Đã Nghỉ</option>
           </select>);
-
       }
     },
     {
@@ -306,7 +306,6 @@ function WorkersMain({ auth }) {
             />,
           ];
         }
-
         return [
           <GridActionsCellItem
             icon={<PencilSquareIcon className='w-6 h-6' />}
@@ -324,11 +323,7 @@ function WorkersMain({ auth }) {
         ];
       },
     },
-
   ];
-
-
-
   return (
     <AuthenticatedLayout children={auth.user} user={auth.user} >
       <Head title="Trang quản lý thông tin thợ" />
@@ -344,7 +339,6 @@ function WorkersMain({ auth }) {
           </div>
         </div>
       </Card>
-
       <Dialog open={open} handler={handleOpen}>
         <form onSubmit={handleSubmit}>
           <DialogHeader >

@@ -6,6 +6,7 @@ import {
     Button,
     Card,
     Typography,
+    select,
 } from "@material-tailwind/react";
 // -------
 import {
@@ -24,7 +25,7 @@ import {
     XCircleIcon,
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 import TableOrder from "@/Core/TableOrder";
 
 const TABLE_HEAD = [
@@ -269,10 +270,17 @@ function Dashboard({ auth }) {
         {
             field: "KTV",
             headerName: "Thợ",
-            width: 50,
+            width: 80,
             editable: true,
             type: "singleSelect",
-            valueOptions: ['Có'],
+            renderCell:(params1)=>{
+                console.log('params1231',params1.id);
+                // return (
+                //     <select>
+                //         <option value=""></option>
+                //     </select>
+                // )
+            },
         },
         {
             field: "actions",
@@ -476,10 +484,9 @@ function Dashboard({ auth }) {
                                 toolbar: { setRows, setRowModesModel },
                             }}
                         />
-                        <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
+                        {/* <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
                             Điện Lạnh
                         </Typography>
-                        {/* bang ben trai  */}
                         <DataGrid
                             rows={workData}
                             columns={columns}
@@ -492,11 +499,11 @@ function Dashboard({ auth }) {
                             slotProps={{
                                 toolbar: { setRows, setRowModesModel },
                             }}
-                        />
+                        /> */}
                     </div>
                 </Card>
                 <div>
-                    <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
+                    {/* <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
                         Điện Nước
                     </Typography>
                     <Card
@@ -504,7 +511,6 @@ function Dashboard({ auth }) {
                             "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
                         }
                     >
-                        {/* bang ben phai */}
                         <DataGrid
                             rows={worksData}
                             columns={columnsRight}
@@ -518,7 +524,7 @@ function Dashboard({ auth }) {
                                 toolbar: { setRows, setRowModesModel },
                             }}
                         />
-                    </Card>
+                    </Card> */}
                 </div>
             </div>
         </AuthenticatedLayout>

@@ -148,7 +148,7 @@ function WorkersMain({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    console.log('kdddddddddd', rows);
+
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch("api/web/workers")
@@ -176,26 +176,9 @@ function WorkersMain({ auth }) {
                 },
                 body: JSON.stringify(data1),
             });
+
             if (res.ok) {
                 console.log("status_change_worker");
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    const fetchDataPhoneCTy = async (data1) => {
-        try {
-            const res = await fetch("api/web/update/worker", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data1),
-            });
-            if (res.ok) {
-                console.log("phone_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -222,33 +205,6 @@ function WorkersMain({ auth }) {
             console.log(error);
         }
     };
-    // Hàm thay đổi sdt trong rendercell
-    const handleChangeva = (event, id) => {
-        // Xử lý sự thay đổi của lựa chọn ở đây
-        const selectedValue = event.target.value;
-        const updatePhoneCTy = {
-          action: "phone_change_worker",
-          id: id,
-          phone_ct: selectedValue,
-        };
-        fetchDataPhoneCTy(updatePhoneCTy);
-      };
-
-      const renderPhoneCTField = (params) => {
-        console.log('dddd', params);
-        return (
-          <Input
-            type="text"
-            className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none"
-            labelProps={{
-              className: "hidden",
-            }}
-            value={params.value}
-            containerProps={{ className: "h-28" }}
-            onChange={(e) => handleChangeva(e, params.id)}
-          />
-        );
-      };
     // Hiển thị dữ liệu bảng
     const columns = [
         { field: "id", headerName: "ID", width: 30 },
@@ -275,13 +231,12 @@ function WorkersMain({ auth }) {
             headerName: "Số Công ty",
             width: 150,
             editable: true,
-            renderCell: renderPhoneCTField
         },
         {
             field: "phone_cn",
             headerName: "Số cá nhân",
             width: 150,
-            editable: false,
+            editable: true,
         },
         {
             field: "status_worker",
@@ -298,6 +253,7 @@ function WorkersMain({ auth }) {
                         status: selectedValue,
                     };
                     fetchData(data_set);
+                    console.log(data_set);
                 };
                 return (
                     <select
@@ -341,6 +297,7 @@ function WorkersMain({ auth }) {
                     fetchDataImage(formDataImage);
                     handleOpen();
                 };
+
                 if (params.field === "avata") {
                     const imagePreview1 = selectedImage ? (
                         <img
@@ -378,15 +335,13 @@ function WorkersMain({ auth }) {
                                         </div>
                                         <div className="w-full col-span-2 h-28">
                                             <Input
-                                                type="file"
-                                                accept="image/*"
+                                                 type="file"
+                                                 accept="image/*"
                                                 className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
                                                 labelProps={{
                                                     className: "hidden",
                                                 }}
-                                                containerProps={{
-                                                    className: "h-28",
-                                                }}
+                                                containerProps={{ className: "h-28" }}
                                                 onChange={handleImageSelect}
                                             />
                                         </div>
@@ -618,4 +573,4 @@ function WorkersMain({ auth }) {
     );
 }
 
-export default WorkersMain;
+export default WorkersMain

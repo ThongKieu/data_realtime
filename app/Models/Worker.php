@@ -12,7 +12,7 @@ class Worker extends Model
         'worker_firstname',
         'worker_name',
         'sort_name',
-        'add_woker', 
+        'add_worker',
         'phone_ct',
         'phone_cn',
         'folder_path',
@@ -20,6 +20,6 @@ class Worker extends Model
         'has_work',
         'status_worker',
         'check_acc',
-        'avata'
+        'avatar'
     ];
 }

@@ -17,8 +17,14 @@ class PushOnlineController extends Controller
     public function updateOnline(Request $re)
     {
         // dd($re->all());
-        DB::table('users')->where('id','=',$re->id)->update(['is_online'=> 1]);
-        return 1;
+        if($re->ac == 1)
+        {
+            DB::table('users')->where('id','=',$re->id)->update(['is_online'=> 1]);
+        }
+        else{
+            DB::table('users')->where('id','=',$re->id)->update(['is_online'=> 0]);
+        }
+        return 'OK';
     }
     public function listOnline()  {
         $is_online = User::where('is_online','=',1)->get('id');

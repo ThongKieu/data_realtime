@@ -144,7 +144,10 @@ function Dashboard({ auth }) {
     }, [socketD]);
     const pushOn = async(data)=>{
         try {
-            let data = {'id':auth.user.id};
+            let data = {
+                'ac':1,
+                'id':auth.user.id
+            };
             const response = await fetch('api/web/push-online', {
                 method: 'POST',
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON

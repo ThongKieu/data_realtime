@@ -32,7 +32,7 @@ function CardMain() {
         {
             id: 4,
             title: 'Hủy',
-            count: 0,
+            count: 10000,
             typographyColor: 'text-center  text-red-600 text-sm',
             cardBorderColor: 'm-1 border border-solid shadow-red-400  w-96 border-red-600 justify-center  w-24 rounded',
         }

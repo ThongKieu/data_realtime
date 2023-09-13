@@ -28,7 +28,7 @@ class WorkersController extends Controller
             // $files = $files.'assets/avata/'.$name.',';
             $path = 'assets/avata/'.$name;
         }
-        else
+        else 
         {
             $path = 'assets/avata/avata1.png';
         }
@@ -108,7 +108,7 @@ class WorkersController extends Controller
                 return response()->json(['data' => 'Change Status']);
             case 'avata_change_worker':
                 if ($re->hasFile('avata_new')) {
-
+                    
                     $file = $re->file('avata_new');
                     $name = $re->sort_name . '-' . time() . '.' . $file->extension();
                     $file->move('assets/avata/', $name);
@@ -123,4 +123,5 @@ class WorkersController extends Controller
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }
     }
+    
 }

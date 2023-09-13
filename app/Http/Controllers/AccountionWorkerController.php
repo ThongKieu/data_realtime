@@ -28,7 +28,7 @@ class AccountionWorkerController extends Controller
         {
             return 'Khởi tạo thành công';
         }
-        else 
+        else
             return 'Không thành công';
     }
     public static function getAllWorkersAcctive()
@@ -157,7 +157,7 @@ class AccountionWorkerController extends Controller
         }
         return redirect()->action('Workers\WorkerController@indexAdmin');
     }
-   
+
     public function checkDeviceKey($key, $id)
 
     {

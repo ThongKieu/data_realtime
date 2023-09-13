@@ -23,28 +23,28 @@ class WorkersController extends Controller
 
         $sort = WorkersController::getSortName($request->kind_worker);
 
-        if ($request->hasFile('avata_new')) {
-            $file = $request->file('avata_new');
+        if ($request->hasFile('avatar_new')) {
+            $file = $request->file('avatar_new');
             $name = $sort . '.' . $file->extension();
-            $file->move('assets/avata/', $name);
+            $file->move('assets/avatar/', $name);
             // $files = $files.'assets/avata/'.$name.',';
-            $path = 'assets/avata/'.$name;
+            $path = 'assets/avatar/'.$name;
         }
-        else 
+        else
         {
-            $path = 'assets/avata/avata1.png';
+            $path = 'assets/avatar/avata1.png';
         }
         // dd($request->all());
         $new = new Worker([
             'worker_firstname' => $request->worker_firstname,
             'worker_name' => $request->worker_name,
             'sort_name' => $sort,
-            'add_woker' => $request->add_woker,
+            'add_worker' => $request->add_worker,
             'phone_ct' => $request->phone_cty,
             'phone_cn' => $request->phone_cn,
             'folder_path' => 'assets/images/work/' . $sort,
             'kind_worker' => $request->kind_worker,
-            'avata' => $path,
+            'avatar' => $path,
         ]);
         $new->save();
         $id = Worker::where('sort_name','=',$sort)->value('id');
@@ -90,13 +90,13 @@ class WorkersController extends Controller
         }
         // return $p = substr(sprintf('%02d', '9'),0,8);
     }
-    public function addAvata(Request $req)
+    public function addAvatar(Request $req)
     {
-        if ($req->hasFile('avata_new')) {
-            $file = $req->file('avata_new');
+        if ($req->hasFile('avatar_new')) {
+            $file = $req->file('avatar_new');
             $name = $req->sort_name . '.' . $file->extension();
-            $file->move('assets/avata/', $name);
-            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avata' => $file]);
+            $file->move('assets/avatar/', $name);
+            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avatar' => $file]);
 
             if ($up) {
                 return 'Update Done!';
@@ -114,16 +114,16 @@ class WorkersController extends Controller
                 // dd($re->id);
                 Worker::where('id', '=', $re->id)->update(['status_worker' => $re->status]);
                 return response()->json(['data' => 'Change Status']);
-            case 'avata_change_worker':
-                if ($re->hasFile('avata_new')) {
-                    
-                    $file = $re->file('avata_new');
+            case 'avatar_change_worker':
+                if ($re->hasFile('avatar_new')) {
+
+                    $file = $re->file('avatar_new');
                     $name = $re->sort_name . '-' . time() . '.' . $file->extension();
-                    $file->move('assets/avata/', $name);
-                    $path = 'assets/avata/'.$name;
-                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avata' => $path]);
+                    $file->move('assets/avatar/', $name);
+                    $path = 'assets/avatar/'.$name;
+                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avatar' => $path]);
                 }
-                return response()->json(['data' => 'Change Avata']);
+                return response()->json(['data' => 'Change Avatar']);
             case 'phone_change_worker':
                 Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
@@ -131,5 +131,5 @@ class WorkersController extends Controller
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }
     }
-    
+
 }

@@ -1,20 +1,20 @@
 import React, { useState, useEffect, } from 'react'
-import AvataImage from '../AvataImage'
+import AvatarImage from '../AvatarImage';
 import {
   List,
   ListItem,
   ListItemPrefix,
   ListItemSuffix,
   Chip,
- 
+
 } from "@material-tailwind/react";
 
 
-function OnlineList( {numberOnline}) {
+function OnlineList( {numberOnline,avatarImage}) {
   return (
     <List className="p-0 my-2">
       <ListItem className="cursor-pointer py-1.5 font-medium ">
-        <AvataImage children='assets/avata/avata2.png'></AvataImage>
+        <AvatarImage children={avatarImage}></AvatarImage>
         <ListItemSuffix>
           <Chip
             value={numberOnline}

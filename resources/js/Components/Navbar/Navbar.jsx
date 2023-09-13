@@ -160,7 +160,7 @@ function ProfileMenu({ propAuthProfile }) {
                             size="sm"
                             alt="tania andrew"
                             className="border border-gray-900 p-0.5"
-                            src={propAuthProfile.avata}
+                            src={propAuthProfile.avatar}
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
@@ -171,7 +171,7 @@ function ProfileMenu({ propAuthProfile }) {
                     </Button>
                 </MenuHandler>
                 <MenuList className="p-1">
-                    <OnlineList  numberOnline={number} />
+                    <OnlineList avatarImage={propAuthProfile.avatar}  numberOnline={number} />
                     <NavLink
                         href={route("profile.edit")}
                         className="w-full font-normal"
@@ -264,6 +264,7 @@ function NavbarDefault({ propAuth }) {
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
     }, []);
+    // console.log('---------',propAuth.avata);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">

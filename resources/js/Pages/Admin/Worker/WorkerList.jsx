@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useMemo } from "react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import {
     Card,
@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
+import { host } from "@/Utils/UrlApi";
 
 import {
     GridRowModes,
@@ -27,7 +28,7 @@ import {
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 
-function WorkersMain({ auth }) {
+function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
@@ -150,7 +151,8 @@ function WorkersMain({ auth }) {
 
     useEffect(() => {
         // Gọi API để lấy dữ liệu
-        fetch("api/web/workers")
+       
+        fetch(host + "api/web/workers")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
@@ -188,7 +190,7 @@ function WorkersMain({ auth }) {
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
-            const response = await fetch("api/web/update/worker", {
+            const response = await fetch(host +"api/web/update/worker", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -236,6 +238,9 @@ function WorkersMain({ auth }) {
             headerName: "Số cá nhân",
             width: 150,
             editable: true,
+            renderCell: (params) => {
+              console.log(params);
+          },
         },
         {
             field: "status_worker",
@@ -280,7 +285,6 @@ function WorkersMain({ auth }) {
                     const file = event.target.files[0];
                     if (file) {
                         const url = URL.createObjectURL(file);
-
                         setImagePreview(url);
                     }
                     setSelectedImage(file);
@@ -296,11 +300,10 @@ function WorkersMain({ auth }) {
                     fetchDataImage(formDataImage);
                     handleOpen();
                 };
-
                 if (params.field === "avata") {
                     const imagePreview1 = selectedImage ? (
                         <img
-                            src={imagePreview}
+                            src={imagePreview}                          
                             alt="Avatar"
                             className="w-full h-full"
                         />
@@ -313,7 +316,7 @@ function WorkersMain({ auth }) {
                         <>
                             <Button onClick={handleOpen} className="bg-white">
                                 <img
-                                    src={params.formattedValue}
+                                    src={host+params.formattedValue}
                                     alt="Avatar"
                                     className="w-10"
                                 />
@@ -438,7 +441,7 @@ function WorkersMain({ auth }) {
         },
     ];
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user}>
+        <AuthenticatedLayoutAdmin user={auth.user}>
             <Head title="Trang quản lý thông tin thợ" />
 
             <Card className="mt-2">
@@ -568,8 +571,8 @@ function WorkersMain({ auth }) {
                     />
                 </Box>
             </Card>
-        </AuthenticatedLayout>
+        </AuthenticatedLayoutAdmin>
     );
 }
 
-export default WorkersMain
+export default WorkerList

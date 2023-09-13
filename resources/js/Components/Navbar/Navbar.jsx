@@ -194,12 +194,12 @@ function ProfileMenu({ propAuthProfile }) {
                     <NavLink
                         href={route("logout")}
                         method="POST"
+                        as="button"
                         className="w-full font-normal"
                     >
                         <MenuItem
                             onClick={closeMenu}
                             className={`flex items-center gap-2 rounded  hover:bg-red-500/10 focus:bg-red-500/10 bg-red-500/10`}
-                           
                         >
                             <PowerIcon className="`h-4 w-4" />
                             <Typography

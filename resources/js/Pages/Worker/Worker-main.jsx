@@ -224,19 +224,19 @@ function WorkersMain({ auth }) {
             field: "sort_name",
             headerName: "Mã",
             width: 80,
-            editable: true,
+            editable: false,
         },
         {
             field: "phone_ct",
             headerName: "Số Công ty",
             width: 150,
-            editable: false,
+            editable: true,
         },
         {
             field: "phone_cn",
             headerName: "Số cá nhân",
             width: 150,
-            editable: false,
+            editable: true,
         },
         {
             field: "status_worker",
@@ -337,21 +337,13 @@ function WorkersMain({ auth }) {
                                             <Input
                                                  type="file"
                                                  accept="image/*"
-                                                className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none "
+                                                className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
                                                 labelProps={{
                                                     className: "hidden",
                                                 }}
-                                                // containerProps={{
-                                                //     className: "min-w-[100px]",
-                                                // }}
+                                                containerProps={{ className: "h-28" }}
                                                 onChange={handleImageSelect}
                                             />
-                                            {/* <Input
-                                                type="file"
-                                                accept="image/*"
-                                                className="w-full border rounded-l-none rounded-r-lg shadow-none outline-none h-28 text-bottom"
-                                                onChange={handleImageSelect}
-                                            /> */}
                                         </div>
                                     </div>
                                 </DialogBody>

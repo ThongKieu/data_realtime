@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\Web;
 
+use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;
+use App\Models\AccountionWorker;
 use App\Models\Worker;
 use Illuminate\Http\Request;
 
@@ -45,6 +47,12 @@ class WorkersController extends Controller
             'avata' => $path,
         ]);
         $new->save();
+        $id = Worker::where('sort_name','=',$sort)->value('id');
+        $createAcc = AccountionWorkerController::createAcc($id, $sort,$request->phone_cty);
+        if($createAcc != 1)
+        {
+            return response()->json('Tạo Tài Khoản Không Thành Công');
+        }
         return response()->json('Worker create');
     }
     public static function getSortName($kind_worker)

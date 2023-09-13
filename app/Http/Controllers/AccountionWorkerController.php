@@ -15,10 +15,10 @@ class AccountionWorkerController extends Controller
         $data = AccountionWorker::all();
         return response()->json($data);
     }
-    public function createAcc(Request $request) {
-        $acc = $request->sort_name.$request->phone_ct;
+    public static function createAcc($id, $sort_name, $phone_ct) {
+        $acc = $sort_name.$phone_ct;
         $newAcc = new AccountionWorker([
-           'id_worker' => $request->id,
+           'id_worker' => $id,
            'acc_worker'  => $acc,
            'pass_worker'  => Hash::make('thoviet2011'),
         ]);
@@ -26,7 +26,7 @@ class AccountionWorkerController extends Controller
 
         if($newAcc)
         {
-            return 'Khởi tạo thành công';
+            return 1;
         }
         else 
             return 'Không thành công';

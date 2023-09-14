@@ -14,6 +14,14 @@ class WorksController extends Controller
 
     public function index ()
     {
+        $today = date('Y-m-d');
+        $dien_nuoc = Work::where('kind_work','=','0')->where('status_work','=',0)->where('date_book','=',$today)->get();
+        // $dien_lanh =;
+        // $do_go =;
+        // $nlmt =;
+        // $xay_dung =;
+        // $tai_xe =;
+
         return response()->json( Work::all());
     }
     public function store (StoreWorkRequest $request)

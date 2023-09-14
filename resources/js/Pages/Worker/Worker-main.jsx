@@ -229,6 +229,12 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
+            field: "add_worker",
+            headerName: "Địa Chỉ",
+            width: 180,
+            editable: false,
+        },
+        {
             field: "last_active",
             headerName: "Last Active",
             width: 180,
@@ -236,39 +242,17 @@ function WorkersMain({ auth }) {
             renderCell: (params) => {
                 const lastActive = params.row.last_active;
                 const a1 = lastActive.h;
-                console.log("ktra1", lastActive);
                 if (lastActive.d >= 1 && lastActive.m === 0) {
                         var a = `${lastActive.d} ngày`;
-                    }
-                else if (lastActive.d === 0 && lastActive.m >= 1) {
+                }else if (lastActive.d === 0 && lastActive.m >= 1) {
                       var a = `${lastActive.m} tháng`;
                 } else if(lastActive.d >= 1 && lastActive.m >= 1){
                        var a = `${lastActive.m} tháng ${lastActive.d} ngày`;
-                    }
-                 else {
+                }else {
                     var a = `${lastActive.h} giờ `;
                 }
                 return <div>online {a} trước</div>;
             },
-        },
-        {
-            field: "null",
-            headerName: "Vị Trí Gần Nhất",
-            width: 180,
-            editable: false,
-            renderCell: () => {
-                return (
-                    <NavLink href={route("dashboard")} className="text-center">
-                        <MapPinIcon className="w-5 h-5 text-red-500" />
-                    </NavLink>
-                );
-            },
-        },
-        {
-            field: "add_worker",
-            headerName: "Địa Chỉ",
-            width: 180,
-            editable: false,
         },
 
         {
@@ -456,6 +440,10 @@ function WorkersMain({ auth }) {
                 if (params.field === "check_acc") {
                     switch (params.value) {
                         case 0:
+                            if(auth.user.permission === 1)
+                                {
+                                    return (<a href={"admin/account"}>{"Chưa có tạo Mới"}</a>);
+                                }
                             return "Chưa có, vui lòng liên hệ Admin.";
                         case 1:
                             return "Đã có chưa kích hoạt";
@@ -465,6 +453,8 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
+            width: 150,
+            editable: false,
         },
     ];
     return (

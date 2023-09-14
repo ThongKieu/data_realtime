@@ -37,14 +37,12 @@ class WorkersController extends Controller
             $file = $request->file('avatar_new');
             $name = $sort . '.' . $file->extension();
             $file->move('assets/avatar/', $name);
-            // $files = $files.'assets/avata/'.$name.',';
             $path = 'assets/avatar/'.$name;
         }
         else
         {
             $path = 'assets/avatar/avata1.png';
         }
-        // dd($request->all());
         $new = new Worker([
             'worker_firstname' => $request->worker_firstname,
             'worker_name' => $request->worker_name,

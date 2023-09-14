@@ -51,7 +51,7 @@ const data = [
     },
 ];
 
-function Notice(auth) {
+function Notice({auth}) {
     const [activeTab, setActiveTab] = useState('New_order');
 
     const handleTabClick = (tabId) => {

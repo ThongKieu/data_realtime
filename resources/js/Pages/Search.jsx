@@ -91,7 +91,7 @@ const TABLE_ROWS = [
         soPhieuThu: "1111",
     },
 ];
-function Search(auth) {
+function Search({auth}) {
     const [email, setEmail] = React.useState("");
   const onChange = ({ target }) => setEmail(target.value);
     return (

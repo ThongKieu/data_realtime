@@ -10,15 +10,17 @@ import {
     DialogBody,
     DialogFooter,
     Tooltip,
+    Typography,
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
     TrashIcon,
-    PencilSquareIcon,
+    PencilSquareIcon,MapPinIcon
 } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
 
+import NavLink from "@/Components/NavLink";
 import {
     GridRowModes,
     DataGrid,
@@ -39,7 +41,7 @@ function WorkersMain({ auth }) {
         kind_worker: "",
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const inputRef = createRef();
+
     const handleOpen = () => setOpen(!open);
 
     const handleSelectChange = (e) => {
@@ -71,7 +73,7 @@ function WorkersMain({ auth }) {
         formData.append("phone_cn", info_worker.phone_cn);
         formData.append("kind_worker", info_worker.kind_worker);
 
-        console.log(formData);
+
         try {
             const response = await fetch(URL_API, {
                 method: "POST",
@@ -81,13 +83,14 @@ function WorkersMain({ auth }) {
                 mode: "no-cors",
                 body: formData,
             });
-
+            console.log('formData',formData);
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
+                console.log(responseData);
                 // window.location.reload();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
@@ -272,18 +275,43 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
-            field: "worker_addre",
-            headerName: "Địa Chỉ",
-            width: 80,
+<<<<<<< HEAD
+=======
+            field: "last_active",
+            headerName: "Last Active",
+            width: 180,
             editable: false,
         },
         {
+            field: "null",
+            headerName: "Vị Trí Gần Nhất",
+            width: 180,
+            editable: false,
+            renderCell:()=>{
+                return(
+                   <NavLink href={route("dashboard")} className="text-center" >
+                     <MapPinIcon className="w-5 h-5 text-red-500"/>
+                   </NavLink>
+                )
+            }
+        },
+        {
+>>>>>>> 4d9c3e0b5a75f4f24dcad7d6d697fb3f8101a6ef
+            field: "add_worker",
+            headerName: "Địa Chỉ",
+            width: 180,
+            editable: false,
+        },
+
+        {
             field: "phone_ct",
             headerName: "Số Công ty",
-            width: 150,
+            width: 120,
             editable: false,
             renderCell: (params) => {
+                const inputRef = createRef();
                 const updatePhone = (e) => {
+
                     const set123 = e.target.value;
                     const dataPhone = {
                         action: "phone_change_worker",
@@ -303,7 +331,7 @@ function WorkersMain({ auth }) {
                         ref={inputRef}
                         defaultValue={params.value}
                         onKeyDown={updatePhone}
-                        className="border-none"
+                        className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
                         labelProps={
                            {
                             className:'hidden'
@@ -312,6 +340,7 @@ function WorkersMain({ auth }) {
                     />
                 );
             },
+
         },
         {
             field: "phone_cn",
@@ -603,6 +632,7 @@ function WorkersMain({ auth }) {
                                 showQuickFilter: true,
                             },
                         }}
+                        className="text-center"
                     />
                 </Box>
             </Card>

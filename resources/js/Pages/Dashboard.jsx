@@ -122,11 +122,11 @@ function Dashboard({ auth }) {
 
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
-        fetchData();
+        // fetchData();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
             // setWorkData(data);
-            fetchData(data);
+            // fetchData(data);
             console.log("Có lịch mới", workData);
             console.log("dat111a", data);
         });
@@ -156,7 +156,7 @@ function Dashboard({ auth }) {
                 },
             });
         } catch (error) {
-            
+
         }
     }
     // ----------------
@@ -487,7 +487,7 @@ function Dashboard({ auth }) {
                                 toolbar: { setRows, setRowModesModel },
                             }}
                         />
-                        {/* <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
+                        <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
                             Điện Lạnh
                         </Typography>
                         <DataGrid
@@ -502,7 +502,7 @@ function Dashboard({ auth }) {
                             slotProps={{
                                 toolbar: { setRows, setRowModesModel },
                             }}
-                        /> */}
+                        />
                     </div>
                 </Card>
                 <div>

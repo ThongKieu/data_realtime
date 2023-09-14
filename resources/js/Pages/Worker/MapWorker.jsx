@@ -1,8 +1,12 @@
-import React from 'react'
-
-function MapWorker() {
+import React from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head } from '@inertiajs/react';
+function MapWorker({auth}) {
   return (
-    <div>MapWorker</div>
+    <AuthenticatedLayout children={auth.user} user={auth.user}>
+    <Head title="Trang Chủ" />
+
+    </AuthenticatedLayout>
   )
 }
 

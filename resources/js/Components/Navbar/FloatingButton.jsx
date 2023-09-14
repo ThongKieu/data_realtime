@@ -30,6 +30,7 @@ function formatCardNumber(value) {
 }
 // --------------------API ---------
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import { host } from "@/utils/UrlApi";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -73,7 +74,7 @@ function FloatingButton() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(url_API_District);
+            const response = await fetch(host+url_API_District);
             const jsonData = await response.json();
             setOptionsDistrict(jsonData);
         } catch (error) {
@@ -125,7 +126,7 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
         try {
-            const response = await fetch(url_API, {
+            const response = await fetch(host+url_API, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",

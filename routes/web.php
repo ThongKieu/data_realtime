@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('worker-list');
     });
     Route::prefix('workers')->group(function(){
-        Route::get('/',function(){return Inertia::render('Worker/Worker-main');});
+        Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');

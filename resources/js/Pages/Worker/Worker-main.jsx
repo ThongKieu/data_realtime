@@ -246,7 +246,7 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
-            field: "worker_addre",
+            field: "add_worker",
             headerName: "Địa Chỉ",
             width: 80,
             editable: false,
@@ -495,8 +495,8 @@ function WorkersMain({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="add_woker"
-                                value={info_worker.add_woker}
+                                name="add_worker"
+                                value={info_worker.add_worker}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
                             />

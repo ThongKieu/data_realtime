@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
 use App\Models\Worker;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class WorkersController extends Controller
@@ -16,7 +17,15 @@ class WorkersController extends Controller
     }
     public function index()
     {
-        return response()->json(Worker::all());
+        $workers =Worker::all();
+        foreach($workers as $worker)
+        {
+            $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
+            $startTime = Carbon::create($worker->last_active);
+            $diff = $startTime->diff($now);
+            $worker->last_active = $diff;
+        }
+        return response()->json($workers);
     }
     public function store(Request $request)
     {

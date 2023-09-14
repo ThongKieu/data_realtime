@@ -204,26 +204,6 @@ function WorkersMain({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    // fetch data phone
-    const fetchDataPhone = async (data) => {
-        try {
-            const res = await fetch("api/web/update/worker", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (res.ok) {
-                console.log("status_change_worker");
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
@@ -541,8 +521,8 @@ function WorkersMain({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="add_woker"
-                                value={info_worker.add_woker}
+                                name="add_worker"
+                                value={info_worker.add_worker}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
                             />

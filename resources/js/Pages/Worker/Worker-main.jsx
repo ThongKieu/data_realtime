@@ -229,8 +229,6 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
-<<<<<<< HEAD
-=======
             field: "last_active",
             headerName: "Last Active",
             width: 180,
@@ -250,7 +248,6 @@ function WorkersMain({ auth }) {
             }
         },
         {
->>>>>>> 4d9c3e0b5a75f4f24dcad7d6d697fb3f8101a6ef
             field: "add_worker",
             headerName: "Địa Chỉ",
             width: 180,

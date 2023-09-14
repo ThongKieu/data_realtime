@@ -4,27 +4,50 @@ import {
     CardBody,
     Typography,
 } from "@material-tailwind/react";
-
+import { useState } from "react";
 function CardMain() {
+    const [WorkDataCountOrder, setWorkDataCountOrder] = useState(0);
+    const [WorkDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch("api/web/works");
+            const jsonData = await response.json();
+            setWorkDataCountOrder(jsonData.dem_lich);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const fetchDataOrderDone = async () => {
+        try {
+            const response = await fetch("api/web/works_done");
+            const jsonData = await response.json();
+            setWorkDataCountOrderDaPhan(jsonData.dem_lich_done)
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    fetchData();
+    fetchDataOrderDone();
     const DataTitle = [
         {
             id: 1,
-            title: 'Mới',
-            count: 0,
+            title: 'Tổng Lịch',
+            count:WorkDataCountOrder+WorkDataCountOrderDaPhan,
             typographyColor: 'text-center  text-blue-600 text-sm',
             cardBorderColor: 'm-1  border border-solid shadow-blue-400  border-blue-600 justify-center  w-24 rounded',
         },
         {
             id: 2,
             title: 'Chưa Phân',
-            count: 0,
+            count:WorkDataCountOrder,
             typographyColor: 'text-center  text-yellow-600 text-sm',
             cardBorderColor: 'm-1  border border-solid shadow-yellow-400  w-96 border-yellow-600 justify-center  w-24 rounded',
 
         }, {
             id: 3,
             title: 'Đã Phân',
-            count: 0,
+            count:WorkDataCountOrderDaPhan,
             typographyColor: 'text-center  text-green-600 text-sm',
             cardBorderColor: 'm-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-24 rounded',
 
@@ -32,11 +55,13 @@ function CardMain() {
         {
             id: 4,
             title: 'Hủy',
-            count: 10000,
+            count:WorkDataCountOrder,
             typographyColor: 'text-center  text-red-600 text-sm',
             cardBorderColor: 'm-1 border border-solid shadow-red-400  w-96 border-red-600 justify-center  w-24 rounded',
         }
     ]
+
+
     return (
         <div className="flex items-center justify-between ">
             {DataTitle.map((result, key) => {

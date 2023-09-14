@@ -284,7 +284,7 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propAuth }) {
+function NavbarDefault({ propAuth,countOrder }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     useEffect(() => {
@@ -316,7 +316,7 @@ function NavbarDefault({ propAuth }) {
                     <NavList />
                 </div>
 
-                <CardMain />
+                <CardMain count={countOrder}/>
 
                 <div>
                     <ProfileMenu propAuthProfile={propAuth} />

@@ -6,7 +6,12 @@ import {
     Button,
     Card,
     Typography,
-    select,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    Textarea,
+    DialogFooter,
+    Input,
 } from "@material-tailwind/react";
 // -------
 import {
@@ -16,13 +21,14 @@ import {
     GridActionsCellItem,
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
-import {randomId} from "@mui/x-data-grid-generator"
+import { randomId } from "@mui/x-data-grid-generator";
 // -----
 import {
     TrashIcon,
     PlusCircleIcon,
     PencilSquareIcon,
     XCircleIcon,
+    UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import io from "socket.io-client";
 import newSocket from "@/utils/socket";
@@ -59,6 +65,7 @@ var dataNew = [
         quan: "1",
         sdt: "1",
         KTV: "1",
+        status_cus: "0",
     },
 ];
 const data = [
@@ -68,7 +75,7 @@ const data = [
         diaChi: "Trần Hưng Đạo",
         quan: "q1",
         sdt: "0947613923",
-        ngayLam: '19/5',
+        ngayLam: "19/5",
         BH: "1 t",
         dsThu: "1.500.000đ",
         dsChi: "500.000đ",
@@ -119,14 +126,19 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState(null);
     const [message, setMessage] = useState(auth.user.id);
     const [workData, setWorkData] = useState(dataNew);
-
+    const [workDataDL, setWorkDataDL] = useState(dataNew);
+    const [workDataDG, setWorkDataDG] = useState(dataNew);
+    const [workDataNLMT, setWorkDataNLMT] = useState(dataNew);
+    const [workDataXD, setWorkDataXD] = useState(dataNew);
+    const [workDataVC, setWorkDataVC] = useState(dataNew);
+    const [workDataHX, setWorkDataHX] = useState(dataNew);
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
-        // fetchData();
+        fetchData();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
             // setWorkData(data);
-            // fetchData(data);
+            fetchData(data);
             console.log("Có lịch mới", workData);
             console.log("dat111a", data);
         });
@@ -139,32 +151,37 @@ function Dashboard({ auth }) {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
-            console.log('User is online');
+            console.log("User is online");
         }
     }, [socketD]);
-    const pushOn = async(data)=>{
+    const pushOn = async (data) => {
         try {
             let data = {
-                'ac':1,
-                'id':auth.user.id
+                ac: 1,
+                id: auth.user.id,
             };
-            const response = await fetch('api/web/push-online', {
-                method: 'POST',
+            const response = await fetch("api/web/push-online", {
+                method: "POST",
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                 headers: {
-                    'Content-Type': 'application/json', // Xác định loại dữ liệu gửi đi
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-        } catch (error) {
-
-        }
-    }
+        } catch (error) {}
+    };
     // ----------------
     const fetchData = async () => {
         try {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
-            setWorkData(jsonData);
+            setWorkData(jsonData.dien_nuoc);
+            setWorkDataDL(jsonData.dien_lanh);
+            setWorkDataDG(jsonData.do_go);
+            setWorkDataNLMT(jsonData.nlmt);
+            setWorkDataXD(jsonData.xay_dung);
+            setWorkDataVC(jsonData.tai_xe);
+            setWorkDataHX(jsonData.co_khi);
+            // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -175,7 +192,6 @@ function Dashboard({ auth }) {
     useEffect(() => {
         setOptions(listWorker);
     }, []);
-
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
@@ -188,7 +204,6 @@ function Dashboard({ auth }) {
     // -----------------------------handle---------------------------
     const [rows, setRows] = useState(dataNew);
     const [rowModesModel, setRowModesModel] = useState({});
-
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
             event.defaultMuiPrevented = true;
@@ -241,7 +256,8 @@ function Dashboard({ auth }) {
             headerName: "yêu Cầu Công Ciệc",
             width: 140,
             editable: true,
-        },{
+        },
+        {
             field: "date_book",
             headerName: "Ngày Làm",
             width: 140,
@@ -271,65 +287,101 @@ function Dashboard({ auth }) {
             type: "text",
         },
         {
-            field: "KTV",
-            headerName: "Thợ",
-            width: 80,
-            editable: true,
-            type: "singleSelect",
-            renderCell:(params1)=>{
-                console.log('params1231',params1.id);
-                // return (
-                //     <select>
-                //         <option value=""></option>
-                //     </select>
-                // )
-            },
-        },
-        {
             field: "actions",
             type: "actions",
             headerName: "Chức Năng",
             width: 100,
+            editable: false,
             cellClassName: "actions",
-            getActions: ({ id }) => {
-                const isInEditMode =
-                    rowModesModel[id]?.mode === GridRowModes.Edit;
+            renderCell: (params) => {
+                console.log(params);
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const [openTho, setOpenTho] = useState(false);
+                const handleOpenTho = () => setOpenTho(!openTho);
+                return (
+                    <div>
+                        <div className="flex">
+                            <UserPlusIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                            onClick={handleOpenTho}/>
+                            <TrashIcon
+                                className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer"
+                                onClick={handleOpen}
+                            />
+                        </div>
+                        <Dialog open={openTho} handler={handleOpenTho}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lựa Chọn Thợ</DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3"
+                                    onClick={handleOpenTho}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Input
+                                        label="Chọn Thợ Phù Hợp"
+                                        className="shadow-none"
+                                    />
 
-                if (isInEditMode) {
-                    return [
-                        <GridActionsCellItem
-                            icon={<PlusCircleIcon className="w-6 h-6" />}
-                            label="Save"
-                            sx={{
-                                color: "primary.main",
-                            }}
-                            onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                            icon={<XCircleIcon className="w-6 h-6" />}
-                            label="Cancel"
-                            className="textPrimary"
-                            onClick={handleCancelClick(id)}
-                            color="inherit"
-                        />,
-                    ];
-                }
-
-                return [
-                    <GridActionsCellItem
-                        icon={<PencilSquareIcon className="w-6 h-6" />}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                    />,
-                    <GridActionsCellItem
-                        icon={<TrashIcon className="w-6 h-6" />}
-                        label="Delete"
-                        onClick={handleDeleteClick(id)}
-                        color="inherit"
-                    />,
-                ];
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpenTho}
+                                >
+                                    Phân Thợ
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        <Dialog open={open} handler={handleOpen}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lý do hủy</DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3"
+                                    onClick={handleOpen}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do hủy"
+                                        className="shadow-none"
+                                    />
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpen}
+                                >
+                                    Hủy
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </div>
+                );
             },
         },
     ];
@@ -482,7 +534,6 @@ function Dashboard({ auth }) {
                             onRowModesModelChange={handleRowModesModelChange}
                             onRowEditStop={handleRowEditStop}
                             processRowUpdate={processRowUpdate}
-
                             slotProps={{
                                 toolbar: { setRows, setRowModesModel },
                             }}
@@ -491,14 +542,13 @@ function Dashboard({ auth }) {
                             Điện Lạnh
                         </Typography>
                         <DataGrid
-                            rows={workData}
+                            rows={workDataDL}
                             columns={columns}
                             editMode="row"
                             rowModesModel={rowModesModel}
                             onRowModesModelChange={handleRowModesModelChange}
                             onRowEditStop={handleRowEditStop}
                             processRowUpdate={processRowUpdate}
-
                             slotProps={{
                                 toolbar: { setRows, setRowModesModel },
                             }}

@@ -12,7 +12,7 @@ class WorksController extends Controller
 {
     //
     // public function __invoke() {
-        
+
     // }
     public function index (Request $request)
     {
@@ -25,7 +25,7 @@ class WorksController extends Controller
         {
             $today = date('Y-m-d');
         }
-        
+
         $dien_nuoc =    Work::where('kind_work','=','0')->where('status_cus','=',0)->where('date_book','=',$today)->get();
         $dien_lanh =    Work::where('kind_work','=','1')->where('status_cus','=',0)->where('date_book','=',$today)->get();
         $do_go     =    Work::where('kind_work','=','2')->where('status_cus','=',0)->where('date_book','=',$today)->get();
@@ -33,7 +33,7 @@ class WorksController extends Controller
         $xay_dung  =    Work::where('kind_work','=','4')->where('status_cus','=',0)->where('date_book','=',$today)->get();
         $tai_xe    =    Work::where('kind_work','=','5')->where('status_cus','=',0)->where('date_book','=',$today)->get();
         $co_khi    =    Work::where('kind_work','=','6')->where('status_cus','=',0)->where('date_book','=',$today)->get();
-
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWork = [
             'dien_nuoc'=>$dien_nuoc,
             'dien_lanh'=>$dien_lanh,
@@ -42,6 +42,7 @@ class WorksController extends Controller
             'xay_dung'=>$xay_dung,
             'tai_xe'=>$tai_xe,
             'co_khi'=>$co_khi,
+            'dem_lich'=>$number,
         ];
         return response()->json( $dataWork);
     }
@@ -56,7 +57,7 @@ class WorksController extends Controller
         {
             $today = date('Y-m-d');
         }
-        
+
         $dien_nuoc =    Work::where('kind_work','=','0')->where('status_cus','=',1)->where('date_book','=',$today)->get();
         $dien_lanh =    Work::where('kind_work','=','1')->where('status_cus','=',1)->where('date_book','=',$today)->get();
         $do_go     =    Work::where('kind_work','=','2')->where('status_cus','=',1)->where('date_book','=',$today)->get();
@@ -64,7 +65,7 @@ class WorksController extends Controller
         $xay_dung  =    Work::where('kind_work','=','4')->where('status_cus','=',1)->where('date_book','=',$today)->get();
         $tai_xe    =    Work::where('kind_work','=','5')->where('status_cus','=',1)->where('date_book','=',$today)->get();
         $co_khi    =    Work::where('kind_work','=','6')->where('status_cus','=',1)->where('date_book','=',$today)->get();
-
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
             'dien_lanh_done'=>$dien_lanh,
@@ -73,6 +74,7 @@ class WorksController extends Controller
             'xay_dung_done'=>$xay_dung,
             'tai_xe_done'=>$tai_xe,
             'co_khi_done'=>$co_khi,
+            'dem_lich_done'=>$number,
         ];
         return response()->json( $dataWorkDone);
     }

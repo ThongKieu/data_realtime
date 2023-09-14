@@ -56,8 +56,8 @@ function FloatingButton() {
         street: "",
         members_read: 1,
         kind_work: 0,
-        status_cus: 1,
-        from_cus: 1,
+        status_cus: 0,
+        from_cus: 0,
         flag_status: 1,
     });
     // ---------------------- select quan --------------------------------

@@ -15,7 +15,8 @@ import {
 import {
     PlusCircleIcon,
     TrashIcon,
-    PencilSquareIcon,MapPinIcon
+    PencilSquareIcon,
+    MapPinIcon,
 } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
@@ -73,7 +74,6 @@ function WorkersMain({ auth }) {
         formData.append("phone_cn", info_worker.phone_cn);
         formData.append("kind_worker", info_worker.kind_worker);
 
-
         try {
             const response = await fetch(URL_API, {
                 method: "POST",
@@ -83,7 +83,7 @@ function WorkersMain({ auth }) {
                 mode: "no-cors",
                 body: formData,
             });
-            console.log('formData',formData);
+            console.log("formData", formData);
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(
@@ -150,7 +150,7 @@ function WorkersMain({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    console.log("data Rows", rows);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch("api/web/workers")
@@ -233,19 +233,36 @@ function WorkersMain({ auth }) {
             headerName: "Last Active",
             width: 180,
             editable: false,
+            renderCell: (params) => {
+                const lastActive = params.row.last_active;
+                const a1 = lastActive.h;
+                console.log("ktra1", lastActive);
+                if (lastActive.d >= 1 && lastActive.m === 0) {
+                        var a = `${lastActive.d} ngày`;
+                    }
+                else if (lastActive.d === 0 && lastActive.m >= 1) {
+                      var a = `${lastActive.m} tháng`;
+                } else if(lastActive.d >= 1 && lastActive.m >= 1){
+                       var a = `${lastActive.m} tháng ${lastActive.d} ngày`;
+                    }
+                 else {
+                    var a = `${lastActive.h} giờ `;
+                }
+                return <div>online {a} trước</div>;
+            },
         },
         {
             field: "null",
             headerName: "Vị Trí Gần Nhất",
             width: 180,
             editable: false,
-            renderCell:()=>{
-                return(
-                   <NavLink href={route("dashboard")} className="text-center" >
-                     <MapPinIcon className="w-5 h-5 text-red-500"/>
-                   </NavLink>
-                )
-            }
+            renderCell: () => {
+                return (
+                    <NavLink href={route("dashboard")} className="text-center">
+                        <MapPinIcon className="w-5 h-5 text-red-500" />
+                    </NavLink>
+                );
+            },
         },
         {
             field: "add_worker",
@@ -262,7 +279,6 @@ function WorkersMain({ auth }) {
             renderCell: (params) => {
                 const inputRef = createRef();
                 const updatePhone = (e) => {
-
                     const set123 = e.target.value;
                     const dataPhone = {
                         action: "phone_change_worker",
@@ -275,7 +291,6 @@ function WorkersMain({ auth }) {
                         fetchDataPhone(dataPhone);
                         inputRef.current.blur();
                     }
-                    console.log("Kiem tra so dien thoai cong ty:", dataPhone);
                 };
                 return (
                     <Input
@@ -283,20 +298,17 @@ function WorkersMain({ auth }) {
                         defaultValue={params.value}
                         onKeyDown={updatePhone}
                         className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
-                        labelProps={
-                           {
-                            className:'hidden'
-                           }
-                        }
+                        labelProps={{
+                            className: "hidden",
+                        }}
                     />
                 );
             },
-
         },
         {
             field: "phone_cn",
             headerName: "Số cá nhân",
-            width: 150,
+            width: 120,
             editable: false,
         },
         {
@@ -332,6 +344,7 @@ function WorkersMain({ auth }) {
         {
             field: "avatar",
             headerName: "Ảnh",
+            width: 100,
             renderCell: (params) => {
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
@@ -432,12 +445,13 @@ function WorkersMain({ auth }) {
                     );
                 }
             },
-            width: 150,
             // editable: true,
         },
         {
             field: "check_acc",
             headerName: "Tài Khoản",
+            width: 250,
+            editable: false,
             renderCell: (params) => {
                 if (params.field === "check_acc") {
                     switch (params.value) {
@@ -451,8 +465,6 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
-            width: 150,
-            editable: false,
         },
     ];
     return (

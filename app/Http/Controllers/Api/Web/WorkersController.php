@@ -21,7 +21,8 @@ class WorkersController extends Controller
         foreach($workers as $worker)
         {
             $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
-            $startTime = Carbon::create($worker->last_active);
+            $last_active = AccountionWorker::where('id_worker','=',$worker->id)->value('last_active');
+            $startTime = Carbon::create($last_active);
             $diff = $startTime->diff($now);
             $worker->last_active = $diff;
         }

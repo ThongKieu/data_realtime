@@ -35,12 +35,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', function () {return Inertia::render('chat/Chat');})->name('chat');
     Route::get('/tim-kiem', function () {return Inertia::render('Search');})->name('search');
     Route::get('/thong-bao-lich-moi', function () {return Inertia::render('Notice');})->name('notice');
+
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('worker-list');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');});
+        Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

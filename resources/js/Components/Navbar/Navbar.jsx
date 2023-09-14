@@ -16,7 +16,7 @@ import {
     UserCircleIcon,
     ChevronDownIcon,
     PowerIcon,
-    Bars2Icon,
+    Bars2Icon,MapPinIcon
 } from "@heroicons/react/24/outline";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
@@ -231,6 +231,12 @@ const navListItems = [
         label: "Tìm Kiếm",
         icon: UserCircleIcon,
         href: "search",
+    },
+    {
+        id: 3,
+        label: "Vị Trí Thợ",
+        icon: MapPinIcon,
+        href: "locationWorker",
     },
 ];
 

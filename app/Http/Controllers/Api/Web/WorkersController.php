@@ -21,7 +21,8 @@ class WorkersController extends Controller
         foreach($workers as $worker)
         {
             $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
-            $startTime = Carbon::create($worker->last_active);
+            $last_active = AccountionWorker::where('id_worker','=',$worker->id)->value('last_active');
+            $startTime = Carbon::create($last_active);
             $diff = $startTime->diff($now);
             $worker->last_active = $diff;
         }
@@ -36,14 +37,12 @@ class WorkersController extends Controller
             $file = $request->file('avatar_new');
             $name = $sort . '.' . $file->extension();
             $file->move('assets/avatar/', $name);
-            // $files = $files.'assets/avata/'.$name.',';
             $path = 'assets/avatar/'.$name;
         }
         else
         {
             $path = 'assets/avatar/avata1.png';
         }
-        // dd($request->all());
         $new = new Worker([
             'worker_firstname' => $request->worker_firstname,
             'worker_name' => $request->worker_name,

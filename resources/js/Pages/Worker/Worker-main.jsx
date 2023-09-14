@@ -275,32 +275,30 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
-<<<<<<< HEAD
-=======
-            field: "last_active",
-            headerName: "Last Active",
-            width: 180,
-            editable: false,
-        },
-        {
-            field: "null",
-            headerName: "Vị Trí Gần Nhất",
-            width: 180,
-            editable: false,
-            renderCell:()=>{
-                return(
-                   <NavLink href={route("dashboard")} className="text-center" >
-                     <MapPinIcon className="w-5 h-5 text-red-500"/>
-                   </NavLink>
-                )
-            }
-        },
-        {
->>>>>>> 4d9c3e0b5a75f4f24dcad7d6d697fb3f8101a6ef
             field: "add_worker",
             headerName: "Địa Chỉ",
             width: 180,
             editable: false,
+        },
+        {
+            field: "last_active",
+            headerName: "Last Active",
+            width: 180,
+            editable: false,
+            renderCell: (params) => {
+                const lastActive = params.row.last_active;
+                const a1 = lastActive.h;
+                if (lastActive.d >= 1 && lastActive.m === 0) {
+                        var a = `${lastActive.d} ngày`;
+                }else if (lastActive.d === 0 && lastActive.m >= 1) {
+                      var a = `${lastActive.m} tháng`;
+                } else if(lastActive.d >= 1 && lastActive.m >= 1){
+                       var a = `${lastActive.m} tháng ${lastActive.d} ngày`;
+                }else {
+                    var a = `${lastActive.h} giờ `;
+                }
+                return <div>online {a} trước</div>;
+            },
         },
 
         {
@@ -324,7 +322,6 @@ function WorkersMain({ auth }) {
                         fetchDataPhone(dataPhone);
                         inputRef.current.blur();
                     }
-                    console.log("Kiem tra so dien thoai cong ty:", dataPhone);
                 };
                 return (
                     <Input
@@ -491,6 +488,10 @@ function WorkersMain({ auth }) {
                 if (params.field === "check_acc") {
                     switch (params.value) {
                         case 0:
+                            if(auth.user.permission === 1)
+                                {
+                                    return (<a href={"admin/account"}>{"Chưa có tạo Mới"}</a>);
+                                }
                             return "Chưa có, vui lòng liên hệ Admin.";
                         case 1:
                             return "Đã có chưa kích hoạt";
@@ -500,7 +501,7 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
-            width: 150,
+            width: 200,
             editable: false,
         },
     ];

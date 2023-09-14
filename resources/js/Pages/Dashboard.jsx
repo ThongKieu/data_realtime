@@ -21,6 +21,7 @@ import {
     GridActionsCellItem,
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
+import Box from "@mui/material/Box";
 import { randomId } from "@mui/x-data-grid-generator";
 // -----
 import {
@@ -302,8 +303,10 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-                            <UserPlusIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                            onClick={handleOpenTho}/>
+                            <UserPlusIcon
+                                className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                onClick={handleOpenTho}
+                            />
                             <TrashIcon
                                 className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer"
                                 onClick={handleOpen}
@@ -332,7 +335,6 @@ function Dashboard({ auth }) {
                                         label="Chọn Thợ Phù Hợp"
                                         className="shadow-none"
                                     />
-
                                 </div>
                             </DialogBody>
                             <DialogFooter className="space-x-2">
@@ -518,43 +520,53 @@ function Dashboard({ auth }) {
             >
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1"
+                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white"
                     }
                 >
                     <div>
-                        <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Điện Nước
                         </Typography>
                         {/* bang ben trai  */}
-                        <DataGrid
-                            rows={workData}
-                            columns={columns}
-                            editMode="row"
-                            rowModesModel={rowModesModel}
-                            onRowModesModelChange={handleRowModesModelChange}
-                            onRowEditStop={handleRowEditStop}
-                            processRowUpdate={processRowUpdate}
-                            slotProps={{
-                                toolbar: { setRows, setRowModesModel },
-                            }}
-                        />
-                        <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workData}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                                hideFooterPagination={true}
+                            />
+                        </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Điện Lạnh
                         </Typography>
-                        <DataGrid
-                            rows={workDataDL}
-                            columns={columns}
-                            editMode="row"
-                            rowModesModel={rowModesModel}
-                            onRowModesModelChange={handleRowModesModelChange}
-                            onRowEditStop={handleRowEditStop}
-                            processRowUpdate={processRowUpdate}
-                            slotProps={{
-                                toolbar: { setRows, setRowModesModel },
-                            }}
-                        />
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataDL}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
                     </div>
                 </Card>
+
                 <div>
                     {/* <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
                         Điện Nước

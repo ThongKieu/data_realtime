@@ -573,7 +573,7 @@ function WorkersMain({ auth }) {
             </Dialog>
             {/* -Đổ dữ liệu thợ- */}
             <Card className="w-[98%] m-auto mt-1">
-                <Box sx={{ height: 800, width: 1 }}>
+                <Box sx={{ width: 1 }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}

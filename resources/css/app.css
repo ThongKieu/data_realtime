@@ -13,3 +13,6 @@
     display: flex !important;
     justify-content: center !important;
 }
+.MuiDataGrid-footerContainer{
+    display: none !important;
+}

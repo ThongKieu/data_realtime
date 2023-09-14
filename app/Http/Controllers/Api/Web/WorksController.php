@@ -11,18 +11,70 @@ use Illuminate\Support\Facades\DB;
 class WorksController extends Controller
 {
     //
-
-    public function index ()
+    // public function __invoke() {
+        
+    // }
+    public function index (Request $request)
     {
-        $today = date('Y-m-d');
-        $dien_nuoc = Work::where('kind_work','=','0')->where('status_work','=',0)->where('date_book','=',$today)->get();
-        // $dien_lanh =;
-        // $do_go =;
-        // $nlmt =;
-        // $xay_dung =;
-        // $tai_xe =;
+        // get data not set for worker
+        if($request->dateCheck)
+        {
+            $today = $request->dateCheck;
+        }
+        else
+        {
+            $today = date('Y-m-d');
+        }
+        
+        $dien_nuoc =    Work::where('kind_work','=','0')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $dien_lanh =    Work::where('kind_work','=','1')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $do_go     =    Work::where('kind_work','=','2')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $nlmt      =    Work::where('kind_work','=','3')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $xay_dung  =    Work::where('kind_work','=','4')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $tai_xe    =    Work::where('kind_work','=','5')->where('status_cus','=',0)->where('date_book','=',$today)->get();
+        $co_khi    =    Work::where('kind_work','=','6')->where('status_cus','=',0)->where('date_book','=',$today)->get();
 
-        return response()->json( Work::all());
+        $dataWork = [
+            'dien_nuoc'=>$dien_nuoc,
+            'dien_lanh'=>$dien_lanh,
+            'do_go'=>$do_go,
+            'nlmt'=>$nlmt,
+            'xay_dung'=>$xay_dung,
+            'tai_xe'=>$tai_xe,
+            'co_khi'=>$co_khi,
+        ];
+        return response()->json( $dataWork);
+    }
+    public function indexSetWork (Request $request)
+    {
+        // get data not set for worker
+        if($request->dateCheck)
+        {
+            $today = $request->dateCheck;
+        }
+        else
+        {
+            $today = date('Y-m-d');
+        }
+        
+        $dien_nuoc =    Work::where('kind_work','=','0')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $dien_lanh =    Work::where('kind_work','=','1')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $do_go     =    Work::where('kind_work','=','2')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $nlmt      =    Work::where('kind_work','=','3')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $xay_dung  =    Work::where('kind_work','=','4')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $tai_xe    =    Work::where('kind_work','=','5')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+        $co_khi    =    Work::where('kind_work','=','6')->where('status_cus','=',1)->where('date_book','=',$today)->get();
+
+        $dataWorkDone = [
+            'dien_nuoc_done'=>$dien_nuoc,
+            'dien_lanh_done'=>$dien_lanh,
+            'do_go_done'=>$do_go,
+            'nlmt_done'=>$nlmt,
+            'xay_dung_done'=>$xay_dung,
+            'tai_xe_done'=>$tai_xe,
+            'co_khi_done'=>$co_khi,
+        ];
+        return response()->json( $dataWorkDone);
     }
     public function store (StoreWorkRequest $request)
     {

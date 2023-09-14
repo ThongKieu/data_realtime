@@ -26,7 +26,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
     });
-
+    Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

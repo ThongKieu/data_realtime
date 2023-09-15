@@ -155,8 +155,6 @@ function Dashboard({ auth }) {
             // setWorkData(data);
             fetchData(data);
             fetchDataDaPhan(data);
-            console.log("Có lịch mới", workData);
-            console.log("dat111a", data);
         });
         return () => {
             newSocket.disconnect();
@@ -219,13 +217,14 @@ function Dashboard({ auth }) {
         }
     };
     // get thong tin tho
-    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState({});
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState();
+
     const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch("api/web/workers");
             const jsonData = await response.json();
             const formatJson = jsonData.map((item)=>({
-                value:item.sort_name,
+                value:item.id,
                 label: item.worker_name
             }))
             setInfoWorkerDashboard(formatJson);
@@ -344,7 +343,10 @@ function Dashboard({ auth }) {
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
                 const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho]=useState();
+                const [selectPhanTho, setSelectPhanTho]=useState(null);
+                const handleSelectChange = (selectedValue) => {
+                    setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
+                  };
                 // console.log('-----------', selectPhanTho);
                 const  handleSentDelete= async ()=>{
                     try {
@@ -367,27 +369,32 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
-                // const  handleSentPhanTho= async ()=>{
-                //     try {
-                //         let data = {
-                //             id: params.id,
-                //             work_note: selectPhanTho,
-                //         };
 
-                //         const response = await fetch("api/web/work-assignment", {
-                //             method: "POST",
-                //             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                //             headers: {
-                //                 "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                //             },
-                //         });
-                //         if(response.ok)
-                //         {
-                //             socketD.emit('addWorkTo_Server','xoalich');
-                //             handleOpen();
-                //         }
-                //     } catch (error) {}
-                // };
+                const  handleSentPhanTho= async (e)=>{
+                    console.log('selectPhanTho',selectPhanTho.value);
+                    try {
+                        let data = {
+                            id_works: params.row.id,
+                            id_worker: selectPhanTho,
+                            work_note: params.row.work_note,
+                        };
+                        console.log('handleSentPhanTho',data);
+                        const response = await fetch("api/web/work-assignment", {
+                            method: "POST",
+                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                            headers: {
+                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                            },
+                        });
+                        if(response.ok)
+                        {
+                            socketD.emit('addWorkTo_Server','xoalich');
+                            handleOpenTho();
+                        }
+                    } catch (error) {
+                        console.log('lixo', error);
+                    }
+                };
                 return (
                     <div>
                         <div className="flex">
@@ -421,7 +428,7 @@ function Dashboard({ auth }) {
                                 <Select
                                 value={selectPhanTho}
                                 options={infoWorkerDashboard}
-                                onChange={(e)=>setSelectPhanTho(e.target.value)}
+                                onChange={(selectedValue) => handleSelectChange(selectedValue)}
                                 isMulti
                                 className="shadow-none"/>
                             </DialogBody>
@@ -429,7 +436,7 @@ function Dashboard({ auth }) {
                                 <Button
                                     variant="gradient"
                                     color="green"
-                                    onClick={handleOpen}
+                                    onClick={handleSentPhanTho}
                                 >
                                     Phân Thợ
                                 </Button>

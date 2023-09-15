@@ -123,11 +123,7 @@ const listWorker = [
     },
 ];
 // ----------------test options -----
-const options1 = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-];
+
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState(null);
     const [message, setMessage] = useState(auth.user.id);
@@ -149,11 +145,11 @@ function Dashboard({ auth }) {
     const [workDataHX_done, setWorkDataHX_done] = useState(dataNew);
     // end ---------------
     // thong tin tho inforworker
-    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState('');
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
+        fetchInfoWorker();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
             // setWorkData(data);
@@ -223,16 +219,22 @@ function Dashboard({ auth }) {
         }
     };
     // get thong tin tho
-    const fetchInfoWorker = async () => {
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState({});
+    const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch("api/web/workers");
             const jsonData = await response.json();
-            setInfoWorkerDashboard(jsonData);
+            const formatJson = jsonData.map((item)=>({
+                value:item.sort_name,
+                label: item.worker_name
+            }))
+            setInfoWorkerDashboard(formatJson);
             console.log(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+    // fetchInfoWorker();
     // ------------------option select thong tin tho  ---------------
     const [selectedOption, setSelectedOption] = useState();
     const [options, setOptions] = useState([]);
@@ -336,19 +338,21 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                console.log(params);
+                // console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
                 const [work_note, setWorkNote] = useState();
+                const [selectPhanTho, setSelectPhanTho]=useState();
+                // console.log('-----------', selectPhanTho);
                 const  handleSentDelete= async ()=>{
                     try {
                         let data = {
                             id: params.id,
                             work_note: work_note,
                         };
-                        
+
                         const response = await fetch("api/web/works_cacle", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
@@ -363,6 +367,27 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
+                // const  handleSentPhanTho= async ()=>{
+                //     try {
+                //         let data = {
+                //             id: params.id,
+                //             work_note: selectPhanTho,
+                //         };
+
+                //         const response = await fetch("api/web/work-assignment", {
+                //             method: "POST",
+                //             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                //             headers: {
+                //                 "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                //             },
+                //         });
+                //         if(response.ok)
+                //         {
+                //             socketD.emit('addWorkTo_Server','xoalich');
+                //             handleOpen();
+                //         }
+                //     } catch (error) {}
+                // };
                 return (
                     <div>
                         <div className="flex">
@@ -393,13 +418,18 @@ function Dashboard({ auth }) {
                                 </svg>
                             </div>
                             <DialogBody divider>
-                                <Select options={options1} isMulti className="shadow-none"/>
+                                <Select
+                                value={selectPhanTho}
+                                options={infoWorkerDashboard}
+                                onChange={(e)=>setSelectPhanTho(e.target.value)}
+                                isMulti
+                                className="shadow-none"/>
                             </DialogBody>
                             <DialogFooter className="space-x-2">
                                 <Button
                                     variant="gradient"
                                     color="green"
-                                    onClick={handleOpenTho}
+                                    onClick={handleOpen}
                                 >
                                     Phân Thợ
                                 </Button>

@@ -10,7 +10,7 @@ class WorksAssignmentController extends Controller
 {
     public function __invoke()
     {
-        
+
     }
     public function allWorkAssign (Request $request)
     {
@@ -23,7 +23,7 @@ class WorksAssignmentController extends Controller
             $today = date('Y-m-d');
         }
         // thông tin điện nước
-        $dien_nuoc = WorksAssignment::where('created_at', 'like',$today.'%')->whereBetween('status_work',[0,3])->get();   
+        $dien_nuoc = WorksAssignment::where('created_at', 'like',$today.'%')->whereBetween('status_work',[0,3])->get();
         // Work::where('date_book','=',$today)->where('kind_work','=','0')->where('status_cus','=',1)->get();
 
 
@@ -84,7 +84,7 @@ class WorksAssignmentController extends Controller
             ]);
         }
         $workHas->save();
-        
+
 
         $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
 
@@ -93,7 +93,7 @@ class WorksAssignmentController extends Controller
         // $newio -> id_cus = $id_cus;
         $newio -> id_work_has = $id_work_has;
         $newio -> save();
-       
+
 
         // CheckWorkByAdminController::create($id_work_has);
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);

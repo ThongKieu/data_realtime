@@ -89,10 +89,10 @@ class WorksAssignmentController extends Controller
         // $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
 
         // insert to new checkin check out
-        $newio =  new WorksAssignment();
-        // $newio -> id_cus = $id_cus;
-        $newio -> id_work_has = $id_work_has;
-        $newio -> save();
+        // $newio =  new WorksAssignment();
+        // // $newio -> id_cus = $id_cus;
+        // $newio -> id_work_has = $id_work_has;
+        // $newio -> save();
        
 
         // CheckWorkByAdminController::create($id_work_has);

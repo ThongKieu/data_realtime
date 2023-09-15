@@ -453,8 +453,6 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
-            width: 150,
-            editable: false,
         },
     ];
     return (

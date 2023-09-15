@@ -13,7 +13,7 @@ class DistrictsSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         Districts::insert([
             'dis_name' => 'Quận 1',
             'dis_sort_name' => 'q1',

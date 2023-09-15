@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import React, { useEffect, useState, memo } from "react";
-
+import Select from "react-select";
 import {
     Button,
     Card,
@@ -122,24 +122,43 @@ const listWorker = [
         linhVuc: "XD",
     },
 ];
-
+// ----------------test options -----
+const options1 = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+];
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState(null);
     const [message, setMessage] = useState(auth.user.id);
-    const [workData, setWorkData] = useState(dataNew);
+    // table left
+    const [workDataDN, setWorkDataDN] = useState(dataNew);
     const [workDataDL, setWorkDataDL] = useState(dataNew);
     const [workDataDG, setWorkDataDG] = useState(dataNew);
     const [workDataNLMT, setWorkDataNLMT] = useState(dataNew);
     const [workDataXD, setWorkDataXD] = useState(dataNew);
     const [workDataVC, setWorkDataVC] = useState(dataNew);
     const [workDataHX, setWorkDataHX] = useState(dataNew);
+    // table right
+    const [workDataDN_done, setWorkDataDN_done] = useState(dataNew);
+    const [workDataDL_done, setWorkDataDL_done] = useState(dataNew);
+    const [workDataDG_done, setWorkDataDG_done] = useState(dataNew);
+    const [workDataNLMT_done, setWorkDataNLMT_done] = useState(dataNew);
+    const [workDataXD_done, setWorkDataXD_done] = useState(dataNew);
+    const [workDataVC_done, setWorkDataVC_done] = useState(dataNew);
+    const [workDataHX_done, setWorkDataHX_done] = useState(dataNew);
+    // end ---------------
+    // thong tin tho inforworker
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState('');
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
         fetchData();
+        fetchDataDaPhan();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
             // setWorkData(data);
             fetchData(data);
+            fetchDataDaPhan(data);
             console.log("Có lịch mới", workData);
             console.log("dat111a", data);
         });
@@ -175,7 +194,7 @@ function Dashboard({ auth }) {
         try {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
-            setWorkData(jsonData.dien_nuoc);
+            setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
             setWorkDataNLMT(jsonData.nlmt);
@@ -183,6 +202,33 @@ function Dashboard({ auth }) {
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
             // console.log('ss',setWorkDataCountOrder);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const fetchDataDaPhan = async () => {
+        try {
+            const response = await fetch("api/web/works_done");
+            const jsonData = await response.json();
+            setWorkDataDN_done(jsonData.dien_nuoc_done);
+            setWorkDataDL_done(jsonData.dien_lanh_done);
+            setWorkDataDG_done(jsonData.do_go_done);
+            setWorkDataNLMT_done(jsonData.nlmt_done);
+            setWorkDataXD_done(jsonData.xay_dung_done);
+            setWorkDataVC_done(jsonData.tai_xe_done);
+            setWorkDataHX_done(jsonData.co_khi_done);
+            // console.log('ss',setWorkDataCountOrder);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    // get thong tin tho
+    const fetchInfoWorker = async () => {
+        try {
+            const response = await fetch("api/web/workers");
+            const jsonData = await response.json();
+            setInfoWorkerDashboard(jsonData);
+            console.log(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -218,12 +264,7 @@ function Dashboard({ auth }) {
         });
     };
 
-    const handleSaveClick = (id) => () => {
-        setWorkData({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View },
-        });
-    };
+
 
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
@@ -304,11 +345,11 @@ function Dashboard({ auth }) {
                     <div>
                         <div className="flex">
                             <UserPlusIcon
-                                className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
                                 onClick={handleOpenTho}
                             />
                             <TrashIcon
-                                className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer"
+                                className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
                                 onClick={handleOpen}
                             />
                         </div>
@@ -330,12 +371,7 @@ function Dashboard({ auth }) {
                                 </svg>
                             </div>
                             <DialogBody divider>
-                                <div className="grid gap-6">
-                                    <Input
-                                        label="Chọn Thợ Phù Hợp"
-                                        className="shadow-none"
-                                    />
-                                </div>
+                                <Select options={options1} isMulti className="shadow-none"/>
                             </DialogBody>
                             <DialogFooter className="space-x-2">
                                 <Button
@@ -476,7 +512,6 @@ function Dashboard({ auth }) {
                     return [
                         <GridActionsCellItem
                             icon={<PlusCircleIcon className="w-6 h-6" />}
-                            label="Save"
                             sx={{
                                 color: "primary.main",
                             }}
@@ -520,7 +555,7 @@ function Dashboard({ auth }) {
             >
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white"
+                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white rounded-none"
                     }
                 >
                     <div>
@@ -530,7 +565,7 @@ function Dashboard({ auth }) {
                         {/* bang ben trai  */}
                         <Box sx={{ width: 1 }}>
                             <DataGrid
-                                rows={workData}
+                                rows={workDataDN}
                                 columns={columns}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
@@ -564,32 +599,153 @@ function Dashboard({ auth }) {
                                 }}
                             />
                         </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                            Điện Gỗ
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataDG}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                            Năng Lượng Mặt Trời
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataNLMT}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                            Xây Dựng
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataXD}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                            Vận Chuyển
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataVC}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
+                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                            Cơ Khí
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
+                            <DataGrid
+                                rows={workDataHX}
+                                columns={columns}
+                                editMode="row"
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={
+                                    handleRowModesModelChange
+                                }
+                                onRowEditStop={handleRowEditStop}
+                                processRowUpdate={processRowUpdate}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                            />
+                        </Box>
                     </div>
                 </Card>
 
                 <div>
-                    {/* <Typography className="p-2 text-lg font-bold text-white w-full max-w-[26rem] shadow-lg bg-blue-500 rounded-sm text-center">
-                        Điện Nước
-                    </Typography>
                     <Card
                         className={
-                            "  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1"
+                            "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white rounded-none"
                         }
                     >
-                        <DataGrid
-                            rows={worksData}
-                            columns={columnsRight}
-                            editMode="row"
-                            rowModesModel={rowModesModel}
-                            onRowModesModelChange={handleRowModesModelChange}
-                            onRowEditStop={handleRowEditStop}
-                            processRowUpdate={processRowUpdate}
-
-                            slotProps={{
-                                toolbar: { setRows, setRowModesModel },
-                            }}
-                        />
-                    </Card> */}
+                        <div>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Điện Nước
+                            </Typography>
+                            {/* bang ben trai  */}
+                            <Box sx={{ width: 1 }}>
+                                <DataGrid
+                                    rows={workDataDN_done}
+                                    columns={columns}
+                                    editMode="row"
+                                    rowModesModel={rowModesModel}
+                                    onRowModesModelChange={
+                                        handleRowModesModelChange
+                                    }
+                                    onRowEditStop={handleRowEditStop}
+                                    processRowUpdate={processRowUpdate}
+                                    slotProps={{
+                                        toolbar: { setRows, setRowModesModel },
+                                    }}
+                                    hideFooterPagination={true}
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Điện Lạnh
+                            </Typography>
+                            <Box sx={{ width: 1 }}>
+                                <DataGrid
+                                    rows={workDataDL}
+                                    columns={columns}
+                                    editMode="row"
+                                    rowModesModel={rowModesModel}
+                                    onRowModesModelChange={
+                                        handleRowModesModelChange
+                                    }
+                                    onRowEditStop={handleRowEditStop}
+                                    processRowUpdate={processRowUpdate}
+                                    slotProps={{
+                                        toolbar: { setRows, setRowModesModel },
+                                    }}
+                                />
+                            </Box>
+                        </div>
+                    </Card>
                 </div>
             </div>
         </AuthenticatedLayout>

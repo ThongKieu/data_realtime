@@ -66,6 +66,7 @@ class WorksController extends Controller
         $tai_xe    =    Work::where('kind_work','=','5')->where('status_cus','=',1)->where('date_book','=',$today)->get();
         $co_khi    =    Work::where('kind_work','=','6')->where('status_cus','=',1)->where('date_book','=',$today)->get();
 
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
             'dien_lanh_done'=>$dien_lanh,

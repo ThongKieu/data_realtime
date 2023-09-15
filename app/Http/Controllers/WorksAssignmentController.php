@@ -86,14 +86,14 @@ class WorksAssignmentController extends Controller
         $workHas->save();
 
 
-        $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
+        // $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
 
         // insert to new checkin check out
-        $newio =  new WorksAssignment();
-        // $newio -> id_cus = $id_cus;
-        $newio -> id_work_has = $id_work_has;
-        $newio -> save();
-
+        // $newio =  new WorksAssignment();
+        // // $newio -> id_cus = $id_cus;
+        // $newio -> id_work_has = $id_work_has;
+        // $newio -> save();
+       
 
         // CheckWorkByAdminController::create($id_work_has);
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);
@@ -101,5 +101,6 @@ class WorksAssignmentController extends Controller
 
         // WorkerController::sentNewWorkToWorker($request->get('id_worker'), $info_noti_push);
         // return redirect()->action('WorkController@home');
+        return 'OK';
     }
 }

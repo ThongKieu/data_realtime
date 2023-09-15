@@ -341,6 +341,28 @@ function Dashboard({ auth }) {
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
+                const [work_note, setWorkNote] = useState();
+                const  handleSentDelete= async ()=>{
+                    try {
+                        let data = {
+                            id: params.id,
+                            work_note: work_note,
+                        };
+                        
+                        const response = await fetch("api/web/works_cacle", {
+                            method: "POST",
+                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                            headers: {
+                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                            },
+                        });
+                        if(response.ok)
+                        {
+                            socketD.emit('addWorkTo_Server','xoalich');
+                            handleOpen();
+                        }
+                    } catch (error) {}
+                };
                 return (
                     <div>
                         <div className="flex">
@@ -402,19 +424,21 @@ function Dashboard({ auth }) {
                             </div>
                             <DialogBody divider>
                                 <div className="grid gap-6">
+                                    {/* <input type="text" value={params.id} /> */}
                                     <Textarea
                                         label="Lý do hủy"
                                         className="shadow-none"
+                                        onChange={(e)=>setWorkNote(e.target.value)}
                                     />
                                 </div>
                             </DialogBody>
                             <DialogFooter className="space-x-2">
                                 <Button
                                     variant="gradient"
-                                    color="green"
-                                    onClick={handleOpen}
+                                    color="red"
+                                    onClick={handleSentDelete}
                                 >
-                                    Hủy
+                                    Xác nhận
                                 </Button>
                             </DialogFooter>
                         </Dialog>

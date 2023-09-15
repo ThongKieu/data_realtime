@@ -135,4 +135,13 @@ class WorksController extends Controller
 
         return response()->json(['message' => 'No image uploaded'], 400);
     }
+    public function insertCancleBook(Request $request) {
+       $up = Work::where('id','=',$request->id)->update(['status_cus'=>2,'work_note'=>$request->work_note]);
+        if($up)
+        {
+            return 'Delete work done !';
+        }
+        return  'Delete Failse !';
+
+    }
 }

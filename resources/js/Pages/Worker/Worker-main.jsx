@@ -453,6 +453,7 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
+
         },
     ];
     return (

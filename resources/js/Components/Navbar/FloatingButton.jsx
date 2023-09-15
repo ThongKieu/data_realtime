@@ -138,6 +138,7 @@ function FloatingButton() {
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
                 console.log('ddddd');
+                handleOpen();
             }
         } catch (error) {
             console.log(error);

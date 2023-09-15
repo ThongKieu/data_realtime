@@ -16,3 +16,6 @@
 .MuiDataGrid-footerContainer{
     display: none !important;
 }
+#react-select-2-input{
+    box-shadow: none !important;
+}

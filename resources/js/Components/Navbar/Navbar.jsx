@@ -150,6 +150,7 @@ function ProfileMenu({ propAuthProfile }) {
                 handler={setIsMenuOpen}
                 placement="bottom-end"
                 onClick={numberOnline}
+                allowHover
             >
                 <MenuHandler>
                     <Button
@@ -284,7 +285,7 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propAuth,countOrder }) {
+function NavbarDefault({ propAuth}) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     useEffect(() => {
@@ -316,7 +317,7 @@ function NavbarDefault({ propAuth,countOrder }) {
                     <NavList />
                 </div>
 
-                <CardMain count={countOrder}/>
+                <CardMain/>
 
                 <div>
                     <ProfileMenu propAuthProfile={propAuth} />

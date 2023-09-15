@@ -50,12 +50,12 @@ class WorksAssignmentController extends Controller
     }
     public function workAssignWorker(Request $request)
     {
-        $request->all();
+        dd($request->all());
 
-        $this->validate($request, [
-            'id_cus' => 'required',
-            'id_worker' => 'required',
-        ]);
+        // $this->validate($request, [
+        //     'id_cus' => 'required',
+        //     'id_worker' => 'required',
+        // ]);
 
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
@@ -93,7 +93,7 @@ class WorksAssignmentController extends Controller
         // // $newio -> id_cus = $id_cus;
         // $newio -> id_work_has = $id_work_has;
         // $newio -> save();
-       
+
 
         // CheckWorkByAdminController::create($id_work_has);
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);

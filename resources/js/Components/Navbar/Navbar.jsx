@@ -40,7 +40,7 @@ const profileMenuItems = [
     },
 ];
 
-function ProfileMenu({ propAuthProfile }) {
+function ProfileMenu({ propauthprofile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
@@ -163,7 +163,7 @@ function ProfileMenu({ propAuthProfile }) {
                             size="sm"
                             alt="tania andrew"
                             className="border border-gray-900 p-0.5"
-                            src={host + propAuthProfile.avatar}
+                            src={host + propauthprofile.avatar}
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
@@ -175,8 +175,8 @@ function ProfileMenu({ propAuthProfile }) {
                 </MenuHandler>
                 <MenuList className="p-1">
                     <OnlineList
-                        avatarImage={host + propAuthProfile.avatar}
-                        numberOnline={number}
+                        avatarimage={host + propauthprofile.avatar}
+                        numberonline={number}
                     />
                     <NavLink
                         href={route("profile.edit")}
@@ -285,7 +285,7 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propAuth}) {
+function NavbarDefault({ propauth}) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     useEffect(() => {
@@ -320,7 +320,7 @@ function NavbarDefault({ propAuth}) {
                 <CardMain/>
 
                 <div>
-                    <ProfileMenu propAuthProfile={propAuth} />
+                    <ProfileMenu propauthprofile={propauth} />
                 </div>
             </div>
             <Collapse open={isNavOpen} className="overflow-scroll ">

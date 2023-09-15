@@ -32,7 +32,7 @@ Route::prefix('web')->group(function () {
     Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
         Route::get('all',WorksAssignmentController::class,"allWorkAssign");
-        Route::post('/',WorksAssignmentController::class,"workAssignWorker");
+        Route::post('/','App\Http\Controllers\Api\WorksAssignmentController');
     });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

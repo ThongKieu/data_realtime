@@ -60,7 +60,7 @@ class WorksAssignmentController extends Controller
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
         $number = count($id_worker);
-        // dd($id_worker[0]);
+        dd($id_worker[0]);
         $work_note =  Work::where('id', '=', $id_cus)
         ->value('work_note');
         // dd($request);

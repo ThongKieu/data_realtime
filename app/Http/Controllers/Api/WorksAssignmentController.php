@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use App\Models\WorksAssignment;
+use App\Http\Controllers\Controller;
 use App\Models\Work;
 use App\Models\Worker;
+use App\Models\WorksAssignment;
+use Illuminate\Http\Request;
+
 class WorksAssignmentController extends Controller
 {
     public function __invoke()
@@ -50,6 +52,8 @@ class WorksAssignmentController extends Controller
     }
     public function workAssignWorker(Request $request)
     {
+        // return "1111111111111111111111";
+        // dd('1111111111111111111111111');
         $request->all();
 
         $this->validate($request, [
@@ -102,5 +106,10 @@ class WorksAssignmentController extends Controller
         // WorkerController::sentNewWorkToWorker($request->get('id_worker'), $info_noti_push);
         // return redirect()->action('WorkController@home');
         return 'OK';
+    }
+    public function returnText(Request $request){
+
+        dd($request->all());
+        
     }
 }

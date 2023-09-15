@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\DistrictController;
 // use App\Http\Controllers\Api\Web\PushOnlineController;
 use App\Http\Controllers\Api\Web\WorksController;
 use App\Http\Controllers\Api\Web\WorkersController;
-use App\Http\Controllers\WorksAssignmentController;
+use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,8 +31,8 @@ Route::prefix('web')->group(function () {
     Route::get('works_cacle','App\Http\Controllers\Api\Web\WorksController@indexCancleBook');
     Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
+        Route::post('/','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all',WorksAssignmentController::class,"allWorkAssign");
-        Route::post('/','App\Http\Controllers\Api\WorksAssignmentController');
     });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

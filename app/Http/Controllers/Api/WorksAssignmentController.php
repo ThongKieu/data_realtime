@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use App\Models\WorksAssignment;
+use App\Http\Controllers\Controller;
 use App\Models\Work;
 use App\Models\Worker;
+use App\Models\WorksAssignment;
+use Illuminate\Http\Request;
+
 class WorksAssignmentController extends Controller
 {
     public function __invoke()
@@ -50,17 +52,19 @@ class WorksAssignmentController extends Controller
     }
     public function workAssignWorker(Request $request)
     {
-        dd($request->all());
+        // return "1111111111111111111111";
+        // dd('1111111111111111111111111');
+        $request->all();
 
-        // $this->validate($request, [
-        //     'id_cus' => 'required',
-        //     'id_worker' => 'required',
-        // ]);
+        $this->validate($request, [
+            'id_cus' => 'required',
+            'id_worker' => 'required',
+        ]);
 
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
         $number = count($id_worker);
-        // dd($id_worker[0]);
+        dd($id_worker[0]);
         $work_note =  Work::where('id', '=', $id_cus)
         ->value('work_note');
         // dd($request);
@@ -102,5 +106,10 @@ class WorksAssignmentController extends Controller
         // WorkerController::sentNewWorkToWorker($request->get('id_worker'), $info_noti_push);
         // return redirect()->action('WorkController@home');
         return 'OK';
+    }
+    public function returnText(Request $request){
+
+        dd($request->all());
+
     }
 }

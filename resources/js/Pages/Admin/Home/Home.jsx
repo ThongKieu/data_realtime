@@ -109,7 +109,7 @@ const TABLE_ROWS = [
 function Home({ auth }) {
   return (
     <AuthenticatedLayout user={auth.user}>
-      <Head title="Home Admin" />
+      <Head title="Trang chủ Admin" />
       <Card className="h-full w-full overflow-scroll">
         <table className="w-full table-auto text-left">
           <thead>

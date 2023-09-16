@@ -65,13 +65,12 @@ import { host } from "@/Utils/UrlApi";
           })
           .then((data) => {
             setAccountData(data); 
-
           })
           .catch((error) => {
               console.error("Error API:", error);
           });
   }, []);
-  
+ 
     return (
         <AuthenticatedLayoutAdmin >
       <Head title="Tài khoản thợ" />
@@ -121,7 +120,7 @@ import { host } from "@/Utils/UrlApi";
             </thead>
             <tbody>
               {accountData.map(
-                ({ item}, index) => {
+                (item, index) => {
                   const isLast = index === accountData.length - 1;
                   const classes = isLast
                     ? "p-4"

@@ -13,3 +13,16 @@
     display: flex !important;
     justify-content: center !important;
 }
+.MuiDataGrid-footerContainer{
+    display: none !important;
+}
+#react-select-2-input{
+    box-shadow: none !important;
+}
+.overflow-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+.overflow-scroll::-webkit-scrollbar-thumb {
+    background-color: blue;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState,memo } from "react";
+import React, { useEffect, useState, memo } from "react";
 import {
     Navbar,
     Collapse,
@@ -17,11 +17,13 @@ import {
     ChevronDownIcon,
     PowerIcon,
     Bars2Icon,
+    IdentificationIcon,
 } from "@heroicons/react/24/outline";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
+import { host } from "@/utils/UrlApi";
 // import NavGuest from "./navGuest";
 
 // profile menu component
@@ -38,30 +40,30 @@ const profileMenuItems = [
     },
 ];
 
-function ProfileMenu({ propAuthProfile }) {
+function ProfileMenu({ propauthprofile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
-    const [number,setNumberOnline] = useState('');
+    const [number, setNumberOnline] = useState("");
     const numberOnline = async () => {
         try {
-        const response = await fetch("api/web/list-online",{
-            method:'get',
-            headers: {
-                'Content-Type': 'application/json', // Xác định loại dữ liệu gửi đi
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Fetch không thành công');
-        }
-        const jsonData = await response.json();
-        // Xử lý dữ liệu lấy được từ API
-        // console.log('1111111111111111111',jsonData);
-        setNumberOnline(jsonData);
+            const response = await fetch(host + "api/web/list-online", {
+                method: "get",
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Fetch không thành công");
+            }
+            const jsonData = await response.json();
+            // Xử lý dữ liệu lấy được từ API
+            // console.log('1111111111111111111',jsonData);
+            setNumberOnline(jsonData);
         } catch (error) {
-        console.error("Error fetching data:", error);
+            console.error("Error fetching data:", error);
         }
     };
-    numberOnline()
+    numberOnline();
     // console.log("xin chào", propAuthProfile);
     return (
         <div className="flex">
@@ -147,7 +149,8 @@ function ProfileMenu({ propAuthProfile }) {
                 open={isMenuOpen}
                 handler={setIsMenuOpen}
                 placement="bottom-end"
-                onClick ={numberOnline}
+                onClick={numberOnline}
+                allowHover
             >
                 <MenuHandler>
                     <Button
@@ -160,7 +163,7 @@ function ProfileMenu({ propAuthProfile }) {
                             size="sm"
                             alt="tania andrew"
                             className="border border-gray-900 p-0.5"
-                            src={propAuthProfile.avatar}
+                            src={host + propauthprofile.avatar}
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
@@ -171,7 +174,10 @@ function ProfileMenu({ propAuthProfile }) {
                     </Button>
                 </MenuHandler>
                 <MenuList className="p-1">
-                    <OnlineList avatarImage={propAuthProfile.avatar}  numberOnline={number} />
+                    <OnlineList
+                        avatarimage={host + propauthprofile.avatar}
+                        numberonline={number}
+                    />
                     <NavLink
                         href={route("profile.edit")}
                         className="w-full font-normal"
@@ -232,30 +238,54 @@ const navListItems = [
         icon: UserCircleIcon,
         href: "search",
     },
+    // {
+    //     id: 3,
+    //     label: "Thông Tin Thợ",
+    //     icon: IdentificationIcon,
+    //     href: "locationWorker",
+    // },
 ];
 
-function NavList() {
+function NavList({ active = false }) {
+    const renderItems = navListItems.map(({ label, icon, href }, index) => (
+        <NavLink key={index} href={route(`${href}`)} className="font-normal">
+            <MenuItem className="flex items-center gap-2 text-black lg:rounded-full">
+                {React.createElement(icon, {
+                    className: "h-[18px] w-[18px]",
+                })}
+                {label}
+            </MenuItem>
+        </NavLink>
+    ));
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-            {navListItems.map(({ label, icon, href }, index) => (
-                <NavLink
-                    key={index}
-                    href={route(`${href}`)}
-                    className="font-normal"
-                >
-                    <MenuItem className="flex items-center gap-2 text-black lg:rounded-full">
-                        {React.createElement(icon, {
-                            className: "h-[18px] w-[18px]",
-                        })}{" "}
-                        {label}
-                    </MenuItem>
-                </NavLink>
-            ))}
+            {renderItems}
+            <IdentificationIcon className="h-[18px] w-[18px]" />
+            <Menu allowHover>
+                <MenuHandler>
+                    <Typography as="span" className="text-sm font-normal">Thông Tin Thợ</Typography>
+                </MenuHandler>
+                <MenuList className="block">
+                    <NavLink
+                        href={route("locationWorker")}
+                        className="font-normal"
+                    >
+                        <MenuItem className="gap-2 text-black lg:rounded-full">
+                            Vị trí Thợ
+                        </MenuItem>
+                    </NavLink>
+                    <NavLink href={route("WorkerMain")} className="font-normal">
+                        <MenuItem className="gap-2 text-black lg:rounded-full">
+                            Thông Tin Thợ
+                        </MenuItem>
+                    </NavLink>
+                </MenuList>
+            </Menu>
         </ul>
     );
 }
 
-function NavbarDefault({ propAuth }) {
+function NavbarDefault({ propauth}) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     useEffect(() => {
@@ -264,7 +294,7 @@ function NavbarDefault({ propAuth }) {
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
     }, []);
-    // console.log('---------',propAuth.avata);
+
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -287,10 +317,10 @@ function NavbarDefault({ propAuth }) {
                     <NavList />
                 </div>
 
-                <CardMain />
+                <CardMain/>
 
                 <div>
-                    <ProfileMenu propAuthProfile={propAuth} />
+                    <ProfileMenu propauthprofile={propauth} />
                 </div>
             </div>
             <Collapse open={isNavOpen} className="overflow-scroll ">

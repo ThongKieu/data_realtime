@@ -23,7 +23,7 @@ return new class extends Migration
             $table->String('image_work_path',1000)->nullable();
             $table->tinyInteger('members_read')->default(0);
             $table->tinyInteger('kind_work')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: Đồ gỗ ; 3: NLMT; 4: Xây dựng; 5: Tài Xế; 6: Cơ Khí');
-            $table->tinyInteger('status_cus')->default(0)->comment('0: Chưa Phân; 1: Đã Phân;2: Khách Hủy ');
+            $table->tinyInteger('status_cus')->default(0)->comment('0: Chưa Phân; 1: Đã Phân; 2: Khách Hủy ');
             $table->tinyInteger('from_cus')->default(0)->comment('0: web; 1:app ; 2:nguồn khác kiểm tra ghi chú');
             $table->tinyInteger('flag_status')->default(0);
             $table->timestamps();

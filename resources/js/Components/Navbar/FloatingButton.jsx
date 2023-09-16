@@ -30,6 +30,7 @@ function formatCardNumber(value) {
 }
 // --------------------API ---------
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import { host } from "@/utils/UrlApi";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -55,8 +56,8 @@ function FloatingButton() {
         street: "",
         members_read: 1,
         kind_work: 0,
-        status_cus: 1,
-        from_cus: 1,
+        status_cus: 0,
+        from_cus: 0,
         flag_status: 1,
     });
     // ---------------------- select quan --------------------------------
@@ -73,7 +74,7 @@ function FloatingButton() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(url_API_District);
+            const response = await fetch(host+url_API_District);
             const jsonData = await response.json();
             setOptionsDistrict(jsonData);
         } catch (error) {
@@ -125,7 +126,7 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
         try {
-            const response = await fetch(url_API, {
+            const response = await fetch(host+url_API, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -137,6 +138,7 @@ function FloatingButton() {
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
                 console.log('ddddd');
+                handleOpen();
             }
         } catch (error) {
             console.log(error);

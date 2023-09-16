@@ -136,7 +136,7 @@ function Dashboard({ auth }) {
         }
     };
     // get thong tin tho
-    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState();
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState('');
     const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch("api/web/workers");
@@ -212,7 +212,7 @@ function Dashboard({ auth }) {
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
                 const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho] = useState(null);
+                const [selectPhanTho, setSelectPhanTho] = useState();
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
@@ -241,8 +241,9 @@ function Dashboard({ auth }) {
                 const handleSentPhanTho = async (e) => {
 
                     try {
+
                         let data = {
-                            id_works: params.row.id,
+                            id_cus: params.row.id,
                             id_worker: selectPhanTho,
                             work_note: params.row.work_note,
                         };

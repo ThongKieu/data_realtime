@@ -64,18 +64,19 @@ class WorksAssignmentController extends Controller
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
         $number = count($id_worker);
-        dd($id_worker[0]);
+        // dd($id_worker[0]);
         $work_note =  Work::where('id', '=', $id_cus)
         ->value('work_note');
         // dd($request);
-        $kind_worker = Worker::where('id', '=', $id_worker[0])->value('kind_worker');
+        // $kind_worker = Worker::where('id', '=', $id_worker[0].value)->value('kind_worker');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work'=> $kind_worker]);
+        // $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work'=> $kind_worker]);
+        dd($id_worker);
         if($number > 1){
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0],
-                'id_phu' => $id_worker[1],
+                'id_worker' => $id_worker[0].value,
+                'id_phu' => $id_worker[1].value,
                 'real_note' => $work_note,
             ]);
         }
@@ -83,7 +84,7 @@ class WorksAssignmentController extends Controller
         {
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0],
+                'id_worker' => $id_worker[0].value,
                 'real_note' => $work_note,
             ]);
         }

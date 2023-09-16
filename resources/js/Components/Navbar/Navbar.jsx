@@ -23,7 +23,7 @@ import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
-import { host } from "@/utils/UrlApi";
+import { host } from "@/Utils/UrlApi";
 // import NavGuest from "./navGuest";
 
 // profile menu component

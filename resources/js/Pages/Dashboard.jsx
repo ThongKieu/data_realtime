@@ -247,7 +247,6 @@ function Dashboard({ auth }) {
                             id_worker: selectPhanTho,
                             work_note: params.row.work_note,
                         };
-                        console.log("handleSentPhanTho", data);
                         const response = await fetch(
                             "api/web/work-assignment",
                             {
@@ -278,7 +277,7 @@ function Dashboard({ auth }) {
                                 onClick={handleOpen}
                             />
                         </div>
-                        <Dialog open={openTho} handler={handleOpenTho}>
+                        <Dialog open={openTho} handler={handleOpenTho} className="lg:min-w-52">
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
                                 <svg
@@ -303,7 +302,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="shadow-none"
+                                    className="border-none shadow-none"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">

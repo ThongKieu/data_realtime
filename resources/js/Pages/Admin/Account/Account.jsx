@@ -65,14 +65,12 @@ import { host } from "@/Utils/UrlApi";
           })
           .then((data) => {
             setAccountData(data); 
-            setTest("Phan Huu Tung")
-            console.log(test + "sdsdsdsd");
-            console.log(data);
           })
           .catch((error) => {
               console.error("Error API:", error);
           });
   }, []);
+  console.log(accountData);
  
     return (
         <AuthenticatedLayoutAdmin >
@@ -123,7 +121,7 @@ import { host } from "@/Utils/UrlApi";
             </thead>
             <tbody>
               {accountData.map(
-                ({ item}, index) => {
+                (item, index) => {
                   const isLast = index === accountData.length - 1;
                   const classes = isLast
                     ? "p-4"

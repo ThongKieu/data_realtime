@@ -10,12 +10,10 @@ import {
     DialogBody,
     DialogFooter,
     Tooltip,
-    Typography,
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
-    TrashIcon,
-    PencilSquareIcon,MapPinIcon
+   MapPinIcon
 } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
@@ -24,8 +22,6 @@ import NavLink from "@/Components/NavLink";
 import {
     GridRowModes,
     DataGrid,
-    GridToolbarContainer,
-    GridActionsCellItem,
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 
@@ -150,7 +146,6 @@ function WorkersMain({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    console.log('kdddddddddd', rows);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch("api/web/workers")
@@ -207,26 +202,7 @@ function WorkersMain({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    // fetch data phone
-    const fetchDataPhone = async (data) => {
-        try {
-            const res = await fetch("api/web/update/worker", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (res.ok) {
-                console.log("status_change_worker");
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
+    
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
@@ -295,8 +271,6 @@ function WorkersMain({ auth }) {
             editable: false,
         },
         {
-<<<<<<< HEAD
-=======
             field: "last_active",
             headerName: "Last Active",
             width: 180,
@@ -316,7 +290,6 @@ function WorkersMain({ auth }) {
             }
         },
         {
->>>>>>> 4d9c3e0b5a75f4f24dcad7d6d697fb3f8101a6ef
             field: "add_worker",
             headerName: "Địa Chỉ",
             width: 180,

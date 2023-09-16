@@ -26,6 +26,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
     });
+    Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
 
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

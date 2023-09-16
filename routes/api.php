@@ -26,6 +26,7 @@ Route::prefix('web')->group(function () {
     Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
+        Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
     Route::get('works_cacle','App\Http\Controllers\Api\Web\WorksController@indexCancleBook');

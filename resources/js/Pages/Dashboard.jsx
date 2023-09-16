@@ -121,15 +121,15 @@ function Dashboard({ auth }) {
     };
     const fetchDataDaPhan = async () => {
         try {
-            const response = await fetch("api/web/works_done");
+            const response = await fetch("api/web/work-assignment/all");
             const jsonData = await response.json();
             setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
+            // setWorkDataDL_done(jsonData.dien_lanh_done);
+            // setWorkDataDG_done(jsonData.do_go_done);
+            // setWorkDataNLMT_done(jsonData.nlmt_done);
+            // setWorkDataXD_done(jsonData.xay_dung_done);
+            // setWorkDataVC_done(jsonData.tai_xe_done);
+            // setWorkDataHX_done(jsonData.co_khi_done);
             // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);

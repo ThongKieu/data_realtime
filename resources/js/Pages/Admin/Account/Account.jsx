@@ -57,9 +57,10 @@ const TABLE_HEAD = [
 
 function Account() {
     const [accountData, setAccountData] = useState([]);
-    const [test, setTest] = useState("");
+    // const [test, setTest] = useState("");
     const handleClick = () => {
         console.log(accountData);
+
     };
 
     useEffect(() => {

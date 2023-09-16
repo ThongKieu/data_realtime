@@ -32,7 +32,7 @@ Route::prefix('web')->group(function () {
     Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
-        Route::get('all',WorksAssignmentController::class,"allWorkAssign");
+        Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
     });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
 });

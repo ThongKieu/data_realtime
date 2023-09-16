@@ -88,7 +88,7 @@ function WorkersMain({ auth }) {
                     responseData
                 );
                 console.log(responseData);
-                // window.location.reload();
+                window.location.reload();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
@@ -124,7 +124,7 @@ function WorkersMain({ auth }) {
             })
             .then((data) => {
                 setData(data); // Lưu dữ liệu vào trạng thái React
-                setLoading(false); // Đã lấy xong dữ liệu
+                setLoading(true); // Đã lấy xong dữ liệu
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);

@@ -51,9 +51,9 @@ import { host } from "@/Utils/UrlApi";
    
   function Account() {
     const [accountData, setAccountData] = useState([]);
-    const [test, setTest] = useState("");
+    // const [test, setTest] = useState("");
     const handleClick = () => {
-      console.log(accountData);
+      
     };
     useEffect(() => {
       fetch(host + "api/web/worker-account")
@@ -65,15 +65,13 @@ import { host } from "@/Utils/UrlApi";
           })
           .then((data) => {
             setAccountData(data); 
-            setTest("Phan Huu Tung")
-            console.log(test + "sdsdsdsd");
-            console.log(data);
+
           })
           .catch((error) => {
               console.error("Error API:", error);
           });
   }, []);
- 
+  
     return (
         <AuthenticatedLayoutAdmin >
       <Head title="Tài khoản thợ" />

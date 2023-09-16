@@ -10,7 +10,6 @@ import {
     DialogBody,
     DialogFooter,
     Tooltip,
-    Typography,
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
@@ -25,8 +24,6 @@ import NavLink from "@/Components/NavLink";
 import {
     GridRowModes,
     DataGrid,
-    GridToolbarContainer,
-    GridActionsCellItem,
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 
@@ -103,41 +100,6 @@ function WorkersMain({ auth }) {
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
 
-    const handleRowEditStop = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
-
-    const handleEditClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.Edit },
-        });
-    };
-
-    const handleSaveClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View },
-        });
-    };
-
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
-    };
-
-    const handleCancelClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View, ignoreModifications: true },
-        });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
-    };
 
     // const processRowUpdate = (newRow) => {
     //   const updatedRow = { ...newRow, isNew: false };
@@ -272,7 +234,7 @@ function WorkersMain({ auth }) {
 
                     if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        fetchDataPhone(dataPhone);
+                        fetchData(dataPhone);
                         inputRef.current.blur();
                     }
                 };

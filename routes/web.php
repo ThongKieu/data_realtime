@@ -38,7 +38,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
-        Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('worker-list');
+        Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/Worker');})->name('worker-list');
+        Route::get('/worker-account ',function(){return Inertia::render('Admin/Account/Account');})->name('worker-account');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');

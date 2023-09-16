@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useMemo } from "react";
+import { React, useState, useEffect, createRef } from "react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import {
@@ -13,28 +13,26 @@ import {
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
-    TrashIcon,
-    PencilSquareIcon,
+   MapPinIcon
 } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
-import { host } from "@/Utils/UrlApi";
 
+import NavLink from "@/Components/NavLink";
 import {
     GridRowModes,
     DataGrid,
-    GridToolbarContainer,
-    GridActionsCellItem,
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
+import { host } from "@/Utils/UrlApi";
 
-function WorkerList({ auth }) {
+function Worker({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
         worker_firstname: "",
         worker_name: "",
-        add_woker: "",
+        add_worker: "",
         phone_cty: "",
         phone_cn: "",
         kind_worker: "",
@@ -48,7 +46,7 @@ function WorkerList({ auth }) {
         // Cập nhật trạng thái khi người dùng chọn tùy chọn
     };
     const handleFileChange = (event) => {
-        setSelectedFiles({ avata_new: event.target.files[0] });
+        setSelectedFiles({ avatar_new: event.target.files[0] });
     };
 
     const handleChange = (e) => {
@@ -64,15 +62,15 @@ function WorkerList({ auth }) {
         // console.log(info_worker);
         // get info to form
         const formData = new FormData();
-        formData.append("avata_new", selectedFiles.avata_new);
+        formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_firstname", info_worker.worker_firstname);
         formData.append("worker_name", info_worker.worker_name);
-        formData.append("add_woker", info_worker.add_woker);
+        formData.append("add_worker", info_worker.add_worker);
         formData.append("phone_cty", info_worker.phone_cty);
         formData.append("phone_cn", info_worker.phone_cn);
         formData.append("kind_worker", info_worker.kind_worker);
 
-        console.log(formData);
+
         try {
             const response = await fetch(URL_API, {
                 method: "POST",
@@ -82,13 +80,14 @@ function WorkerList({ auth }) {
                 mode: "no-cors",
                 body: formData,
             });
-
+            console.log('formData',formData);
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
+                console.log(responseData);
                 // window.location.reload();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
@@ -148,10 +147,8 @@ function WorkerList({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         // Gọi API để lấy dữ liệu
-       
         fetch(host + "api/web/workers")
             .then((response) => {
                 if (!response.ok) {
@@ -177,6 +174,25 @@ function WorkerList({ auth }) {
                 },
                 body: JSON.stringify(data1),
             });
+            if (res.ok) {
+                console.log("status_change_worker");
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    // fetch data phone
+    const fetchDataPhone = async (data) => {
+        try {
+            const res = await fetch("api/web/update/worker", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
             if (res.ok) {
                 console.log("status_change_worker");
@@ -187,10 +203,11 @@ function WorkerList({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
+    
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
-            const response = await fetch(host +"api/web/update/worker", {
+            const response = await fetch("api/web/update/worker", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -206,6 +223,33 @@ function WorkerList({ auth }) {
             console.log(error);
         }
     };
+    // Hàm thay đổi sdt trong rendercell
+    const handleChangeva = (event, id) => {
+        // Xử lý sự thay đổi của lựa chọn ở đây
+        const selectedValue = event.target.value;
+        const updatePhoneCTy = {
+          action: "phone_change_worker",
+          id: id,
+          phone_ct: selectedValue,
+        };
+        fetchDataPhoneCTy(updatePhoneCTy);
+      };
+
+      const renderPhoneCTField = (params) => {
+     
+        return (
+          <Input
+            type="text"
+            className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none"
+            labelProps={{
+              className: "hidden",
+            }}
+            value={params.value}
+            containerProps={{ className: "h-28" }}
+            onChange={(e) => handleChangeva(e, params.id)}
+          />
+        );
+      };
     // Hiển thị dữ liệu bảng
     const columns = [
         { field: "id", headerName: "ID", width: 30 },
@@ -215,7 +259,7 @@ function WorkerList({ auth }) {
             description: "This column has a value getter and is not sortable.",
             sortable: true,
             width: 160,
-            editable: true,
+            editable: false,
             valueGetter: (params) =>
                 `${params.row.worker_firstname || ""} ${
                     params.row.worker_name || ""
@@ -228,19 +272,75 @@ function WorkerList({ auth }) {
             editable: false,
         },
         {
+            field: "last_active",
+            headerName: "Last Active",
+            width: 180,
+            editable: false,
+        },
+        {
+            field: "null",
+            headerName: "Vị Trí Gần Nhất",
+            width: 180,
+            editable: false,
+            renderCell:()=>{
+                return(
+                   <NavLink href={route("dashboard")} className="text-center" >
+                     <MapPinIcon className="w-5 h-5 text-red-500"/>
+                   </NavLink>
+                )
+            }
+        },
+        {
+            field: "add_worker",
+            headerName: "Địa Chỉ",
+            width: 180,
+            editable: false,
+        },
+
+        {
             field: "phone_ct",
             headerName: "Số Công ty",
-            width: 150,
-            editable: true,
+            width: 120,
+            editable: false,
+            renderCell: (params) => {
+                const inputRef = createRef();
+                const updatePhone = (e) => {
+
+                    const set123 = e.target.value;
+                    const dataPhone = {
+                        action: "phone_change_worker",
+                        id: params.id,
+                        phone_ct: set123,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        fetchDataPhone(dataPhone);
+                        inputRef.current.blur();
+                    }
+  
+                };
+                return (
+                    <Input
+                        ref={inputRef}
+                        defaultValue={params.value}
+                        onKeyDown={updatePhone}
+                        className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
+                        labelProps={
+                           {
+                            className:'hidden'
+                           }
+                        }
+                    />
+                );
+            },
+
         },
         {
             field: "phone_cn",
             headerName: "Số cá nhân",
             width: 150,
-            editable: true,
-            renderCell: (params) => {
-              console.log(params);
-          },
+            editable: false,
         },
         {
             field: "status_worker",
@@ -257,7 +357,6 @@ function WorkerList({ auth }) {
                         status: selectedValue,
                     };
                     fetchData(data_set);
-                    console.log(data_set);
                 };
                 return (
                     <select
@@ -273,7 +372,7 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "avata",
+            field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
                 const [open, setOpen] = useState(false);
@@ -285,6 +384,7 @@ function WorkerList({ auth }) {
                     const file = event.target.files[0];
                     if (file) {
                         const url = URL.createObjectURL(file);
+
                         setImagePreview(url);
                     }
                     setSelectedImage(file);
@@ -295,15 +395,16 @@ function WorkerList({ auth }) {
                     const formDataImage = new FormData();
                     formDataImage.append("id", params.id);
                     formDataImage.append("sort_name", params.row.sort_name);
-                    formDataImage.append("action", "avata_change_worker");
-                    formDataImage.append("avata_new", selectedImage);
+                    formDataImage.append("action", "avatar_change_worker");
+                    formDataImage.append("avatar_new", selectedImage);
                     fetchDataImage(formDataImage);
                     handleOpen();
                 };
-                if (params.field === "avata") {
+
+                if (params.field === "avatar") {
                     const imagePreview1 = selectedImage ? (
                         <img
-                            src={imagePreview}                          
+                            src={imagePreview}
                             alt="Avatar"
                             className="w-full h-full"
                         />
@@ -316,7 +417,7 @@ function WorkerList({ auth }) {
                         <>
                             <Button onClick={handleOpen} className="bg-white">
                                 <img
-                                    src={host+params.formattedValue}
+                                    src={host+ params.formattedValue}
                                     alt="Avatar"
                                     className="w-10"
                                 />
@@ -337,13 +438,15 @@ function WorkerList({ auth }) {
                                         </div>
                                         <div className="w-full col-span-2 h-28">
                                             <Input
-                                                 type="file"
-                                                 accept="image/*"
+                                                type="file"
+                                                accept="image/*"
                                                 className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
                                                 labelProps={{
                                                     className: "hidden",
                                                 }}
-                                                containerProps={{ className: "h-28" }}
+                                                containerProps={{
+                                                    className: "h-28",
+                                                }}
                                                 onChange={handleImageSelect}
                                             />
                                         </div>
@@ -381,7 +484,7 @@ function WorkerList({ auth }) {
                 if (params.field === "check_acc") {
                     switch (params.value) {
                         case 0:
-                            return "Chưa có";
+                            return "Chưa có, vui lòng liên hệ Admin.";
                         case 1:
                             return "Đã có chưa kích hoạt";
                         case 2:
@@ -391,58 +494,12 @@ function WorkerList({ auth }) {
                 return <div>{params.value}</div>;
             },
             width: 150,
-            editable: true,
-        },
-        {
-            field: "null",
-            headerName: "Tình Trang",
-            type: "actions",
-            width: 110,
             editable: false,
-            getActions: ({ id }) => {
-                const isInEditMode =
-                    rowModesModel[id]?.mode === GridRowModes.Edit;
-
-                if (isInEditMode) {
-                    return [
-                        <GridActionsCellItem
-                            icon={<PlusCircleIcon className="w-6 h-6" />}
-                            label="Save"
-                            sx={{
-                                color: "primary.main",
-                            }}
-                            onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                            icon={<TrashIcon className="w-6 h-6" />}
-                            label="Cancel"
-                            className="textPrimary"
-                            onClick={handleCancelClick(id)}
-                            color="inherit"
-                        />,
-                    ];
-                }
-                return [
-                    <GridActionsCellItem
-                        icon={<PencilSquareIcon className="w-6 h-6" />}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                    />,
-                    <GridActionsCellItem
-                        icon={<PlusCircleIcon className="w-6 h-6" />}
-                        label="Delete"
-                        onClick={handleDeleteClick(id)}
-                        color="inherit"
-                    />,
-                ];
-            },
         },
     ];
     return (
-        <AuthenticatedLayoutAdmin user={auth.user}>
-            <Head title="Trang quản lý thông tin thợ" />
+        <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
+            <Head title="Danh sách thợ" />
 
             <Card className="mt-2">
                 <div className="grid m-2 justify-items-stretch ">
@@ -486,8 +543,8 @@ function WorkerList({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="add_woker"
-                                value={info_worker.add_woker}
+                                name="add_worker"
+                                value={info_worker.add_worker}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
                             />
@@ -532,7 +589,7 @@ function WorkerList({ auth }) {
                                 <option value={6}>Cơ Khí</option>
                             </select>
                             <input
-                                id="avata_new"
+                                id="avatar_new"
                                 type="file"
                                 onChange={handleFileChange}
                                 className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
@@ -568,6 +625,7 @@ function WorkerList({ auth }) {
                                 showQuickFilter: true,
                             },
                         }}
+                        className="text-center"
                     />
                 </Box>
             </Card>
@@ -575,4 +633,4 @@ function WorkerList({ auth }) {
     );
 }
 
-export default WorkerList
+export default Worker;

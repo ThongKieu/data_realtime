@@ -41,10 +41,7 @@ class AccountionWorkerController extends Controller
             $item->id_worker = $a;
         }
 
-        return  response()->json([
-            'code' => 200,
-            'data' => $all,
-        ]);
+        return  $all;
     }
     // trả về thông tin tên thợ
     public static function getNameWorkerAcctive($id)

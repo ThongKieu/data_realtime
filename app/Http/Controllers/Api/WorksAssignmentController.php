@@ -7,6 +7,7 @@ use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WorksAssignmentController extends Controller
 {

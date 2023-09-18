@@ -26,6 +26,7 @@ import {
 } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 
+
 function Worker({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
@@ -150,6 +151,7 @@ function Worker({ auth }) {
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
+        
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");

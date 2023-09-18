@@ -26,13 +26,14 @@ Route::prefix('web')->group(function () {
     Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
+        Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
     Route::get('works_cacle','App\Http\Controllers\Api\Web\WorksController@indexCancleBook');
     Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
-        Route::get('all',WorksAssignmentController::class,"allWorkAssign");
+        Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
     });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
 });

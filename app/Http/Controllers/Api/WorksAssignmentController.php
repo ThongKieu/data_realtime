@@ -7,6 +7,7 @@ use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WorksAssignmentController extends Controller
 {
@@ -25,13 +26,73 @@ class WorksAssignmentController extends Controller
             $today = date('Y-m-d');
         }
         // thông tin điện nước
-        $dien_nuoc = WorksAssignment::where('created_at', 'like',$today.'%')->whereBetween('status_work',[0,3])->get();
+        $dien_nuoc = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
         // Work::where('date_book','=',$today)->where('kind_work','=','0')->where('status_cus','=',1)->get();
 
 
 
 
-        // $dien_lanh =    Work::where('date_book','=',$today)->where('kind_work','=','1')->where('status_cus','=',1)->get();
+        $dien_lanh =    DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',1)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
         // $do_go     =    Work::where('date_book','=',$today)->where('kind_work','=','2')->where('status_cus','=',1)->get();
         // $nlmt      =    Work::where('date_book','=',$today)->where('kind_work','=','3')->where('status_cus','=',1)->get();
         // $xay_dung  =    Work::where('date_book','=',$today)->where('kind_work','=','4')->where('status_cus','=',1)->get();
@@ -40,7 +101,7 @@ class WorksAssignmentController extends Controller
         // $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
-            // 'dien_lanh_done'=>$dien_lanh,
+            'dien_lanh_done'=>$dien_lanh,
             // 'do_go_done'=>$do_go,
             // 'nlmt_done'=>$nlmt,
             // 'xay_dung_done'=>$xay_dung,
@@ -52,8 +113,7 @@ class WorksAssignmentController extends Controller
     }
     public function workAssignWorker(Request $request)
     {
-        // return "1111111111111111111111";
-        // dd('1111111111111111111111111');
+
         $request->all();
 
         $this->validate($request, [
@@ -65,19 +125,19 @@ class WorksAssignmentController extends Controller
         $id_worker = $request->get('id_worker');
         $number = count($id_worker);
         // dd($id_worker[0]);
-        
+
         $work_note =  Work::where('id', '=', $id_cus)
         ->value('work_note');
         // dd($request);
-        // $kind_worker = Worker::where('id', '=', $id_worker[0].value)->value('kind_worker');
+        $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('kind_worker');
         // Update kind work by kind worker
-        // $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work'=> $kind_worker]);
-        dd($id_worker);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work'=> $kind_worker,'status_cus'=>1]);
+        // dd($id_worker);
         if($number > 1){
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0],
-                'id_phu' => $id_worker[1],
+                'id_worker' => $id_worker[0]['value'],
+                'id_phu' => $id_worker[1]['value'],
                 'real_note' => $work_note,
             ]);
         }
@@ -85,7 +145,7 @@ class WorksAssignmentController extends Controller
         {
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0],
+                'id_worker' => $id_worker[0]['value'],
                 'real_note' => $work_note,
             ]);
         }

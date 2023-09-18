@@ -34,6 +34,7 @@ class AccountionWorkerController extends Controller
     public static function getAllWorkersAcctive()
     {
 
+        // dd('1111111111111');
         $all = AccountionWorker::all();
 
         foreach($all as $item){

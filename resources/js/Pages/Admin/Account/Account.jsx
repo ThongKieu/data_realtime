@@ -70,7 +70,7 @@ import { host } from "@/Utils/UrlApi";
               console.error("Error API:", error);
           });
   }, []);
-  console.log(accountData);
+  
  
     return (
         <AuthenticatedLayoutAdmin >

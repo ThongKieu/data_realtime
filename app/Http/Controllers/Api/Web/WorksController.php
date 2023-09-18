@@ -124,7 +124,7 @@ class WorksController extends Controller
                 $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_cus]);
                 break;
         }
-        
+
         return response()->json('Update Work done - '.$content);
     }
     public static function upload($file)

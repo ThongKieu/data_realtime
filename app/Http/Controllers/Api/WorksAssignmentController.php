@@ -7,6 +7,7 @@ use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WorksAssignmentController extends Controller
 {
@@ -25,7 +26,37 @@ class WorksAssignmentController extends Controller
             $today = date('Y-m-d');
         }
         // thông tin điện nước
-        $dien_nuoc = WorksAssignment::where('created_at', 'like',$today.'%')->whereBetween('status_work',[0,3])->get();
+        $dien_nuoc = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.name_cus",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
         // Work::where('date_book','=',$today)->where('kind_work','=','0')->where('status_cus','=',1)->get();
 
 

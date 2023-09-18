@@ -29,7 +29,7 @@ import {
     XCircleIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 
 var dataNew = [
     {

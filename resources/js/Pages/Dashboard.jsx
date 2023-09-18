@@ -121,15 +121,15 @@ function Dashboard({ auth }) {
     };
     const fetchDataDaPhan = async () => {
         try {
-            const response = await fetch("api/web/works_done");
+            const response = await fetch("api/web/work-assignment/all");
             const jsonData = await response.json();
             setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
+            // setWorkDataDL_done(jsonData.dien_lanh_done);
+            // setWorkDataDG_done(jsonData.do_go_done);
+            // setWorkDataNLMT_done(jsonData.nlmt_done);
+            // setWorkDataXD_done(jsonData.xay_dung_done);
+            // setWorkDataVC_done(jsonData.tai_xe_done);
+            // setWorkDataHX_done(jsonData.co_khi_done);
             // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -247,7 +247,6 @@ function Dashboard({ auth }) {
                             id_worker: selectPhanTho,
                             work_note: params.row.work_note,
                         };
-                        console.log("handleSentPhanTho", data);
                         const response = await fetch(
                             "api/web/work-assignment",
                             {
@@ -278,7 +277,7 @@ function Dashboard({ auth }) {
                                 onClick={handleOpen}
                             />
                         </div>
-                        <Dialog open={openTho} handler={handleOpenTho}>
+                        <Dialog open={openTho} handler={handleOpenTho} className="lg:min-w-52">
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
                                 <svg
@@ -303,7 +302,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="shadow-none"
+                                    className="border-none shadow-none"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">

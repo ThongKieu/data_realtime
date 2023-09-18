@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, createRef } from "react";
 import Select from "react-select";
 import {
     Button,
@@ -12,6 +12,7 @@ import {
     Textarea,
     DialogFooter,
     Input,
+    Tooltip,
 } from "@material-tailwind/react";
 // -------
 import {
@@ -27,6 +28,8 @@ import {
     PlusCircleIcon,
     PencilSquareIcon,
     XCircleIcon,
+    EyeIcon,
+    ArrowPathIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/utils/socket";
@@ -75,6 +78,7 @@ function Dashboard({ auth }) {
             // setWorkData(data);
             fetchData(data);
             fetchDataDaPhan(data);
+            fetchDataDashboard(data);
         });
         return () => {
             newSocket.disconnect();
@@ -121,7 +125,7 @@ function Dashboard({ auth }) {
     };
     const fetchDataDaPhan = async () => {
         try {
-            const response = await fetch("api/web/work-assignment/all");
+            const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
             setWorkDataDN_done(jsonData.dien_nuoc_done);
             // setWorkDataDL_done(jsonData.dien_lanh_done);
@@ -136,7 +140,7 @@ function Dashboard({ auth }) {
         }
     };
     // get thong tin tho
-    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState('');
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState("");
     const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch("api/web/workers");
@@ -162,16 +166,68 @@ function Dashboard({ auth }) {
     // -----------------------------handle---------------------------
     const [rowModesModel, setRowModesModel] = useState({});
     // --------------------------------column -------------------------
+    const fetchDataDashboard = async (data) => {
+        try {
+            const res = await fetch("api/web/update/work", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                console.log("Sửa thong tin lịch chưa phân");
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     const columns = [
         {
             field: "work_content",
             headerName: "yêu Cầu Công Việc",
             width: 140,
             editable: true,
+            renderCell: (params) => {
+                const inputRef = createRef();
+                const updateWorkContent = (e) => {
+                    const setWork = e.target.value;
+                    console.log("setWork", setWork);
+                    const data = {
+                        ac: "1",
+                        id: params.id,
+                        work_content: setWork,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        fetchDataDashboard(data);
+                        socketD.emit("addWorkTo_Server", JSON.stringify(data));
+                        inputRef.current.blur();
+                    }
+                };
+                return (
+                    <div className="text-left w-fit min-w-[100px]">
+                        <Input
+                        ref={inputRef}
+                        defaultValue={params.value}
+                        onKeyDown={updateWorkContent}
+                        className="bg-white border-none rounded-none outline-none focus:w-fit "
+                        labelProps={{
+                            className: "hidden",
+                        }}
+                    />
+                    </div>
+                );
+            },
         },
         {
-            field: "date_book",
-            headerName: "Ngày Làm",
+            field: "work_note",
+            headerName: "Ghi Chú",
             width: 140,
             editable: true,
         },
@@ -216,7 +272,7 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
-                // console.log('-----------', selectPhanTho);
+                console.log("-----------", selectPhanTho);
                 const handleSentDelete = async () => {
                     try {
                         let data = {
@@ -235,13 +291,13 @@ function Dashboard({ auth }) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
                         }
-                    } catch (error) {}
+                    } catch (error) {
+                        console.log("Lỗi:", error);
+                    }
                 };
 
                 const handleSentPhanTho = async (e) => {
-
                     try {
-
                         let data = {
                             id_cus: params.row.id,
                             id_worker: selectPhanTho,
@@ -277,7 +333,11 @@ function Dashboard({ auth }) {
                                 onClick={handleOpen}
                             />
                         </div>
-                        <Dialog open={openTho} handler={handleOpenTho} className="lg:min-w-52">
+                        <Dialog
+                            open={openTho}
+                            handler={handleOpenTho}
+                            className="lg:min-w-52"
+                        >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
                                 <svg
@@ -437,7 +497,7 @@ function Dashboard({ auth }) {
             field: "actions",
             type: "actions",
             headerName: "Chức Năng",
-            width: 100,
+            width: 150,
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
@@ -496,8 +556,8 @@ function Dashboard({ auth }) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpenTho();
                             console.log("handleSentPhanTho1", data);
-                        }else{
-                            console.log('chua dau');
+                        } else {
+                            console.log("chua dau");
                         }
                     } catch (error) {
                         console.log("lixo", error);
@@ -506,14 +566,18 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-                            <UserPlusIcon
-                                className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                onClick={handleOpenTho}
-                            />
-                            <TrashIcon
-                                className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                onClick={handleOpen}
-                            />
+                            <Tooltip content="Admin Check">
+                                <EyeIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
+                            </Tooltip>
+                            <Tooltip content="Thu Hồi Lịch">
+                                <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
+                            </Tooltip>
+                            <Tooltip content="Hủy Lịch">
+                                <TrashIcon
+                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                    onClick={handleOpen}
+                                />
+                            </Tooltip>
                         </div>
                         <Dialog open={openTho} handler={handleOpenTho}>
                             <div className="flex items-center justify-between">

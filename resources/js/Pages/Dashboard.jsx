@@ -106,6 +106,9 @@ function Dashboard({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
+            if (response.status = 200) {
+                console.log('push on thanh cong');
+            }
         } catch (error) {}
     };
     // ----------------

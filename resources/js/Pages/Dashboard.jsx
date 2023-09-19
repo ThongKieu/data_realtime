@@ -32,7 +32,7 @@ import {
     ArrowPathIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-// import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 
 var dataNew = [
     {
@@ -69,7 +69,7 @@ function Dashboard({ auth }) {
     // end ---------------
     // thong tin tho inforworker
     useEffect(() => {
-        // setSocketD(newSocket, { secure: true });
+        setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
@@ -78,20 +78,23 @@ function Dashboard({ auth }) {
             // setWorkData(data);
             fetchData(data);
             fetchDataDaPhan(data);
-            fetchDataDashboard(data);
+            if(data != 'undefined')
+            {
+                fetchDataDashboard(data);
+            }
         });
         return () => {
             newSocket.disconnect();
         };
     }, []);
 
-    // useEffect(() => {
-    //     if (socketD) {
-    //         socketD.emit("pushOnline", message);
-    //         pushOn();
-    //         console.log("User is online",message);
-    //     }
-    // }, [socketD]);
+    useEffect(() => {
+        if (socketD) {
+            socketD.emit("pushOnline", message);
+            pushOn();
+            console.log("User is online",message);
+        }
+    }, [socketD]);
     const pushOn = async (data) => {
         try {
             let data = {
@@ -127,13 +130,14 @@ function Dashboard({ auth }) {
         try {
             const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
-            setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
+            
+            // setWorkDataDN_done(jsonData.dien_nuoc_done);
+            // setWorkDataDL_done(jsonData.dien_lanh_done);
+            // setWorkDataDG_done(jsonData.do_go_done);
+            // setWorkDataNLMT_done(jsonData.nlmt_done);
+            // setWorkDataXD_done(jsonData.xay_dung_done);
+            // setWorkDataVC_done(jsonData.tai_xe_done);
+            // setWorkDataHX_done(jsonData.co_khi_done);
             // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);

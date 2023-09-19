@@ -29,13 +29,13 @@ io.on("connection", (socket) => {
     //     });
     // });
   
-    // socket.on("addWorkTo_Server", async (formData1) => {
-    //     console.log("Received form data:", formData1);
-    //     io.sockets.emit("sendAddWorkTo_Client", formData1);
-    //     socket.on("disconnect", () => {
-    //         console.log("A user disconnected");
-    //     });
-    // });
+    socket.on("addWorkTo_Server", async (formData1) => {
+        console.log("Received form data:", formData1);
+        io.sockets.emit("sendAddWorkTo_Client", formData1);
+        socket.on("disconnect", () => {
+            console.log("A user disconnected");
+        });
+    });
     // Xử lý sự kiện khi máy khách ngắt kết nối
    
     return () => {

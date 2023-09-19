@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, memo, useRef  } from "react";
+import React, { useEffect, useState, memo, useRef } from "react";
 import Select from "react-select";
 import {
     Button,
@@ -12,7 +12,7 @@ import {
     Textarea,
     DialogFooter,
     Input,
-    Tooltip,
+    Tooltip,Spinner
 } from "@material-tailwind/react";
 // -------
 import {
@@ -33,6 +33,7 @@ import {
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/socket";
+import { host } from "@/Utils/UrlApi";
 
 var dataNew = [
     {
@@ -43,6 +44,32 @@ var dataNew = [
         sdt: "1",
         KTV: "1",
         status_cus: "0",
+    },
+];
+var data_done = [
+    {
+        id: 19,
+        id_cus: 25,
+        id_worker: 1,
+        id_phu: 0,
+        real_note: null,
+        spending_total: 0,
+        income_total: 0,
+        bill_imag: null,
+        status_work: 0,
+        check_in: 0,
+        seri_number: null,
+        work_content: "Sửa máy  lạnh",
+        date_book: "2023-09-19",
+        street: "sư vạn hạnh",
+        district: "q1",
+        phone_number: 947613923,
+        image_work_path: null,
+        kind_work: 0,
+        worker_firstname: "Test",
+        worker_name: "Manh DN",
+        sort_name: "A01",
+        add_worker: null,
     },
 ];
 // ----------------test options -----
@@ -59,15 +86,17 @@ function Dashboard({ auth }) {
     const [workDataVC, setWorkDataVC] = useState(dataNew);
     const [workDataHX, setWorkDataHX] = useState(dataNew);
     // table right
-    const [workDataDN_done, setWorkDataDN_done] = useState(dataNew);
-    const [workDataDL_done, setWorkDataDL_done] = useState(dataNew);
-    const [workDataDG_done, setWorkDataDG_done] = useState(dataNew);
-    const [workDataNLMT_done, setWorkDataNLMT_done] = useState(dataNew);
-    const [workDataXD_done, setWorkDataXD_done] = useState(dataNew);
-    const [workDataVC_done, setWorkDataVC_done] = useState(dataNew);
-    const [workDataHX_done, setWorkDataHX_done] = useState(dataNew);
+    const [workDataDN_done, setWorkDataDN_done] = useState(data_done);
+    const [workDataDL_done, setWorkDataDL_done] = useState(data_done);
+    const [workDataDG_done, setWorkDataDG_done] = useState(data_done);
+    const [workDataNLMT_done, setWorkDataNLMT_done] = useState(data_done);
+    const [workDataXD_done, setWorkDataXD_done] = useState(data_done);
+    const [workDataVC_done, setWorkDataVC_done] = useState(data_done);
+    const [workDataHX_done, setWorkDataHX_done] = useState(data_done);
     // end ---------------
     // thong tin tho inforworker
+
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
         fetchData();
@@ -75,11 +104,13 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            if(data !== ''){
+            if (data != "" ) {
                 fetchData(data);
                 fetchDataDaPhan(data);
                 fetchDataDashboard(data);
+                setIsLoading(false);
             }
+
         });
         return () => {
             newSocket.disconnect();
@@ -106,8 +137,8 @@ function Dashboard({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            if (response.status = 200) {
-                console.log('push on thanh cong');
+            if ((response.status = 200)) {
+                console.log("push on thanh cong");
             }
         } catch (error) {}
     };
@@ -131,6 +162,7 @@ function Dashboard({ auth }) {
         try {
             const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
+
             setWorkDataDN_done(jsonData.dien_nuoc_done);
             setWorkDataDL_done(jsonData.dien_lanh_done);
             setWorkDataDG_done(jsonData.do_go_done);
@@ -138,7 +170,6 @@ function Dashboard({ auth }) {
             setWorkDataXD_done(jsonData.xay_dung_done);
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
-            // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -147,7 +178,7 @@ function Dashboard({ auth }) {
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState("");
     const fetchInfoWorker = async (e) => {
         try {
-            const response = await fetch("api/web/workers");
+            const response = await fetch(host + "api/web/workers");
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
@@ -210,8 +241,6 @@ function Dashboard({ auth }) {
                     setWorkInputChange(e.target.value);
                 };
                 const updateWorkContent = (e) => {
-
-
                     if (e.keyCode === 13 && !e.shiftKey) {
                         e.preventDefault();
                         fetchDataDashboard(data);
@@ -237,7 +266,6 @@ function Dashboard({ auth }) {
                         />
                     </Tooltip>
                 );
-
             },
         },
         {
@@ -282,7 +310,7 @@ function Dashboard({ auth }) {
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
                 const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho] = useState('');
+                const [selectPhanTho, setSelectPhanTho] = useState("");
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
@@ -337,7 +365,6 @@ function Dashboard({ auth }) {
                 };
                 return (
                     <div>
-
                         <div className="flex">
                             <UserPlusIcon
                                 className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
@@ -581,7 +608,6 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-
                             <Tooltip content="Admin Check">
                                 <EyeIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
                             </Tooltip>
@@ -782,84 +808,142 @@ function Dashboard({ auth }) {
                     }
                 >
                     <div>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography className="w-[110vh] p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Điện Nước
                         </Typography>
-                        {/* bang ben trai  */}
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataDN_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                                hideFooterPagination={true}
-                            />
+
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
+                                <DataGrid
+                                    rows={workDataDN_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                    rowModesModel={rowModesModel}
+                                    hideFooterPagination={true}
+                                />
+                            )}
                         </Box>
+
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Điện Lạnh
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataDL_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Đồ Gỗ
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataDG_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Năng Lượng Mặt Trời
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataNLMT_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Xây Dựng
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataXD_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Vận Chuyển
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataVC_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                             Cơ Khí
                         </Typography>
-                        <Box sx={{ width: 1 }}>
+                        <Box >
+                            {isLoading ? (
+                              <div className="flex justify-center p-2 align-middle ">
+                                 <Spinner className="w-6 h-6" color="amber" />
+                                 <p className="pl-2 text-center text-black" >
+                                   Loading...
+                                </p>
+                              </div>
+                            ) : (
                             <DataGrid
                                 rows={workDataHX_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
-                            />
+                            />)}
                         </Box>
                     </div>
                 </Card>

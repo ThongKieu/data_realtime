@@ -44,40 +44,216 @@ class WorksAssignmentController extends Controller
             "works_assignments.status_work",
             "works_assignments.check_in",
             "works_assignments.seri_number",
-            "works.name_cus",
+            "works.work_content",
             "works.date_book",
             "works.street",
             "works.district",
             "works.phone_number",
             "works.image_work_path",
             "works.kind_work",
-            "worker_firstname",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $dien_lanh = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $do_go = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $nlmt = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $xay_dung = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $tai_xe = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
+            "workers.worker_name",
+            "workers.sort_name",
+            "workers.add_worker",
+        ]
+        );
+        $co_khi = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','=','works.id')
+        ->join('workers','works_assignments.id_worker','=','workers.id')
+        ->where('works_assignments.created_at', 'like',$today.'%')
+        ->where('works.kind_work','=',0)
+        ->whereBetween('works_assignments.status_work',[0,3])
+        ->get([
+            "works_assignments.id",
+            "works_assignments.id_cus",
+            "works_assignments.id_worker",
+            "works_assignments.id_phu",
+            "works_assignments.real_note",
+            "works_assignments.spending_total",
+            "works_assignments.income_total",
+            "works_assignments.bill_imag",
+            "works_assignments.status_work",
+            "works_assignments.check_in",
+            "works_assignments.seri_number",
+            "works.work_content",
+            "works.date_book",
+            "works.street",
+            "works.district",
+            "works.phone_number",
+            "works.image_work_path",
+            "works.kind_work",
+            "workers.worker_firstname",
             "workers.worker_name",
             "workers.sort_name",
             "workers.add_worker",
         ]
         );
         // Work::where('date_book','=',$today)->where('kind_work','=','0')->where('status_cus','=',1)->get();
-
-
-
-
-        // $dien_lanh =    Work::where('date_book','=',$today)->where('kind_work','=','1')->where('status_cus','=',1)->get();
-        // $do_go     =    Work::where('date_book','=',$today)->where('kind_work','=','2')->where('status_cus','=',1)->get();
-        // $nlmt      =    Work::where('date_book','=',$today)->where('kind_work','=','3')->where('status_cus','=',1)->get();
-        // $xay_dung  =    Work::where('date_book','=',$today)->where('kind_work','=','4')->where('status_cus','=',1)->get();
-        // $tai_xe    =    Work::where('date_book','=',$today)->where('kind_work','=','5')->where('status_cus','=',1)->get();
-        // $co_khi    =    Work::where('date_book','=',$today)->where('kind_work','=','6')->where('status_cus','=',1)->get();
-        // $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
-            // 'dien_lanh_done'=>$dien_lanh,
-            // 'do_go_done'=>$do_go,
-            // 'nlmt_done'=>$nlmt,
-            // 'xay_dung_done'=>$xay_dung,
-            // 'tai_xe_done'=>$tai_xe,
-            // 'co_khi_done'=>$co_khi,
-            // 'dem_lich_done'=>$number,
+            'dien_lanh_done'=>$dien_lanh,
+            'do_go_done'=>$do_go,
+            'nlmt_done'=>$nlmt,
+            'xay_dung_done'=>$xay_dung,
+            'tai_xe_done'=>$tai_xe,
+            'co_khi_done'=>$co_khi,
+            'dem_lich_done'=>$number,
         ];
         return response()->json( $dataWorkDone);
     }

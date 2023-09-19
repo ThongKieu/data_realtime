@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, memo, createRef } from "react";
+import React, { useEffect, useState, memo, useRef  } from "react";
 import Select from "react-select";
 import {
     Button,
@@ -75,10 +75,11 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            // setWorkData(data);
-            fetchData(data);
-            fetchDataDaPhan(data);
-            fetchDataDashboard(data);
+            if(data !== ''){
+                fetchData(data);
+                fetchDataDaPhan(data);
+                fetchDataDashboard(data);
+            }
         });
         return () => {
             newSocket.disconnect();
@@ -128,12 +129,12 @@ function Dashboard({ auth }) {
             const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
             setWorkDataDN_done(jsonData.dien_nuoc_done);
-            // setWorkDataDL_done(jsonData.dien_lanh_done);
-            // setWorkDataDG_done(jsonData.do_go_done);
-            // setWorkDataNLMT_done(jsonData.nlmt_done);
-            // setWorkDataXD_done(jsonData.xay_dung_done);
-            // setWorkDataVC_done(jsonData.tai_xe_done);
-            // setWorkDataHX_done(jsonData.co_khi_done);
+            setWorkDataDL_done(jsonData.dien_lanh_done);
+            setWorkDataDG_done(jsonData.do_go_done);
+            setWorkDataNLMT_done(jsonData.nlmt_done);
+            setWorkDataXD_done(jsonData.xay_dung_done);
+            setWorkDataVC_done(jsonData.tai_xe_done);
+            setWorkDataHX_done(jsonData.co_khi_done);
             // console.log('ss',setWorkDataCountOrder);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -193,36 +194,47 @@ function Dashboard({ auth }) {
             width: 140,
             editable: true,
             renderCell: (params) => {
-                const inputRef = createRef();
+                const [workInputChange, setWorkInputChange] = useState(
+                    params.value
+                );
+                const inputRef = useRef(null);
+                const data = {
+                    ac: "1",
+                    id: params.id,
+                    work_content: workInputChange,
+                };
+                const handleInputChange = (e) => {
+                    setWorkInputChange(e.target.value);
+                };
                 const updateWorkContent = (e) => {
-                    const setWork = e.target.value;
-                    console.log("setWork", setWork);
-                    const data = {
-                        ac: "1",
-                        id: params.id,
-                        work_content: setWork,
-                    };
 
-                    if (e.key === "Enter" && !e.shiftKey) {
+
+                    if (e.keyCode === 13 && !e.shiftKey) {
                         e.preventDefault();
                         fetchDataDashboard(data);
                         socketD.emit("addWorkTo_Server", JSON.stringify(data));
-                        inputRef.current.blur();
+                        if (inputRef.current) {
+                            inputRef.current.blur(); // Kiểm tra xem tham chiếu có tồn tại trước khi sử dụng
+                        }
                     }
+                    // console.log(workInputChange);
                 };
                 return (
-                    <div className="text-left w-fit min-w-[100px]">
+                    <Tooltip content={params.value}>
                         <Input
-                        ref={inputRef}
-                        defaultValue={params.value}
-                        onKeyDown={updateWorkContent}
-                        className="bg-white border-none rounded-none outline-none focus:w-fit "
-                        labelProps={{
-                            className: "hidden",
-                        }}
-                    />
-                    </div>
+                            type="text"
+                            ref={inputRef}
+                            value={workInputChange}
+                            className="min-w-full bg-white border-none rounded-none outline-none pointer-events-auto "
+                            onChange={handleInputChange}
+                            onKeyDown={updateWorkContent}
+                            labelProps={{
+                                className: "hidden",
+                            }}
+                        />
+                    </Tooltip>
                 );
+
             },
         },
         {
@@ -262,13 +274,12 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                // console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
                 const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho] = useState();
+                const [selectPhanTho, setSelectPhanTho] = useState('');
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
@@ -323,6 +334,7 @@ function Dashboard({ auth }) {
                 };
                 return (
                     <div>
+
                         <div className="flex">
                             <UserPlusIcon
                                 className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
@@ -466,28 +478,28 @@ function Dashboard({ auth }) {
             type: "text",
         },
         {
-            field: "KTV",
+            field: "worker_name",
             headerName: "Thợ",
             width: 80,
             editable: true,
             type: "singleSelect",
         },
         {
-            field: "dsChi",
+            field: "spending_total",
             headerName: "Chi",
             width: 100,
             editable: true,
             type: "text",
         },
         {
-            field: "dsThu",
+            field: "income_total",
             headerName: "Thu",
             width: 100,
             editable: true,
             type: "text",
         },
         {
-            field: "soPhieuThu",
+            field: "seri_number",
             headerName: "Phiếu Thu",
             width: 100,
             editable: true,
@@ -566,6 +578,7 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
+
                             <Tooltip content="Admin Check">
                                 <EyeIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
                             </Tooltip>
@@ -666,7 +679,7 @@ function Dashboard({ auth }) {
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
             <div
-                className={`  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1 `}
+                className={`grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1 `}
                 style={{ height: `${heightScreenTV}px` }}
             >
                 <Card
@@ -686,6 +699,9 @@ function Dashboard({ auth }) {
                                 editMode="row"
                                 rowModesModel={rowModesModel}
                                 hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -810,33 +826,33 @@ function Dashboard({ auth }) {
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Điện Lạnh
+                            Xây Dựng
                         </Typography>
                         <Box sx={{ width: 1 }}>
                             <DataGrid
-                                rows={workDataDL_done}
+                                rows={workDataXD_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Điện Lạnh
+                            Vận Chuyển
                         </Typography>
                         <Box sx={{ width: 1 }}>
                             <DataGrid
-                                rows={workDataDL_done}
+                                rows={workDataVC_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Điện Lạnh
+                            Cơ Khí
                         </Typography>
                         <Box sx={{ width: 1 }}>
                             <DataGrid
-                                rows={workDataDL_done}
+                                rows={workDataHX_done}
                                 columns={columnsRight}
                                 editMode="row"
                                 rowModesModel={rowModesModel}

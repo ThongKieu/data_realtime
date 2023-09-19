@@ -106,7 +106,7 @@ class WorksController extends Controller
 
     public function updateWork(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         switch ($request->ac) {
             case ('1'):
                 $content =Work::where('id','=',$request->id) -> update(['work_content'=>$request->work_content]);

@@ -243,7 +243,7 @@ function WorkersMain({ auth }) {
                         ref={inputRef}
                         defaultValue={params.value}
                         onKeyDown={updatePhone}
-                        className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
+                        className="text-center bg-white border-none rounded-none outline-none w-fit"
                         labelProps={{
                             className: "hidden",
                         }}

@@ -62,7 +62,7 @@ function Account() {
         console.log(accountData);
 
     };
-
+    console.log('sasdasd',host);
     useEffect(() => {
         fetch(host + "api/web/worker-account")
             .then((response) => {

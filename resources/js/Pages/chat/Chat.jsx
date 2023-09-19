@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import newSocket from "@/Utils/socket";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Avatar } from "@material-tailwind/react";
 
 function Chat({ auth }) {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const [chatContent, setChatContent] = useState([]);
-    // kết nối url server socket "your_socket_server_url"
     useEffect(() => {
-        const ip_address = window.location.host;
-        const socket_port = "3000";
-        const newSocket = io(ip_address + ":" + socket_port);
         setSocket(newSocket, { secure: true });
         return () => {
             newSocket.disconnect();

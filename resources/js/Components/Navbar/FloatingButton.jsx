@@ -7,12 +7,9 @@ import {
     DialogFooter,
     Input,
     Radio,
-    Select,
-    Option,
 } from "@material-tailwind/react";
 import { XMarkIcon,PlusIcon } from "@heroicons/react/24/solid";
-
-import io from "socket.io-client";
+import newSocket from "@/Utils/socket";
 function formatCardNumber(value) {
     const val = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = val.match(/\d{4,16}/g);
@@ -99,9 +96,6 @@ function FloatingButton() {
 
     //-------------------- add new order ----------------------------
     const [socketFTB, setSocketFTB] = useState(null);
-    const ip_address = window.location.hostname;
-    const socket_port = "3000";
-    const newSocket = io(ip_address + ":" + socket_port);
     useEffect(() => {
         setSocketFTB(newSocket, { secure: true });
         return () => {

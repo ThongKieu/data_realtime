@@ -32,7 +32,7 @@ import {
     ArrowPathIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/utils/socket";
+// import newSocket from "@/utils/socket";
 
 var dataNew = [
     {
@@ -69,29 +69,29 @@ function Dashboard({ auth }) {
     // end ---------------
     // thong tin tho inforworker
     useEffect(() => {
-        setSocketD(newSocket, { secure: true });
+        // setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
         // lắng nghe server
-        newSocket.on("sendAddWorkTo_Client", (data) => {
-            // setWorkData(data);
-            fetchData(data);
-            fetchDataDaPhan(data);
-            fetchDataDashboard(data);
-        });
+        // newSocket.on("sendAddWorkTo_Client", (data) => {
+        //     // setWorkData(data);
+        //     fetchData(data);
+        //     fetchDataDaPhan(data);
+        //     fetchDataDashboard(data);
+        // });
         return () => {
             newSocket.disconnect();
         };
     }, []);
 
-    useEffect(() => {
-        if (socketD) {
-            socketD.emit("pushOnline", message);
-            pushOn();
-            console.log("User is online");
-        }
-    }, [socketD]);
+    // useEffect(() => {
+    //     if (socketD) {
+    //         socketD.emit("pushOnline", message);
+    //         pushOn();
+    //         console.log("User is online",message);
+    //     }
+    // }, [socketD]);
     const pushOn = async (data) => {
         try {
             let data = {
@@ -206,7 +206,7 @@ function Dashboard({ auth }) {
                     if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         fetchDataDashboard(data);
-                        socketD.emit("addWorkTo_Server", JSON.stringify(data));
+                        // socketD.emit("addWorkTo_Server", JSON.stringify(data));
                         inputRef.current.blur();
                     }
                 };
@@ -288,7 +288,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            // socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
                         }
                     } catch (error) {
@@ -314,7 +314,7 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            // socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpenTho();
                         }
                     } catch (error) {
@@ -527,7 +527,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            // socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
                         }
                     } catch (error) {}
@@ -553,7 +553,7 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            // socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpenTho();
                             console.log("handleSentPhanTho1", data);
                         } else {

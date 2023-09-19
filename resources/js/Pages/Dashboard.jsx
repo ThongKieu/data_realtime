@@ -107,10 +107,7 @@ function Dashboard({ auth }) {
             if (data != "" ) {
                 fetchData(data);
                 fetchDataDaPhan(data);
-                fetchDataDashboard(data);
-                setIsLoading(false);
             }
-
         });
         return () => {
             newSocket.disconnect();
@@ -147,6 +144,7 @@ function Dashboard({ auth }) {
         try {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
+            console.log('---------2323---132--',jsonData);
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
@@ -162,7 +160,7 @@ function Dashboard({ auth }) {
         try {
             const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
-
+            console.log('---------2323-----',jsonData);
             setWorkDataDN_done(jsonData.dien_nuoc_done);
             setWorkDataDL_done(jsonData.dien_lanh_done);
             setWorkDataDG_done(jsonData.do_go_done);
@@ -170,6 +168,7 @@ function Dashboard({ auth }) {
             setWorkDataXD_done(jsonData.xay_dung_done);
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
+            setIsLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -185,7 +184,6 @@ function Dashboard({ auth }) {
                 label: item.worker_name,
             }));
             setInfoWorkerDashboard(formatJson);
-            console.log(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }

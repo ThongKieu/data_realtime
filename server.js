@@ -29,9 +29,12 @@ io.on("connection", (socket) => {
     //     });
     // });
   
-    socket.on("addWorkTo_Server", async (formData1) => {
-        console.log("Received form data:", formData1);
-        io.sockets.emit("sendAddWorkTo_Client", formData1);
+    socket.on("addWorkTo_Server", async (message) => {
+        console.log("Received form data:", message);
+        if(message === 1)
+        {
+            io.sockets.emit("sendAddWorkTo_Client", message);
+        }
         socket.on("disconnect", () => {
             console.log("A user disconnected");
         });

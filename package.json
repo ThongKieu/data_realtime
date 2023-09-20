@@ -31,6 +31,7 @@
         "react-select": "^5.7.4",
         "socket.io": "^4.7.2",
         "socket.io-client": "^4.7.2",
-        "soket.io": "^0.0.1-security"
+        "soket.io": "^0.0.1-security",
+        "xlsx": "^0.18.5"
     }
 }

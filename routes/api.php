@@ -36,6 +36,8 @@ Route::prefix('web')->group(function () {
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
     });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
+    Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
+    
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

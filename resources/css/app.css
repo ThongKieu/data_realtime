@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.css-1b74o31-MuiInputBase-root-MuiDataGrid-editInputCell input {
-    height: 52px !important;
-}
-.css-5wly58-MuiDataGrid-root .MuiDataGrid-row:not(.MuiDataGrid-row--dynamicHeight)>.MuiDataGrid-cell{
-    display: flex !important;
-    justify-content: center !important;
-}
 .MuiDataGrid-columnHeaderTitleContainer{
     display: flex !important;
     justify-content: center !important;
@@ -25,4 +18,12 @@
 }
 .overflow-scroll::-webkit-scrollbar-thumb {
     background-color: blue;
+}
+
+.MuiDataGrid-cell--editable>div{
+    min-width: 130px;
+}
+/* worker_main  -----------*/
+.MuiDataGrid-cell>div{
+    min-width: 100px;
 }

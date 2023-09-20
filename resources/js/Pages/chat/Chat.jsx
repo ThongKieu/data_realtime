@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
+import newSocket from "@/Utils/socket";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import newSocket from "@/Utils/socket";
 
 function Chat({ auth }) {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const [chatContent, setChatContent] = useState([]);
-    // kết nối url server socket "your_socket_server_url"
     useEffect(() => {
         setSocket(newSocket, { secure: true });
         return () => {

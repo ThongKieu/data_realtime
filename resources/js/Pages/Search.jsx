@@ -97,7 +97,6 @@ function Search({ auth }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="chat" />
-
             <Card className="w-full overflow-scroll">
                 <Box sx={{ width: 1 }}>
                     <div className="pt-3 focus:outline-none">

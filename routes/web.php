@@ -38,8 +38,13 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
-        Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('worker-list');
-        Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('worker-account');
+        // Worker
+        Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
+        Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
+        // Data
+        Route::get('/data-customer-import ',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-customer-import');
+        Route::get('/data-worker-import ',function(){return Inertia::render('Admin/DataImport/DataWorkerImport');})->name('admin/data-worker-import');
+        Route::get('/data-price-import ',function(){return Inertia::render('Admin/DataImport/DataPriceImport');})->name('admin/data-price-import');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');

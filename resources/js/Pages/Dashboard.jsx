@@ -32,7 +32,7 @@ import {
     ArrowPathIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 
 var dataNew = [
     {

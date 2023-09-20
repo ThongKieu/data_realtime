@@ -45,6 +45,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-customer-import ',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-customer-import');
         Route::get('/data-worker-import ',function(){return Inertia::render('Admin/DataImport/DataWorkerImport');})->name('admin/data-worker-import');
         Route::get('/data-price-import ',function(){return Inertia::render('Admin/DataImport/DataPriceImport');})->name('admin/data-price-import');
+        // Application
+        Route::get('/popup-discount',function(){return Inertia::render('Admin/Application/ApplicationPopupDiscount');})->name('admin/popup-discount');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');

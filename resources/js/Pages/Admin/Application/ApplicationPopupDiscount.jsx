@@ -1,61 +1,29 @@
 import { React, useState, useEffect } from "react";
 import {
-  MagnifyingGlassIcon
-} from "@heroicons/react/24/outline";
-import {
   Card,
   CardHeader,
-  Input,
   Typography,
   Button,
   CardBody,
   Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
+  
 } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-const TABS = [
-  {
-    label: "Xây Dựng",
-    value: "XD",
-  },
-  {
-    label: "Điện Nước",
-    value: "DN",
-  },
-  {
-    label: "Điện Lạnh",
-    value: "monitored",
-  },
-  {
-    label: "Cơ Khí",
-    value: "CK",
-  },
-  {
-    label: "Đồ Gỗ",
-    value: "DG",
-  },
-  {
-    label: "NLMT",
-    value: "NLMT",
-  },
-];
 
-const TABLE_HEAD = ["Tên Thợ", "Tài Khoản", "Đăng Nhập Lần Cuối", "ID Điện Thoại", "Đăng Nhập Sai", "Trạng Thái", "Sửa Tài Khoản", "Đổi Mật Khẩu"];
+
+const TABLE_HEAD = ["STT", "Nội Dung", "% Khuyến Mãi", "Hình Ảnh", "Bắt Đầu", "Kết Thúc", "Sửa"];
 
 
 function ApplicationPopupDiscount() {
-  const [accountData, setAccountData] = useState([]);
+  const [popupData, setPopupData] = useState([]);
   const handleClick = () => {
     console.log(accountData);
   };
   useEffect(() => {
-    fetch(host + "api/web/worker-account")
+    fetch(host + "api/web/popup-discount")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error Status Network");
@@ -63,7 +31,7 @@ function ApplicationPopupDiscount() {
         return response.json();
       })
       .then((data) => {
-        setAccountData(data);
+        setPopupData(data);
       })
       .catch((error) => {
         console.error("Error API:", error);
@@ -76,24 +44,9 @@ function ApplicationPopupDiscount() {
       <Head title="Tài khoản thợ" />
       <Card className="h-full w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
-
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader >
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value} className="w-fit" >
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
-          </div>
+          <Typography variant="h4" color="blue-gray" className="flex justify-center">
+            Danh Sách Popup Chương Trình Khuyến Mãi
+          </Typography>
         </CardHeader>
         <CardBody className="overflow-scroll px-0">
           <table className=" w-full min-w-max table-auto text-left">
@@ -119,54 +72,23 @@ function ApplicationPopupDiscount() {
               </tr>
             </thead>
             <tbody>
-              {accountData.map(
+              {popupData.map(
                 (item, index) => {
-                  const isLast = index === accountData.length - 1;
+                  const isLast = index === popupData.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={item.id_worker}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar src="https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg" alt={item.id_worker} size="sm" />
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              Không tìm thấy tên thợ
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
+                    <tr key={item.id}>
+                      
                       <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal  "
                         >
-                          {item.acc_worker}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {item.last_active != null ? item.last_active : "Chưa đăng nhập"}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {item.device_key != null ? item.device_key : "Chưa đăng nhập"}
+                          {item.id}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -175,39 +97,56 @@ function ApplicationPopupDiscount() {
                           color="blue-gray"
                           className="font-normal  "
                         >
-                          {item.time_log}
+                          {item.content_view_sale}
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value="Trạng thái"
-                            color="green"
-                          />
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {item.sale_percent}
+                        </Typography>
                       </td>
                       <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>
+                      <img
+                            src={host + item.image_path}
+                            alt="Avatar"
+                            className="w-40 h-15"
+                        />
+                                            
+                      </td>
+                      
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal  "
+                        >
+                          {item.time_begin}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal  "
+                        >
+                          {item.time_end}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <div className="w-max" >
                           <Chip
                             variant="ghost"
                             size="sm"
-                            value="Sửa tài khoản"
+                            value="Sửa Popup"
                             color="deep-purple"
                           />
                         </div>
                       </td>
-                      <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value="Xoá tài khoản"
-                            color="red"
-                          />
-                        </div>
-                      </td>
+                     
                     </tr>
                   );
                 },

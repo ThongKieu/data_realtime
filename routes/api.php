@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\DistrictController;
 // use App\Http\Controllers\Api\Web\PushOnlineController;
 use App\Http\Controllers\Api\Web\WorksController;
 use App\Http\Controllers\Api\Web\WorkersController;
-use App\Http\Controllers\Api\WorksAssignmentController;
+// use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +37,9 @@ Route::prefix('web')->group(function () {
     });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
-    
+    Route::prefix('import')->group(function () {
+        Route::post('oldcus','App\Http\Controllers\Api\OldCustomerController@inportCus');
+    });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -106,7 +106,7 @@ class WorksController extends Controller
 
     public function updateWork(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         switch ($request->ac) {
             case ('1'):
                 $content =Work::where('id','=',$request->id) -> update(['work_content'=>$request->work_content]);
@@ -123,9 +123,13 @@ class WorksController extends Controller
             case ('5'):
                 $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_cus]);
                 break;
-        }
 
-        return response()->json('Update Work done - '.$content);
+        }
+        if (isset($content)) {
+            return response()->json('Update Work done - '.$content);
+        }
+        return response()->json('Update Work fail !!!!!!!!!');
+
     }
     public static function upload($file)
     {

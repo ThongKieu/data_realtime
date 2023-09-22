@@ -10,21 +10,23 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
     console.log("user connected");
     // ... your code
-    socket.on("sendChatToServer", (message) => {
-        console.log(message);
-        io.sockets.emit("sendChatToClient", message);
-        socket.broadcast.emit("sendChatToClient", message);
+    // socket.on("sendChatToServer", (message) => {
+    //     console.log(message);
+    //     io.sockets.emit("sendChatToClient", message);
+    //     socket.broadcast.emit("sendChatToClient", message);
 
-    });
+    // });
     socket.on("pushOnline", (message) => {
         console.log('User:',message,' is online');
         io.sockets.emit('sentListOnline_Client',message);
 
     });
-    socket.on("addWorkTo_Server", async (formData1) => {
-        console.log("Received form data:", formData1);
-        io.sockets.emit("sendAddWorkTo_Client", formData1);
-
+    socket.on("addWorkTo_Server", async (message,id) => {
+        console.log("Received form data:", message);
+        io.sockets.emit("sendAddWorkTo_Client", message);
+        // if(message && id==2) {
+        //     io.sockets.emit("sendAddWorkTo_Client", message);
+        // }
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on("disconnect", () => {

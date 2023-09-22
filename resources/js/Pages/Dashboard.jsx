@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, memo, useRef } from "react";
+import React, { useEffect, useState, memo, useCallback, useRef } from "react";
 import Select from "react-select";
 import {
     Button,
@@ -12,22 +12,19 @@ import {
     Textarea,
     DialogFooter,
     Input,
-    Tooltip,Spinner
+    Tooltip,
+    Spinner,
 } from "@material-tailwind/react";
 // -------
 import {
-    GridRowModes,
     DataGrid,
-    GridActionsCellItem,
-    GridRowEditStopReasons,
+    GridCellEditStopReasons,
+    GridCellModes,
 } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 // -----
 import {
     TrashIcon,
-    PlusCircleIcon,
-    PencilSquareIcon,
-    XCircleIcon,
     EyeIcon,
     ArrowPathIcon,
     UserPlusIcon,
@@ -75,7 +72,7 @@ var data_done = [
 // ----------------test options -----
 
 function Dashboard({ auth }) {
-    const [socketD, setSocketD] = useState(null);
+    const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     // table left
     const [workDataDN, setWorkDataDN] = useState(dataNew);
@@ -102,15 +99,16 @@ function Dashboard({ auth }) {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
+        // setIsLoading(false);
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data != "" ) {
+            console.log("hell", data);
+            if (data != '') {
+                fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                fetchDataDashboard(data);
-                setIsLoading(false);
+                // processRowUpdateDN(data);
             }
-
         });
         return () => {
             newSocket.disconnect();
@@ -170,6 +168,7 @@ function Dashboard({ auth }) {
             setWorkDataXD_done(jsonData.xay_dung_done);
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
+            setIsLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -199,8 +198,6 @@ function Dashboard({ auth }) {
     var heightScreenTV = screenSize.height;
 
     // -----------------------------handle---------------------------
-    const [rowModesModel, setRowModesModel] = useState({});
-    // --------------------------------column -------------------------
     const fetchDataDashboard = async (data) => {
         try {
             const res = await fetch("api/web/update/work", {
@@ -213,66 +210,73 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log("Sửa thong tin lịch chưa phân");
+                socketD?.emit("addWorkTo_Server", data);
+                console.log('socketD',socketD);
+                console.log('newSocket ahihi',newSocket);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Error fetching data lỗi rồi:", error);
         }
     };
-
     const columns = [
         {
             field: "work_content",
             headerName: "yêu Cầu Công Việc",
             width: 140,
             editable: true,
-            renderCell: (params) => {
-                const [workInputChange, setWorkInputChange] = useState(
-                    params.value
-                );
-                const inputRef = useRef(null);
-                const data = {
-                    ac: "1",
-                    id: params.id,
-                    work_content: workInputChange,
-                };
-                const handleInputChange = (e) => {
-                    setWorkInputChange(e.target.value);
-                };
-                const updateWorkContent = (e) => {
-                    if (e.keyCode === 13 && !e.shiftKey) {
-                        e.preventDefault();
-                        fetchDataDashboard(data);
-                        socketD.emit("addWorkTo_Server", JSON.stringify(data));
-                        if (inputRef.current) {
-                            inputRef.current.blur(); // Kiểm tra xem tham chiếu có tồn tại trước khi sử dụng
+            renderEditCell: (params) => (
+
+                <input
+                    type="text"
+                    defaultValue={params.row.work_content}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "1",
+                                id: params.id,
+                                work_content: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataDashboard(data);
                         }
-                    }
-                    // console.log(workInputChange);
-                };
-                return (
-                    <Tooltip content={params.value}>
-                        <Input
-                            type="text"
-                            ref={inputRef}
-                            value={workInputChange}
-                            className="min-w-full bg-white border-none rounded-none outline-none pointer-events-auto "
-                            onChange={handleInputChange}
-                            onKeyDown={updateWorkContent}
-                            labelProps={{
-                                className: "hidden",
-                            }}
-                        />
-                    </Tooltip>
-                );
-            },
+                    }}
+                />
+            ),
         },
         {
             field: "work_note",
             headerName: "Ghi Chú",
             width: 140,
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.work_note}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "2",
+                                id: params.id,
+                                work_note: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataDashboard(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "street",
@@ -282,6 +286,28 @@ function Dashboard({ auth }) {
             align: "left",
             headerAlign: "left",
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.street}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "3",
+                                id: params.id,
+                                street: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataDashboard(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "district",
@@ -289,6 +315,28 @@ function Dashboard({ auth }) {
             type: "text",
             width: 50,
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.district}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" ||e.key === 'Tab') {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "4",
+                                id: params.id,
+                                district: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataDashboard(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "phone_number",
@@ -296,6 +344,28 @@ function Dashboard({ auth }) {
             width: 110,
             editable: true,
             type: "text",
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.phone_number}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "5",
+                                id: params.id,
+                                phone_number: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataDashboard(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "actions",
@@ -314,7 +384,6 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
-                console.log("-----------", selectPhanTho);
                 const handleSentDelete = async () => {
                     try {
                         let data = {
@@ -356,7 +425,7 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "phantho");
                             handleOpenTho();
                         }
                     } catch (error) {
@@ -595,7 +664,7 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "phantho");
                             handleOpenTho();
                             console.log("handleSentPhanTho1", data);
                         } else {
@@ -726,7 +795,6 @@ function Dashboard({ auth }) {
                                 rows={workDataDN}
                                 columns={columns}
                                 editMode="row"
-                                rowModesModel={rowModesModel}
                                 hideFooterPagination={true}
                                 slotProps={{
                                     className: "text-center",
@@ -740,8 +808,11 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataDL}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
+
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -751,8 +822,10 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataDG}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -762,8 +835,10 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataNLMT}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -773,8 +848,10 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataXD}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -784,8 +861,10 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataVC}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                         <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
@@ -795,8 +874,10 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataHX}
                                 columns={columns}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
+                                hideFooterPagination={true}
+                                slotProps={{
+                                    className: "text-center",
+                                }}
                             />
                         </Box>
                     </div>
@@ -807,145 +888,90 @@ function Dashboard({ auth }) {
                         "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white rounded-none"
                     }
                 >
-                    <div>
-                        <Typography className="w-[110vh] p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Điện Nước
-                        </Typography>
+                    {isLoading ? (
+                        <div className="flex justify-center p-2 align-middle ">
+                            <Spinner className="w-6 h-6" color="amber" />
+                            <p className="pl-2 text-center text-black">
+                                Loading...
+                            </p>
+                        </div>
+                    ) : (
+                        <div>
+                            <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Điện Nước
+                            </Typography>
 
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
+                            <Box>
                                 <DataGrid
                                     rows={workDataDN_done}
                                     columns={columnsRight}
                                     editMode="row"
-                                    rowModesModel={rowModesModel}
                                     hideFooterPagination={true}
                                 />
-                            )}
-                        </Box>
+                            </Box>
 
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Điện Lạnh
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataDL_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Đồ Gỗ
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataDG_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Năng Lượng Mặt Trời
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataNLMT_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Xây Dựng
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataXD_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Vận Chuyển
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataVC_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                            Cơ Khí
-                        </Typography>
-                        <Box >
-                            {isLoading ? (
-                              <div className="flex justify-center p-2 align-middle ">
-                                 <Spinner className="w-6 h-6" color="amber" />
-                                 <p className="pl-2 text-center text-black" >
-                                   Loading...
-                                </p>
-                              </div>
-                            ) : (
-                            <DataGrid
-                                rows={workDataHX_done}
-                                columns={columnsRight}
-                                editMode="row"
-                                rowModesModel={rowModesModel}
-                            />)}
-                        </Box>
-                    </div>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Điện Lạnh
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataDL_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Đồ Gỗ
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataDG_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Năng Lượng Mặt Trời
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataNLMT_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Xây Dựng
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataXD_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Vận Chuyển
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataVC_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                Cơ Khí
+                            </Typography>
+                            <Box>
+                                <DataGrid
+                                    rows={workDataHX_done}
+                                    columns={columnsRight}
+                                    editMode="row"
+                                />
+                            </Box>
+                        </div>
+                    )}
                 </Card>
             </div>
         </AuthenticatedLayout>

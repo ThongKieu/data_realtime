@@ -6,6 +6,9 @@
     display: flex !important;
     justify-content: center !important;
 }
+.MuiInputBase-input{
+    height: 52px !important;
+}
 .MuiDataGrid-footerContainer{
     display: none !important;
 }

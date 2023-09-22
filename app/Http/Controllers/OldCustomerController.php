@@ -9,13 +9,13 @@ use Maatwebsite\Excel\Excel;
 class OldCustomerController extends Controller
 {
     //
-    public function inportCus(Request $request) {
-            $a = Excel::import( new OldCusImport, $request->file);
-            if($a)
+    public function importDataCustomer(Request $request) {
+            $imported = Excel::import( new OldCusImport, $request->file);
+            if($imported)
             {
-                return 'ok';
+                return 'Ok';
             }
             else 
-                return 'Fails';
+                return 'Failed';
     }
 }

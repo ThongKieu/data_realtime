@@ -26,10 +26,12 @@
         "@mui/material": "^5.14.8",
         "@mui/x-data-grid": "^6.12.1",
         "express": "^4.18.2",
+        "google-map-react": "^2.2.1",
         "react-query": "^3.39.3",
         "react-select": "^5.7.4",
         "socket.io": "^4.7.2",
         "socket.io-client": "^4.7.2",
-        "soket.io": "^0.0.1-security"
+        "soket.io": "^0.0.1-security",
+        "xlsx": "^0.18.5"
     }
 }

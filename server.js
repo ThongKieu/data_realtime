@@ -21,17 +21,13 @@ io.on("connection", (socket) => {
         io.sockets.emit('sentListOnline_Client',message);
 
     });
-    socket.on("addWorkTo_Server", async (message,id) => {
-        console.log("Received form data:", message);
-        io.sockets.emit("sendAddWorkTo_Client", message);
-        // if(message && id==2) {
-        //     io.sockets.emit("sendAddWorkTo_Client", message);
-        // }
+    socket.on("addWorkTo_Server", async (formData1) => {
+        console.log("Received form data:", formData1);
+        io.sockets.emit("sendAddWorkTo_Client", formData1);
+
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
-    socket.on("disconnect", () => {
-        console.log("A user disconnected");
-    });
+
     return () => {
         socket.disconnect();
     };

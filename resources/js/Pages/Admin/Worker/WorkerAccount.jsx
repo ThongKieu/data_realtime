@@ -1,83 +1,83 @@
 import { React, useState, useEffect } from "react";
 import {
-    MagnifyingGlassIcon
-  } from "@heroicons/react/24/outline";
-  import {
-    Card,
-    CardHeader,
-    Input,
-    Typography,
-    Button,
-    CardBody,
-    Chip,
-    CardFooter,
-    Tabs,
-    TabsHeader,
-    Tab,
-    Avatar,
-  } from "@material-tailwind/react";
+  MagnifyingGlassIcon
+} from "@heroicons/react/24/outline";
+import {
+  Card,
+  CardHeader,
+  Input,
+  Typography,
+  Button,
+  CardBody,
+  Chip,
+  CardFooter,
+  Tabs,
+  TabsHeader,
+  Tab,
+  Avatar,
+} from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
-import { Head} from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-  const TABS = [
-    {
-      label: "Xây Dựng",
-      value: "XD",
-    },
-    {
-      label: "Điện Nước",
-      value: "DN",
-    },
-    {
-      label: "Điện Lạnh",
-      value: "monitored",
-    },
-    {
-      label: "Cơ Khí",
-      value: "CK",
-    },
-    {
-      label: "Đồ Gỗ",
-      value: "DG",
-    },
-    {
-      label: "NLMT",
-      value: "NLMT",
-    },
-  ];
-   
-  const TABLE_HEAD = ["Tên Thợ", "Tài Khoản","Đăng Nhập Lần Cuối", "ID Điện Thoại", "Đăng Nhập Sai", "Trạng Thái","Sửa Tài Khoản",  "Đổi Mật Khẩu"];
-   
-   
-  function Account() {
-    const [accountData, setAccountData] = useState([]);
-    const [test, setTest] = useState("");
-    const handleClick = () => {
-      console.log(accountData);
-    };
-    useEffect(() => {
-      fetch(host + "api/web/worker-account")
-          .then((response) => {
-              if (!response.ok) {
-                  throw new Error("Error Status Network");
-              }
-              return response.json();
-          })
-          .then((data) => {
-            setAccountData(data); 
-          })
-          .catch((error) => {
-              console.error("Error API:", error);
-          });
+const TABS = [
+  {
+    label: "Xây Dựng",
+    value: "XD",
+  },
+  {
+    label: "Điện Nước",
+    value: "DN",
+  },
+  {
+    label: "Điện Lạnh",
+    value: "monitored",
+  },
+  {
+    label: "Cơ Khí",
+    value: "CK",
+  },
+  {
+    label: "Đồ Gỗ",
+    value: "DG",
+  },
+  {
+    label: "NLMT",
+    value: "NLMT",
+  },
+];
+
+const TABLE_HEAD = ["Tên Thợ", "Tài Khoản", "Đăng Nhập Lần Cuối", "ID Điện Thoại", "Đăng Nhập Sai", "Trạng Thái", "Sửa Tài Khoản", "Đổi Mật Khẩu"];
+
+
+function Account() {
+  const [accountData, setAccountData] = useState([]);
+  const [test, setTest] = useState("");
+  const handleClick = () => {
+    console.log(accountData);
+  };
+  useEffect(() => {
+    fetch(host + "api/web/worker-account")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error Status Network");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setAccountData(data);
+      })
+      .catch((error) => {
+        console.error("Error API:", error);
+      });
   }, []);
-  
- 
-    return (
-        <AuthenticatedLayoutAdmin >
+
+
+  return (
+    <AuthenticatedLayoutAdmin >
       <Head title="Tài khoản thợ" />
       <Card className="h-full w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
-          
+
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <Tabs value="all" className="w-full md:w-max">
               <TabsHeader >
@@ -126,7 +126,7 @@ import { host } from "@/Utils/UrlApi";
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
-   
+
                   return (
                     <tr key={item.id_worker}>
                       <td className={classes}>
@@ -139,7 +139,7 @@ import { host } from "@/Utils/UrlApi";
                               className="font-normal"
                             >
                               Không tìm thấy tên thợ
-                            </Typography>                           
+                            </Typography>
                           </div>
                         </div>
                       </td>
@@ -180,8 +180,8 @@ import { host } from "@/Utils/UrlApi";
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>                       
-                          <Chip                      
+                        <div className="w-max" onClick={handleClick}>
+                          <Chip
                             variant="ghost"
                             size="sm"
                             value="Trạng thái"
@@ -190,8 +190,8 @@ import { host } from "@/Utils/UrlApi";
                         </div>
                       </td>
                       <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>                       
-                          <Chip                      
+                        <div className="w-max" onClick={handleClick}>
+                          <Chip
                             variant="ghost"
                             size="sm"
                             value="Sửa tài khoản"
@@ -200,8 +200,8 @@ import { host } from "@/Utils/UrlApi";
                         </div>
                       </td>
                       <td className={classes}>
-                        <div className="w-max" onClick={handleClick}>                       
-                          <Chip                      
+                        <div className="w-max" onClick={handleClick}>
+                          <Chip
                             variant="ghost"
                             size="sm"
                             value="Xoá tài khoản"
@@ -230,8 +230,8 @@ import { host } from "@/Utils/UrlApi";
           </div>
         </CardFooter>
       </Card>
-      </AuthenticatedLayoutAdmin>
-    );
-  }
-  
+    </AuthenticatedLayoutAdmin>
+  );
+}
+
 export default Account;

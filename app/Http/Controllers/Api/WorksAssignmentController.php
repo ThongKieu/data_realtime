@@ -254,7 +254,7 @@ class WorksAssignmentController extends Controller
         // $xay_dung  =    Work::where('date_book','=',$today)->where('kind_work','=','4')->where('status_cus','=',1)->get();
         // $tai_xe    =    Work::where('date_book','=',$today)->where('kind_work','=','5')->where('status_cus','=',1)->get();
         // $co_khi    =    Work::where('date_book','=',$today)->where('kind_work','=','6')->where('status_cus','=',1)->get();
-        // $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
             'dien_lanh_done'=>$dien_lanh,

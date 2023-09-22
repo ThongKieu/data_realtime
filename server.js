@@ -8,39 +8,26 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-    const i = 1;
-    const j = i+1;
-    
-    console.log("user connected",j);
-    socket.on("pushOnline", (message) => {
-        console.log('User:',message,' is online');
-        io.sockets.emit('sentListOnline_Client',message);
-        socket.on("disconnect", () => {
-            console.log("A user disconnected");
-        });
-    });
+    console.log("user connected");
     // ... your code
     // socket.on("sendChatToServer", (message) => {
     //     console.log(message);
     //     io.sockets.emit("sendChatToClient", message);
     //     socket.broadcast.emit("sendChatToClient", message);
-    //     socket.on("disconnect", () => {
-    //         console.log("A user disconnected");
-    //     });
+
     // });
-  
-    socket.on("addWorkTo_Server", async (message) => {
-        console.log("Received form data:", message);
-        if(message === 1)
-        {
-            io.sockets.emit("sendAddWorkTo_Client", message);
-        }
-        socket.on("disconnect", () => {
-            console.log("A user disconnected");
-        });
+    socket.on("pushOnline", (message) => {
+        console.log('User:',message,' is online');
+        io.sockets.emit('sentListOnline_Client',message);
+
+    });
+    socket.on("addWorkTo_Server", async (formData1) => {
+        console.log("Received form data:", formData1);
+        io.sockets.emit("sendAddWorkTo_Client", formData1);
+
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
-   
+
     return () => {
         socket.disconnect();
     };

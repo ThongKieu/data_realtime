@@ -19,9 +19,7 @@ const TABLE_HEAD = ["STT", "Nội Dung", "% Khuyến Mãi", "Hình Ảnh", "Bắ
 
 function ApplicationPopupDiscount() {
   const [popupData, setPopupData] = useState([]);
-  const handleClick = () => {
-    console.log(accountData);
-  };
+
   useEffect(() => {
     fetch(host + "api/web/popup-discount")
       .then((response) => {

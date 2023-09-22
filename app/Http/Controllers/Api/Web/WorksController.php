@@ -123,9 +123,13 @@ class WorksController extends Controller
             case ('5'):
                 $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_cus]);
                 break;
-        }
 
-        return response()->json('Update Work done - '.$content);
+        }
+        if (isset($content)) {
+            return response()->json('Update Work done - '.$content);
+        }
+        return response()->json('Update Work fail !!!!!!!!!');
+
     }
     public static function upload($file)
     {

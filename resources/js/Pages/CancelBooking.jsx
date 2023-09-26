@@ -1,8 +1,11 @@
 import React from 'react'
-
-function CancelBooking() {
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from '@inertiajs/react';
+function CancelBooking({auth}) {
   return (
-    <div>CancelBooking</div>
+    <AuthenticatedLayout children={auth.user} user={auth.user}>
+    <Head title="Trang Chủ" />
+    </AuthenticatedLayout>
   )
 }
 

@@ -10,6 +10,8 @@ import {
     IconButton,
     MenuHandler,
     Typography,
+    Card,
+    CardBody,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -257,7 +259,9 @@ function NavList({ active = false }) {
             <IdentificationIcon className="h-[18px] w-[18px]" />
             <Menu allowHover>
                 <MenuHandler>
-                    <Typography as="span" className="text-sm font-normal">Thông Tin Thợ</Typography>
+                    <Typography as="span" className="text-sm font-normal">
+                        Thông Tin Thợ
+                    </Typography>
                 </MenuHandler>
                 <MenuList className="block">
                     <NavLink
@@ -279,7 +283,7 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propauth}) {
+function NavbarDefault({ propauth }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     useEffect(() => {
@@ -310,8 +314,30 @@ function NavbarDefault({ propauth}) {
                     </NavLink>
                     <NavList />
                 </div>
+                <div className="flex">
+                    <CardMain />
+                    <NavLink href={route("CancelBooking")} className="font-normal">
+                    <Card className="w-24 m-1 border border-red-600 border-solid rounded justify-left shadow-red-400">
+                        <CardBody className="flex items-center justify-between p-1 ">
+                            <Typography
+                                className="text-sm text-center text-red-600"
+                                variant="paragraph"
+                                color="blue-gray"
+                            >
+                                Hủy
+                            </Typography>
+                            <Typography
+                                className="text-sm text-center text-red-600"
+                                variant="paragraph"
+                                color="blue-gray"
+                            >
+                                1
+                            </Typography>
+                        </CardBody>
+                    </Card>
+                    </NavLink>
 
-                <CardMain/>
+                </div>
 
                 <div>
                     <ProfileMenu propauthprofile={propauth} />

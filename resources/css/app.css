@@ -2,31 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-.MuiDataGrid-columnHeaderTitleContainer{
+.MuiDataGrid-columnHeaderTitleContainer {
     display: flex !important;
     justify-content: center !important;
 }
-.MuiInputBase-input{
+
+.MuiInputBase-input {
     height: 52px !important;
 }
-.MuiDataGrid-footerContainer{
+
+.MuiDataGrid-footerContainer {
     display: none !important;
 }
-#react-select-2-input{
+
+#react-select-2-input {
     box-shadow: none !important;
 }
+
 .overflow-scroll::-webkit-scrollbar {
     height: 8px;
     width: 8px;
 }
+
 .overflow-scroll::-webkit-scrollbar-thumb {
     background-color: blue;
 }
 
-.MuiDataGrid-cell--editable>div{
+.MuiDataGrid-cell--editable>div {
     min-width: 130px;
 }
+
 /* worker_main  -----------*/
-.MuiDataGrid-cell>div{
+.MuiDataGrid-cell>div {
     min-width: 100px;
+}
+
+.MuiDataGrid-cell--editable>div {
+    min-width: 40px;
+}
+
+.dateBooking>div {
+    height: 35px;
+    margin-right: 4px;
+}
+
+.dateBooking>div>input {
+    border: 1px solid green;
+
+
+}
+
+.dateBooking>div>input:focus {
+    border: 1px solid green;
+
 }

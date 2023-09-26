@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', function () {return Inertia::render('chat/Chat');})->name('chat');
     Route::get('/tim-kiem', function () {return Inertia::render('Search');})->name('search');
     Route::get('/thong-bao-lich-moi', function () {return Inertia::render('Notice');})->name('notice');
+    Route::get('/lich-huy', function () {return Inertia::render('CancelBooking');})->name('CancelBooking');
     Route::get('/test', function () {return Inertia::render('test');})->name('test');
 
     Route::prefix('admin')->group(function(){

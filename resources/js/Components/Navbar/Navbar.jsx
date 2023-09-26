@@ -238,12 +238,6 @@ const navListItems = [
         icon: UserCircleIcon,
         href: "search",
     },
-    // {
-    //     id: 3,
-    //     label: "Thông Tin Thợ",
-    //     icon: IdentificationIcon,
-    //     href: "locationWorker",
-    // },
 ];
 
 function NavList({ active = false }) {

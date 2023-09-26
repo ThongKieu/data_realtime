@@ -80,7 +80,11 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
         $co_khi    =   Work::where('date_book', '=', $today)->where('status_cus', '=', 2)->get('id');
-        return response()->json(count($co_khi));
+        $nu_can= count($co_khi);
+        return response()->json([
+            'num_can'=>$nu_can,
+            'info_can'=>$co_khi
+        ]);
     }
     public function store(StoreWorkRequest $request)
     {

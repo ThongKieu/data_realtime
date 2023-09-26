@@ -130,7 +130,7 @@ function Dashboard({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            if ((response.status = 200)) {
+            if ((response.status == 200)) {
                 console.log("push on thanh cong");
             }
         } catch (error) {}
@@ -881,12 +881,12 @@ function Dashboard({ auth }) {
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
             <div
-                className={`grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1 `}
+                className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll  auto-cols-max mt-1 text-white rounded-none"
+                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
                 >
                     <div>
@@ -1015,7 +1015,7 @@ function Dashboard({ auth }) {
 
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white rounded-none"
+                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
                 >
                     {isLoading ? (

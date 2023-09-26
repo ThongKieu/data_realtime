@@ -5,6 +5,7 @@ function CancelBooking({auth}) {
   return (
     <AuthenticatedLayout children={auth.user} user={auth.user}>
     <Head title="Trang Chủ" />
+
     </AuthenticatedLayout>
   )
 }

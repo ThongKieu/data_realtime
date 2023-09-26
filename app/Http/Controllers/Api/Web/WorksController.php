@@ -79,7 +79,7 @@ class WorksController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $co_khi    =   Work::where('date_book', '=', $today)->where('status_cus', '=', 2)->get('id');
+        $co_khi    =   Work::where('date_book', '=', $today)->where('status_cus', '=', 2)->get();
         $nu_can= count($co_khi);
         return response()->json([
             'num_can'=>$nu_can,

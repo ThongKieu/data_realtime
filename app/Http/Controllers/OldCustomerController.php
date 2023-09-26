@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\OldCusImport;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Excel;
+// use Maatwebsite\Excel\Excel;
 
 class OldCustomerController extends Controller
 {
@@ -15,7 +15,7 @@ class OldCustomerController extends Controller
             {
                 return 'Ok';
             }
-            else 
+            else
                 return 'Failed';
     }
 }

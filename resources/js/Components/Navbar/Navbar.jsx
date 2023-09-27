@@ -26,6 +26,7 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
+import newSocket from "@/Utils/socket";
 // import NavGuest from "./navGuest";
 
 // profile menu component
@@ -292,7 +293,33 @@ function NavbarDefault({ propauth }) {
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
     }, []);
-
+    const [socketDelete, setSocketDelete] = useState();
+    useEffect(() => {
+        setSocketDelete(newSocket, { secure: true });
+        fetchDelete();
+        newSocket.on("sendAddWorkTo_Client", (data) => {
+            console.log("hell", data);
+            if (data != "") {
+                fetchDelete(data);
+            }
+        });
+        // lắng nghe server
+        return () => {
+            newSocket.disconnect();
+        };
+    }, []);
+    const [countDelete, setCountDelete] = useState(0);
+    const fetchDelete = async () => {
+        try {
+            const response = await fetch("api/web/works_cacle");
+            const jsonData = await response.json();
+            setCountDelete(jsonData.num_can);
+            if (socketDelete) {
+            socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -316,27 +343,29 @@ function NavbarDefault({ propauth }) {
                 </div>
                 <div className="flex">
                     <CardMain />
-                    <NavLink href={route("CancelBooking")} className="font-normal">
-                    <Card className="w-24 m-1 border border-red-600 border-solid rounded justify-left shadow-red-400">
-                        <CardBody className="flex items-center justify-between p-1 ">
-                            <Typography
-                                className="text-sm text-center text-red-600"
-                                variant="paragraph"
-                                color="blue-gray"
-                            >
-                                Hủy
-                            </Typography>
-                            <Typography
-                                className="text-sm text-center text-red-600"
-                                variant="paragraph"
-                                color="blue-gray"
-                            >
-                                1
-                            </Typography>
-                        </CardBody>
-                    </Card>
+                    <NavLink
+                        href={route("CancelBooking")}
+                        className="font-normal"
+                    >
+                        <Card className="w-24 m-1 border border-red-600 border-solid rounded justify-left shadow-red-400">
+                            <CardBody className="flex items-center justify-between p-1 ">
+                                <Typography
+                                    className="text-sm text-center text-red-600"
+                                    variant="paragraph"
+                                    color="blue-gray"
+                                >
+                                    Hủy
+                                </Typography>
+                                <Typography
+                                    className="text-sm text-center text-red-600"
+                                    variant="paragraph"
+                                    color="blue-gray"
+                                >
+                                    {countDelete}
+                                </Typography>
+                            </CardBody>
+                        </Card>
                     </NavLink>
-
                 </div>
 
                 <div>

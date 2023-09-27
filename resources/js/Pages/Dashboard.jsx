@@ -16,9 +16,7 @@ import {
     Spinner,
 } from "@material-tailwind/react";
 // -------
-import {
-    DataGrid
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 // -----
 import {
@@ -130,7 +128,7 @@ function Dashboard({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            if ((response.status == 200)) {
+            if (response.status == 200) {
                 console.log("push on thanh cong");
             }
         } catch (error) {}
@@ -153,7 +151,9 @@ function Dashboard({ auth }) {
     };
     const fetchDateCheck = async (dateCheck) => {
         try {
-            const response = await fetch(`api/web/works?dateCheck=${dateCheck}`);
+            const response = await fetch(
+                `api/web/works?dateCheck=${dateCheck}`
+            );
             const jsonData = await response.json();
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
@@ -162,7 +162,7 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
-            console.log('HDHDHDHDHD',jsonData);
+            console.log("HDHDHDHDHD", jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -425,10 +425,12 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
+                // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
                         let data = {
                             id: params.id,
+                            id_auth: auth.user.id,
                             work_note: work_note,
                         };
 
@@ -466,7 +468,8 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "Phan Tho");
+                            handleCopyToClipboard(params.row)
                             handleOpenTho();
                         }
                     } catch (error) {
@@ -497,27 +500,59 @@ function Dashboard({ auth }) {
                         console.log(error);
                     }
                 };
+
+                const handleCopyToClipboard = (text) => {
+                    const work_content = text.work_content;
+                    const street = text.street;
+                    const phone_number = text.phone_number;
+                    const name_cus = text.name_cus;
+                    const district = text.district;
+                    const work_note = text.work_note;
+                    const data = `${work_content ? work_content + " " : ""} ${
+                        street ? street + " " : ""
+                    } ${phone_number ? phone_number + " " : ""} ${
+                        name_cus ? name_cus + " " : ""
+                    } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""} `;
+
+                    const textarea = document.createElement('textarea');
+                    textarea.value = data;
+                    document.body.appendChild(textarea);
+
+                    textarea.select();
+
+                    console.log('tam tai',document.execCommand);
+                    document.body.removeChild(textarea);
+
+                    // alert('Đã sao chép vào clipboard: ' + data);
+                    console.log('Đã sao chép vào clipboard: ' + data);
+                  };
                 return (
                     <div>
                         <div className="flex">
                             <Tooltip content="Phân Thợ">
                                 <UserPlusIcon
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                    className="w-8 h-8 p-1 mr-1 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
                                     onClick={handleOpenTho}
                                 />
                             </Tooltip>
                             <Tooltip content="Hủy Lịch">
                                 <TrashIcon
-                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                    className="w-8 h-8 p-1 mr-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
                                     onClick={handleOpen}
                                 />
                             </Tooltip>
                             <Tooltip content="Nhân Đôi">
                                 <DocumentDuplicateIcon
-                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
                                     onClick={handleSentNhanDoi}
                                 />
                             </Tooltip>
+                            {/* <Tooltip content="Sao Chép">
+                                <DocumentDuplicateIcon
+                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    onClick={() => handleCopyToClipboard(params.row)}
+                                />
+                            </Tooltip> */}
                         </div>
                         <Dialog
                             open={openTho}
@@ -548,7 +583,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="border-none shadow-none"
+                                    className="border-none shadow-none qqq"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">
@@ -858,10 +893,11 @@ function Dashboard({ auth }) {
 
     const [selectedDate, setSelectedDate] = useState(formattedToday);
     const handleSearch = async () => {
-        fetchDateCheck(selectedDate)
+        fetchDateCheck(selectedDate);
     };
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
+
     };
     // ----------------------------nut scrollView trong bang --------------------------
     const DN = useRef(null);

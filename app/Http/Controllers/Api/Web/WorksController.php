@@ -130,9 +130,9 @@ class WorksController extends Controller
                 $content =Work::where('id','=',$request->id) -> update(['district'=>$request->district]);
                 break;
             case ('5'):
-                $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_cus]);
+                $phone = (int) $request->phone_number;
+                $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$phone]);
                 break;
-
         }
         if (isset($content)) {
             return response()->json('Update Work done - '.$content);

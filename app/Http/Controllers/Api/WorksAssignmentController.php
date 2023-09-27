@@ -243,17 +243,7 @@ class WorksAssignmentController extends Controller
             "workers.add_worker",
         ]
         );
-        // Work::where('date_book','=',$today)->where('kind_work','=','0')->where('status_cus','=',1)->get();
-
-
-
-
-        // $dien_lanh =    Work::where('date_book','=',$today)->where('kind_work','=','1')->where('status_cus','=',1)->get();
-        // $do_go     =    Work::where('date_book','=',$today)->where('kind_work','=','2')->where('status_cus','=',1)->get();
-        // $nlmt      =    Work::where('date_book','=',$today)->where('kind_work','=','3')->where('status_cus','=',1)->get();
-        // $xay_dung  =    Work::where('date_book','=',$today)->where('kind_work','=','4')->where('status_cus','=',1)->get();
-        // $tai_xe    =    Work::where('date_book','=',$today)->where('kind_work','=','5')->where('status_cus','=',1)->get();
-        // $co_khi    =    Work::where('date_book','=',$today)->where('kind_work','=','6')->where('status_cus','=',1)->get();
+     
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
@@ -330,4 +320,33 @@ class WorksAssignmentController extends Controller
         dd($request->all());
 
     }
+    public function updateWorkAss(Request $request) {
+        if($request->ac)
+        {   $id_cus =  WorksAssignment::where('id','=',$request->id)->value('id_cus');
+            switch ($request->ac) {
+                case ('1'):
+                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
+                    break;
+                case ('2'):
+                    $content =Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
+                    break;
+                case ('3'):
+                    $content =Work::where('id','=',$id_cus) -> update(['street'=>$request->street]);
+                    break;
+                case ('4'):
+                    $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
+                    break;
+                case ('5'):
+                    $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_cus]);
+                    break;
+    
+            }
+            if (isset($content)) {
+                return response()->json('Update Work done - '.$content);
+            }
+            return response()->json('Update Work fail !!!!!!!!!');
+        }
+        return response()->json('Non Action !');
+    }
+    
 }

@@ -27,10 +27,11 @@ Route::prefix('web')->group(function () {
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
+        Route::post('work-assignment','App\Http\Controllers\Api\Web\WorksController@updateWorkAss');
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
     Route::get('works_cacle','App\Http\Controllers\Api\Web\WorksController@indexCancleBook');
-    Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
+    Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksAssignmentController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');

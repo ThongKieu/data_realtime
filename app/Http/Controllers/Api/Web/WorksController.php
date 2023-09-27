@@ -154,7 +154,7 @@ class WorksController extends Controller
     }
     public function insertCancleBook(Request $request)
     {
-        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note,'member_read'=>$request->id]);
+        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note,'members_read'=>$request->id_auth]);
         if ($up) {
             return 'Delete work done !';
         }

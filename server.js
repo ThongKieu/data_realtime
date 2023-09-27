@@ -14,20 +14,20 @@ io.on("connection", (socket) => {
     //     console.log(message);
     //     io.sockets.emit("sendChatToClient", message);
     //     socket.broadcast.emit("sendChatToClient", message);
-
     // });
     socket.on("pushOnline", (message) => {
         console.log('User:',message,' is online');
         io.sockets.emit('sentListOnline_Client',message);
-
     });
     socket.on("addWorkTo_Server", async (formData1) => {
         console.log("Received form data:", formData1);
         io.sockets.emit("sendAddWorkTo_Client", formData1);
-
+    });
+    socket.on("deleteWorkTo_Server", async (data) => {
+        console.log("Receiva:", data);
+        io.sockets.emit("deleteWorkTo_Client", data);
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
-
     return () => {
         socket.disconnect();
     };

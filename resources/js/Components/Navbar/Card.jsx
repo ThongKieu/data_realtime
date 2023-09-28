@@ -1,16 +1,37 @@
 /* eslint-disable react/prop-types */
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
+import newSocket from "@/Utils/socket";
 function CardMain() {
     const [WorkDataCountOrder, setWorkDataCountOrder] = useState(0);
     const [WorkDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
-
+    const [socketDelete, setSocketDelete] = useState();
+    useEffect(() => {
+        setSocketDelete(newSocket, { secure: true });
+        fetchDelete();
+        fetchData();
+        fetchDataOrderDone();
+        newSocket.on("sendAddWorkTo_Client", (data) => {
+            console.log("hell", data);
+            if (data != "") {
+                fetchDelete(data);
+                fetchData(data);
+                fetchDataOrderDone(data);
+            }
+        });
+        // lắng nghe server
+        return () => {
+            newSocket.disconnect();
+        };
+    }, []);
     const fetchData = async () => {
         try {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
             setWorkDataCountOrder(jsonData.dem_lich);
+            if (socketDelete) {
+                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -20,17 +41,28 @@ function CardMain() {
             const response = await fetch("api/web/works_done");
             const jsonData = await response.json();
             setWorkDataCountOrderDaPhan(jsonData.dem_lich_done);
+            if (socketDelete) {
+                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
+    const fetchDelete = async () => {
+        try {
+            const response = await fetch("api/web/works_cacle");
+            const jsonData = await response.json();
+            setWorkDataCountDelete(jsonData.num_can);
+            if (socketDelete) {
+                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-    fetchData();
-    fetchDataOrderDone();
     const DataTitle = [
         {
             id: 1,
             title: "Tổng Lịch",
-            count: WorkDataCountOrder + WorkDataCountOrderDaPhan,
+            count: WorkDataCountOrder + WorkDataCountOrderDaPhan +workDataCountDelete,
             typographyColor: "text-center  text-blue-600 text-sm",
             cardBorderColor:
                 "m-1  border border-solid shadow-blue-400  border-blue-600 justify-center  w-24 rounded",
@@ -51,14 +83,7 @@ function CardMain() {
             cardBorderColor:
                 "m-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-24 rounded",
         },
-        {
-            id: 4,
-            title: "Hủy",
-            count: WorkDataCountOrder,
-            typographyColor: "text-center  text-red-600 text-sm",
-            cardBorderColor:
-                "m-1 border border-solid shadow-red-400  w-96 border-red-600 justify-center  w-24 rounded",
-        },
+
     ];
 
     return (

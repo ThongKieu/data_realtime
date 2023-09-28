@@ -79,8 +79,17 @@ class WorksController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $co_khi    =   Work::where('date_book', '=', $today)->where('status_cus', '=', 2)->get('id');
-        return response()->json(count($co_khi));
+        $co_khi    =   DB::table('works')
+        ->join('users','works.members_read','=','users.id')
+        ->where('works.date_book', '=', $today)
+        ->where('works.status_cus', '=', 2)
+        ->limit(100)
+        ->get();
+        $nu_can= count($co_khi);
+        return response()->json([
+            'num_can'=>$nu_can,
+            'info_can'=>$co_khi
+        ]);
     }
     public function store(StoreWorkRequest $request)
     {
@@ -121,9 +130,9 @@ class WorksController extends Controller
                 $content =Work::where('id','=',$request->id) -> update(['district'=>$request->district]);
                 break;
             case ('5'):
-                $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_cus]);
+                $phone = (int) $request->phone_number;
+                $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$phone]);
                 break;
-
         }
         if (isset($content)) {
             return response()->json('Update Work done - '.$content);
@@ -145,7 +154,7 @@ class WorksController extends Controller
     }
     public function insertCancleBook(Request $request)
     {
-        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note]);
+        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note,'members_read'=>$request->id_auth]);
         if ($up) {
             return 'Delete work done !';
         }

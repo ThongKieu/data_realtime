@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, memo, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
 import {
     Button,
@@ -16,11 +16,7 @@ import {
     Spinner,
 } from "@material-tailwind/react";
 // -------
-import {
-    DataGrid,
-    GridCellEditStopReasons,
-    GridCellModes,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 // -----
 import {
@@ -28,10 +24,13 @@ import {
     EyeIcon,
     ArrowPathIcon,
     UserPlusIcon,
+    DocumentDuplicateIcon,
+    MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/socket";
 import { host } from "@/Utils/UrlApi";
-
+import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import { data } from "autoprefixer";
 var dataNew = [
     {
         id: 1,
@@ -69,8 +68,6 @@ var data_done = [
         add_worker: null,
     },
 ];
-// ----------------test options -----
-
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
@@ -90,38 +87,35 @@ function Dashboard({ auth }) {
     const [workDataXD_done, setWorkDataXD_done] = useState(data_done);
     const [workDataVC_done, setWorkDataVC_done] = useState(data_done);
     const [workDataHX_done, setWorkDataHX_done] = useState(data_done);
-    // end ---------------
-    // thong tin tho inforworker
-
+    // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
-        // setIsLoading(false);
         // lắng nghe server
         newSocket.on("sendAddWorkTo_Client", (data) => {
             console.log("hell", data);
-            if (data != '') {
+            if (data != "") {
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                // processRowUpdateDN(data);
+                fetchDataWorkDone(data);
             }
         });
         return () => {
             newSocket.disconnect();
         };
     }, []);
-
+    // --------------------------kiem tra socket io tai khoan online -----------------------------
     useEffect(() => {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
-            console.log("User is online",message);
         }
     }, [socketD]);
+
     const pushOn = async (data) => {
         try {
             let data = {
@@ -135,17 +129,16 @@ function Dashboard({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            if ((response.status = 200)) {
+            if (response.status == 200) {
                 console.log("push on thanh cong");
             }
         } catch (error) {}
     };
-    // ----------------
+    // ---------------lay du lieu cong viec chua phan----------------------------------------------
     const fetchData = async () => {
         try {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
-            console.log('---------2323---132--',jsonData);
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
@@ -157,11 +150,29 @@ function Dashboard({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
+    const fetchDateCheck = async (dateCheck) => {
+        try {
+            const response = await fetch(
+                `api/web/works?dateCheck=${dateCheck}`
+            );
+            const jsonData = await response.json();
+            setWorkDataDN(jsonData.dien_nuoc);
+            setWorkDataDL(jsonData.dien_lanh);
+            setWorkDataDG(jsonData.do_go);
+            setWorkDataNLMT(jsonData.nlmt);
+            setWorkDataXD(jsonData.xay_dung);
+            setWorkDataVC(jsonData.tai_xe);
+            setWorkDataHX(jsonData.co_khi);
+            console.log("HDHDHDHDHD", jsonData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    // --------------------------- lay du lieu lich da phan ----------------------------------
     const fetchDataDaPhan = async () => {
         try {
             const response = await fetch("/api/web/work-assignment/all");
             const jsonData = await response.json();
-            console.log('---------2323-----',jsonData);
             setWorkDataDN_done(jsonData.dien_nuoc_done);
             setWorkDataDL_done(jsonData.dien_lanh_done);
             setWorkDataDG_done(jsonData.do_go_done);
@@ -174,7 +185,7 @@ function Dashboard({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    // get thong tin tho
+    // ----------------------------lay thong tin tho ----------------------------
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState("");
     const fetchInfoWorker = async (e) => {
         try {
@@ -189,15 +200,13 @@ function Dashboard({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    // fetchInfoWorker();
-    // ------------------option select thong tin tho  ---------------
+    // -----------------lay kich thuoc man hinh reponsive bang---------------
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
     });
     var heightScreenTV = screenSize.height;
-
-    // -----------------------------handle---------------------------
+    // -----------------------------fetch api update du lieu trong bang---------------------------
     const fetchDataDashboard = async (data) => {
         try {
             const res = await fetch("api/web/update/work", {
@@ -211,8 +220,8 @@ function Dashboard({ auth }) {
             if (res.ok) {
                 console.log("Sửa thong tin lịch chưa phân");
                 socketD?.emit("addWorkTo_Server", data);
-                console.log('socketD',socketD);
-                console.log('newSocket ahihi',newSocket);
+                console.log("socketD", socketD);
+                console.log("newSocket ahihi", newSocket);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -220,14 +229,65 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    const fetchDataWorkDone = async (data) => {
+        try {
+            const res = await fetch("api/web/update/work-assignment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                console.log("Sửa thong tin lịch chưa phân");
+                socketD?.emit("addWorkTo_Server", data);
+                console.log("socketD", socketD);
+                console.log("newSocket ahihi", newSocket);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
+    // ---------------------su dung nut di chuyen trong bang--------------------
+    const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
+    const handleKeyPress = (e) => {
+        const { row, col } = selectedCell;
+
+        switch (e.key) {
+            case "ArrowUp":
+                setSelectedCell({ row: Math.max(row - 1, 0), col });
+                break;
+            case "ArrowDown":
+                setSelectedCell({
+                    row: Math.min(row + 1, rows.length - 1),
+                    col,
+                });
+                break;
+            case "ArrowLeft":
+                setSelectedCell({ row, col: Math.max(col - 1, 0) });
+                break;
+            case "ArrowRight":
+                setSelectedCell({
+                    row,
+                    col: Math.min(col + 1, columns.length - 1),
+                });
+                break;
+            default:
+                break;
+        }
+    };
+    // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
             field: "work_content",
             headerName: "yêu Cầu Công Việc",
             width: 140,
             editable: true,
+            tabindex: 0,
             renderEditCell: (params) => (
-
                 <input
                     type="text"
                     defaultValue={params.row.work_content}
@@ -235,8 +295,9 @@ function Dashboard({ auth }) {
                     labelProps={{
                         className: "hidden",
                     }}
+                    tabIndex={0}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
                             const data = {
                                 ac: "1",
@@ -252,31 +313,19 @@ function Dashboard({ auth }) {
         },
         {
             field: "work_note",
+            type: "actions",
             headerName: "Ghi Chú",
             width: 140,
-            editable: true,
-            renderEditCell: (params) => (
-                <Input
-                    type="text"
-                    defaultValue={params.row.work_note}
-                    className=" bg-white border-none rounded-none outline-none w-[137px]"
-                    labelProps={{
-                        className: "hidden",
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            const newValue = e.target.value;
-                            const data = {
-                                ac: "2",
-                                id: params.id,
-                                work_note: newValue,
-                            };
-                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
-                            fetchDataDashboard(data);
-                        }
-                    }}
-                />
-            ),
+            editable: false,
+            tabindex: 0,
+            renderCell: (params) => {
+
+                return (
+                    <div>
+                        {params.row.id}
+                    </div>
+                );
+            },
         },
         {
             field: "street",
@@ -295,7 +344,7 @@ function Dashboard({ auth }) {
                         className: "hidden",
                     }}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
                             const data = {
                                 ac: "3",
@@ -319,12 +368,12 @@ function Dashboard({ auth }) {
                 <Input
                     type="text"
                     defaultValue={params.row.district}
-                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    className=" bg-white border-none rounded-none outline-none w-[50px]"
                     labelProps={{
                         className: "hidden",
                     }}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter" ||e.key === 'Tab') {
+                        if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
                             const data = {
                                 ac: "4",
@@ -353,7 +402,7 @@ function Dashboard({ auth }) {
                         className: "hidden",
                     }}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
                             const data = {
                                 ac: "5",
@@ -384,10 +433,12 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
+                // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
                         let data = {
                             id: params.id,
+                            id_auth: auth.user.id,
                             work_note: work_note,
                         };
 
@@ -399,7 +450,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            // socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
                         }
                     } catch (error) {
@@ -425,24 +476,91 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "Phan Tho");
+                            handleCopyToClipboard(params.row)
                             handleOpenTho();
                         }
                     } catch (error) {
                         console.log("lixo", error);
                     }
                 };
+                const handleSentNhanDoi = async (e) => {
+                    // Lấy dữ liệu từ params.row
+                    const originalData = params.row;
+
+                    // Tạo bản sao của dữ liệu ban đầu và đặt ID thành null (hoặc một giá trị mới nếu cần)
+                    const duplicatedData = { ...originalData, id: null };
+
+                    try {
+                        const response = await fetch(host + url_API, {
+                            method: "POST",
+                            body: JSON.stringify(duplicatedData), // Gửi dữ liệu mới lên máy chủ
+                            headers: {
+                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                            },
+                        });
+
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", duplicatedData);
+                            console.log("Đã nhân đôi dữ liệu:", duplicatedData);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                };
+
+                const handleCopyToClipboard = (text) => {
+                    const work_content = text.work_content;
+                    const street = text.street;
+                    const phone_number = text.phone_number;
+                    const name_cus = text.name_cus;
+                    const district = text.district;
+                    const work_note = text.work_note;
+                    const data = `${work_content ? work_content + " " : ""} ${
+                        street ? street + " " : ""
+                    } ${phone_number ? phone_number + " " : ""} ${
+                        name_cus ? name_cus + " " : ""
+                    } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""} `;
+
+                    const textarea = document.createElement('textarea');
+                    textarea.value = data;
+                    document.body.appendChild(textarea);
+
+                    textarea.select();
+
+                    console.log('tam tai',document.execCommand);
+                    document.body.removeChild(textarea);
+
+                    // alert('Đã sao chép vào clipboard: ' + data);
+                    console.log('Đã sao chép vào clipboard: ' + data);
+                  };
                 return (
                     <div>
                         <div className="flex">
-                            <UserPlusIcon
-                                className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                onClick={handleOpenTho}
-                            />
-                            <TrashIcon
-                                className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                onClick={handleOpen}
-                            />
+                            <Tooltip content="Phân Thợ">
+                                <UserPlusIcon
+                                    className="w-8 h-8 p-1 mr-1 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                    onClick={handleOpenTho}
+                                />
+                            </Tooltip>
+                            <Tooltip content="Hủy Lịch">
+                                <TrashIcon
+                                    className="w-8 h-8 p-1 mr-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                    onClick={handleOpen}
+                                />
+                            </Tooltip>
+                            <Tooltip content="Nhân Đôi">
+                                <DocumentDuplicateIcon
+                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    onClick={handleSentNhanDoi}
+                                />
+                            </Tooltip>
+                            {/* <Tooltip content="Sao Chép">
+                                <DocumentDuplicateIcon
+                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    onClick={() => handleCopyToClipboard(params.row)}
+                                />
+                            </Tooltip> */}
                         </div>
                         <Dialog
                             open={openTho}
@@ -473,7 +591,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="border-none shadow-none"
+                                    className="border-none shadow-none qqq"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">
@@ -530,12 +648,36 @@ function Dashboard({ auth }) {
             },
         },
     ];
+    // du lieu bang cong viec da phan ------------------------------------
     const columnsRight = [
         {
             field: "work_content",
             headerName: "yêu cầu công việc",
             width: 140,
             editable: true,
+            renderEditCell: (params) => (
+                <input
+                    type="text"
+                    defaultValue={params.row.work_content}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "1",
+                                id: params.id,
+                                work_content: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "street",
@@ -545,6 +687,28 @@ function Dashboard({ auth }) {
             align: "left",
             headerAlign: "left",
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.street}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "3",
+                                id: params.id,
+                                street: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "district",
@@ -552,6 +716,28 @@ function Dashboard({ auth }) {
             type: "text",
             width: 40,
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.district}
+                    className=" bg-white border-none rounded-none outline-none w-[50px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "4",
+                                id: params.id,
+                                district: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "phone_number",
@@ -559,15 +745,37 @@ function Dashboard({ auth }) {
             width: 100,
             editable: true,
             type: "text",
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.phone_number}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "5",
+                                id: params.id,
+                                phone_number: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "date_book",
             headerName: "Ngày Làm",
             type: "text",
-            width: 80,
+            width: 90,
             align: "left",
             headerAlign: "left",
-            editable: true,
+            editable: false,
         },
         {
             field: "BH",
@@ -772,21 +980,53 @@ function Dashboard({ auth }) {
             },
         },
     ];
-    // ----------------------------------------------------------------------------
+
+    // -----------------------------Dinh dang lai ngay-----------------------------------------------
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    const formattedToday = `${year}-${month}-${day}`;
+
+    const [selectedDate, setSelectedDate] = useState(formattedToday);
+    const handleSearch = async () => {
+        fetchDateCheck(selectedDate);
+    };
+    const handleDateChange = async (event) => {
+        setSelectedDate(event.target.value);
+
+    };
+    // ----------------------------nut scrollView trong bang --------------------------
+    const DN = useRef(null);
+    const DL = useRef(null);
+    const DG = useRef(null);
+    const NLMT = useRef(null);
+    const XD = useRef(null);
+    const VC = useRef(null);
+    const HX = useRef(null);
+    const scrollView = (ref) => {
+        if (ref && ref.current) {
+            ref.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+    // ----------------------------ket thuc nut scrollView trong bang --------------------------
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
             <div
-                className={`grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1 `}
+                className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll  auto-cols-max mt-1 text-white rounded-none"
+                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
                 >
                     <div>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={DN}
+                        >
                             Điện Nước
                         </Typography>
                         {/* bang ben trai  */}
@@ -794,14 +1034,23 @@ function Dashboard({ auth }) {
                             <DataGrid
                                 rows={workDataDN}
                                 columns={columns}
-                                editMode="row"
                                 hideFooterPagination={true}
                                 slotProps={{
                                     className: "text-center",
                                 }}
+                                onKeyDown={handleKeyPress}
+                                cellClassName={(params) =>
+                                    selectedCell.row === params.rowIndex &&
+                                    selectedCell.col === params.colIndex
+                                        ? "selected-cell"
+                                        : ""
+                                }
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={DL}
+                        >
                             Điện Lạnh
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -812,10 +1061,12 @@ function Dashboard({ auth }) {
                                 slotProps={{
                                     className: "text-center",
                                 }}
-
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={DG}
+                        >
                             Điện Gỗ
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -828,7 +1079,10 @@ function Dashboard({ auth }) {
                                 }}
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={NLMT}
+                        >
                             Năng Lượng Mặt Trời
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -841,7 +1095,10 @@ function Dashboard({ auth }) {
                                 }}
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={XD}
+                        >
                             Xây Dựng
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -854,7 +1111,10 @@ function Dashboard({ auth }) {
                                 }}
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={VC}
+                        >
                             Vận Chuyển
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -867,7 +1127,10 @@ function Dashboard({ auth }) {
                                 }}
                             />
                         </Box>
-                        <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                        <Typography
+                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
+                            ref={HX}
+                        >
                             Cơ Khí
                         </Typography>
                         <Box sx={{ width: 1 }}>
@@ -885,7 +1148,7 @@ function Dashboard({ auth }) {
 
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll auto-cols-max mt-1 text-white rounded-none"
+                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
                 >
                     {isLoading ? (
@@ -905,7 +1168,7 @@ function Dashboard({ auth }) {
                                 <DataGrid
                                     rows={workDataDN_done}
                                     columns={columnsRight}
-                                    editMode="row"
+
                                     hideFooterPagination={true}
                                 />
                             </Box>
@@ -974,8 +1237,77 @@ function Dashboard({ auth }) {
                     )}
                 </Card>
             </div>
+            <div className="fixed flex mt-1">
+                <div>
+                    <Button
+                        className="p-2 mx-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(DN)}
+                    >
+                        Điện Nước
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(DN)}
+                    >
+                        Điện Lạnh
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(DG)}
+                    >
+                        Đồ Gỗ
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(NLMT)}
+                    >
+                        Năng Lượng Mặt Trời
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(XD)}
+                    >
+                        Xây Dựng
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(VC)}
+                    >
+                        Vận Chuyển
+                    </Button>
+                    <Button
+                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
+                        onClick={() => scrollView(HX)}
+                    >
+                        Cơ Khí
+                    </Button>
+                </div>
+                <div className="flex items-center dateBooking">
+                    <Input
+                        id="date_check"
+                        type="date"
+                        name="date_check"
+                        containerProps={{
+                            className: "min-w-[72px]",
+                        }}
+                        labelProps={{
+                            className: "hidden",
+                        }}
+                        className="text-green-700"
+                        value={selectedDate}
+                        onChange={handleDateChange}
+                    />
+                    <Button
+                        size="sm"
+                        className="px-2 text-green-700 bg-white border border-green-700 rounded"
+                        onClick={handleSearch}
+                    >
+                        <MagnifyingGlassIcon className="w-4 h-4 " />
+                    </Button>
+                </div>
+            </div>
         </AuthenticatedLayout>
     );
 }
 
-export default memo(Dashboard);
+export default Dashboard;

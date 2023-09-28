@@ -101,6 +101,7 @@ function Dashboard({ auth }) {
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
+                fetchDataWorkDone(data);
             }
         });
         return () => {
@@ -205,11 +206,32 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     var heightScreenTV = screenSize.height;
-
     // -----------------------------fetch api update du lieu trong bang---------------------------
     const fetchDataDashboard = async (data) => {
         try {
             const res = await fetch("api/web/update/work", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                console.log("Sửa thong tin lịch chưa phân");
+                socketD?.emit("addWorkTo_Server", data);
+                console.log("socketD", socketD);
+                console.log("newSocket ahihi", newSocket);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
+    const fetchDataWorkDone = async (data) => {
+        try {
+            const res = await fetch("api/web/update/work-assignment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -291,33 +313,19 @@ function Dashboard({ auth }) {
         },
         {
             field: "work_note",
+            type: "actions",
             headerName: "Ghi Chú",
             width: 140,
-            editable: true,
+            editable: false,
             tabindex: 0,
-            renderEditCell: (params) => (
-                <Input
-                    type="text"
-                    defaultValue={params.row.work_note}
-                    className=" bg-white border-none rounded-none outline-none w-[137px]"
-                    labelProps={{
-                        className: "hidden",
-                    }}
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === "Tab") {
-                            const newValue = e.target.value;
-                            const data = {
-                                ac: "2",
-                                id: params.id,
-                                work_note: newValue,
-                            };
-                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
-                            fetchDataDashboard(data);
-                        }
-                    }}
-                />
-            ),
+            renderCell: (params) => {
+
+                return (
+                    <div>
+                        {params.row.id}
+                    </div>
+                );
+            },
         },
         {
             field: "street",
@@ -647,6 +655,29 @@ function Dashboard({ auth }) {
             headerName: "yêu cầu công việc",
             width: 140,
             editable: true,
+            renderEditCell: (params) => (
+                <input
+                    type="text"
+                    defaultValue={params.row.work_content}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "1",
+                                id: params.id,
+                                work_content: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "street",
@@ -656,6 +687,28 @@ function Dashboard({ auth }) {
             align: "left",
             headerAlign: "left",
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.street}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "3",
+                                id: params.id,
+                                street: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "district",
@@ -663,6 +716,28 @@ function Dashboard({ auth }) {
             type: "text",
             width: 40,
             editable: true,
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.district}
+                    className=" bg-white border-none rounded-none outline-none w-[50px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "4",
+                                id: params.id,
+                                district: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "phone_number",
@@ -670,15 +745,37 @@ function Dashboard({ auth }) {
             width: 100,
             editable: true,
             type: "text",
+            renderEditCell: (params) => (
+                <Input
+                    type="text"
+                    defaultValue={params.row.phone_number}
+                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    labelProps={{
+                        className: "hidden",
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                            const newValue = e.target.value;
+                            const data = {
+                                ac: "5",
+                                id: params.id,
+                                phone_number: newValue,
+                            };
+                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                            fetchDataWorkDone(data);
+                        }
+                    }}
+                />
+            ),
         },
         {
             field: "date_book",
             headerName: "Ngày Làm",
             type: "text",
-            width: 80,
+            width: 90,
             align: "left",
             headerAlign: "left",
-            editable: true,
+            editable: false,
         },
         {
             field: "BH",
@@ -1071,7 +1168,7 @@ function Dashboard({ auth }) {
                                 <DataGrid
                                     rows={workDataDN_done}
                                     columns={columnsRight}
-                                    editMode="row"
+
                                     hideFooterPagination={true}
                                 />
                             </Box>

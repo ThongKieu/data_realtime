@@ -132,7 +132,6 @@ class WorksController extends Controller
             case ('5'):
                 $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$request->phone_number]);
                 break;
-
         }
         if (isset($content)) {
             return response()->json('Update Work done - !! ');

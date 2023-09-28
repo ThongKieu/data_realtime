@@ -243,7 +243,7 @@ class WorksAssignmentController extends Controller
             "workers.add_worker",
         ]
         );
-     
+
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go ) + count( $nlmt )+ count($xay_dung) + count($tai_xe) + count( $co_khi);
         $dataWorkDone = [
             'dien_nuoc_done'=>$dien_nuoc,
@@ -339,7 +339,8 @@ class WorksAssignmentController extends Controller
                 case ('5'):
                     $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_number]);
                     break;
-    
+
+
             }
             if (isset($content)) {
                 return response()->json('Update Work done !!! ');
@@ -348,5 +349,5 @@ class WorksAssignmentController extends Controller
         }
         return response()->json('Non Action !');
     }
-    
+
 }

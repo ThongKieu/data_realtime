@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\OldCustomer;
+use App\Imports\CustomerImport;
 use Illuminate\Http\Request;
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -11,14 +11,14 @@ use Maatwebsite\Excel\Facades\Excel;
 class OldCustomersController extends Controller
 {
     //
-    public function importCus(Request $request) {
-            $a = Excel::import( new OldCustomer(), $request->file);
-            if($a)
+    public function importDataCustomer(Request $request) {
+            $imported = Excel::import(new CustomerImport(), $request->file);
+            if($imported)
             {
-                return 'ok';
+                return 'Ok';
             }
             else 
-                return 'Fails';
+                return 'Failed';
     }
 }
 

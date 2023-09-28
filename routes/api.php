@@ -38,7 +38,7 @@ Route::prefix('web')->group(function () {
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
-        Route::post('oldcus','App\Http\Controllers\Api\OldCustomersController@importCus');
+        Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
     });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

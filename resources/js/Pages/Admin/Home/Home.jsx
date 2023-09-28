@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import React,{useEffect, useState} from 'react'
 import { TableRow } from "@mui/material";
 
-// const TABLE_HEAD = ["ID", "Tên nhân viên", "Email", "Thời gian online", "Tình trạng"];
+const TABLE_HEAD = ["ID", "Tên nhân viên", "Email", "Thời gian online", "Tình trạng"];
 
 const TABLE_ROWS = [
   {
@@ -47,7 +47,7 @@ const [isLoading, setIsLoading] = useState(true);
         <table className="w-full text-left table-auto">
           <thead>
             <tr>
-              {getData.map((head) => (
+              {TABLE_HEAD.map((head) => (
                 <th
                   key={head}
                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
@@ -57,10 +57,10 @@ const [isLoading, setIsLoading] = useState(true);
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                  
+                  {head}
                   </Typography>
                 </th>
-             
+              ))}
             </tr>
           </thead>
           <tbody>

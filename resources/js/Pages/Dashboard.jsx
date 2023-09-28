@@ -14,6 +14,7 @@ import {
     Input,
     Tooltip,
     Spinner,
+    IconButton,
 } from "@material-tailwind/react";
 // -------
 import { DataGrid } from "@mui/x-data-grid";
@@ -26,75 +27,40 @@ import {
     UserPlusIcon,
     DocumentDuplicateIcon,
     MagnifyingGlassIcon,
+    ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { data } from "autoprefixer";
-var dataNew = [
-    {
-        id: 1,
-        yccv: "1",
-        diaChi: "1",
-        quan: "1",
-        sdt: "1",
-        KTV: "1",
-        status_cus: "0",
-    },
-];
-var data_done = [
-    {
-        id: 19,
-        id_cus: 25,
-        id_worker: 1,
-        id_phu: 0,
-        real_note: null,
-        spending_total: 0,
-        income_total: 0,
-        bill_imag: null,
-        status_work: 0,
-        check_in: 0,
-        seri_number: null,
-        work_content: "Sửa máy  lạnh",
-        date_book: "2023-09-19",
-        street: "sư vạn hạnh",
-        district: "q1",
-        phone_number: 947613923,
-        image_work_path: null,
-        kind_work: 0,
-        worker_firstname: "Test",
-        worker_name: "Manh DN",
-        sort_name: "A01",
-        add_worker: null,
-    },
-];
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     // table left
-    const [workDataDN, setWorkDataDN] = useState(dataNew);
-    const [workDataDL, setWorkDataDL] = useState(dataNew);
-    const [workDataDG, setWorkDataDG] = useState(dataNew);
-    const [workDataNLMT, setWorkDataNLMT] = useState(dataNew);
-    const [workDataXD, setWorkDataXD] = useState(dataNew);
-    const [workDataVC, setWorkDataVC] = useState(dataNew);
-    const [workDataHX, setWorkDataHX] = useState(dataNew);
+    const [workDataDN, setWorkDataDN] = useState('');
+    const [workDataDL, setWorkDataDL] = useState('');
+    const [workDataDG, setWorkDataDG] = useState('');
+    const [workDataNLMT, setWorkDataNLMT] = useState('');
+    const [workDataXD, setWorkDataXD] = useState('');
+    const [workDataVC, setWorkDataVC] = useState('');
+    const [workDataHX, setWorkDataHX] = useState('');
     // table right
-    const [workDataDN_done, setWorkDataDN_done] = useState(data_done);
-    const [workDataDL_done, setWorkDataDL_done] = useState(data_done);
-    const [workDataDG_done, setWorkDataDG_done] = useState(data_done);
-    const [workDataNLMT_done, setWorkDataNLMT_done] = useState(data_done);
-    const [workDataXD_done, setWorkDataXD_done] = useState(data_done);
-    const [workDataVC_done, setWorkDataVC_done] = useState(data_done);
-    const [workDataHX_done, setWorkDataHX_done] = useState(data_done);
+    const [workDataDN_done, setWorkDataDN_done] = useState('');
+    const [workDataDL_done, setWorkDataDL_done] = useState('');
+    const [workDataDG_done, setWorkDataDG_done] = useState('');
+    const [workDataNLMT_done, setWorkDataNLMT_done] = useState('');
+    const [workDataXD_done, setWorkDataXD_done] = useState('');
+    const [workDataVC_done, setWorkDataVC_done] = useState('');
+    const [workDataHX_done, setWorkDataHX_done] = useState('');
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
-        setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
-        // lắng nghe server
+    }, []);
+    useEffect(() => {
+        setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             console.log("hell", data);
             if (data != "") {
@@ -315,14 +281,60 @@ function Dashboard({ auth }) {
             field: "work_note",
             type: "actions",
             headerName: "Ghi Chú",
-            width: 140,
+            width: 80,
             editable: false,
             tabindex: 0,
             renderCell: (params) => {
-
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const hasData = params.row;
+                const data = hasData.image_work_path;
+                const parts = data?.split(",");
+                const filteredArray = parts?.filter(
+                    (item) => item.trim() !== ""
+                );
+                const shouldDisplayIconButton = hasData.work_note  !== null || hasData.image_work_path !== null;
+                console.log("hasData", hasData.work_note ,data);
                 return (
-                    <div>
-                        {params.row.id}
+                    <div className="text-center">
+                        {shouldDisplayIconButton && (
+                            <IconButton
+                                className="w-8 h-8 p-1"
+                                variant="outlined"
+                                onClick={handleOpen}
+                            >
+                                <ClipboardDocumentListIcon className="w-4 h-4" />
+                            </IconButton>
+                        )}
+                        <Dialog open={open} handler={handleOpen}>
+                            <DialogHeader>Ghi Chú</DialogHeader>
+                            <DialogBody divider>
+                                <p className="object-cover object-center w-full p-2 mb-5 rounded-lg shadow-xl">
+                                    {params.row.work_note}
+                                </p>
+
+                                <div className="flex flex-wrap">
+                                    {filteredArray?.map((item, index) => (
+                                        <img
+                                            key={index}
+                                            className="object-cover object-center w-1/2 p-1 rounded-lg shadow-xl"
+                                            src={`${host}${item}`}
+                                            alt="nature image"
+                                        />
+                                    ))}
+                                </div>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpen}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
                     </div>
                 );
             },
@@ -477,7 +489,7 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Phan Tho");
-                            handleCopyToClipboard(params.row)
+                            handleCopyToClipboard(params.row);
                             handleOpenTho();
                         }
                     } catch (error) {
@@ -520,20 +532,22 @@ function Dashboard({ auth }) {
                         street ? street + " " : ""
                     } ${phone_number ? phone_number + " " : ""} ${
                         name_cus ? name_cus + " " : ""
-                    } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""} `;
+                    } ${district ? district + " " : ""} ${
+                        work_note ? work_note + " " : ""
+                    } `;
 
-                    const textarea = document.createElement('textarea');
+                    const textarea = document.createElement("textarea");
                     textarea.value = data;
                     document.body.appendChild(textarea);
 
                     textarea.select();
 
-                    console.log('tam tai',document.execCommand);
+                    console.log("tam tai", document.execCommand);
                     document.body.removeChild(textarea);
 
                     // alert('Đã sao chép vào clipboard: ' + data);
-                    console.log('Đã sao chép vào clipboard: ' + data);
-                  };
+                    console.log("Đã sao chép vào clipboard: " + data);
+                };
                 return (
                     <div>
                         <div className="flex">
@@ -994,7 +1008,6 @@ function Dashboard({ auth }) {
     };
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
-
     };
     // ----------------------------nut scrollView trong bang --------------------------
     const DN = useRef(null);
@@ -1031,21 +1044,23 @@ function Dashboard({ auth }) {
                         </Typography>
                         {/* bang ben trai  */}
                         <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataDN}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                                onKeyDown={handleKeyPress}
-                                cellClassName={(params) =>
-                                    selectedCell.row === params.rowIndex &&
-                                    selectedCell.col === params.colIndex
-                                        ? "selected-cell"
-                                        : ""
-                                }
-                            />
+
+                                <DataGrid
+                                    rows={workDataDN}
+                                    columns={columns}
+                                    hideFooterPagination={true}
+                                    slotProps={{
+                                        className: "text-center",
+                                    }}
+                                    onKeyDown={handleKeyPress}
+                                    cellClassName={(params) =>
+                                        selectedCell.row === params.rowIndex &&
+                                        selectedCell.col === params.colIndex
+                                            ? "selected-cell"
+                                            : ""
+                                    }
+                                />
+
                         </Box>
                         <Typography
                             className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
@@ -1168,7 +1183,6 @@ function Dashboard({ auth }) {
                                 <DataGrid
                                     rows={workDataDN_done}
                                     columns={columnsRight}
-
                                     hideFooterPagination={true}
                                 />
                             </Box>

@@ -2,111 +2,25 @@ import { Card, Typography } from "@material-tailwind/react";
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayoutAdmin';
 import { Head } from '@inertiajs/react';
 import React,{useEffect, useState} from 'react'
+import { TableRow } from "@mui/material";
 
 // const TABLE_HEAD = ["ID", "Tên nhân viên", "Email", "Thời gian online", "Tình trạng"];
 
-// const TABLE_ROWS = [
-//   {
-//     id: "1",
-//     name: "Mr Huy Lương",
-//     email: "huy@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "2",
-//     name: "Mr Thông Ngô",
-//     email: "thongngo@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "3",
-//     name: "Mr Hậu Nguyễn",
-//     email: "haunguyen@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "4",
-//     name: "Mr Hậu Phạm",
-//     email: "haupham@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "5",
-//     name: "Mr Thiện Phạm",
-//     email: "thienpham@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "6",
-//     name: "Ms Như Lương",
-//     email: "nhuluong@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "7",
-//     name: "Mr Kiệt Trịnh	",
-//     email: "kiettrinh@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "8",
-//     name: "Mr Tùng Phan",
-//     email: "tungphan@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "9",
-//     name: "Ms Yến Dương",
-//     email: "yen@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "10",
-//     name: "Ms Trang Lê",
-//     email: "trangle@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "11",
-//     name: "Mr Mạnh",
-//     email: "tranmanh@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "12",
-//     name: "Mr Thống",
-//     email: "thongkieu@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "13",
-//     name: "Ms Văn",
-//     email: "van@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-//   {
-//     id: "14",
-//     name: "Mr Phú",
-//     email: "nguyenphu@thoviet.com.vn",
-//     time: "1 second ago",
-//     status: "Online"
-//   },
-// ];
+const TABLE_ROWS = [
+  {
+    id: "1",
+    name: "Mr Huy Lương",
+    email: "huy@thoviet.com.vn",
+    time: "1 second ago",
+    status: "Online"
+  },
+
+];
 
 function Home({ auth }) {
+    useEffect(()=>{
+        fetchData();
+      },[]);
   const [getData, usersData] = useState('');
   const fetchData = async () => {
     try {
@@ -114,27 +28,28 @@ function Home({ auth }) {
         const jsonData = await response.json();
         if(response.ok)
         {
-          usersData(jsonData);
+          usersData(jsonData.users);
+          setIsLoading(false);
           console.log(jsonData);
         }
     } catch (error) {
         console.error("Error fetching data:", error);
     }
 };
-useEffect(()=>{
 
-  fetchData();
-},[]);
+
+console.log('sdsdas',getData);
 const [isLoading, setIsLoading] = useState(true);
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Trang chủ Admin" />
-      <Card className="h-full w-full overflow-scroll">
-        <table className="w-full table-auto text-left">
+      <Card className="w-full h-full overflow-scroll">
+        <table className="w-full text-left table-auto">
           <thead>
             <tr>
-              
+              {getData.map((head) => (
                 <th
+                  key={head}
                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                 >
                   <Typography
@@ -149,7 +64,14 @@ const [isLoading, setIsLoading] = useState(true);
             </tr>
           </thead>
           <tbody>
-            {getData.map(({ id, name, email, time, status }, index) => {
+            {isLoading ? (
+                        <div className="flex justify-center p-2 align-middle ">
+                            {/* <Spinner className="w-6 h-6" color="amber" /> */}
+                            <p className="pl-2 text-center text-black">
+                                Loading...
+                            </p>
+                        </div>
+                    ) : (getData.map(({ id, name, email, time, status }, index) => {
               const isLast = index === getData.length - 1;
               const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -204,7 +126,7 @@ const [isLoading, setIsLoading] = useState(true);
                   </td>
                 </tr>
               );
-            })}
+            }))}
           </tbody>
         </table>
       </Card>

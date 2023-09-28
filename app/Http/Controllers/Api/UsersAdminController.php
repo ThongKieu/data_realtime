@@ -15,7 +15,7 @@ class UsersAdminController extends Controller
     }
 
     public  function create(Request $request) {
-        
+
         return response()->json('Ngon');
     }
 }

@@ -29,7 +29,7 @@ function formatCardNumber(value) {
 // --------------------API ---------
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")

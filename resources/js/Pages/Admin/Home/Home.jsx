@@ -110,14 +110,14 @@ function Home({ auth }) {
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Trang chủ Admin" />
-      <Card className="h-full w-full overflow-scroll">
-        <table className="w-full table-auto text-left">
+      <Card className="w-full h-full overflow-scroll">
+        <table className="w-full text-left table-auto">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
                 <th
                   key={head}
-                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                  className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                 >
                   <Typography
                     variant="small"

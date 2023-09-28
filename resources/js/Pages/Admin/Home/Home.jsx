@@ -1,7 +1,7 @@
 import { Card, Typography } from "@material-tailwind/react";
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayoutAdmin';
 import { Head } from '@inertiajs/react';
-import React from 'react'
+import React,{useEffect, useState} from 'react'
 
 const TABLE_HEAD = ["ID", "Tên nhân viên", "Email", "Thời gian online", "Tình trạng"];
 
@@ -107,6 +107,25 @@ const TABLE_ROWS = [
 ];
 
 function Home({ auth }) {
+  const [getData, usersData] = useState('');
+  const fetchData = async () => {
+    try {
+        const response = await fetch("api/web/users");
+        const jsonData = await response.json();
+        if(response.ok)
+        {
+          usersData(jsonData);
+          console.log(jsonData);
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+};
+useEffect(()=>{
+
+  fetchData();
+},[]);
+const [isLoading, setIsLoading] = useState(true);
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Trang chủ Admin" />
@@ -114,7 +133,7 @@ function Home({ auth }) {
         <table className="w-full table-auto text-left">
           <thead>
             <tr>
-              {TABLE_HEAD.map((head) => (
+              {getData.map((head) => (
                 <th
                   key={head}
                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
@@ -131,8 +150,8 @@ function Home({ auth }) {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(({ id, name, email, time, status }, index) => {
-              const isLast = index === TABLE_ROWS.length - 1;
+            {getData.map(({ id, name, email, time, status }, index) => {
+              const isLast = index === getData.length - 1;
               const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
               return (

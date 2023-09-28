@@ -41,6 +41,11 @@ Route::prefix('web')->group(function () {
     Route::prefix('import')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
     });
+    Route::prefix('users')->group(function (){
+        Route::get('/','App\Http\Controllers\Api\UsersAdminController@index');
+        Route::post('/','App\Http\Controllers\Api\UsersAdminController@create');
+    });
+    
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

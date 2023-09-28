@@ -337,14 +337,13 @@ class WorksAssignmentController extends Controller
                     $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
                     break;
                 case ('5'):
-                    $phone = (int) $request->phone_number;
-                    $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$phone]);
+                    $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_number]);
                     break;
 
 
             }
             if (isset($content)) {
-                return response()->json('Update Work done - '.$content);
+                return response()->json('Update Work done !!! ');
             }
             return response()->json('Update Work fail !!!!!!!!!');
         }

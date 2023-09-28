@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('spending_total')->nullable();
             $table->string('seri_number')->nullable();
             $table->string('code_work')->nullable();
-            $table->tinyInteger('cus_show')->default(0);
+            $table->string('cus_show')->nullable()->default(0);
             $table->string('sort_name')->nullable();
             $table->integer('seri_number_check')->nullable();
             $table->timestamps();

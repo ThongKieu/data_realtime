@@ -2,34 +2,29 @@
 
 namespace App\Imports;
 
+use Maatwebsite\Excel\Concerns\ToModel;
 use App\Models\OldCustomer;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\ToCollection;
-
-class CustomerImport implements ToCollection
+class CustomerImport implements ToModel
 {
-    /**
-    * @param Collection $collection
-    */
-    public function collection(Collection $collection)
+    public function model(array $row)
     {
         return new OldCustomer([
-            'work_content' => $collection[0],
-            'date_book' => $collection[1],
-            'warranty_period' => $collection[2],
-            'name_cus' => $collection[3],
-            'add_cus' => $collection[4],
-            'des_cus' => $collection[5],
-            'phone_cus' => $collection[6],
-            'note_cus' => $collection[7],
-            'sort_name' => $collection[8],
-            'worker_name' => $collection[9],
-            'spending_total' => $collection[10],
-            'income_total' => $collection[11],
-            'seri_number' => $collection[12],
-            'cus_show' => $collection[13],
-			'seri_number_check' => $collection[14],
-			'code_work' => $collection[15],
+            'work_content' => $row[0],
+            'date_book' => $row[1],
+            'warranty_period' => $row[2],
+            'name_cus' => $row[3],
+            'add_cus' => $row[4],
+            'des_cus' => $row[5],
+            'phone_cus' => $row[6],
+            'note_cus' => $row[7],
+            'sort_name' => $row[8],
+            'worker_name' => $row[9],
+            'spending_total' => $row[10],
+            'income_total' => $row[11],
+            'seri_number' => $row[12],
+            'cus_show' => $row[13],
+			'seri_number_check' => $row[14],
+			'code_work' => $row[15],
         ]);
     }
 }

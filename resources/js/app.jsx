@@ -22,6 +22,7 @@ createInertiaApp({
             <QueryClientProvider client={queryClient}>
                 <App {...props} key={index} />
             </QueryClientProvider>
+            
         );
     },
     progress: {

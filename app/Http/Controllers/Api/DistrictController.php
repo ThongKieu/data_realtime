@@ -69,7 +69,7 @@ class DistrictController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        District::where('id','=',$id)->update(['dis_name'=>$request->dis_name,'dis_sort_name'=>$request->dis_sort_name]);
+        Districts::where('id','=',$id)->update(['dis_name'=>$request->dis_name,'dis_sort_name'=>$request->dis_sort_name]);
         return response()->json('Update Distrist Done');
     }
 

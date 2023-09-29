@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayoutAdmin';
 import { Head } from '@inertiajs/react';
 import React,{useEffect, useState} from 'react'
 import { TableRow } from "@mui/material";
+import { host } from "@/utils/UrlApi";
 
 const TABLE_HEAD = ["ID", "Tên nhân viên", "Email", "Thời gian online", "Tình trạng"];
 
@@ -24,7 +25,7 @@ function Home({ auth }) {
   const [getData, usersData] = useState('');
   const fetchData = async () => {
     try {
-        const response = await fetch("api/web/users");
+        const response = await fetch(host+"api/web/users");
         const jsonData = await response.json();
         if(response.ok)
         {
@@ -43,7 +44,10 @@ const [isLoading, setIsLoading] = useState(true);
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Trang chủ Admin" />
-      <Card className="w-full h-full overflow-scroll">
+      <Card> <h1 className="text-center font-medium">Công ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt</h1>
+      <div class="grid grid-flow-row-dense grid-cols-3 grid-rows-3 ...">
+        <div class="col-span-2">01</div>
+        <div ><Card className="w-full h-full overflow-scroll">
         <table className="w-full text-left table-auto">
           <thead>
             <tr>
@@ -129,7 +133,11 @@ const [isLoading, setIsLoading] = useState(true);
             }))}
           </tbody>
         </table>
+      </Card></div>
+        
+      </div>
       </Card>
+      
     </AuthenticatedLayout>
   );
 }

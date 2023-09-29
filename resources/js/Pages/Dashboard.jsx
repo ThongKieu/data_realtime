@@ -845,7 +845,7 @@ function Dashboard({ auth }) {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
                 // console.log('-----------', selectPhanTho);
-                const handleSentDelete = async () => {
+                const handleSentDeleteDone = async () => {
                     try {
                         let data = {
                             id: params.id,
@@ -860,7 +860,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            // socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
                         }
                     } catch (error) {}
@@ -983,7 +983,7 @@ function Dashboard({ auth }) {
                                 <Button
                                     variant="gradient"
                                     color="red"
-                                    onClick={handleSentDelete}
+                                    onClick={handleSentDeleteDone}
                                 >
                                     Xác nhận
                                 </Button>

@@ -49,10 +49,14 @@ export function SidebarAdmin() {
           </div>
           <List>
             <ListItem>
+              
               <ListItemPrefix>
                 <HomeIcon className="w-5 h-5" />
+                
               </ListItemPrefix>
+              <Link href={route('admin')}>
               Admin
+              </Link>
             </ListItem>
             <Accordion
               open={open === 1}
@@ -126,12 +130,12 @@ export function SidebarAdmin() {
               <AccordionBody className="py-1">
                 <List className="p-0">
                   <Link href={route("admin/data-customer-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Thêm Dữ Liệu Khách
-                  </ListItem>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Thêm Dữ Liệu Khách
+                    </ListItem>
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
@@ -140,20 +144,20 @@ export function SidebarAdmin() {
                     Xuất Dữ Liệu Khách
                   </ListItem>
                   <Link href={route("admin/data-worker-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Thêm Dữ Liệu Thợ
-                  </ListItem>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Thêm Dữ Liệu Thợ
+                    </ListItem>
                   </Link>
                   <Link href={route("admin/data-price-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Thêm Bảng Giá
-                  </ListItem>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Thêm Bảng Giá
+                    </ListItem>
                   </Link>
                 </List>
               </AccordionBody>
@@ -179,13 +183,13 @@ export function SidebarAdmin() {
               </ListItem>
               <AccordionBody className="py-1">
                 <List className="p-0">
-                <Link href={route("admin/popup-discount")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Popup Chương Trình Khuyến Mãi
-                  </ListItem>
+                  <Link href={route("admin/popup-discount")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Popup Chương Trình Khuyến Mãi
+                    </ListItem>
                   </Link>
                   <ListItem>
                     <ListItemPrefix>

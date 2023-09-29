@@ -41,8 +41,6 @@ function DataCustomerImport() {
     const [excelData, setExcelData] = useState(null);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
-   
-
 
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
@@ -95,11 +93,11 @@ function DataCustomerImport() {
         <AuthenticatedLayoutAdmin >
             <Head title="Thêm dữ liệu khách hàng" />
             {isLoading
-                ? <div className='flex justify-center h-full items-center'>
+                ? <div className='flex justify-center h-full items-center '>
                     <Spinner className="h-12 w-12 " color="green" />
                 </div>
                 : <div className="min-h-screen flex justify-center mt-5">
-                    <Card color="transparent" shadow={false}>
+                    <Card className='w-full bg-white text-center items-center h-full m-8 p-10' color="transparent" shadow={false}>
                         {showAlertFailed && (
                             <AlertIcon setShowAlertFailed={setShowAlertFailed} />
 

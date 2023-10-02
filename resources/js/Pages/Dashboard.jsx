@@ -14,6 +14,8 @@ import {
     Input,
     Tooltip,
     Spinner,
+    IconButton,
+    Radio,
 } from "@material-tailwind/react";
 // -------
 import { DataGrid } from "@mui/x-data-grid";
@@ -26,75 +28,42 @@ import {
     UserPlusIcon,
     DocumentDuplicateIcon,
     MagnifyingGlassIcon,
+    ClipboardDocumentListIcon,
+    ArrowUpTrayIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { data } from "autoprefixer";
-var dataNew = [
-    {
-        id: 1,
-        yccv: "1",
-        diaChi: "1",
-        quan: "1",
-        sdt: "1",
-        KTV: "1",
-        status_cus: "0",
-    },
-];
-var data_done = [
-    {
-        id: 19,
-        id_cus: 25,
-        id_worker: 1,
-        id_phu: 0,
-        real_note: null,
-        spending_total: 0,
-        income_total: 0,
-        bill_imag: null,
-        status_work: 0,
-        check_in: 0,
-        seri_number: null,
-        work_content: "Sửa máy  lạnh",
-        date_book: "2023-09-19",
-        street: "sư vạn hạnh",
-        district: "q1",
-        phone_number: 947613923,
-        image_work_path: null,
-        kind_work: 0,
-        worker_firstname: "Test",
-        worker_name: "Manh DN",
-        sort_name: "A01",
-        add_worker: null,
-    },
-];
+import { Divider } from "@mui/material";
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     // table left
-    const [workDataDN, setWorkDataDN] = useState(dataNew);
-    const [workDataDL, setWorkDataDL] = useState(dataNew);
-    const [workDataDG, setWorkDataDG] = useState(dataNew);
-    const [workDataNLMT, setWorkDataNLMT] = useState(dataNew);
-    const [workDataXD, setWorkDataXD] = useState(dataNew);
-    const [workDataVC, setWorkDataVC] = useState(dataNew);
-    const [workDataHX, setWorkDataHX] = useState(dataNew);
+    const [workDataDN, setWorkDataDN] = useState("");
+    const [workDataDL, setWorkDataDL] = useState("");
+    const [workDataDG, setWorkDataDG] = useState("");
+    const [workDataNLMT, setWorkDataNLMT] = useState("");
+    const [workDataXD, setWorkDataXD] = useState("");
+    const [workDataVC, setWorkDataVC] = useState("");
+    const [workDataHX, setWorkDataHX] = useState("");
     // table right
-    const [workDataDN_done, setWorkDataDN_done] = useState(data_done);
-    const [workDataDL_done, setWorkDataDL_done] = useState(data_done);
-    const [workDataDG_done, setWorkDataDG_done] = useState(data_done);
-    const [workDataNLMT_done, setWorkDataNLMT_done] = useState(data_done);
-    const [workDataXD_done, setWorkDataXD_done] = useState(data_done);
-    const [workDataVC_done, setWorkDataVC_done] = useState(data_done);
-    const [workDataHX_done, setWorkDataHX_done] = useState(data_done);
+    const [workDataDN_done, setWorkDataDN_done] = useState("");
+    const [workDataDL_done, setWorkDataDL_done] = useState("");
+    const [workDataDG_done, setWorkDataDG_done] = useState("");
+    const [workDataNLMT_done, setWorkDataNLMT_done] = useState("");
+    const [workDataXD_done, setWorkDataXD_done] = useState("");
+    const [workDataVC_done, setWorkDataVC_done] = useState("");
+    const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
-        setSocketD(newSocket, { secure: true });
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
-        // lắng nghe server
+    }, []);
+    useEffect(() => {
+        setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             console.log("hell", data);
             if (data != "") {
@@ -315,14 +284,63 @@ function Dashboard({ auth }) {
             field: "work_note",
             type: "actions",
             headerName: "Ghi Chú",
-            width: 140,
+            width: 80,
             editable: false,
             tabindex: 0,
             renderCell: (params) => {
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const hasData = params.row;
+                const data = hasData.image_work_path;
+                const parts = data?.split(",");
+                const filteredArray = parts?.filter(
+                    (item) => item.trim() !== ""
+                );
+                const shouldDisplayIconButton =
+                    hasData.work_note !== null ||
+                    hasData.image_work_path !== null;
+                console.log("hasData", hasData.work_note, data);
 
                 return (
-                    <div>
-                        {params.row.id}
+                    <div className="text-center">
+                        {shouldDisplayIconButton && (
+                            <IconButton
+                                className="w-8 h-8 p-1"
+                                variant="outlined"
+                                onClick={handleOpen}
+                            >
+                                <ClipboardDocumentListIcon className="w-4 h-4" />
+                            </IconButton>
+                        )}
+                        <Dialog open={open} handler={handleOpen}>
+                            <DialogHeader>Ghi Chú</DialogHeader>
+                            <DialogBody divider>
+                                <p className="object-cover object-center w-full p-2 mb-5 rounded-lg shadow-xl">
+                                    {params.row.work_note}
+                                </p>
+
+                                <div className="flex flex-wrap">
+                                    {filteredArray?.map((item, index) => (
+                                        <img
+                                            key={index}
+                                            className="object-cover object-center w-1/2 p-1 rounded-lg shadow-xl"
+                                            src={`${host}${item}`}
+                                            alt="nature image"
+                                        />
+                                    ))}
+                                </div>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpen}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
                     </div>
                 );
             },
@@ -477,7 +495,7 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Phan Tho");
-                            handleCopyToClipboard(params.row)
+                            handleCopyToClipboard(params.row);
                             handleOpenTho();
                         }
                     } catch (error) {
@@ -520,20 +538,22 @@ function Dashboard({ auth }) {
                         street ? street + " " : ""
                     } ${phone_number ? phone_number + " " : ""} ${
                         name_cus ? name_cus + " " : ""
-                    } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""} `;
+                    } ${district ? district + " " : ""} ${
+                        work_note ? work_note + " " : ""
+                    } `;
 
-                    const textarea = document.createElement('textarea');
+                    const textarea = document.createElement("textarea");
                     textarea.value = data;
                     document.body.appendChild(textarea);
 
                     textarea.select();
 
-                    console.log('tam tai',document.execCommand);
+                    console.log("tam tai", document.execCommand);
                     document.body.removeChild(textarea);
 
                     // alert('Đã sao chép vào clipboard: ' + data);
-                    console.log('Đã sao chép vào clipboard: ' + data);
-                  };
+                    console.log("Đã sao chép vào clipboard: " + data);
+                };
                 return (
                     <div>
                         <div className="flex">
@@ -790,13 +810,410 @@ function Dashboard({ auth }) {
             width: 80,
             editable: true,
             type: "singleSelect",
+            renderCell: (params) => {
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const [cardExpires, setCardExpires] = useState(params.row);
+                console.log(params.row);
+                const handleChange = (e) => {
+                    const { name, value } = e.target;
+                    setCardExpires((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                    console.log(value);
+                };
+                const shouldDisplayIconButton = params.row.worker_name === null;
+                return (
+                    <div>
+                        {/* {shouldDisplayIconButton ? (
+                            <Tooltip content="Nhập Thu Chi">
+                                <IconButton
+                                    className="w-8 h-8 p-1"
+                                    variant="outlined"
+                                    onClick={handleOpen}
+                                >
+                                    <ClipboardDocumentListIcon className="w-4 h-4" />
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <p>{params.row.worker_name}</p>
+                        )} */}
+                        <p onClick={handleOpen}>{params.row.worker_name}</p>
+                        <Dialog
+                            open={open}
+                            handler={handleOpen}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>CHỌN THỢ CẦN PHÂN</DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpen}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <form className="flex flex-col gap-4 mt-2">
+                                    <div className="flex items-center gap-4 ">
+                                        <Input
+                                            label="Thợ Chính"
+                                            id="work_content"
+                                            name="work_content"
+                                            value={cardExpires.work_content}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Thợ Phụ"
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={cardExpires.phone_number}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+
+                                    <Divider />
+                                    <div className="flex flex-row-reverse">
+                                        <Button
+                                            size="md"
+                                            className="p-3 py-0 mx-4 text-green-500 border-green-500 "
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận
+                                        </Button>
+                                        <Button
+                                            size="md"
+                                            className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
+                                            variant="outlined"
+                                        >
+                                            Hủy
+                                        </Button>
+                                    </div>
+                                </form>
+                            </DialogBody>
+                        </Dialog>
+                    </div>
+                );
+            },
         },
         {
             field: "spending_total",
             headerName: "Chi",
             width: 100,
-            editable: true,
+            editable: false,
             type: "text",
+            renderCell: (params) => {
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const [cardExpires, setCardExpires] = useState(params.row);
+                console.log(params.row);
+                const handleChange = (e) => {
+                    const { name, value } = e.target;
+                    setCardExpires((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                    console.log(value);
+                };
+                const shouldDisplayIconButton = params.row.spending_total === 0;
+                return (
+                    <div>
+                        {shouldDisplayIconButton ? (
+                            <Tooltip content="Nhập Thu Chi">
+                                <IconButton
+                                    className="w-8 h-8 p-1"
+                                    variant="outlined"
+                                    onClick={handleOpen}
+                                >
+                                    <ClipboardDocumentListIcon className="w-4 h-4" />
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <p>{params.row.spending_total}</p>
+                        )}
+                        <Dialog
+                            open={open}
+                            handler={handleOpen}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Nhập Thu Chi</DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpen}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <form className="flex flex-col gap-4 mt-2">
+                                    <div className="flex items-center gap-4 ">
+                                        <Input
+                                            label="Yêu Cầu Công Việc"
+                                            id="work_content"
+                                            name="work_content"
+                                            value={cardExpires.work_content}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Số Điện Thoại"
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={cardExpires.phone_number}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Địa Chỉ"
+                                            id="street"
+                                            name="street"
+                                            value={cardExpires.street}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Quận"
+                                            id="district"
+                                            name="district"
+                                            value={cardExpires.district}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Tên Khách Hàng"
+                                            id="name_cus"
+                                            name="name_cus"
+                                            value={cardExpires.name_cus}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Ngày Làm"
+                                            id="date_book"
+                                            name="date_book"
+                                            value={cardExpires.date_book}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center gap-4 ">
+                                        <div className="w-full">
+                                            <Input
+                                                label="Ghi Chú"
+                                                id="real_note"
+                                                name="real_note"
+                                                value={cardExpires.real_note}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center w-full gap-4 ">
+                                            <Input
+                                                label="Tiền Chi"
+                                                id="spending_total"
+                                                name="spending_total"
+                                                value={
+                                                    cardExpires.spending_total
+                                                }
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                            <Input
+                                                label="Tiền Thu"
+                                                id="income_total"
+                                                name="income_total"
+                                                value={cardExpires.income_total}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
+                                        <div className="flex justify-between w-full">
+                                            <Radio
+                                                id="DN"
+                                                name="kind_work"
+                                                label="Hoàn Thành"
+                                                value="0"
+                                                checked='{formData.kind_work === "0"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="DL"
+                                                name="kind_work"
+                                                label="Mai Làm Tiếp"
+                                                value="1"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Vật Tư
+                                            </Button>
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Phiếu Thu
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4 ">
+                                        <div className="w-[50%]">
+                                            <Input
+                                                label="Thông Tin Bảo Hành"
+                                                id="info_BH"
+                                                name="info_BH"
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                            <div className="flex justify-between w-full mt-5 text-sm">
+                                                <Radio
+                                                    id="BHDay"
+                                                    name="BH"
+                                                    label="Ngày"
+                                                    value="0"
+                                                    checked='{formData.kind_work === "0"}'
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                                <Radio
+                                                    id="BHWeek"
+                                                    name="BH"
+                                                    label="Tuần"
+                                                    value="1"
+                                                    checked='{formData.kind_work === "1"}'
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                                <Radio
+                                                    id="BHMonth"
+                                                    name="BH"
+                                                    label="Tháng"
+                                                    value="0"
+                                                    checked='{formData.kind_work === "0"}'
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                                <Radio
+                                                    id="KBH"
+                                                    name="BH"
+                                                    label="Không bảo hành"
+                                                    value="1"
+                                                    checked='{formData.kind_work === "1"}'
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex w-[50%]">
+                                            <Textarea
+                                                label="Nội Dung Bảo Hành"
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <Divider />
+                                    <div className="flex flex-row-reverse">
+                                        <Button
+                                            size="sx"
+                                            className="p-3 py-2 mx-4 text-red-500 border-red-500"
+                                            variant="outlined"
+                                        >
+                                            Báo Hủy
+                                        </Button>
+                                        <Button
+                                            size="sx"
+                                            className="p-3 py-0 mx-4 "
+                                            variant="outlined"
+                                        >
+                                            Trả Lịch
+                                        </Button>
+                                        <Button
+                                            size="sx"
+                                            className="p-3 py-0 mx-4 text-orange-500 border-orange-500 "
+                                            variant="outlined"
+                                        >
+                                            Khảo Sát
+                                        </Button>
+                                        <Button
+                                            size="sx"
+                                            className="p-3 py-0 mx-4 text-green-500 border-green-500 "
+                                            variant="outlined"
+                                        >
+                                            Cập Nhật
+                                        </Button>
+                                    </div>
+                                </form>
+                            </DialogBody>
+                        </Dialog>
+                    </div>
+                );
+            },
         },
         {
             field: "income_total",
@@ -825,16 +1242,33 @@ function Dashboard({ auth }) {
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
                 const handleOpenTho = () => setOpenTho(!openTho);
+                const [openAdminCheck, setOpenAdminCheck] = useState(false);
+                const handleOpenAdminCheck = () =>
+                    setOpenAdminCheck(!openAdminCheck);
+                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
+                const handleOpenUpdateThuChi = () =>
+                    setOpenUpdateThuChi(!openUpdateThuChi);
                 const [work_note, setWorkNote] = useState();
                 const [selectPhanTho, setSelectPhanTho] = useState(null);
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
+                const [cardExpires, setCardExpires] = useState(params.row);
+                console.log(params.row);
+                const handleChange = (e) => {
+                    const { name, value } = e.target;
+                    setCardExpires((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                    console.log(value);
+                };
                 // console.log('-----------', selectPhanTho);
-                const handleSentDelete = async () => {
+                const handleSentDeleteDone = async () => {
                     try {
                         let data = {
                             id: params.id,
+                            id_auth: auth.user.id,
                             work_note: work_note,
                         };
 
@@ -846,7 +1280,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            // socketD.emit("addWorkTo_Server", "xoalich");
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
                         }
                     } catch (error) {}
@@ -886,7 +1320,10 @@ function Dashboard({ auth }) {
                     <div>
                         <div className="flex">
                             <Tooltip content="Admin Check">
-                                <EyeIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
+                                <EyeIcon
+                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                    onClick={handleOpenAdminCheck}
+                                />
                             </Tooltip>
                             <Tooltip content="Thu Hồi Lịch">
                                 <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
@@ -897,8 +1334,18 @@ function Dashboard({ auth }) {
                                     onClick={handleOpen}
                                 />
                             </Tooltip>
+                            <Tooltip content="Cập Nhật Dữ Liệu">
+                                <ArrowUpTrayIcon
+                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    onClick={handleOpenUpdateThuChi}
+                                />
+                            </Tooltip>
                         </div>
-                        <Dialog open={openTho} handler={handleOpenTho}>
+                        <Dialog
+                            open={openTho}
+                            handler={handleOpenTho}
+                            className="bg-transparent "
+                        >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
                                 <svg
@@ -969,11 +1416,464 @@ function Dashboard({ auth }) {
                                 <Button
                                     variant="gradient"
                                     color="red"
-                                    onClick={handleSentDelete}
+                                    onClick={handleSentDeleteDone}
                                 >
                                     Xác nhận
                                 </Button>
                             </DialogFooter>
+                        </Dialog>
+
+                        <Dialog
+                            open={openAdminCheck}
+                            handler={handleOpenAdminCheck}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>
+                                    XÁC NHẬN THÔNG TIN THỢ BÁO
+                                </DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenAdminCheck}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <form className="flex flex-col gap-4 mt-2">
+                                    <div className="flex items-center gap-4 ">
+                                        <Input
+                                            label="Yêu Cầu Công Việc"
+                                            id="work_content"
+                                            name="work_content"
+                                            value={cardExpires.work_content}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Số Điện Thoại"
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={cardExpires.phone_number}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Địa Chỉ"
+                                            id="street"
+                                            name="street"
+                                            value={cardExpires.street}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Quận"
+                                            id="district"
+                                            name="district"
+                                            value={cardExpires.district}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Tên Khách Hàng"
+                                            id="name_cus"
+                                            name="name_cus"
+                                            value={cardExpires.name_cus}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Ngày Làm"
+                                            id="date_book"
+                                            name="date_book"
+                                            value={cardExpires.date_book}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            disabled
+                                            className="shadow-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center gap-4 ">
+                                        <div className="w-full">
+                                            <Input
+                                                label="Ghi Chú"
+                                                id="real_note"
+                                                name="real_note"
+                                                value={cardExpires.real_note}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center w-full gap-4 ">
+                                            <Input
+                                                label="Tiền Chi"
+                                                id="spending_total"
+                                                name="spending_total"
+                                                value={
+                                                    cardExpires.spending_total
+                                                }
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                            <Input
+                                                label="Tiền Thu"
+                                                id="income_total"
+                                                name="income_total"
+                                                value={cardExpires.income_total}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
+                                        <div className="flex justify-between w-full">
+                                            <Radio
+                                                id="DN"
+                                                name="kind_work"
+                                                label="Đã Làm"
+                                                value="0"
+                                                checked='{formData.kind_work === "0"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Vật Tư
+                                            </Button>
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Phiếu Thu
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className="gap-4 ">
+                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
+                                            <label htmlFor="Nội Dung Bảo Hành">
+                                                Nội Dung Bảo Hành:
+                                            </label>
+                                            <p className="pl-5">
+                                                Không có thông tin bảo hành !
+                                            </p>
+                                        </Card>
+
+                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
+                                            <Radio
+                                                id="BHDay"
+                                                name="BH"
+                                                label="Điện Nước"
+                                                value="0"
+                                                checked='{formData.kind_work === "0"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="BHWeek"
+                                                name="BH"
+                                                label="Điện Lạnh"
+                                                value="1"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="BHMonth"
+                                                name="BH"
+                                                label="Đồ Gỗ"
+                                                value="2"
+                                                checked='{formData.kind_work === "0"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Xây Dựng"
+                                                value="3"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Năng Lượng Mặt Trời"
+                                                value="4"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Vận Chuyển"
+                                                value="3"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Cơ Khí"
+                                                value="4"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                        </Card>
+                                    </div>
+                                    <Divider />
+                                    <div className="flex flex-row justify-center">
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
+                                        <Button
+                                            size="sx"
+                                            className="px-3 py-2 mx-4 "
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận Thông Tin
+                                        </Button>
+                                    </div>
+                                </form>
+                            </DialogBody>
+                        </Dialog>
+                        <Dialog
+                            open={openUpdateThuChi}
+                            handler={handleOpenUpdateThuChi}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>
+                                    CẬP NHẬT THÔNG TIN THỢ
+                                </DialogHeader>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenUpdateThuChi}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <DialogBody divider>
+                                <form className="flex flex-col gap-4 mt-2">
+                                    <div className="flex items-center gap-4 ">
+                                        <Input
+                                            label="Yêu Cầu Công Việc"
+                                            id="work_content"
+                                            name="work_content"
+                                            value={cardExpires.work_content}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Số Điện Thoại"
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={cardExpires.phone_number}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Địa Chỉ"
+                                            id="street"
+                                            name="street"
+                                            value={cardExpires.street}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Quận"
+                                            id="district"
+                                            name="district"
+                                            value={cardExpires.district}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            label="Tên Khách Hàng"
+                                            id="name_cus"
+                                            name="name_cus"
+                                            value={cardExpires.name_cus}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                        <Input
+                                            label="Ngày Làm"
+                                            id="date_book"
+                                            name="date_book"
+                                            value={cardExpires.date_book}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            disabled
+                                            className="shadow-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center gap-4 ">
+                                        <div className="w-full">
+                                            <Input
+                                                label="Ghi Chú"
+                                                id="real_note"
+                                                name="real_note"
+                                                value={cardExpires.real_note}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center w-full gap-4 ">
+                                            <Input
+                                                label="Tiền Chi"
+                                                id="spending_total"
+                                                name="spending_total"
+                                                value={
+                                                    cardExpires.spending_total
+                                                }
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                            <Input
+                                                label="Tiền Thu"
+                                                id="income_total"
+                                                name="income_total"
+                                                value={cardExpires.income_total}
+                                                onChange={handleChange}
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
+                                        <div className="flex justify-between w-full">
+                                            <Radio
+                                                id="DN"
+                                                name="kind_work"
+                                                label="Đã Làm"
+                                                value="0"
+                                                checked='{formData.kind_work === "0"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Vật Tư
+                                            </Button>
+                                            <Button
+                                                className="px-1 py-0"
+                                                variant="outlined"
+                                            >
+                                                Phiếu Thu
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
+                                        <label htmlFor="Nội Dung Bảo Hành">
+                                            Nội Dung Bảo Hành:
+                                        </label>
+                                        <p className="pl-5">
+                                            Không có thông tin bảo hành !
+                                        </p>
+                                    </Card>
+                                    <Divider />
+                                    <div className="flex flex-row justify-center">
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
+                                        <Button
+                                            size="sx"
+                                            className="px-3 py-2 mx-4 "
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận Thông Tin
+                                        </Button>
+                                    </div>
+                                </form>
+                            </DialogBody>
                         </Dialog>
                     </div>
                 );
@@ -994,7 +1894,6 @@ function Dashboard({ auth }) {
     };
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
-
     };
     // ----------------------------nut scrollView trong bang --------------------------
     const DN = useRef(null);
@@ -1168,7 +2067,6 @@ function Dashboard({ auth }) {
                                 <DataGrid
                                     rows={workDataDN_done}
                                     columns={columnsRight}
-
                                     hideFooterPagination={true}
                                 />
                             </Box>

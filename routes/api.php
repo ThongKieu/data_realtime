@@ -31,7 +31,7 @@ Route::prefix('web')->group(function () {
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
     Route::get('works_cacle','App\Http\Controllers\Api\Web\WorksController@indexCancleBook');
-    Route::post('works_cacle','App\Http\Controllers\Api\Web\WorksAssignmentController@insertCancleBook');
+    Route::post('works_cacle','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
     Route::prefix('work-assignment')->group(function(){
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
@@ -42,6 +42,11 @@ Route::prefix('web')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
         Route::post('data-worker','App\Http\Controllers\Api\WorkerController@importDataWorker');
     });
+    Route::prefix('users')->group(function (){
+        Route::get('/','App\Http\Controllers\Api\UsersAdminController@index');
+        Route::post('/','App\Http\Controllers\Api\UsersAdminController@create');
+    });
+
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -51,6 +51,7 @@ class WorksAssignmentController extends Controller
             "works.phone_number",
             "works.image_work_path",
             "works.kind_work",
+            "works.name_cus",
             "workers.worker_firstname",
             "workers.worker_name",
             "workers.sort_name",
@@ -79,6 +80,7 @@ class WorksAssignmentController extends Controller
             "works.date_book",
             "works.street",
             "works.district",
+            "works.name_cus",
             "works.phone_number",
             "works.image_work_path",
             "works.kind_work",
@@ -115,6 +117,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -139,6 +142,7 @@ class WorksAssignmentController extends Controller
             "works_assignments.seri_number",
             "works.work_content",
             "works.date_book",
+            "works.name_cus",
             "works.street",
             "works.district",
             "works.phone_number",
@@ -177,6 +181,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -208,6 +213,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -239,6 +245,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -321,34 +328,46 @@ class WorksAssignmentController extends Controller
 
     }
     public function updateWorkAss(Request $request) {
+        $id_cus =  WorksAssignment::where('id','=',$request->id)->value('id_cus');
+        $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
+        if($request->warranties != null)
+        {
+
+        }
         if($request->ac)
-        {   $id_cus =  WorksAssignment::where('id','=',$request->id)->value('id_cus');
-            switch ($request->ac) {
-                case ('1'):
-                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
-                    break;
-                case ('2'):
-                    $content =Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
-                    break;
-                case ('3'):
-                    $content =Work::where('id','=',$id_cus) -> update(['street'=>$request->street]);
-                    break;
-                case ('4'):
-                    $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
-                    break;
-                case ('5'):
-                    $phone = (int) $request->phone_number;
-                    $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$phone]);
-                    break;
-
-
-            }
+        {
+            // switch ($request->ac) {
+            //     case ('1'):
+            //         $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
+            //         break;
+            //     case ('2'):
+            //         $content =Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
+            //         break;
+            //     case ('3'):
+            //         $content =Work::where('id','=',$id_cus) -> update(['street'=>$request->street]);
+            //         break;
+            //     case ('4'):
+            //         $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
+            //         break;
+            //     case ('5'):
+            //         $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_number]);
+            //         break;
+            // }
             if (isset($content)) {
-                return response()->json('Update Work done - '.$content);
+                return response()->json('Update Work done !!! ');
             }
             return response()->json('Update Work fail !!!!!!!!!');
         }
         return response()->json('Non Action !');
     }
+    public function insertCancleBook(Request $request)
+    {   $id_cus = WorksAssignment::where('id','=',$request->id)->value('id_cus');
+        $up1 = WorksAssignment::where('id','=',$request->id)->update(['status_work'=>5]);
+        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 2, 'work_note' => $request->work_note,'members_read'=>$request->id_auth]);
 
+        if ($up) {
+            return 'Delete work done !';
+        }
+        return  'Delete Failse !';
+    }
 }

@@ -29,7 +29,7 @@ function formatCardNumber(value) {
 // --------------------API ---------
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -117,10 +117,12 @@ function FloatingButton() {
         formData1.append("phone_number", formData.phone_number);
         formData1.append("kind_work", formData.kind_work);
         formData1.append("status_cus", formData.status_cus);
+        formData1.append("work_note", formData.work_note);
         formData1.append("flag_status", formData.flag_status);
         formData1.append("from_cus", formData.from_cus);
+        formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
-        formData1.append("menber_read", formData.members_read);
+        formData1.append("members_read", formData.members_read);
         try {
             const response = await fetch(host+url_API, {
                 method: "POST",

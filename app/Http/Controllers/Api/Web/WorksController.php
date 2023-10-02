@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,13 +24,55 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
 
-        $dien_nuoc =    Work::where('date_book', '=', $today)->where('kind_work', '=', '0')->where('status_cus', '=', 0)->get();
-        $dien_lanh =    Work::where('date_book', '=', $today)->where('kind_work', '=', '1')->where('status_cus', '=', 0)->get();
-        $do_go     =    Work::where('date_book', '=', $today)->where('kind_work', '=', '2')->where('status_cus', '=', 0)->get();
-        $nlmt      =    Work::where('date_book', '=', $today)->where('kind_work', '=', '3')->where('status_cus', '=', 0)->get();
-        $xay_dung  =    Work::where('date_book', '=', $today)->where('kind_work', '=', '4')->where('status_cus', '=', 0)->get();
-        $tai_xe    =    Work::where('date_book', '=', $today)->where('kind_work', '=', '5')->where('status_cus', '=', 0)->get();
-        $co_khi    =    Work::where('date_book', '=', $today)->where('kind_work', '=', '6')->where('status_cus', '=', 0)->get();
+        $dien_nuoc = Work::where('kind_work', '=', 0)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 0)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $dien_lanh =   Work::where('kind_work', '=', 1)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 1)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $do_go     =    Work::where('kind_work', '=', 2)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 2)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $nlmt      =   Work::where('kind_work', '=', 3)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 3)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $xay_dung  =    Work::where('kind_work', '=', 4)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 4)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $tai_xe    =    Work::where('kind_work', '=', 5)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 5)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
+        $co_khi    =    Work::where('kind_work', '=', 6)
+            ->where('status_cus', '=', 0)
+            ->orWhere(function ($query) use ($today) {
+                $query->where('kind_work', '=', 6)
+                    ->where('date_book', '=', $today);
+            })
+            ->get();
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWork = [
             'dien_nuoc' => $dien_nuoc,
@@ -80,15 +123,15 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
         $co_khi    =   DB::table('works')
-        ->join('users','works.members_read','=','users.id')
-        ->where('works.date_book', '=', $today)
-        ->where('works.status_cus', '=', 2)
-        ->limit(100)
-        ->get();
-        $nu_can= count($co_khi);
+            ->join('users', 'works.members_read', '=', 'users.id')
+            ->where('works.date_book', '=', $today)
+            ->where('works.status_cus', '=', 2)
+            ->limit(100)
+            ->get();
+        $nu_can = count($co_khi);
         return response()->json([
-            'num_can'=>$nu_can,
-            'info_can'=>$co_khi
+            'num_can' => $nu_can,
+            'info_can' => $co_khi
         ]);
     }
     public function store(StoreWorkRequest $request)
@@ -118,27 +161,25 @@ class WorksController extends Controller
         // dd($request->all());
         switch ($request->ac) {
             case ('1'):
-                $content =Work::where('id','=',$request->id) -> update(['work_content'=>$request->work_content]);
+                $content = Work::where('id', '=', $request->id)->update(['work_content' => $request->work_content]);
                 break;
             case ('2'):
-                $content =Work::where('id','=',$request->id) -> update(['work_note'=>$request->work_note]);
+                $content = Work::where('id', '=', $request->id)->update(['work_note' => $request->work_note]);
                 break;
             case ('3'):
-                $content =Work::where('id','=',$request->id) -> update(['street'=>$request->street]);
+                $content = Work::where('id', '=', $request->id)->update(['street' => $request->street]);
                 break;
             case ('4'):
-                $content =Work::where('id','=',$request->id) -> update(['district'=>$request->district]);
+                $content = Work::where('id', '=', $request->id)->update(['district' => $request->district]);
                 break;
             case ('5'):
-                $phone = (int) $request->phone_number;
-                $content =Work::where('id','=',$request->id) -> update(['phone_number'=>$phone]);
+                $content = Work::where('id', '=', $request->id)->update(['phone_number' => $request->phone_number]);
                 break;
         }
         if (isset($content)) {
-            return response()->json('Update Work done - '.$content);
+            return response()->json('Update Work done - !! ');
         }
         return response()->json('Update Work fail !!!!!!!!!');
-
     }
     public static function upload($file)
     {
@@ -154,7 +195,7 @@ class WorksController extends Controller
     }
     public function insertCancleBook(Request $request)
     {
-        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note,'members_read'=>$request->id_auth]);
+        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
         if ($up) {
             return 'Delete work done !';
         }

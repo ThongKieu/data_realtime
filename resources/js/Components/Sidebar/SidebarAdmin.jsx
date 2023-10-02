@@ -21,7 +21,7 @@ export function SidebarAdmin() {
   const handleOpen = (value) => {
     setOpen(open === value ? 0 : value);
   };
-  const [isSidebarOpen, setSidebarOpen] = React.useState(true);
+  const [isSidebarOpen, setSidebarOpen] = React.useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -35,24 +35,28 @@ export function SidebarAdmin() {
     <div>
       {isSidebarOpen === false ?
         (<div className={`h-full w-[4rem] pt-3  bg-white flex justify-center`}>
-          <Bars3Icon className="w-7 h-7" onClick={toggleSidebar} fill="black" />
+          <Bars3Icon className="cursor-pointer w-7 h-7" onClick={toggleSidebar} fill="black" />
         </div>)
         :
         (<Card className={`h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 block ${sidebarStyles}`}>
-          <div className="mb-2 p-4 flex">
+          <div className="flex p-4 mb-2">
             <Typography variant="h5" color="blue-gray" className="mr-5" >
               THỢ VIỆT
             </Typography>
-            <div className="w-7 h-7 rounded-full bg-white text-white flex items-center justify-center ml-auto">
-              <XMarkIcon className="w-6 h-6" onClick={toggleSidebar} fill="black" />
+            <div className="flex items-center justify-center ml-auto text-white bg-white rounded-full w-7 h-7">
+              <XMarkIcon className="w-6 h-6 cursor-pointer" onClick={toggleSidebar} fill="black" />
             </div>
           </div>
           <List>
             <ListItem>
+              
               <ListItemPrefix>
-                <HomeIcon className="h-5 w-5" />
+                <HomeIcon className="w-5 h-5" />
+                
               </ListItemPrefix>
+              <Link href={route('admin')}>
               Admin
+              </Link>
             </ListItem>
             <Accordion
               open={open === 1}
@@ -64,9 +68,9 @@ export function SidebarAdmin() {
               }
             >
               <ListItem className="p-0" selected={open === 1}>
-                <AccordionHeader onClick={() => handleOpen(1)} className="border-b-0 p-3">
+                <AccordionHeader onClick={() => handleOpen(1)} className="p-3 border-b-0">
                   <ListItemPrefix>
-                    <UserGroupIcon className="h-5 w-5" />
+                    <UserGroupIcon className="w-5 h-5" />
                   </ListItemPrefix>
                   <Typography color="blue-gray" className="mr-auto font-normal">
                     Thợ
@@ -77,7 +81,7 @@ export function SidebarAdmin() {
                 <List className="p-0">
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Kiểm Tra Liên Hệ
                   </ListItem>
@@ -86,7 +90,7 @@ export function SidebarAdmin() {
                   >
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Danh Sách Thợ
                     </ListItem>
@@ -96,7 +100,7 @@ export function SidebarAdmin() {
                   >
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Tài Khoản App
                     </ListItem>
@@ -114,9 +118,9 @@ export function SidebarAdmin() {
               }
             >
               <ListItem className="p-0" selected={open === 2}>
-                <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
+                <AccordionHeader onClick={() => handleOpen(2)} className="p-3 border-b-0">
                   <ListItemPrefix>
-                    <CircleStackIcon className="h-5 w-5" />
+                    <CircleStackIcon className="w-5 h-5" />
                   </ListItemPrefix>
                   <Typography color="blue-gray" className="mr-auto font-normal">
                     Thêm Dữ Liệu
@@ -135,7 +139,7 @@ export function SidebarAdmin() {
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Xuất Dữ Liệu Khách
                   </ListItem>
@@ -168,9 +172,9 @@ export function SidebarAdmin() {
               }
             >
               <ListItem className="p-0" selected={open === 3}>
-                <AccordionHeader onClick={() => handleOpen(3)} className="border-b-0 p-3">
+                <AccordionHeader onClick={() => handleOpen(3)} className="p-3 border-b-0">
                   <ListItemPrefix>
-                    <DevicePhoneMobileIcon className="h-5 w-5" />
+                    <DevicePhoneMobileIcon className="w-5 h-5" />
                   </ListItemPrefix>
                   <Typography color="blue-gray" className="mr-auto font-normal">
                     Ứng Dụng
@@ -189,31 +193,31 @@ export function SidebarAdmin() {
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     QR Code
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Banner
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Bảng Giá
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Bài Viết
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Danh Sách Công Việc
                   </ListItem>
@@ -230,9 +234,9 @@ export function SidebarAdmin() {
               }
             >
               <ListItem className="p-0" selected={open === 4}>
-                <AccordionHeader onClick={() => handleOpen(4)} className="border-b-0 p-3">
+                <AccordionHeader onClick={() => handleOpen(4)} className="p-3 border-b-0">
                   <ListItemPrefix>
-                    <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                    <ChatBubbleLeftRightIcon className="w-5 h-5" />
                   </ListItemPrefix>
                   <Typography color="blue-gray" className="mr-auto font-normal">
                     Zalo
@@ -251,13 +255,13 @@ export function SidebarAdmin() {
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Gửi ZNS Báo Giá
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Gửi ZNS Báo Giá Sau 15 Ngày
                   </ListItem>
@@ -274,9 +278,9 @@ export function SidebarAdmin() {
               }
             >
               <ListItem className="p-0" selected={open === 5}>
-                <AccordionHeader onClick={() => handleOpen(5)} className="border-b-0 p-3">
+                <AccordionHeader onClick={() => handleOpen(5)} className="p-3 border-b-0">
                   <ListItemPrefix>
-                    <WrenchIcon className="h-5 w-5" />
+                    <WrenchIcon className="w-5 h-5" />
                   </ListItemPrefix>
                   <Typography color="blue-gray" className="mr-auto font-normal">
                     Công Cụ
@@ -287,13 +291,13 @@ export function SidebarAdmin() {
                 <List className="p-0">
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Chặn Số
                   </ListItem>
                   <ListItem>
                     <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Kiểm Kê
                   </ListItem>

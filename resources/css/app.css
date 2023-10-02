@@ -57,3 +57,8 @@
 #react-select-6-input{
     box-shadow: none;
 }
+*, html, body {
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Times New Roman', Times, serif;
+}

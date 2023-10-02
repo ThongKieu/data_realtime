@@ -322,30 +322,32 @@ class WorksAssignmentController extends Controller
     }
     public function updateWorkAss(Request $request) {
         $id_cus =  WorksAssignment::where('id','=',$request->id)->value('id_cus');
-        $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
-        if($request->warranties != null)
-        {
-            
-        }
         if($request->ac)
         {   
-            // switch ($request->ac) {
-            //     case ('1'):
-            //         $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
-            //         break;
-            //     case ('2'):
-            //         $content =Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
-            //         break;
-            //     case ('3'):
-            //         $content =Work::where('id','=',$id_cus) -> update(['street'=>$request->street]);
-            //         break;
-            //     case ('4'):
-            //         $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
-            //         break;
-            //     case ('5'):
-            //         $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_number]);
-            //         break;
-            // }
+           
+            
+            switch ($request->ac) {
+                case ('1'):
+                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
+                    if($request->warranties != null)
+                    {
+                        
+                    }
+                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
+                    break;
+                case ('2'):
+                    $content = Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
+                    break;
+                case ('3'):
+                    $content =Work::where('id','=',$id_cus) -> update(['street'=>$request->street]);
+                    break;
+                case ('4'):
+                    $content =Work::where('id','=',$id_cus) -> update(['district'=>$request->district]);
+                    break;
+                case ('5'):
+                    $content =Work::where('id','=',$id_cus) -> update(['phone_number'=>$request->phone_number]);
+                    break;
+            }
             if (isset($content)) {
                 return response()->json('Update Work done !!! ');
             }

@@ -17,7 +17,7 @@ function Icon() {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-6 w-6"
+            className="w-6 h-6"
         >
             <path
                 strokeLinecap="round"
@@ -41,6 +41,7 @@ function DataCustomerImport() {
     const [excelData, setExcelData] = useState(null);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
+
 
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
@@ -93,11 +94,11 @@ function DataCustomerImport() {
         <AuthenticatedLayoutAdmin >
             <Head title="Thêm dữ liệu khách hàng" />
             {isLoading
-                ? <div className='flex justify-center h-full items-center '>
-                    <Spinner className="h-12 w-12 " color="green" />
+                ? <div className='flex items-center justify-center h-full'>
+                    <Spinner className="w-12 h-12 " color="green" />
                 </div>
-                : <div className="min-h-screen flex justify-center mt-5">
-                    <Card className='w-full bg-white text-center items-center h-full m-8 p-10' color="transparent" shadow={false}>
+                : <div className="flex justify-center min-h-screen mt-5">
+                    <Card color="transparent" shadow={false}>
                         {showAlertFailed && (
                             <AlertIcon setShowAlertFailed={setShowAlertFailed} />
 
@@ -108,12 +109,12 @@ function DataCustomerImport() {
                         <Typography color="gray" className="mt-1 font-normal">
                             Vui lòng chọn file để import.
                         </Typography>
-                        <form className="mt-8 w-80 max-w-screen-lg sm:w-96">
+                        <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
                             <Input
                                 labelProps={{ className: "hidden" }}
                                 type="file"
                                 accept=".xlsx, .xls"
-                                className="border-none pl-0" // Sử dụng lớp CSS 'border-none' của Material Tailwind
+                                className="pl-0 border-none" // Sử dụng lớp CSS 'border-none' của Material Tailwind
                                 onChange={handleFileUpload}
                             />
                             <Button className="mt-12" fullWidth color="green" onClick={() => {

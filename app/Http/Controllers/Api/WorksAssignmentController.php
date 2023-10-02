@@ -51,6 +51,7 @@ class WorksAssignmentController extends Controller
             "works.phone_number",
             "works.image_work_path",
             "works.kind_work",
+            "works.name_cus",
             "workers.worker_firstname",
             "workers.worker_name",
             "workers.sort_name",
@@ -79,6 +80,7 @@ class WorksAssignmentController extends Controller
             "works.date_book",
             "works.street",
             "works.district",
+            "works.name_cus",
             "works.phone_number",
             "works.image_work_path",
             "works.kind_work",
@@ -115,6 +117,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -139,6 +142,7 @@ class WorksAssignmentController extends Controller
             "works_assignments.seri_number",
             "works.work_content",
             "works.date_book",
+            "works.name_cus",
             "works.street",
             "works.district",
             "works.phone_number",
@@ -177,6 +181,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -208,6 +213,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]
@@ -239,6 +245,7 @@ class WorksAssignmentController extends Controller
             "works.kind_work",
             "workers.worker_firstname",
             "workers.worker_name",
+            "works.name_cus",
             "workers.sort_name",
             "workers.add_worker",
         ]

@@ -28,7 +28,8 @@ import {
     UserPlusIcon,
     DocumentDuplicateIcon,
     MagnifyingGlassIcon,
-    ClipboardDocumentListIcon,ArrowUpTrayIcon
+    ClipboardDocumentListIcon,
+    ArrowUpTrayIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/socket";
 import { host } from "@/Utils/UrlApi";
@@ -889,7 +890,6 @@ function Dashboard({ auth }) {
 
                                     <Divider />
                                     <div className="flex flex-row-reverse">
-
                                         <Button
                                             size="md"
                                             className="p-3 py-0 mx-4 text-green-500 border-green-500 "
@@ -1245,9 +1245,9 @@ function Dashboard({ auth }) {
                 const [openAdminCheck, setOpenAdminCheck] = useState(false);
                 const handleOpenAdminCheck = () =>
                     setOpenAdminCheck(!openAdminCheck);
-                    const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-                const handleOpenUpdateThuChi= () =>
-                setOpenUpdateThuChi(!openUpdateThuChi);
+                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
+                const handleOpenUpdateThuChi = () =>
+                    setOpenUpdateThuChi(!openUpdateThuChi);
                 const [work_note, setWorkNote] = useState();
                 const [selectPhanTho, setSelectPhanTho] = useState(null);
                 const handleSelectChange = (selectedValue) => {
@@ -1341,7 +1341,11 @@ function Dashboard({ auth }) {
                                 />
                             </Tooltip>
                         </div>
-                        <Dialog open={openTho} handler={handleOpenTho} className="bg-transparent ">
+                        <Dialog
+                            open={openTho}
+                            handler={handleOpenTho}
+                            className="bg-transparent "
+                        >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
                                 <svg
@@ -1591,14 +1595,16 @@ function Dashboard({ auth }) {
                                             <label htmlFor="Nội Dung Bảo Hành">
                                                 Nội Dung Bảo Hành:
                                             </label>
-                                            <p className="pl-5">Không có thông tin bảo hành !</p>
+                                            <p className="pl-5">
+                                                Không có thông tin bảo hành !
+                                            </p>
                                         </Card>
 
                                         <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
                                             <Radio
                                                 id="BHDay"
                                                 name="BH"
-                                                label="Ngày"
+                                                label="Điện Nước"
                                                 value="0"
                                                 checked='{formData.kind_work === "0"}'
                                                 onChange={handleChange}
@@ -1607,7 +1613,7 @@ function Dashboard({ auth }) {
                                             <Radio
                                                 id="BHWeek"
                                                 name="BH"
-                                                label="Tuần"
+                                                label="Điện Lạnh"
                                                 value="1"
                                                 checked='{formData.kind_work === "1"}'
                                                 onChange={handleChange}
@@ -1616,7 +1622,7 @@ function Dashboard({ auth }) {
                                             <Radio
                                                 id="BHMonth"
                                                 name="BH"
-                                                label="Tháng"
+                                                label="Đồ Gỗ"
                                                 value="2"
                                                 checked='{formData.kind_work === "0"}'
                                                 onChange={handleChange}
@@ -1625,7 +1631,7 @@ function Dashboard({ auth }) {
                                             <Radio
                                                 id="KBH"
                                                 name="BH"
-                                                label="Không bảo hành"
+                                                label="Xây Dựng"
                                                 value="3"
                                                 checked='{formData.kind_work === "1"}'
                                                 onChange={handleChange}
@@ -1634,7 +1640,25 @@ function Dashboard({ auth }) {
                                             <Radio
                                                 id="KBH"
                                                 name="BH"
-                                                label="Không bảo hành"
+                                                label="Năng Lượng Mặt Trời"
+                                                value="4"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Vận Chuyển"
+                                                value="3"
+                                                checked='{formData.kind_work === "1"}'
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                            <Radio
+                                                id="KBH"
+                                                name="BH"
+                                                label="Cơ Khí"
                                                 value="4"
                                                 checked='{formData.kind_work === "1"}'
                                                 onChange={handleChange}
@@ -1644,7 +1668,10 @@ function Dashboard({ auth }) {
                                     </div>
                                     <Divider />
                                     <div className="flex flex-row justify-center">
-                                        <Typography className='font-medium text-red-700'>(*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác Nhận!!</Typography>
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
                                         <Button
                                             size="sx"
                                             className="px-3 py-2 mx-4 "
@@ -1824,14 +1851,19 @@ function Dashboard({ auth }) {
                                         </div>
                                     </div>
                                     <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                            <label htmlFor="Nội Dung Bảo Hành">
-                                                Nội Dung Bảo Hành:
-                                            </label>
-                                            <p className="pl-5">Không có thông tin bảo hành !</p>
-                                        </Card>
+                                        <label htmlFor="Nội Dung Bảo Hành">
+                                            Nội Dung Bảo Hành:
+                                        </label>
+                                        <p className="pl-5">
+                                            Không có thông tin bảo hành !
+                                        </p>
+                                    </Card>
                                     <Divider />
                                     <div className="flex flex-row justify-center">
-                                        <Typography className='font-medium text-red-700'>(*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác Nhận!!</Typography>
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
                                         <Button
                                             size="sx"
                                             className="px-3 py-2 mx-4 "

@@ -125,13 +125,13 @@ export function SidebarAdmin() {
               </ListItem>
               <AccordionBody className="py-1">
                 <List className="p-0">
-                  <Link href={route("admin/data-customer-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Thêm Dữ Liệu Khách
-                  </ListItem>
+                  <Link href={route("admin/data-import-customer")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Thêm Dữ Liệu Khách
+                    </ListItem>
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
@@ -139,21 +139,21 @@ export function SidebarAdmin() {
                     </ListItemPrefix>
                     Xuất Dữ Liệu Khách
                   </ListItem>
-                  <Link href={route("admin/data-worker-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Thêm Dữ Liệu Thợ
-                  </ListItem>
+                  <Link href={route("admin/data-import-worker")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Thêm Dữ Liệu Thợ
+                    </ListItem>
                   </Link>
-                  <Link href={route("admin/data-price-import")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Thêm Bảng Giá
-                  </ListItem>
+                  <Link href={route("admin/data-import-price")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Thêm Bảng Giá
+                    </ListItem>
                   </Link>
                 </List>
               </AccordionBody>
@@ -179,13 +179,13 @@ export function SidebarAdmin() {
               </ListItem>
               <AccordionBody className="py-1">
                 <List className="p-0">
-                <Link href={route("admin/popup-discount")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Popup Chương Trình Khuyến Mãi
-                  </ListItem>
+                  <Link href={route("admin/application-popup")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Popup Chương Trình Khuyến Mãi
+                    </ListItem>
                   </Link>
                   <ListItem>
                     <ListItemPrefix>
@@ -241,12 +241,14 @@ export function SidebarAdmin() {
               </ListItem>
               <AccordionBody className="py-1">
                 <List className="p-0">
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Gửi ZNS Cảm Ơn
-                  </ListItem>
+                  <Link href={route("admin/zalo-zns-thanks")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Gửi ZNS Cảm Ơn
+                    </ListItem>
+                  </Link>
                   <ListItem>
                     <ListItemPrefix>
                       <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />

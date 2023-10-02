@@ -3,37 +3,12 @@ import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
 import {
-    Card, Input, Button, Typography, Spinner, Alert
+    Card, Input, Button, Typography, Spinner
 } from "@material-tailwind/react";
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-function Icon() {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-6 w-6"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-            />
-        </svg>
-    );
-}
-function AlertIcon({ setShowAlertFailed }) {
-    return (
-        <Alert className='pt-3 pb-3 mb-8' icon={<Icon />} color="red" onClose={() => {
-            setShowAlertFailed(false);
-        }}>Vui lòng chọn file cần thêm dữ liệu</Alert>
-    );
-}
+import AlertIcon from '@/Pages/Admin/DataImport/Components/AlertIcon';
+
 
 
 function DataCustomerImport() {
@@ -41,7 +16,7 @@ function DataCustomerImport() {
     const [excelData, setExcelData] = useState(null);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
-   
+
 
 
     const handleFileUpload = async (event) => {
@@ -74,20 +49,27 @@ function DataCustomerImport() {
             });
             if (response.ok) {
                 console.log('Tải lên thành công');
+                toast.success('Thông báo thành công', {
+                    position: 'top-center', // Đặt vị trí ở giữa
+                    autoClose: 2000, // Đặt thời gian tồn tại là 2 giây (2000 mili giây)
+                    closeOnClick: true, // Click tắt Toast thông báo
+                    // hideProgressBar: true, // Ẩn progressbar chạy dưới
+                });
             } else {
                 console.error('Lỗi khi tải lên');
+                toast.error('Lỗi thêm dữ liệu', {
+                    position: 'top-center', // Đặt vị trí ở giữa
+                    autoClose: 2000, // Đặt thời gian tồn tại là 2 giây (2000 mili giây)
+                    closeOnClick: true, // Click tắt Toast thông báo
+                    // hideProgressBar: true, // Ẩn progressbar chạy dưới
+                    pauseOnHover: false
+                });
             }
         } catch (error) {
             console.error('Lỗi khi tải lên: ', error);
         } finally {
             setIsLoading(false);
             setFile(null);
-            toast.success('Thông báo thành công', {
-                position: 'top-center', // Đặt vị trí ở giữa
-                autoClose: 2000, // Đặt thời gian tồn tại là 2 giây (2000 mili giây)
-                closeOnClick: true, // Click tắt Toast thông báo
-                // hideProgressBar: true, // Ẩn progressbar chạy dưới
-            });
         }
     }
     // In giá trị file
@@ -130,7 +112,6 @@ function DataCustomerImport() {
                             </Button>
                         </form>
                     </Card>
-                    <ToastContainer />
                 </div>}
 
         </AuthenticatedLayoutAdmin>

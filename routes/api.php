@@ -40,6 +40,7 @@ Route::prefix('web')->group(function () {
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
+        Route::post('data-worker','App\Http\Controllers\Api\WorkerController@importDataWorker');
     });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

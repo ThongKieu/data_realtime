@@ -44,11 +44,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
         // Data
-        Route::get('/data-customer-import ',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-customer-import');
-        Route::get('/data-worker-import ',function(){return Inertia::render('Admin/DataImport/DataWorkerImport');})->name('admin/data-worker-import');
-        Route::get('/data-price-import ',function(){return Inertia::render('Admin/DataImport/DataPriceImport');})->name('admin/data-price-import');
+        Route::get('/data-import-customer',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-import-customer');
+        Route::get('/data-import-worker',function(){return Inertia::render('Admin/DataImport/DataWorkerImport');})->name('admin/data-import-worker');
+        Route::get('/data-import-price',function(){return Inertia::render('Admin/DataImport/DataPriceImport');})->name('admin/data-import-price');
         // Application
-        Route::get('/popup-discount',function(){return Inertia::render('Admin/Application/ApplicationPopupDiscount');})->name('admin/popup-discount');
+        Route::get('/application-popup',function(){return Inertia::render('Admin/Application/ApplicationPopupDiscount');})->name('admin/application-popup');
+        // Zalo
+        Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');

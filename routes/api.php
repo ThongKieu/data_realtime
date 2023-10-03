@@ -40,6 +40,7 @@ Route::prefix('web')->group(function () {
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
+        Route::post('data-worker','App\Http\Controllers\Api\WorkerController@importDataWorker');
     });
     Route::prefix('users')->group(function (){
         Route::get('/','App\Http\Controllers\Api\UsersAdminController@index');

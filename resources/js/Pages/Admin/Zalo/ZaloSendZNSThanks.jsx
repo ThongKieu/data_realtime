@@ -1,54 +1,44 @@
 
-import { Button, Card, Input, Checkbox, Typography, } from "@material-tailwind/react";
+import { Button, Card, Input, Select, Option, Typography, } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
 
-function Tab1() {
+function Tab1({ showAlertFailed, handleFileUpload, file }) {
+
     // Xử lý logic cho Tab 1
     return (
         <div>
-            <h2 className="text-2xl mb-4">Tab 1</h2>
-            <Card color="transparent" shadow={false}>
+            <Card color="transparent" shadow={false} className="ml-60">
+                {showAlertFailed && (
+                    <AlertIcon setShowAlertFailed={setShowAlertFailed} />
+
+                )}
                 <Typography variant="h4" color="blue-gray">
-                    Sign Up
+                    Gửi Thông Báo ZNS Cảm Ơn Theo Danh Sách Khách Hàng
                 </Typography>
                 <Typography color="gray" className="mt-1 font-normal">
-                    Enter your details to register.
+                    Vui lòng chọn file danh sách khách hàng
                 </Typography>
-                <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                    <div className="mb-4 flex flex-col gap-6">
-                        <Input size="lg" label="Name" />
-                        <Input size="lg" label="Email" />
-                        <Input type="password" size="lg" label="Password" />
-                    </div>
-                    <Checkbox
-                        label={
-                            <Typography
-                                variant="small"
-                                color="gray"
-                                className="flex items-center font-normal"
-                            >
-                                I agree the
-                                <a
-                                    href="#"
-                                    className="font-medium transition-colors hover:text-gray-900"
-                                >
-                                    &nbsp;Terms and Conditions
-                                </a>
-                            </Typography>
-                        }
-                        containerProps={{ className: "-ml-2.5" }}
+                <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
+                    <Input
+                        labelProps={{ className: "hidden" }}
+                        type="file"
+                        accept=".xlsx, .xls"
+                        className="pl-0 border-none" // Sử dụng lớp CSS 'border-none' của Material Tailwind
+                        onChange={handleFileUpload}
                     />
-                    <Button className="mt-6" fullWidth>
-                        Register
+                    <Button className="mt-12" fullWidth color="green" onClick={() => {
+
+                        if (file != null) {
+                            console.log(file + 'hahahahaha');
+                        } else {
+                            setShowAlertFailed(true);
+                        }
+                    }}>
+                        Gửi Thông Báo
                     </Button>
-                    <Typography color="gray" className="mt-4 text-center font-normal">
-                        Already have an account?{" "}
-                        <a href="#" className="font-medium text-gray-900">
-                            Sign In
-                        </a>
-                    </Typography>
                 </form>
             </Card>
         </div>
@@ -56,50 +46,45 @@ function Tab1() {
 }
 
 function Tab2() {
+    const [selectedValue, setSelectedValue] = useState("Ngày");
+
+    const handleSelectChange = (event) => {
+        if (event && event.target && event.target.value) {
+            setSelectedValue(event.target.value);
+          }
+      };
     // Xử lý logic cho Tab 2
     return (
         <div>
-            <h2 className="text-2xl mb-4">Tab 2</h2>
-            <Card color="transparent" shadow={false}>
+            <Card color="transparent" shadow={false} className="ml-60">
                 <Typography variant="h4" color="blue-gray">
-                    Sign Up
+                    Gửi Thông Báo ZNS Cảm Ơn Từng Khách Hàng
                 </Typography>
                 <Typography color="gray" className="mt-1 font-normal">
-                    Enter your details to register.
+                    Vui lòng nhập thông tin khách hàng
                 </Typography>
                 <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                    <div className="mb-4 flex flex-col gap-6">
-                        <Input size="lg" label="Name" />
-                        <Input size="lg" label="Email" />
-                        <Input type="password" size="lg" label="Password" />
+                    <div className="mb-4 flex flex-col ">
+                        <p>Số liên hệ khách hàng: </p>
+                        <Input size="lg" className="mb-4" />
+
+                        <p className="mt-3">Tên khách hàng: </p>
+                        <Input size="lg" />
+                        <p className="mt-3">Ngày làm: </p>
+                        <Input size="lg" />
+                        <p className="mt-3">Thời gian bảo hành: </p>
+                        <Select color="green" variant="outlined" value={selectedValue} onChange={handleSelectChange}>
+                            <Option >Ngày</Option>
+                            <Option >Tháng</Option>
+                            <Option >Năm</Option>
+                        </Select>
+                        <Input size="lg" className="mt-1" />
                     </div>
-                    <Checkbox
-                        label={
-                            <Typography
-                                variant="small"
-                                color="gray"
-                                className="flex items-center font-normal"
-                            >
-                                I agree the
-                                <a
-                                    href="#"
-                                    className="font-medium transition-colors hover:text-gray-900"
-                                >
-                                    &nbsp;Terms and Conditions
-                                </a>
-                            </Typography>
-                        }
-                        containerProps={{ className: "-ml-2.5" }}
-                    />
-                    <Button className="mt-6" fullWidth>
-                        Register
+
+                    <Button className="mt-6" fullWidth color="green">
+                        Gửi Thông Báo
                     </Button>
-                    <Typography color="gray" className="mt-4 text-center font-normal">
-                        Already have an account?{" "}
-                        <a href="#" className="font-medium text-gray-900">
-                            Sign In
-                        </a>
-                    </Typography>
+
                 </form>
             </Card>
         </div>
@@ -107,6 +92,28 @@ function Tab2() {
 }
 function ZaloSendZNSThanks() {
     const [activeTab, setActiveTab] = useState(1);
+    const [file, setFile] = useState(null);
+    const [showAlertFailed, setShowAlertFailed] = useState(false);
+    
+
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            // Lấy dữ liệu từ file Excel
+            const firstSheetName = workbook.SheetNames[0];
+            const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
+
+            // Xử lý dữ liệu ở đây (ví dụ: lưu vào state của React)
+            setFile(file);
+            setShowAlertFailed(false);
+        };
+        reader.readAsArrayBuffer(file);
+    };
     return (
         <AuthenticatedLayoutAdmin >
             <Head title="Gửi ZNS cảm ơn khách hàng" />
@@ -131,8 +138,8 @@ function ZaloSendZNSThanks() {
                     <ul className="flex border-b">
                         <li className="-mb-px mr-1">
                             <button
-                                className={`inline-block py-2 px-4 text-green-700 ${activeTab === 1
-                                    ? 'border-gray border-l border-t border-r rounded-t bg-white '
+                                className={`inline-block py-2 px-4 text-green-600 font-bold ${activeTab === 1
+                                    ? 'border border-gray bg-white '
                                     : 'border-white'
                                     }`}
                                 onClick={() => setActiveTab(1)}
@@ -142,8 +149,8 @@ function ZaloSendZNSThanks() {
                         </li>
                         <li className="mr-1">
                             <button
-                                className={`inline-block py-2 px-4 text-green-500 ${activeTab === 2
-                                    ? 'border-white bg-white '
+                                className={`inline-block py-2 px-4 text-green-600 font-bold ${activeTab === 2
+                                    ? 'border border-gray bg-white '
                                     : 'border-white'
                                     }`}
                                 onClick={() => setActiveTab(2)}
@@ -153,7 +160,8 @@ function ZaloSendZNSThanks() {
                         </li>
                     </ul>
                     <div className="bg-white p-4 border border-t-0 rounded-b">
-                        {activeTab === 1 ? <Tab1 /> : <Tab2 />}
+                        {activeTab === 1 ? <Tab1 setShowAlertFailed={setShowAlertFailed} handleFileUpload={handleFileUpload} file={file} />
+                            : <Tab2 />}
                     </div>
                 </div>
             </div>

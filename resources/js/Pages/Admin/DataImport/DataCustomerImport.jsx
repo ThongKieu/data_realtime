@@ -13,7 +13,6 @@ import AlertIcon from '@/Pages/Admin/DataImport/Components/AlertIcon';
 
 function DataCustomerImport() {
     const [isLoading, setIsLoading] = useState(false);
-    const [excelData, setExcelData] = useState(null);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
    
@@ -34,7 +33,7 @@ function DataCustomerImport() {
             // Xử lý dữ liệu ở đây (ví dụ: lưu vào state của React)
             setFile(file);
             setShowAlertFailed(false);
-            setExcelData(sheetData);
+    
         };
         reader.readAsArrayBuffer(file);
     };

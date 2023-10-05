@@ -32,7 +32,7 @@ import {
     ArrowUpTrayIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { data } from "autoprefixer";
@@ -266,9 +266,7 @@ function Dashboard({ auth }) {
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
         setOpenWorkerNameTableRight(!openWorkerNameTableRight);
-    const [openSpending_total, setOpenSpending_total] = useState(false);
-    const handleOpenSpending_total = () =>
-        setOpenSpending_total(!openSpending_total);
+
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -481,7 +479,7 @@ function Dashboard({ auth }) {
                             work_note: work_note,
                         };
 
-                        const response = await fetch("api/web/works_cacle", {
+                        const response = await fetch("api/web/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                             headers: {
@@ -596,12 +594,6 @@ function Dashboard({ auth }) {
                                     onClick={handleSentNhanDoi}
                                 />
                             </Tooltip>
-                            {/* <Tooltip content="Sao Chép">
-                                <DocumentDuplicateIcon
-                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={() => handleCopyToClipboard(params.row)}
-                                />
-                            </Tooltip> */}
                         </div>
                         <Dialog
                             open={openTho}
@@ -903,6 +895,13 @@ function Dashboard({ auth }) {
             type: "text",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [previewImgVt, setPreviewImgVt] = useState([]);
+                const [previewImgPt, setPreviewImgPt] = useState([]);
+                const [openSpending_total, setOpenSpending_total] =
+                    useState(false);
+                const handleOpenSpending_total = () =>
+                    setOpenSpending_total(!openSpending_total);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -910,6 +909,23 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                     console.log(value);
+                };
+                const handleFileChangeVt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsVt = files.map((file) =>
+                        URL.createObjectURL(file)
+                    );
+
+                    setPreviewImgVt(previewsVt);
+                };
+                const handleFileChangePt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsPt = files.map((file) =>
+                    URL.createObjectURL(file)
+                );
+                    setPreviewImgPt(previewsPt);
                 };
                 console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
@@ -944,11 +960,11 @@ function Dashboard({ auth }) {
                     },
                 ];
                 const dataBtnChi = [
-                    {
-                        id: "BtnHuy",
-                        content: "Báo hủy",
-                        className: "text-red-500 rounded-none border-red-500",
-                    },
+                    // {
+                    //     id: "BtnHuy",
+                    //     content: "Báo hủy",
+                    //     className: "text-red-500 rounded-none border-red-500",
+                    // },
                     {
                         id: "BtnTraLich",
                         content: "Trả Lịch",
@@ -969,9 +985,9 @@ function Dashboard({ auth }) {
                 ];
                 return (
                     <div>
-                        <p onClick={handleOpenSpending_total}>
+                        <Button onClick={handleOpenSpending_total}>
                             {params.row.spending_total}
-                        </p>
+                        </Button>
                         <Dialog
                             open={openSpending_total}
                             handler={handleOpenSpending_total}
@@ -985,52 +1001,34 @@ function Dashboard({ auth }) {
                                 />
                             </div>
                             <DialogBody divider>
+                                <div className="flex justify-center w-full mb-4">
+                                    <Card className="flex flex-row w-[50%] border justify-center">
+                                        <Radio
+                                            id="DN"
+                                            name="kind_work"
+                                            label="Hoàn Thành"
+                                            value="0"
+                                            checked="0"
+                                            onChange={handleChange}
+                                            className="w-1 h-1 p-1"
+                                        />
+                                        <Radio
+                                            id="DL"
+                                            name="kind_work"
+                                            label="Mai Làm Tiếp"
+                                            value="1"
+                                            checked="1"
+                                            onChange={handleChange}
+                                            className="w-1 h-1 p-1"
+                                        />
+                                    </Card>
+                                </div>
                                 <WorkForm
                                     cardExpires={cardExpires}
                                     handleChange={handleChange}
                                     vatCard={vatCard}
                                 >
-                                    <div className="flex items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Hoàn Thành"
-                                                value="0"
-                                                checked="0"
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="DL"
-                                                name="kind_work"
-                                                label="Mai Làm Tiếp"
-                                                value="1"
-                                                checked="1"
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    No image
-                                                </Card>
-                                            )}
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    No image
-                                                </Card>
-                                            )}
-                                        </div>
-                                    </div>
+                                    {" "}
                                     <div className="flex gap-4 ">
                                         <div className="w-[50%]">
                                             <Input
@@ -1055,6 +1053,88 @@ function Dashboard({ auth }) {
                                                         className="w-1 h-1 p-1"
                                                     />
                                                 ))}
+                                            </div>
+                                            <div className="flex justify-between w-full">
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangeVt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Vật Tư)
+                                                        </i>
+                                                        {previewImgVt.map(
+                                                            (
+                                                                preview,
+                                                                index
+                                                            ) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={
+                                                                        preview
+                                                                    }
+                                                                    alt={`Preview ${index}`}
+                                                                    style={{
+                                                                        width: "100px",
+                                                                        height: "auto",
+                                                                        margin: "5px",
+                                                                    }}
+                                                                />
+                                                            )
+                                                        )}
+                                                    </Card>
+                                                )}
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangePt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Phiếu Thu)
+                                                        </i>
+                                                        {previewImgPt.map(
+                                                            (
+                                                                preview,
+                                                                index
+                                                            ) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={
+                                                                        preview
+                                                                    }
+                                                                    alt={`Preview ${index}`}
+                                                                    style={{
+                                                                        width: "100px",
+                                                                        height: "auto",
+                                                                        margin: "5px",
+                                                                    }}
+                                                                />
+                                                            )
+                                                        )}
+                                                    </Card>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex w-[50%]">
@@ -1093,15 +1173,15 @@ function Dashboard({ auth }) {
             width: 100,
             editable: false,
             type: "text",
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <p onClick={handleOpenSpending_total}>
-                            {params.row.income_total}
-                        </p>
-                    </div>
-                );
-            },
+            // renderCell: (params) => {
+            //     return (
+            //         <div>
+            //             <p>
+            //                 {params.row.income_total}
+            //             </p>
+            //         </div>
+            //     );
+            // },
         },
         {
             field: "seri_number",
@@ -1152,13 +1232,16 @@ function Dashboard({ auth }) {
                             id_auth: auth.user.id,
                             work_note: work_note,
                         };
-                        const response = await fetch("api/web/works_cacle", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
+                        const response = await fetch(
+                            "api/web/cancle/workassigment",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
@@ -1712,6 +1795,9 @@ function Dashboard({ auth }) {
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsRight}
                                                 hideFooterPagination={true}
+                                                containerProps={{
+                                                    className: "hidden",
+                                                }}
                                             />
                                         </Box>
                                     </div>

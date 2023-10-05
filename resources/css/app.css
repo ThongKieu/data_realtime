@@ -11,9 +11,9 @@
     height: 52px !important;
 }
 
-.MuiDataGrid-footerContainer {
+/* .css-wop1k0-MuiDataGrid-footerContainer {
     display: none !important;
-}
+} */
 
 #react-select-2-input {
     box-shadow: none !important;
@@ -61,4 +61,10 @@
     font-size: 16px;
     font-weight: 500;
     font-family: 'Times New Roman', Times, serif;
+}
+.css-c63i49-MuiInputBase-input-MuiInput-input:focus{
+    box-shadow: none;
+}
+.css-128fb87-MuiDataGrid-toolbarContainer>button{
+    display: none;
 }

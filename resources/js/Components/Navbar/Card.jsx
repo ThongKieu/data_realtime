@@ -2,7 +2,7 @@
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState,useEffect } from "react";
 
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 function CardMain() {
     const [WorkDataCountOrder, setWorkDataCountOrder] = useState(0);
     const [WorkDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
@@ -49,7 +49,7 @@ function CardMain() {
     };const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
     const fetchDelete = async () => {
         try {
-            const response = await fetch("api/web/works_cacle");
+            const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setWorkDataCountDelete(jsonData.num_can);
             if (socketDelete) {

@@ -342,7 +342,7 @@ class WorksAssignmentController extends Controller
                     }
                     $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content]);
                     break;
-                case ('2'):
+                case ('tobeConti'):
                     $content = Work::where('id','=',$id_cus) -> update(['work_note'=>$request->work_note]);
                     break;
                 case ('3'):

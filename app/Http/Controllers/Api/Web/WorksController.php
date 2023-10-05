@@ -28,7 +28,7 @@ class WorksController extends Controller
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 0)
-                    ->where('date_book', '=', $today);
+                    ->where('date_book2', '=', $today);
             })
             ->get();
         $dien_lanh =   Work::where('kind_work', '=', 1)
@@ -115,7 +115,7 @@ class WorksController extends Controller
         ];
         return response()->json($dataWorkDone);
     }
-    public function indexCancleBook(Request $request)
+    public function getCancleBook(Request $request)
     {
         if ($request->dateCheck) {
             $today = $request->dateCheck;
@@ -127,7 +127,19 @@ class WorksController extends Controller
             ->where('works.date_book', '=', $today)
             ->where('works.status_cus', '=', 2)
             ->limit(100)
-            ->get();
+            ->get([
+                
+                "works.id",
+                "works.work_content",
+                "works.name_cus",
+                "works.date_book",
+                "works.work_note",
+                "works.street",
+                "works.district",
+                "works.phone_number",
+                "works.image_work_path",
+                "users.name"
+            ]);
         $nu_can = count($co_khi);
         return response()->json([
             'num_can' => $nu_can,
@@ -194,6 +206,7 @@ class WorksController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     public function insertCancleBook(Request $request)
+
     {
         $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
         if ($up) {

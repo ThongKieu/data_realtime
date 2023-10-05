@@ -28,6 +28,7 @@ Route::prefix('web')->group(function () {
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-assignment','App\Http\Controllers\Api\WorksAssignmentController@updateWorkAss');
+        Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
     });
     Route::prefix('cancle')->group(function () {
         Route::get('works','App\Http\Controllers\Api\Web\WorksController@getCancleBook');

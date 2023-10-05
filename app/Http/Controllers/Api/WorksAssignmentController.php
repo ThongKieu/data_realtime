@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -331,8 +332,6 @@ class WorksAssignmentController extends Controller
         $id_cus =  WorksAssignment::where('id','=',$request->id)->value('id_cus');
         if($request->ac)
         {   
-           
-            
             switch ($request->ac) {
                 case ('1'):
                     $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
@@ -371,5 +370,27 @@ class WorksAssignmentController extends Controller
             return 'Delete work done !';
         }
         return  'Delete Failse !';
+    }
+    public function continueWorkAss($id ,) 
+    {
+        // update bảng đã phân
+        $up1 = WorksAssignment::where('id','=',$id)->update(['status_work'=>1]);
+        // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
+        $id_cus = WorksAssignment::where('id','=',$id)->get('id_cus');
+
+        $note = Work::where('id', '=', $id_cus)->value('work_note');
+
+        if($note != null)
+        {
+            $note = $note.' - '. date('d/m');
+        }
+        else
+        {
+            $sub = Carbon::now()->subDay(1)->format('d/m');
+            $note = 'Đã lan ngày : '.$sub;
+        
+        }
+        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 1, 'work_note' => $note]);
+        return response()->json('Ok !!!');
     }
 }

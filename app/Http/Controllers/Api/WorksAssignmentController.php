@@ -396,6 +396,6 @@ class WorksAssignmentController extends Controller
         return response()->json('Ok !!!');
     }
     function FunctionName() {
-        
+
     }
 }

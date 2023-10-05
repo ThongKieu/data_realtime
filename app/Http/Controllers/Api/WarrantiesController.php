@@ -11,6 +11,16 @@ use Illuminate\Http\Request;
 
 class WarrantiesController extends Controller
 {
+    public static function insertWarranties($id_work_has,    $warranty_time,    $warranty_info,    $unit)
+    {
+        $i = new Warranties([
+            'id_work_has'=>$id_work_has,
+            'warranty_time'=> $warranty_time,
+            'warranty_info' => $warranty_info,
+            'unit'=> $unit,
+        ]);
+        $i->save();
+    }
     public function infoWarranty(Request $req)
     {
         if($req->id_cus)

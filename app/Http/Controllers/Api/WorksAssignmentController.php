@@ -371,7 +371,9 @@ class WorksAssignmentController extends Controller
         }
         return  'Delete Failse !';
     }
-    public function continueWorkAss(Request $request)
+    
+    function FunctionName() {
+        public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {
             // update bảng đã phân
@@ -428,7 +430,5 @@ class WorksAssignmentController extends Controller
             return response()->json('Update work !!!');
         }
     }
-    function FunctionName() {
-        
     }
 }

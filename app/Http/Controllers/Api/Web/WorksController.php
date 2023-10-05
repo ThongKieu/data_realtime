@@ -28,7 +28,7 @@ class WorksController extends Controller
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 0)
-                    ->where('date_book2', '=', $today);
+                    ->where('date_book', '=', $today);
             })
             ->where('status_cus', '=', 0)
             ->get();

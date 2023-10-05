@@ -373,29 +373,62 @@ class WorksAssignmentController extends Controller
         }
         return  'Delete Failse !';
     }
+
     public function continueWorkAss(Request $request)
     {
-        // update bảng đã phân
-        $up1 = WorksAssignment::where('id','=',$id)->update(['status_work'=>1]);
-        // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
-        $id_cus = WorksAssignment::where('id','=',$id)->get('id_cus');
-
-        $note = Work::where('id', '=', $id_cus)->value('work_note');
-
-        if($note != null)
-        {
-            $note = $note.' - '. date('d/m');
+        if ($request->ac == 1) {
+            // update bảng đã phân
+            // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
+            $note = WorksAssignment::where('id', '=', $request->id)->value('real_note');
+            if ($note != null) {
+                $note = $note . ' - ' . date('d/m');
+            } else {
+                $sub = Carbon::now()->subDay(1)->format('d/m');
+                $note = 'Đã làm ngày : ' . $sub;
+            }
+            $up =  WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+            return response()->json('Update continue work !!!');
         }
-        else
-        {
-            $sub = Carbon::now()->subDay(1)->format('d/m');
-            $note = 'Đã lan ngày : '.$sub;
-
+        else{
+            $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
+            $up_work = Work::where('id','=',$id_cus)-> update([
+                'work_content'=>$request->work_content,
+                'date_book'=>$request->date_book,
+                'phone_number'=>$request->phone_number,
+                'district'=>$request->district,
+                'members_read'=>auth()->id,
+                'street'=>$request->street,
+                'name_cus'=>$request->name_cus,
+            ]);
+            $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
+            ->update([
+                'status_work' => 2,
+                'real_note' =>$request->real_note,
+                'spending_total'=>$request->spending_total,
+                'income_total'=>$request->income_total,
+                'bill_imag',
+                'seri_number'=>$request->seri_number,
+                'work_done_date'=>date('d-m-Y '),
+            ]);
+            if($request->unit != 0)
+            {
+                switch($request->unit)
+                {
+                    case 2:
+                        $time_w = 'w';
+                        break;
+                    case 3:
+                        $time_w = 'm';
+                        break;
+                    case 4:
+                        $time_w = 'y';
+                        break;
+                    default :
+                        $time_w = 'd';
+                }
+                WarrantiesController::insertWarranties($request->id,$time_w,$request->warranty_time,$request->warranty_time);
+            }
+            return response()->json('Update work !!!');
         }
-        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 1, 'work_note' => $note]);
-        return response()->json('Ok !!!');
-    }
-    function FunctionName() {
-
     }
 }

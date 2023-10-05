@@ -30,12 +30,17 @@ import {
     MagnifyingGlassIcon,
     ClipboardDocumentListIcon,
     ArrowUpTrayIcon,
+    XMarkIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { data } from "autoprefixer";
 import { Divider } from "@mui/material";
+import Modal from "@/Components/Modal";
+import PrimaryButton from "@/Components/PrimaryButton";
+import InputDialog from "@/Components/WorkForm";
+import WorkForm from "@/Components/WorkForm";
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
@@ -248,6 +253,20 @@ function Dashboard({ auth }) {
                 break;
         }
     };
+    // ---------- Dialog ------------------------
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(!open);
+    const [openTho, setOpenTho] = useState(false);
+    const handleOpenTho = () => setOpenTho(!openTho);
+    const [openAdminCheck, setOpenAdminCheck] = useState(false);
+    const handleOpenAdminCheck = () => setOpenAdminCheck(!openAdminCheck);
+    const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
+    const handleOpenUpdateThuChi = () => setOpenUpdateThuChi(!openUpdateThuChi);
+    const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
+        useState(false);
+    const handleOpenWorkerNameTableRight = () =>
+        setOpenWorkerNameTableRight(!openWorkerNameTableRight);
+
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -460,7 +479,7 @@ function Dashboard({ auth }) {
                             work_note: work_note,
                         };
 
-                        const response = await fetch("api/web/works_cacle", {
+                        const response = await fetch("api/web/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                             headers: {
@@ -575,12 +594,6 @@ function Dashboard({ auth }) {
                                     onClick={handleSentNhanDoi}
                                 />
                             </Tooltip>
-                            {/* <Tooltip content="Sao Chép">
-                                <DocumentDuplicateIcon
-                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={() => handleCopyToClipboard(params.row)}
-                                />
-                            </Tooltip> */}
                         </div>
                         <Dialog
                             open={openTho}
@@ -589,19 +602,10 @@ function Dashboard({ auth }) {
                         >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className="w-5 h-5 mr-3"
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpenTho}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
                                 <Select
@@ -627,19 +631,10 @@ function Dashboard({ auth }) {
                         <Dialog open={open} handler={handleOpen}>
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lý do hủy</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className="w-5 h-5 mr-3"
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpen}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
                                 <div className="grid gap-6">
@@ -674,7 +669,7 @@ function Dashboard({ auth }) {
             field: "work_content",
             headerName: "yêu cầu công việc",
             width: 140,
-            editable: true,
+            editable: false,
             renderEditCell: (params) => (
                 <input
                     type="text"
@@ -706,7 +701,7 @@ function Dashboard({ auth }) {
             width: 150,
             align: "left",
             headerAlign: "left",
-            editable: true,
+            editable: false,
             renderEditCell: (params) => (
                 <Input
                     type="text"
@@ -735,7 +730,7 @@ function Dashboard({ auth }) {
             headerName: "Quận",
             type: "text",
             width: 40,
-            editable: true,
+            editable: false,
             renderEditCell: (params) => (
                 <Input
                     type="text"
@@ -763,7 +758,7 @@ function Dashboard({ auth }) {
             field: "phone_number",
             headerName: "Số Điện thoại",
             width: 100,
-            editable: true,
+            editable: false,
             type: "text",
             renderEditCell: (params) => (
                 <Input
@@ -801,18 +796,16 @@ function Dashboard({ auth }) {
             field: "BH",
             headerName: "BH",
             width: 30,
-            editable: true,
+            editable: false,
             type: "text",
         },
         {
             field: "worker_name",
             headerName: "Thợ",
             width: 80,
-            editable: true,
+            editable: false,
             type: "singleSelect",
             renderCell: (params) => {
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => setOpen(!open);
                 const [cardExpires, setCardExpires] = useState(params.row);
                 console.log(params.row);
                 const handleChange = (e) => {
@@ -821,45 +814,24 @@ function Dashboard({ auth }) {
                         ...prevData,
                         [name]: value,
                     }));
-                    console.log(value);
                 };
                 const shouldDisplayIconButton = params.row.worker_name === null;
                 return (
                     <div>
-                        {/* {shouldDisplayIconButton ? (
-                            <Tooltip content="Nhập Thu Chi">
-                                <IconButton
-                                    className="w-8 h-8 p-1"
-                                    variant="outlined"
-                                    onClick={handleOpen}
-                                >
-                                    <ClipboardDocumentListIcon className="w-4 h-4" />
-                                </IconButton>
-                            </Tooltip>
-                        ) : (
-                            <p>{params.row.worker_name}</p>
-                        )} */}
-                        <p onClick={handleOpen}>{params.row.worker_name}</p>
+                        <p onClick={handleOpenWorkerNameTableRight}>
+                            {params.row.worker_name}
+                        </p>
                         <Dialog
-                            open={open}
-                            handler={handleOpen}
+                            open={openWorkerNameTableRight}
+                            handler={handleOpenWorkerNameTableRight}
                             className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
                         >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>CHỌN THỢ CẦN PHÂN</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
+                                <XMarkIcon
+                                    onClick={handleOpenWorkerNameTableRight}
                                     className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpen}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
                                 <form className="flex flex-col gap-4 mt-2">
@@ -901,6 +873,9 @@ function Dashboard({ auth }) {
                                             size="md"
                                             className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
                                             variant="outlined"
+                                            onClick={
+                                                handleOpenWorkerNameTableRight
+                                            }
                                         >
                                             Hủy
                                         </Button>
@@ -919,10 +894,14 @@ function Dashboard({ auth }) {
             editable: false,
             type: "text",
             renderCell: (params) => {
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => setOpen(!open);
                 const [cardExpires, setCardExpires] = useState(params.row);
-                console.log(params.row);
+                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [previewImgVt, setPreviewImgVt] = useState([]);
+                const [previewImgPt, setPreviewImgPt] = useState([]);
+                const [openSpending_total, setOpenSpending_total] =
+                    useState(false);
+                const handleOpenSpending_total = () =>
+                    setOpenSpending_total(!openSpending_total);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -931,194 +910,125 @@ function Dashboard({ auth }) {
                     }));
                     console.log(value);
                 };
-                const shouldDisplayIconButton = params.row.spending_total === 0;
+                const handleFileChangeVt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsVt = files.map((file) =>
+                        URL.createObjectURL(file)
+                    );
+
+                    setPreviewImgVt(previewsVt);
+                };
+                const handleFileChangePt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsPt = files.map((file) =>
+                    URL.createObjectURL(file)
+                );
+                    setPreviewImgPt(previewsPt);
+                };
+                console.log("params >_<", params);
+                const vatCard = params.row.bill_image === null;
+                const dataRadioChi = [
+                    {
+                        id: "BHDay",
+                        name: "BH",
+                        label: "Ngày",
+                        value: "0",
+                        checked: "0",
+                    },
+                    {
+                        id: "BHWeek",
+                        name: "BH",
+                        label: "Tuần",
+                        value: "1",
+                        checked: "1",
+                    },
+                    {
+                        id: "BHMonth",
+                        name: "BH",
+                        label: "Tháng",
+                        value: "2",
+                        checked: "2",
+                    },
+                    {
+                        id: "BHKBH",
+                        name: "BH",
+                        label: "Không Bảo Hành",
+                        value: "3",
+                        checked: "3",
+                    },
+                ];
+                const dataBtnChi = [
+                    // {
+                    //     id: "BtnHuy",
+                    //     content: "Báo hủy",
+                    //     className: "text-red-500 rounded-none border-red-500",
+                    // },
+                    {
+                        id: "BtnTraLich",
+                        content: "Trả Lịch",
+                        className: "text-blue-500 rounded-none border-blue-500",
+                    },
+                    {
+                        id: "BtnKhaoSat",
+                        content: "Khảo Sát",
+                        className:
+                            "text-orange-500 rounded-none border-orange-500",
+                    },
+                    {
+                        id: "BtnCapNhat",
+                        content: "Cập Nhật",
+                        className:
+                            "text-green-500 rounded-none border-green-500",
+                    },
+                ];
                 return (
                     <div>
-                        {shouldDisplayIconButton ? (
-                            <Tooltip content="Nhập Thu Chi">
-                                <IconButton
-                                    className="w-8 h-8 p-1"
-                                    variant="outlined"
-                                    onClick={handleOpen}
-                                >
-                                    <ClipboardDocumentListIcon className="w-4 h-4" />
-                                </IconButton>
-                            </Tooltip>
-                        ) : (
-                            <p>{params.row.spending_total}</p>
-                        )}
+                        <Button onClick={handleOpenSpending_total}>
+                            {params.row.spending_total}
+                        </Button>
                         <Dialog
-                            open={open}
-                            handler={handleOpen}
+                            open={openSpending_total}
+                            handler={handleOpenSpending_total}
                             className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
                         >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Nhập Thu Chi</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
+                                <XMarkIcon
                                     className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpen}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                    onClick={handleOpenSpending_total}
+                                />
                             </div>
                             <DialogBody divider>
-                                <form className="flex flex-col gap-4 mt-2">
-                                    <div className="flex items-center gap-4 ">
-                                        <Input
-                                            label="Yêu Cầu Công Việc"
-                                            id="work_content"
-                                            name="work_content"
-                                            value={cardExpires.work_content}
+                                <div className="flex justify-center w-full mb-4">
+                                    <Card className="flex flex-row w-[50%] border justify-center">
+                                        <Radio
+                                            id="DN"
+                                            name="kind_work"
+                                            label="Hoàn Thành"
+                                            value="0"
+                                            checked="0"
                                             onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
+                                            className="w-1 h-1 p-1"
                                         />
-                                        <Input
-                                            label="Số Điện Thoại"
-                                            id="phone_number"
-                                            name="phone_number"
-                                            value={cardExpires.phone_number}
+                                        <Radio
+                                            id="DL"
+                                            name="kind_work"
+                                            label="Mai Làm Tiếp"
+                                            value="1"
+                                            checked="1"
                                             onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
+                                            className="w-1 h-1 p-1"
                                         />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Địa Chỉ"
-                                            id="street"
-                                            name="street"
-                                            value={cardExpires.street}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Quận"
-                                            id="district"
-                                            name="district"
-                                            value={cardExpires.district}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Tên Khách Hàng"
-                                            id="name_cus"
-                                            name="name_cus"
-                                            value={cardExpires.name_cus}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Ngày Làm"
-                                            id="date_book"
-                                            name="date_book"
-                                            value={cardExpires.date_book}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-4 ">
-                                        <div className="w-full">
-                                            <Input
-                                                label="Ghi Chú"
-                                                id="real_note"
-                                                name="real_note"
-                                                value={cardExpires.real_note}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-
-                                        <div className="flex items-center w-full gap-4 ">
-                                            <Input
-                                                label="Tiền Chi"
-                                                id="spending_total"
-                                                name="spending_total"
-                                                value={
-                                                    cardExpires.spending_total
-                                                }
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                            <Input
-                                                label="Tiền Thu"
-                                                id="income_total"
-                                                name="income_total"
-                                                value={cardExpires.income_total}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Hoàn Thành"
-                                                value="0"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="DL"
-                                                name="kind_work"
-                                                label="Mai Làm Tiếp"
-                                                value="1"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Vật Tư
-                                            </Button>
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Phiếu Thu
-                                            </Button>
-                                        </div>
-                                    </div>
+                                    </Card>
+                                </div>
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
+                                >
+                                    {" "}
                                     <div className="flex gap-4 ">
                                         <div className="w-[50%]">
                                             <Input
@@ -1132,42 +1042,99 @@ function Dashboard({ auth }) {
                                                 className="shadow-none"
                                             />
                                             <div className="flex justify-between w-full mt-5 text-sm">
-                                                <Radio
-                                                    id="BHDay"
-                                                    name="BH"
-                                                    label="Ngày"
-                                                    value="0"
-                                                    checked='{formData.kind_work === "0"}'
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                                <Radio
-                                                    id="BHWeek"
-                                                    name="BH"
-                                                    label="Tuần"
-                                                    value="1"
-                                                    checked='{formData.kind_work === "1"}'
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                                <Radio
-                                                    id="BHMonth"
-                                                    name="BH"
-                                                    label="Tháng"
-                                                    value="0"
-                                                    checked='{formData.kind_work === "0"}'
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                                <Radio
-                                                    id="KBH"
-                                                    name="BH"
-                                                    label="Không bảo hành"
-                                                    value="1"
-                                                    checked='{formData.kind_work === "1"}'
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
+                                                {dataRadioChi.map((result) => (
+                                                    <Radio
+                                                        id={result.id}
+                                                        name={result.name}
+                                                        label={result.label}
+                                                        value={result.value}
+                                                        checked={result.checked}
+                                                        onChange={handleChange}
+                                                        className="w-1 h-1 p-1"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div className="flex justify-between w-full">
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangeVt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Vật Tư)
+                                                        </i>
+                                                        {previewImgVt.map(
+                                                            (
+                                                                preview,
+                                                                index
+                                                            ) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={
+                                                                        preview
+                                                                    }
+                                                                    alt={`Preview ${index}`}
+                                                                    style={{
+                                                                        width: "100px",
+                                                                        height: "auto",
+                                                                        margin: "5px",
+                                                                    }}
+                                                                />
+                                                            )
+                                                        )}
+                                                    </Card>
+                                                )}
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangePt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Phiếu Thu)
+                                                        </i>
+                                                        {previewImgPt.map(
+                                                            (
+                                                                preview,
+                                                                index
+                                                            ) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={
+                                                                        preview
+                                                                    }
+                                                                    alt={`Preview ${index}`}
+                                                                    style={{
+                                                                        width: "100px",
+                                                                        height: "auto",
+                                                                        margin: "5px",
+                                                                    }}
+                                                                />
+                                                            )
+                                                        )}
+                                                    </Card>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex w-[50%]">
@@ -1177,38 +1144,23 @@ function Dashboard({ auth }) {
                                             />
                                         </div>
                                     </div>
-                                    <Divider />
-                                    <div className="flex flex-row-reverse">
-                                        <Button
-                                            size="sx"
-                                            className="p-3 py-2 mx-4 text-red-500 border-red-500"
-                                            variant="outlined"
-                                        >
-                                            Báo Hủy
-                                        </Button>
-                                        <Button
-                                            size="sx"
-                                            className="p-3 py-0 mx-4 "
-                                            variant="outlined"
-                                        >
-                                            Trả Lịch
-                                        </Button>
-                                        <Button
-                                            size="sx"
-                                            className="p-3 py-0 mx-4 text-orange-500 border-orange-500 "
-                                            variant="outlined"
-                                        >
-                                            Khảo Sát
-                                        </Button>
-                                        <Button
-                                            size="sx"
-                                            className="p-3 py-0 mx-4 text-green-500 border-green-500 "
-                                            variant="outlined"
-                                        >
-                                            Cập Nhật
-                                        </Button>
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row-reverse pt-2">
+                                        {dataBtnChi.map((result) => (
+                                            <Button
+                                                id={result.id}
+                                                size="sm"
+                                                className={
+                                                    `p-3 py-2 mx-4 ` +
+                                                    result.className
+                                                }
+                                                variant="outlined"
+                                            >
+                                                {result.content}
+                                            </Button>
+                                        ))}
                                     </div>
-                                </form>
+                                </WorkForm>
                             </DialogBody>
                         </Dialog>
                     </div>
@@ -1219,14 +1171,23 @@ function Dashboard({ auth }) {
             field: "income_total",
             headerName: "Thu",
             width: 100,
-            editable: true,
+            editable: false,
             type: "text",
+            // renderCell: (params) => {
+            //     return (
+            //         <div>
+            //             <p>
+            //                 {params.row.income_total}
+            //             </p>
+            //         </div>
+            //     );
+            // },
         },
         {
             field: "seri_number",
             headerName: "Phiếu Thu",
             width: 100,
-            editable: true,
+            editable: false,
             type: "text",
         },
         {
@@ -1271,14 +1232,16 @@ function Dashboard({ auth }) {
                             id_auth: auth.user.id,
                             work_note: work_note,
                         };
-
-                        const response = await fetch("api/web/works_cacle", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
+                        const response = await fetch(
+                            "api/web/cancle/workassigment",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
@@ -1316,6 +1279,58 @@ function Dashboard({ auth }) {
                         console.log("lixo", error);
                     }
                 };
+                const vatCard = params.row.bill_image === null;
+                const dataRadio = [
+                    {
+                        id: "ThoDN",
+                        name: "XNTTNV",
+                        label: "Điện Nước",
+                        value: "0",
+                        checked: '{formData.kind_work === "0"}',
+                    },
+                    {
+                        id: "ThoDL",
+                        name: "XNTTNV",
+                        label: "Điện Lạnh",
+                        value: "1",
+                        checked: '{formData.kind_work === "1"}',
+                    },
+                    {
+                        id: "ThoDG",
+                        name: "XNTTNV",
+                        label: "Đồ Gỗ",
+                        value: "2",
+                        checked: '{formData.kind_work === "2"}',
+                    },
+                    {
+                        id: "ThoXD",
+                        name: "XNTTNV",
+                        label: "Xây Dựng",
+                        value: "3",
+                        checked: '{formData.kind_work === "3"}',
+                    },
+                    {
+                        id: "ThoNLMT",
+                        name: "XNTTNV",
+                        label: "Năng Lượng Mặt Trời",
+                        value: "4",
+                        checked: '{formData.kind_work === "4"}',
+                    },
+                    {
+                        id: "ThoVC",
+                        name: "XNTTNV",
+                        label: "Vận Chuyển",
+                        value: "5",
+                        checked: '{formData.kind_work === "5"}',
+                    },
+                    {
+                        id: "ThoHX",
+                        name: "XNTTNV",
+                        label: "Cơ Khí",
+                        value: "6",
+                        checked: '{formData.kind_work === "6"}',
+                    },
+                ];
                 return (
                     <div>
                         <div className="flex">
@@ -1348,19 +1363,10 @@ function Dashboard({ auth }) {
                         >
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lựa Chọn Thợ</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className="w-5 h-5 mr-3"
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpenTho}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
                                 <Select
@@ -1386,19 +1392,10 @@ function Dashboard({ auth }) {
                         <Dialog open={open} handler={handleOpen}>
                             <div className="flex items-center justify-between">
                                 <DialogHeader>Lý do hủy</DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className="w-5 h-5 mr-3"
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpen}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
                                 <div className="grid gap-6">
@@ -1432,164 +1429,17 @@ function Dashboard({ auth }) {
                                 <DialogHeader>
                                     XÁC NHẬN THÔNG TIN THỢ BÁO
                                 </DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
+                                <XMarkIcon
                                     className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpenAdminCheck}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
-                                <form className="flex flex-col gap-4 mt-2">
-                                    <div className="flex items-center gap-4 ">
-                                        <Input
-                                            label="Yêu Cầu Công Việc"
-                                            id="work_content"
-                                            name="work_content"
-                                            value={cardExpires.work_content}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Số Điện Thoại"
-                                            id="phone_number"
-                                            name="phone_number"
-                                            value={cardExpires.phone_number}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Địa Chỉ"
-                                            id="street"
-                                            name="street"
-                                            value={cardExpires.street}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Quận"
-                                            id="district"
-                                            name="district"
-                                            value={cardExpires.district}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Tên Khách Hàng"
-                                            id="name_cus"
-                                            name="name_cus"
-                                            value={cardExpires.name_cus}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Ngày Làm"
-                                            id="date_book"
-                                            name="date_book"
-                                            value={cardExpires.date_book}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            disabled
-                                            className="shadow-none"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-4 ">
-                                        <div className="w-full">
-                                            <Input
-                                                label="Ghi Chú"
-                                                id="real_note"
-                                                name="real_note"
-                                                value={cardExpires.real_note}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-
-                                        <div className="flex items-center w-full gap-4 ">
-                                            <Input
-                                                label="Tiền Chi"
-                                                id="spending_total"
-                                                name="spending_total"
-                                                value={
-                                                    cardExpires.spending_total
-                                                }
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                            <Input
-                                                label="Tiền Thu"
-                                                id="income_total"
-                                                name="income_total"
-                                                value={cardExpires.income_total}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Đã Làm"
-                                                value="0"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Vật Tư
-                                            </Button>
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Phiếu Thu
-                                            </Button>
-                                        </div>
-                                    </div>
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
+                                >
                                     <div className="gap-4 ">
                                         <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
                                             <label htmlFor="Nội Dung Bảo Hành">
@@ -1601,86 +1451,34 @@ function Dashboard({ auth }) {
                                         </Card>
 
                                         <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
-                                            <Radio
-                                                id="BHDay"
-                                                name="BH"
-                                                label="Điện Nước"
-                                                value="0"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="BHWeek"
-                                                name="BH"
-                                                label="Điện Lạnh"
-                                                value="1"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="BHMonth"
-                                                name="BH"
-                                                label="Đồ Gỗ"
-                                                value="2"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="KBH"
-                                                name="BH"
-                                                label="Xây Dựng"
-                                                value="3"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="KBH"
-                                                name="BH"
-                                                label="Năng Lượng Mặt Trời"
-                                                value="4"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="KBH"
-                                                name="BH"
-                                                label="Vận Chuyển"
-                                                value="3"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                            <Radio
-                                                id="KBH"
-                                                name="BH"
-                                                label="Cơ Khí"
-                                                value="4"
-                                                checked='{formData.kind_work === "1"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
+                                            {dataRadio.map((result) => (
+                                                <Radio
+                                                    id={result.id}
+                                                    name={result.name}
+                                                    label={result.label}
+                                                    value={result.value}
+                                                    checked={result.checked}
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                            ))}
                                         </Card>
                                     </div>
-                                    <Divider />
-                                    <div className="flex flex-row justify-center">
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row justify-center pt-2">
                                         <Typography className="font-medium text-red-700">
                                             (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
                                             Trước Khi Xác Nhận!!
                                         </Typography>
                                         <Button
-                                            size="sx"
-                                            className="px-3 py-2 mx-4 "
+                                            size="sm"
+                                            className="px-3 py-2 mx-4 shadow-none"
                                             variant="outlined"
                                         >
                                             Xác Nhận Thông Tin
                                         </Button>
                                     </div>
-                                </form>
+                                </WorkForm>
                             </DialogBody>
                         </Dialog>
                         <Dialog
@@ -1692,138 +1490,17 @@ function Dashboard({ auth }) {
                                 <DialogHeader>
                                     CẬP NHẬT THÔNG TIN THỢ
                                 </DialogHeader>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
+                                <XMarkIcon
                                     className="w-5 h-5 mr-3 cursor-pointer"
                                     onClick={handleOpenUpdateThuChi}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                             </div>
                             <DialogBody divider>
-                                <form className="flex flex-col gap-4 mt-2">
-                                    <div className="flex items-center gap-4 ">
-                                        <Input
-                                            label="Yêu Cầu Công Việc"
-                                            id="work_content"
-                                            name="work_content"
-                                            value={cardExpires.work_content}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Số Điện Thoại"
-                                            id="phone_number"
-                                            name="phone_number"
-                                            value={cardExpires.phone_number}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Địa Chỉ"
-                                            id="street"
-                                            name="street"
-                                            value={cardExpires.street}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Quận"
-                                            id="district"
-                                            name="district"
-                                            value={cardExpires.district}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            label="Tên Khách Hàng"
-                                            id="name_cus"
-                                            name="name_cus"
-                                            value={cardExpires.name_cus}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Ngày Làm"
-                                            id="date_book"
-                                            name="date_book"
-                                            value={cardExpires.date_book}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            disabled
-                                            className="shadow-none"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-4 ">
-                                        <div className="w-full">
-                                            <Input
-                                                label="Ghi Chú"
-                                                id="real_note"
-                                                name="real_note"
-                                                value={cardExpires.real_note}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-
-                                        <div className="flex items-center w-full gap-4 ">
-                                            <Input
-                                                label="Tiền Chi"
-                                                id="spending_total"
-                                                name="spending_total"
-                                                value={
-                                                    cardExpires.spending_total
-                                                }
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                            <Input
-                                                label="Tiền Thu"
-                                                id="income_total"
-                                                name="income_total"
-                                                value={cardExpires.income_total}
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                    </div>
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
+                                >
                                     <div className="items-center justify-center gap-4 my-2 text-sm ">
                                         <div className="flex justify-between w-full">
                                             <Radio
@@ -1858,21 +1535,21 @@ function Dashboard({ auth }) {
                                             Không có thông tin bảo hành !
                                         </p>
                                     </Card>
-                                    <Divider />
-                                    <div className="flex flex-row justify-center">
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row justify-center pt-2">
                                         <Typography className="font-medium text-red-700">
                                             (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
                                             Trước Khi Xác Nhận!!
                                         </Typography>
                                         <Button
-                                            size="sx"
+                                            size="sm"
                                             className="px-3 py-2 mx-4 "
                                             variant="outlined"
                                         >
-                                            Xác Nhận Thông Tin
+                                            Cập nhật
                                         </Button>
                                     </div>
-                                </form>
+                                </WorkForm>
                             </DialogBody>
                         </Dialog>
                     </div>
@@ -1909,6 +1586,53 @@ function Dashboard({ auth }) {
         }
     };
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
+    //------------------------------------data dataGrid---------------------------------------------
+    const dataGrid = [
+        {
+            id: "workDN",
+            rowsDataGrid: workDataDN_done,
+            contentDataGird: "Điện Nước",
+        },
+        {
+            id: "workDL",
+            rowsDataGrid: workDataDL_done,
+            contentDataGird: "Điện Lạnh",
+        },
+        {
+            id: "workDG",
+            rowsDataGrid: workDataDG_done,
+            contentDataGird: "Đồ Gỗ",
+        },
+        {
+            id: "workNLMT",
+            rowsDataGrid: workDataNLMT_done,
+            contentDataGird: "Năng Lượng Mặt Trời",
+        },
+        {
+            id: "workXD",
+            rowsDataGrid: workDataXD_done,
+            contentDataGird: "Xây Dựng",
+        },
+        {
+            id: "workVC",
+            rowsDataGrid: workDataVC_done,
+            contentDataGird: "Vận Chuyển",
+        },
+        {
+            id: "workHX",
+            rowsDataGrid: workDataHX_done,
+            contentDataGird: "Cơ Khí",
+        },
+    ];
+    const dataBtnFixed = [
+        { id: 0, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
+        { id: 1, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
+        { id: 2, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
+        { id: 3, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
+        { id: 4, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
+        { id: 5, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
+        { id: 6, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
+    ];
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
@@ -2059,126 +1783,46 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div>
-                            <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Điện Nước
-                            </Typography>
+                            {dataGrid.map((result) => {
+                                return (
+                                    <div id={result.id}>
+                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                            {result.contentDataGird}
+                                        </Typography>
 
-                            <Box>
-                                <DataGrid
-                                    rows={workDataDN_done}
-                                    columns={columnsRight}
-                                    hideFooterPagination={true}
-                                />
-                            </Box>
-
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Điện Lạnh
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataDL_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Đồ Gỗ
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataDG_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Năng Lượng Mặt Trời
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataNLMT_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Xây Dựng
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataXD_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Vận Chuyển
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataVC_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
-                            <Typography className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
-                                Cơ Khí
-                            </Typography>
-                            <Box>
-                                <DataGrid
-                                    rows={workDataHX_done}
-                                    columns={columnsRight}
-                                    editMode="row"
-                                />
-                            </Box>
+                                        <Box>
+                                            <DataGrid
+                                                rows={result.rowsDataGrid}
+                                                columns={columnsRight}
+                                                hideFooterPagination={true}
+                                                containerProps={{
+                                                    className: "hidden",
+                                                }}
+                                            />
+                                        </Box>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </Card>
             </div>
             <div className="fixed flex mt-1">
                 <div>
-                    <Button
-                        className="p-2 mx-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(DN)}
-                    >
-                        Điện Nước
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(DN)}
-                    >
-                        Điện Lạnh
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(DG)}
-                    >
-                        Đồ Gỗ
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(NLMT)}
-                    >
-                        Năng Lượng Mặt Trời
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(XD)}
-                    >
-                        Xây Dựng
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(VC)}
-                    >
-                        Vận Chuyển
-                    </Button>
-                    <Button
-                        className="p-2 mr-1 text-green-700 bg-white border border-green-700 shadow-none hover:shadow-green-700"
-                        onClick={() => scrollView(HX)}
-                    >
-                        Cơ Khí
-                    </Button>
+                    {dataBtnFixed.map((result) => {
+                        return (
+                            <Button
+                                id={result.id}
+                                className={`p-2 mx-1 text-green-700 border border-green-700 rounded-tr-none rounded-bl-none shadow-none focus:bg-green-700 focus:text-white `}
+                                onClick={() => {
+                                    scrollView(result.idFixedBtn);
+                                }}
+                                variant="outlined"
+                            >
+                                {result.contentBtnFixed}
+                            </Button>
+                        );
+                    })}
                 </div>
                 <div className="flex items-center dateBooking">
                     <Input
@@ -2191,14 +1835,15 @@ function Dashboard({ auth }) {
                         labelProps={{
                             className: "hidden",
                         }}
-                        className="text-green-700"
+                        className="text-green-700 rounded-tr-none rounded-bl-none"
                         value={selectedDate}
                         onChange={handleDateChange}
                     />
                     <Button
                         size="sm"
-                        className="px-2 text-green-700 bg-white border border-green-700 rounded"
+                        className="p-2 text-green-700 border border-green-700 rounded-full"
                         onClick={handleSearch}
+                        variant="outlined"
                     >
                         <MagnifyingGlassIcon className="w-4 h-4 " />
                     </Button>

@@ -4,6 +4,8 @@ import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient();
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
@@ -21,8 +23,9 @@ createInertiaApp({
         root.render(
             <QueryClientProvider client={queryClient}>
                 <App {...props} key={index} />
+                <ToastContainer />
             </QueryClientProvider>
-            
+
         );
     },
     progress: {

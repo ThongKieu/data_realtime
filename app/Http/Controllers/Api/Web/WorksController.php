@@ -30,6 +30,7 @@ class WorksController extends Controller
                 $query->where('kind_work', '=', 0)
                     ->where('date_book2', '=', $today);
             })
+            ->where('status_cus', '=', 0)
             ->get();
         $dien_lanh =   Work::where('kind_work', '=', 1)
             ->where('status_cus', '=', 0)
@@ -37,6 +38,7 @@ class WorksController extends Controller
                 $query->where('kind_work', '=', 1)
                     ->where('date_book', '=', $today);
             })
+            ->where('status_cus', '=', 0)
             ->get();
         $do_go     =    Work::where('kind_work', '=', 2)
             ->where('status_cus', '=', 0)
@@ -44,34 +46,35 @@ class WorksController extends Controller
                 $query->where('kind_work', '=', 2)
                     ->where('date_book', '=', $today);
             })
+            ->where('status_cus', '=', 0)
             ->get();
         $nlmt      =   Work::where('kind_work', '=', 3)
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 3)
                     ->where('date_book', '=', $today);
-            })
+            })->where('status_cus', '=', 0)
             ->get();
         $xay_dung  =    Work::where('kind_work', '=', 4)
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 4)
                     ->where('date_book', '=', $today);
-            })
+            })->where('status_cus', '=', 0)
             ->get();
         $tai_xe    =    Work::where('kind_work', '=', 5)
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 5)
                     ->where('date_book', '=', $today);
-            })
+            })->where('status_cus', '=', 0)
             ->get();
         $co_khi    =    Work::where('kind_work', '=', 6)
             ->where('status_cus', '=', 0)
             ->orWhere(function ($query) use ($today) {
                 $query->where('kind_work', '=', 6)
                     ->where('date_book', '=', $today);
-            })
+            })->where('status_cus', '=', 0)
             ->get();
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWork = [
@@ -208,6 +211,7 @@ class WorksController extends Controller
     public function insertCancleBook(Request $request)
 
     {
+        // dd($request);
         $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
         if ($up) {
             return 'Delete work done !';

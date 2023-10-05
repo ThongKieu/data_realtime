@@ -12,12 +12,10 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import {
-    UserPlusIcon,ArrowPathIcon
-} from "@heroicons/react/24/outline";
+import { UserPlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import newSocket from "@/Utils/socket";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import newSocket from "@/utils/socket";
 const columns = [
     {
         field: "work_content",
@@ -48,11 +46,11 @@ const columns = [
     {
         field: "phone_number",
         headerName: "Số Điện thoại",
-        type: "number",
+        type: "text",
         width: 220,
     },
     {
-        field: "members_read",
+        field: "name",
         headerName: "Người Xử Lý",
         type: "text",
         width: 220,
@@ -158,7 +156,8 @@ const columns = [
 ];
 function CancelBooking({ auth }) {
     const [deleteBooking, setDeleteBooking] = useState([]);
-    const [socketDelete, setSocketDelete] = useState();
+    console.log("deleteBooking", deleteBooking);
+    const [socketDelete, setSocketDelete] = useState("");
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
         fetchDelete();
@@ -175,16 +174,20 @@ function CancelBooking({ auth }) {
     }, []);
     const fetchDelete = async () => {
         try {
-            const response = await fetch("api/web/works_cacle");
+            const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setDeleteBooking(jsonData.info_can);
-            console.log("num_can", jsonData.info_can);
-            socketDelete.emit("addWorkTo_Server",socketDelete)
+            console.log("num_can111", jsonData.info_can);
+            // socketDelete.emit("addWorkTo_Server",socketDelete)
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight - 180,
+    });
+    var heightScreenTV = screenSize.height;
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
@@ -194,8 +197,24 @@ function CancelBooking({ auth }) {
                         Lịch Hủy
                     </Typography>
                     {/* bang ben trai  */}
-                    <Box sx={{ width: 1 }}>
-                        <DataGrid rows={deleteBooking} columns={columns} />
+                    <Box sx={{ width: 1, height: heightScreenTV }}>
+                        <DataGrid
+                            rows={deleteBooking}
+                            columns={columns}
+                            disableColumnFilter
+                            disableColumnSelector
+                            disableDensitySelector
+                            slots={{ toolbar: GridToolbar }}
+                            initialState={{
+                                ...deleteBooking.initialState,
+                                pagination: { paginationModel: { pageSize: 10 } },
+                              }}
+                            slotProps={{
+                                toolbar: {
+                                    showQuickFilter: true,
+                                },
+                            }}
+                        />
                     </Box>
                 </div>
             </Card>

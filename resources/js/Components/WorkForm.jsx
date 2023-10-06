@@ -8,7 +8,7 @@ import {
     Card,
 } from "@material-tailwind/react";
 
-function WorkForm({ cardExpires, handleChange, vatCard,children }) {
+function WorkForm({ cardExpires, handleChange, vatCard,children,disabledAllowed }) {
     return (
         <form className="flex flex-col gap-4 mt-2">
             {/* Các trường input */}
@@ -83,6 +83,7 @@ function WorkForm({ cardExpires, handleChange, vatCard,children }) {
                         className: "min-w-[72px]",
                     }}
                     className="shadow-none"
+                    disabled={disabledAllowed}
                 />
             </div>
 
@@ -112,6 +113,7 @@ function WorkForm({ cardExpires, handleChange, vatCard,children }) {
                             className: "min-w-[72px]",
                         }}
                         className="shadow-none"
+                        disabled={disabledAllowed}
                     />
                     <Input
                         label="Tiền Thu"
@@ -123,6 +125,7 @@ function WorkForm({ cardExpires, handleChange, vatCard,children }) {
                             className: "min-w-[72px]",
                         }}
                         className="shadow-none"
+                        disabled={disabledAllowed}
                     />
                 </div>
             </div>

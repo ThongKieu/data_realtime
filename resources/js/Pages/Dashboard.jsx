@@ -32,7 +32,7 @@ import {
     ArrowUpTrayIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { data } from "autoprefixer";
@@ -62,15 +62,13 @@ function Dashboard({ auth }) {
     const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
-    }, []);
-    useEffect(() => {
         setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            console.log("hell", data);
             if (data != "") {
                 fetchDataDashboard(data);
                 fetchData(data);
@@ -226,6 +224,25 @@ function Dashboard({ auth }) {
         }
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
+    const fetchDataUpdateThuchi = async (data, Url_Api) => {
+        try {
+            const res = await fetch(Url_Api, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                console.log(`Cập nhật thông tin ${data.ac}`, data);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
     const handleKeyPress = (e) => {
         const { row, col } = selectedCell;
@@ -266,9 +283,7 @@ function Dashboard({ auth }) {
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
         setOpenWorkerNameTableRight(!openWorkerNameTableRight);
-    const [openSpending_total, setOpenSpending_total] = useState(false);
-    const handleOpenSpending_total = () =>
-        setOpenSpending_total(!openSpending_total);
+
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -481,7 +496,7 @@ function Dashboard({ auth }) {
                             work_note: work_note,
                         };
 
-                        const response = await fetch("api/web/works_cacle", {
+                        const response = await fetch("api/web/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                             headers: {
@@ -596,12 +611,6 @@ function Dashboard({ auth }) {
                                     onClick={handleSentNhanDoi}
                                 />
                             </Tooltip>
-                            {/* <Tooltip content="Sao Chép">
-                                <DocumentDuplicateIcon
-                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={() => handleCopyToClipboard(params.row)}
-                                />
-                            </Tooltip> */}
                         </div>
                         <Dialog
                             open={openTho}
@@ -623,7 +632,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="border-none shadow-none qqq"
+                                    className="border-none shadow-none"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">
@@ -903,6 +912,13 @@ function Dashboard({ auth }) {
             type: "text",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [previewImgVt, setPreviewImgVt] = useState([]);
+                const [previewImgPt, setPreviewImgPt] = useState([]);
+                const [openSpending_total, setOpenSpending_total] =
+                    useState(false);
+                const handleOpenSpending_total = () =>
+                    setOpenSpending_total(!openSpending_total);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -911,44 +927,58 @@ function Dashboard({ auth }) {
                     }));
                     console.log(value);
                 };
+                const handleFileChangeVt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsVt = files.map((file) =>
+                        URL.createObjectURL(file)
+                    );
+
+                    setPreviewImgVt(previewsVt);
+                };
+                const handleFileChangePt = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previewsPt = files.map((file) =>
+                        URL.createObjectURL(file)
+                    );
+                    setPreviewImgPt(previewsPt);
+                };
                 console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
-                const dataRadioChi = [
-                    {
-                        id: "BHDay",
-                        name: "BH",
-                        label: "Ngày",
-                        value: "0",
-                        checked: "0",
-                    },
-                    {
-                        id: "BHWeek",
-                        name: "BH",
-                        label: "Tuần",
-                        value: "1",
-                        checked: "1",
-                    },
-                    {
-                        id: "BHMonth",
-                        name: "BH",
-                        label: "Tháng",
-                        value: "2",
-                        checked: "2",
-                    },
-                    {
-                        id: "BHKBH",
-                        name: "BH",
-                        label: "Không Bảo Hành",
-                        value: "3",
-                        checked: "3",
-                    },
-                ];
+                const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
+                const [valueRadio, setValueRadio] = useState("1");
+                const handleRadioChangeAllow = (e) => {
+                    const value = e.target.value;
+                    setIsAllowed(value === "1");
+                    setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
+                };
+                const handleUpdateThuChi = async (e) => {
+                    const UrlApi = "api/web/update/work-continue";
+                    const data_0 = {
+                        ac: valueRadio,
+                        id: params.row.id,
+                        handleChange: cardExpires,
+                    };
+                    console.log("cardExpires data_0", data_0);
+                    const data_1 = {
+                        ac: valueRadio,
+                        id: params.row.id,
+                    };
+                    if (valueRadio === "1") {
+                        fetchDataUpdateThuchi(data_1, UrlApi);
+                    } else if (valueRadio === "0") {
+                        fetchDataUpdateThuchi(data_0, UrlApi);
+                    }
+                    handleOpenSpending_total();
+                };
+
                 const dataBtnChi = [
-                    {
-                        id: "BtnHuy",
-                        content: "Báo hủy",
-                        className: "text-red-500 rounded-none border-red-500",
-                    },
+                    // {
+                    //     id: "BtnHuy",
+                    //     content: "Báo hủy",
+                    //     className: "text-red-500 rounded-none border-red-500",
+                    // },
                     {
                         id: "BtnTraLich",
                         content: "Trả Lịch",
@@ -965,13 +995,27 @@ function Dashboard({ auth }) {
                         content: "Cập Nhật",
                         className:
                             "text-green-500 rounded-none border-green-500",
+                        handleSubmit: handleUpdateThuChi,
                     },
                 ];
+                const optionBH = [
+                    {id:0, value: "KBH", label: "KBH" },
+                    {id:1,  value: "d", label: "Ngày" },
+                    {id:2,  value: "w", label: "Tuần" },
+                    {id:3,  value: "m", label: "Tháng" },
+                    {id:4,  value: "y", label: "Năm" },
+                ];
+                const [selectBH, setSelectBH] = useState();
+                const handleSelectBH = (valueBh) => {
+                    setSelectBH(valueBh);
+                    console.log('selectBH',selectBH);
+                };
+
                 return (
                     <div>
-                        <p onClick={handleOpenSpending_total}>
+                        <Button onClick={handleOpenSpending_total}>
                             {params.row.spending_total}
-                        </p>
+                        </Button>
                         <Dialog
                             open={openSpending_total}
                             handler={handleOpenSpending_total}
@@ -985,83 +1029,169 @@ function Dashboard({ auth }) {
                                 />
                             </div>
                             <DialogBody divider>
+                                <div className="flex justify-center w-full mb-4">
+                                    <Card className="flex flex-row w-[50%] border justify-center">
+                                        <Radio
+                                            id="HT"
+                                            name="status_work"
+                                            label="Hoàn Thành"
+                                            value="0"
+                                            checked={!isAllowed} // Đảo ngược trạng thái, checked là true khi isAllowed là false
+                                            onChange={handleRadioChangeAllow}
+                                            className="w-1 h-1 p-1"
+                                        />
+                                        <Radio
+                                            id="MLT"
+                                            name="status_work"
+                                            label="Mai Làm Tiếp"
+                                            value="1"
+                                            checked={isAllowed} // checked là true khi isAllowed là true
+                                            onChange={handleRadioChangeAllow}
+                                            className="w-1 h-1 p-1"
+                                        />
+                                    </Card>
+                                </div>
                                 <WorkForm
                                     cardExpires={cardExpires}
                                     handleChange={handleChange}
                                     vatCard={vatCard}
+                                    disabledAllowed={isAllowed}
                                 >
-                                    <div className="flex items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Hoàn Thành"
-                                                value="0"
-                                                checked="0"
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
+                                    {" "}
+                                    <div className="flex justify-between w-full my-2 text-sm">
+                                        <div className="flex-none ">
+                                            <Select
+                                                value={selectBH}
+                                                options={optionBH}
+                                                onChange={(selectedValue) =>
+                                                    handleSelectBH(
+                                                        selectedValue
+                                                    )
+                                                }
+                                                className="border-none shadow-none"
+                                                disabled={isAllowed}
                                             />
-                                            <Radio
-                                                id="DL"
-                                                name="kind_work"
-                                                label="Mai Làm Tiếp"
-                                                value="1"
-                                                checked="1"
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    No image
-                                                </Card>
-                                            )}
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    No image
-                                                </Card>
-                                            )}
                                         </div>
-                                    </div>
-                                    <div className="flex gap-4 ">
-                                        <div className="w-[50%]">
+                                        <div className="flex-none mx-2">
                                             <Input
                                                 label="Thông Tin Bảo Hành"
                                                 id="info_BH"
                                                 name="info_BH"
+                                                type="number"
+                                                min="1" max="5"
                                                 onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
                                                 className="shadow-none"
+                                                disabled={isAllowed}
                                             />
-                                            <div className="flex justify-between w-full mt-5 text-sm">
-                                                {dataRadioChi.map((result) => (
-                                                    <Radio
-                                                        id={result.id}
-                                                        name={result.name}
-                                                        label={result.label}
-                                                        value={result.value}
-                                                        checked={result.checked}
-                                                        onChange={handleChange}
-                                                        className="w-1 h-1 p-1"
-                                                    />
-                                                ))}
-                                            </div>
                                         </div>
-                                        <div className="flex w-[50%]">
+                                        <div className="flex-1">
                                             <Textarea
                                                 label="Nội Dung Bảo Hành"
                                                 className="shadow-none"
+                                                disabled={isAllowed}
                                             />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-center gap-4 ">
+                                        <div className="w-full ">
+                                            <div className="flex w-full">
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Button
+                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                        disabled={isAllowed}
+                                                    >
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangeVt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                            disabled={isAllowed}
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Vật Tư)
+                                                        </i>
+                                                        <div className="flex flex-row">
+                                                            {previewImgVt.map(
+                                                                (
+                                                                    preview,
+                                                                    index
+                                                                ) => (
+                                                                    <img
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        src={
+                                                                            preview
+                                                                        }
+                                                                        alt={`Preview ${index}`}
+                                                                        style={{
+                                                                            width: "100px",
+                                                                            height: "auto",
+                                                                            margin: "5px",
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </Button>
+                                                )}
+                                                {vatCard ? (
+                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                        {params.row.bill_image}
+                                                    </Card>
+                                                ) : (
+                                                    <Button
+                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                        disabled={isAllowed}
+                                                    >
+                                                        <input
+                                                            id="hinh"
+                                                            type="file"
+                                                            accept=".jpg, .jpeg, .png"
+                                                            onChange={
+                                                                handleFileChangePt
+                                                            }
+                                                            multiple
+                                                            className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                            disabled={isAllowed}
+                                                        />
+                                                        <i className="text-[10px]">
+                                                            (Hình Phiếu Thu)
+                                                        </i>
+                                                        <div className="flex flex-row flex-wrap justify-center">
+                                                            {previewImgPt.map(
+                                                                (
+                                                                    preview,
+                                                                    index
+                                                                ) => (
+                                                                    <img
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        src={
+                                                                            preview
+                                                                        }
+                                                                        alt={`Preview ${index}`}
+                                                                        style={{
+                                                                            width: "100px",
+                                                                            height: "auto",
+                                                                            margin: "5px",
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                     <Divider className="pt-2" />
@@ -1075,6 +1205,7 @@ function Dashboard({ auth }) {
                                                     result.className
                                                 }
                                                 variant="outlined"
+                                                onClick={result.handleSubmit}
                                             >
                                                 {result.content}
                                             </Button>
@@ -1093,15 +1224,15 @@ function Dashboard({ auth }) {
             width: 100,
             editable: false,
             type: "text",
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <p onClick={handleOpenSpending_total}>
-                            {params.row.income_total}
-                        </p>
-                    </div>
-                );
-            },
+            // renderCell: (params) => {
+            //     return (
+            //         <div>
+            //             <p>
+            //                 {params.row.income_total}
+            //             </p>
+            //         </div>
+            //     );
+            // },
         },
         {
             field: "seri_number",
@@ -1152,13 +1283,16 @@ function Dashboard({ auth }) {
                             id_auth: auth.user.id,
                             work_note: work_note,
                         };
-                        const response = await fetch("api/web/works_cacle", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
+                        const response = await fetch(
+                            "api/web/cancle/workassigment",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
@@ -1712,6 +1846,9 @@ function Dashboard({ auth }) {
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsRight}
                                                 hideFooterPagination={true}
+                                                containerProps={{
+                                                    className: "hidden",
+                                                }}
                                             />
                                         </Box>
                                     </div>

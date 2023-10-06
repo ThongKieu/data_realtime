@@ -26,7 +26,7 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/utils/socket";
 // import NavGuest from "./navGuest";
 
 // profile menu component
@@ -311,7 +311,7 @@ function NavbarDefault({ propauth }) {
     const [countDelete, setCountDelete] = useState(0);
     const fetchDelete = async () => {
         try {
-            const response = await fetch("api/web/works_cacle");
+            const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
             if (socketDelete) {

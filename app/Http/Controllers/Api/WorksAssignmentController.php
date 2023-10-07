@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class WorksAssignmentController extends Controller
 {
@@ -336,8 +337,10 @@ class WorksAssignmentController extends Controller
         if ($request->ac) {
             switch ($request->ac) {
                 case ('1'):
-                    $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content, 'work_note' => $request->work_note, 'street' => $request->street, 'district' => $request->district, 'phone_number' => $request->phone_number]);
-                    if ($request->warranties != null) {
+                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
+                    if($request->warranties != null)
+                    {
+
                     }
                     $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content]);
                     break;
@@ -389,6 +392,7 @@ class WorksAssignmentController extends Controller
         }
         else{
             $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
+            // dd(Auth::user());
             $up_work = Work::where('id','=',$id_cus)-> update([
                 'work_content'=>$request->work_content,
                 'date_book'=>$request->date_book,
@@ -400,21 +404,35 @@ class WorksAssignmentController extends Controller
             ]);
             $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
             ->update([
-                'status_work' => 2, 
+                'status_work' => 2,
                 'real_note' =>$request->real_note,
                 'spending_total'=>$request->spending_total,
                 'income_total'=>$request->income_total,
-                'bill_imag',
+                // 'bill_imag',
                 'seri_number'=>$request->seri_number,
                 'work_done_date'=>date('d-m-Y '),
             ]);
             if($request->unit != 0)
             {
-                
-                WarrantiesController::insertWarranties($request->id,$request->warranty_time,$request->warranty_info,$request->unit);
+                switch($request->unit)
+                { case 1:
+                    $time_w = 'd';
+                    break;
+                    case 2:
+                        $time_w = 'w';
+                        break;
+                    case 3:
+                        $time_w = 'm';
+                        break;
+                    case 4:
+                        $time_w = 'y';
+                        break;
+                    default :
+                        $time_w = 'n';
+                }
+                WarrantiesController::insertWarranties($request->id,$request->warranty_time,$request->warranty_info,$time_w);
             }
             return response()->json('Update work !!!');
         }
     }
-    
 }

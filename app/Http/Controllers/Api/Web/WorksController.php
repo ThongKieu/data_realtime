@@ -131,7 +131,7 @@ class WorksController extends Controller
             ->where('works.status_cus', '=', 2)
             ->limit(100)
             ->get([
-                
+
                 "works.id",
                 "works.work_content",
                 "works.name_cus",

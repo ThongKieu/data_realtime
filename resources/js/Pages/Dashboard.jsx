@@ -41,6 +41,7 @@ import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputDialog from "@/Components/WorkForm";
 import WorkForm from "@/Components/WorkForm";
+import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
@@ -62,15 +63,13 @@ function Dashboard({ auth }) {
     const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
-    }, []);
-    useEffect(() => {
         setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            console.log("hell", data);
             if (data != "") {
                 fetchDataDashboard(data);
                 fetchData(data);
@@ -226,6 +225,25 @@ function Dashboard({ auth }) {
         }
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
+    const fetchDataUpdateThuchi = async (data, Url_Api) => {
+        try {
+            const res = await fetch(Url_Api, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                console.log(`Cập nhật thông tin ${data.ac}`, data);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
     const handleKeyPress = (e) => {
         const { row, col } = selectedCell;
@@ -615,7 +633,7 @@ function Dashboard({ auth }) {
                                         handleSelectChange(selectedValue)
                                     }
                                     isMulti
-                                    className="border-none shadow-none qqq"
+                                    className="border-none shadow-none"
                                 />
                             </DialogBody>
                             <DialogFooter className="space-x-2">
@@ -895,6 +913,7 @@ function Dashboard({ auth }) {
             type: "text",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [isDataChanged, setIsDataChanged] = useState("");
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
@@ -904,61 +923,64 @@ function Dashboard({ auth }) {
                     setOpenSpending_total(!openSpending_total);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
+                    setIsDataChanged(true);
                     setCardExpires((prevData) => ({
                         ...prevData,
                         [name]: value,
                     }));
-                    console.log(value);
                 };
+                const handleDataFromChild = (data) => {
+                    setIsDataChanged(data);
+                };
+                console.log("isDataChanged---", isDataChanged);
                 const handleFileChangeVt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
                     const previewsVt = files.map((file) =>
                         URL.createObjectURL(file)
                     );
-
                     setPreviewImgVt(previewsVt);
                 };
                 const handleFileChangePt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
                     const previewsPt = files.map((file) =>
-                    URL.createObjectURL(file)
-                );
+                        URL.createObjectURL(file)
+                    );
                     setPreviewImgPt(previewsPt);
                 };
                 console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
-                const dataRadioChi = [
-                    {
-                        id: "BHDay",
-                        name: "BH",
-                        label: "Ngày",
-                        value: "0",
-                        checked: "0",
-                    },
-                    {
-                        id: "BHWeek",
-                        name: "BH",
-                        label: "Tuần",
-                        value: "1",
-                        checked: "1",
-                    },
-                    {
-                        id: "BHMonth",
-                        name: "BH",
-                        label: "Tháng",
-                        value: "2",
-                        checked: "2",
-                    },
-                    {
-                        id: "BHKBH",
-                        name: "BH",
-                        label: "Không Bảo Hành",
-                        value: "3",
-                        checked: "3",
-                    },
-                ];
+                const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
+                const [valueRadio, setValueRadio] = useState("1");
+                const handleRadioChangeAllow = (e) => {
+                    const value = e.target.value;
+                    setIsAllowed(value === "1");
+                    setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
+                };
+
+                const handleUpdateThuChi = async (e) => {
+                    const UrlApi = "api/web/update/work-continue";
+                    const data_0 = {
+                        ...cardExpires,
+                        ac: valueRadio,
+                        id: params.row.id,
+                        datainput: isDataChanged,
+                    };
+                    const data_1 = {
+                        ac: valueRadio,
+                        id: params.row.id,
+                    };
+                    if (valueRadio === "0") {
+                        fetchDataUpdateThuchi(data_0, UrlApi);
+                        console.log("cardExpires data_0", data_0);
+                    } else if (valueRadio === "1") {
+                        fetchDataUpdateThuchi(data_1, UrlApi);
+                        console.log("cardExpires data_1", data_1);
+                    }
+                    handleOpenSpending_total();
+                };
+
                 const dataBtnChi = [
                     // {
                     //     id: "BtnHuy",
@@ -981,8 +1003,10 @@ function Dashboard({ auth }) {
                         content: "Cập Nhật",
                         className:
                             "text-green-500 rounded-none border-green-500",
+                        handleSubmit: handleUpdateThuChi,
                     },
                 ];
+
                 return (
                     <div>
                         <Button onClick={handleOpenSpending_total}>
@@ -1002,23 +1026,23 @@ function Dashboard({ auth }) {
                             </div>
                             <DialogBody divider>
                                 <div className="flex justify-center w-full mb-4">
-                                    <Card className="flex flex-row w-[50%] border justify-center">
+                                    <Card className="flex flex-row w-[50%] border justify-between px-10">
                                         <Radio
-                                            id="DN"
-                                            name="kind_work"
+                                            id="HT"
+                                            name="status_work"
                                             label="Hoàn Thành"
                                             value="0"
-                                            checked="0"
-                                            onChange={handleChange}
+                                            checked={!isAllowed} // Đảo ngược trạng thái, checked là true khi isAllowed là false
+                                            onChange={handleRadioChangeAllow}
                                             className="w-1 h-1 p-1"
                                         />
                                         <Radio
-                                            id="DL"
-                                            name="kind_work"
+                                            id="MLT"
+                                            name="status_work"
                                             label="Mai Làm Tiếp"
                                             value="1"
-                                            checked="1"
-                                            onChange={handleChange}
+                                            checked={isAllowed} // checked là true khi isAllowed là true
+                                            onChange={handleRadioChangeAllow}
                                             className="w-1 h-1 p-1"
                                         />
                                     </Card>
@@ -1027,40 +1051,29 @@ function Dashboard({ auth }) {
                                     cardExpires={cardExpires}
                                     handleChange={handleChange}
                                     vatCard={vatCard}
+                                    disabledAllowed={isAllowed}
                                 >
                                     {" "}
-                                    <div className="flex gap-4 ">
-                                        <div className="w-[50%]">
-                                            <Input
-                                                label="Thông Tin Bảo Hành"
-                                                id="info_BH"
-                                                name="info_BH"
-                                                onChange={handleChange}
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                            <div className="flex justify-between w-full mt-5 text-sm">
-                                                {dataRadioChi.map((result) => (
-                                                    <Radio
-                                                        id={result.id}
-                                                        name={result.name}
-                                                        label={result.label}
-                                                        value={result.value}
-                                                        checked={result.checked}
-                                                        onChange={handleChange}
-                                                        className="w-1 h-1 p-1"
-                                                    />
-                                                ))}
-                                            </div>
-                                            <div className="flex justify-between w-full">
+                                    <div className="flex justify-between w-full my-2 text-sm">
+                                        <DynamicTwoInput
+                                            disabledAllowed={isAllowed}
+                                            sendDataToParent={
+                                                handleDataFromChild
+                                            }
+                                        />
+                                    </div>
+                                    <div className="flex justify-center gap-4 ">
+                                        <div className="w-full ">
+                                            <div className="flex justify-center w-full">
                                                 {vatCard ? (
                                                     <Card className="justify-center px-2 border border-green-500 rounded-none">
                                                         {params.row.bill_image}
                                                     </Card>
                                                 ) : (
-                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                    <Button
+                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                        disabled={isAllowed}
+                                                    >
                                                         <input
                                                             id="hinh"
                                                             type="file"
@@ -1070,37 +1083,45 @@ function Dashboard({ auth }) {
                                                             }
                                                             multiple
                                                             className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                            disabled={isAllowed}
                                                         />
                                                         <i className="text-[10px]">
                                                             (Hình Vật Tư)
                                                         </i>
-                                                        {previewImgVt.map(
-                                                            (
-                                                                preview,
-                                                                index
-                                                            ) => (
-                                                                <img
-                                                                    key={index}
-                                                                    src={
-                                                                        preview
-                                                                    }
-                                                                    alt={`Preview ${index}`}
-                                                                    style={{
-                                                                        width: "100px",
-                                                                        height: "auto",
-                                                                        margin: "5px",
-                                                                    }}
-                                                                />
-                                                            )
-                                                        )}
-                                                    </Card>
+                                                        <div className="flex flex-row">
+                                                            {previewImgVt.map(
+                                                                (
+                                                                    preview,
+                                                                    index
+                                                                ) => (
+                                                                    <img
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        src={
+                                                                            preview
+                                                                        }
+                                                                        alt={`Preview ${index}`}
+                                                                        style={{
+                                                                            width: "100px",
+                                                                            height: "auto",
+                                                                            margin: "5px",
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </Button>
                                                 )}
                                                 {vatCard ? (
                                                     <Card className="justify-center px-2 border border-green-500 rounded-none">
                                                         {params.row.bill_image}
                                                     </Card>
                                                 ) : (
-                                                    <Card className="justify-center px-2 pt-1 text-center border border-green-500 rounded-none">
+                                                    <Button
+                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                        disabled={isAllowed}
+                                                    >
                                                         <input
                                                             id="hinh"
                                                             type="file"
@@ -1110,38 +1131,37 @@ function Dashboard({ auth }) {
                                                             }
                                                             multiple
                                                             className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                            disabled={isAllowed}
                                                         />
                                                         <i className="text-[10px]">
                                                             (Hình Phiếu Thu)
                                                         </i>
-                                                        {previewImgPt.map(
-                                                            (
-                                                                preview,
-                                                                index
-                                                            ) => (
-                                                                <img
-                                                                    key={index}
-                                                                    src={
-                                                                        preview
-                                                                    }
-                                                                    alt={`Preview ${index}`}
-                                                                    style={{
-                                                                        width: "100px",
-                                                                        height: "auto",
-                                                                        margin: "5px",
-                                                                    }}
-                                                                />
-                                                            )
-                                                        )}
-                                                    </Card>
+                                                        <div className="flex flex-row flex-wrap justify-center">
+                                                            {previewImgPt.map(
+                                                                (
+                                                                    preview,
+                                                                    index
+                                                                ) => (
+                                                                    <img
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        src={
+                                                                            preview
+                                                                        }
+                                                                        alt={`Preview ${index}`}
+                                                                        style={{
+                                                                            width: "100px",
+                                                                            height: "auto",
+                                                                            margin: "5px",
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </Button>
                                                 )}
                                             </div>
-                                        </div>
-                                        <div className="flex w-[50%]">
-                                            <Textarea
-                                                label="Nội Dung Bảo Hành"
-                                                className="shadow-none"
-                                            />
                                         </div>
                                     </div>
                                     <Divider className="pt-2" />
@@ -1155,6 +1175,7 @@ function Dashboard({ auth }) {
                                                     result.className
                                                 }
                                                 variant="outlined"
+                                                onClick={result.handleSubmit}
                                             >
                                                 {result.content}
                                             </Button>
@@ -1198,7 +1219,6 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                // console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
@@ -1331,14 +1351,25 @@ function Dashboard({ auth }) {
                         checked: '{formData.kind_work === "6"}',
                     },
                 ];
+                // cho phep su dung cac nut
+                const isButtonDisabled = (permissionValue, valuePermiss) => {
+                    return permissionValue !== valuePermiss;
+                };
                 return (
                     <div>
                         <div className="flex">
                             <Tooltip content="Admin Check">
-                                <EyeIcon
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                <Button
+                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
                                     onClick={handleOpenAdminCheck}
-                                />
+                                    disabled={isButtonDisabled(
+                                        auth.user.permission,
+                                        1
+                                    )}
+                                    variant="outlined"
+                                >
+                                    <EyeIcon />
+                                </Button>
                             </Tooltip>
                             <Tooltip content="Thu Hồi Lịch">
                                 <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />

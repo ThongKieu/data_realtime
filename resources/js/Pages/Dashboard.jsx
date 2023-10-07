@@ -41,6 +41,7 @@ import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputDialog from "@/Components/WorkForm";
 import WorkForm from "@/Components/WorkForm";
+import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
@@ -912,6 +913,7 @@ function Dashboard({ auth }) {
             type: "text",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [isDataChanged, setIsDataChanged] = useState("");
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
@@ -921,19 +923,22 @@ function Dashboard({ auth }) {
                     setOpenSpending_total(!openSpending_total);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
+                    setIsDataChanged(true);
                     setCardExpires((prevData) => ({
                         ...prevData,
                         [name]: value,
                     }));
-                    console.log(value);
                 };
+                const handleDataFromChild = (data) => {
+                    setIsDataChanged(data);
+                };
+                console.log("isDataChanged---", isDataChanged);
                 const handleFileChangeVt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
                     const previewsVt = files.map((file) =>
                         URL.createObjectURL(file)
                     );
-
                     setPreviewImgVt(previewsVt);
                 };
                 const handleFileChangePt = (e) => {
@@ -953,22 +958,25 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
+
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
                     const data_0 = {
+                        ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
-                        handleChange: cardExpires,
+                        datainput: isDataChanged,
                     };
-                    console.log("cardExpires data_0", data_0);
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
                     };
-                    if (valueRadio === "1") {
-                        fetchDataUpdateThuchi(data_1, UrlApi);
-                    } else if (valueRadio === "0") {
+                    if (valueRadio === "0") {
                         fetchDataUpdateThuchi(data_0, UrlApi);
+                        console.log("cardExpires data_0", data_0);
+                    } else if (valueRadio === "1") {
+                        fetchDataUpdateThuchi(data_1, UrlApi);
+                        console.log("cardExpires data_1", data_1);
                     }
                     handleOpenSpending_total();
                 };
@@ -998,18 +1006,6 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-                const optionBH = [
-                    {id:0, value: "KBH", label: "KBH" },
-                    {id:1,  value: "d", label: "Ngày" },
-                    {id:2,  value: "w", label: "Tuần" },
-                    {id:3,  value: "m", label: "Tháng" },
-                    {id:4,  value: "y", label: "Năm" },
-                ];
-                const [selectBH, setSelectBH] = useState();
-                const handleSelectBH = (valueBh) => {
-                    setSelectBH(valueBh);
-                    console.log('selectBH',selectBH);
-                };
 
                 return (
                     <div>
@@ -1030,7 +1026,7 @@ function Dashboard({ auth }) {
                             </div>
                             <DialogBody divider>
                                 <div className="flex justify-center w-full mb-4">
-                                    <Card className="flex flex-row w-[50%] border justify-center">
+                                    <Card className="flex flex-row w-[50%] border justify-between px-10">
                                         <Radio
                                             id="HT"
                                             name="status_work"
@@ -1059,42 +1055,16 @@ function Dashboard({ auth }) {
                                 >
                                     {" "}
                                     <div className="flex justify-between w-full my-2 text-sm">
-                                        <div className="flex-none ">
-                                            <Select
-                                                value={selectBH}
-                                                options={optionBH}
-                                                onChange={(selectedValue) =>
-                                                    handleSelectBH(
-                                                        selectedValue
-                                                    )
-                                                }
-                                                className="border-none shadow-none"
-                                                disabled={isAllowed}
-                                            />
-                                        </div>
-                                        <div className="flex-none mx-2">
-                                            <Input
-                                                label="Thông Tin Bảo Hành"
-                                                id="info_BH"
-                                                name="info_BH"
-                                                type="number"
-                                                min="1" max="5"
-                                                onChange={handleChange}
-                                                className="shadow-none"
-                                                disabled={isAllowed}
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <Textarea
-                                                label="Nội Dung Bảo Hành"
-                                                className="shadow-none"
-                                                disabled={isAllowed}
-                                            />
-                                        </div>
+                                        <DynamicTwoInput
+                                            disabledAllowed={isAllowed}
+                                            sendDataToParent={
+                                                handleDataFromChild
+                                            }
+                                        />
                                     </div>
                                     <div className="flex justify-center gap-4 ">
                                         <div className="w-full ">
-                                            <div className="flex w-full">
+                                            <div className="flex justify-center w-full">
                                                 {vatCard ? (
                                                     <Card className="justify-center px-2 border border-green-500 rounded-none">
                                                         {params.row.bill_image}
@@ -1249,7 +1219,6 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                // console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [openTho, setOpenTho] = useState(false);
@@ -1382,14 +1351,25 @@ function Dashboard({ auth }) {
                         checked: '{formData.kind_work === "6"}',
                     },
                 ];
+                // cho phep su dung cac nut
+                const isButtonDisabled = (permissionValue, valuePermiss) => {
+                    return permissionValue !== valuePermiss;
+                };
                 return (
                     <div>
                         <div className="flex">
                             <Tooltip content="Admin Check">
-                                <EyeIcon
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                <Button
+                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
                                     onClick={handleOpenAdminCheck}
-                                />
+                                    disabled={isButtonDisabled(
+                                        auth.user.permission,
+                                        1
+                                    )}
+                                    variant="outlined"
+                                >
+                                    <EyeIcon />
+                                </Button>
                             </Tooltip>
                             <Tooltip content="Thu Hồi Lịch">
                                 <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />

@@ -34,5 +34,11 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('Thoviet58568!@#'), 'permission'=>1,
                 'avatar'=>'assets/avatar/avata3.png'
             ],);
+            User::factory()->create([
+                'name' => 'Thống Kiềutest',
+                'email' => 'thongtest@thoviet.com.vn',
+                'password' => Hash::make('Thoviet58568!@#'), 'permission'=>0,
+                'avatar'=>'assets/avatar/avata3.png'
+            ],);
     }
 }

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class WorksAssignmentController extends Controller
 {
@@ -391,14 +390,15 @@ class WorksAssignmentController extends Controller
             return response()->json('Update continue work !!!');
         }
         else{
-            $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
-            // dd(Auth::user());
+            
+
+            $id_cus = $request->id_cus;
             $up_work = Work::where('id','=',$id_cus)-> update([
                 'work_content'=>$request->work_content,
                 'date_book'=>$request->date_book,
                 'phone_number'=>$request->phone_number,
                 'district'=>$request->district,
-                'members_read'=>Auth::user()->id,
+                'members_read'=>$request->members_read,
                 'street'=>$request->street,
                 'name_cus'=>$request->name_cus,
             ]);
@@ -412,26 +412,9 @@ class WorksAssignmentController extends Controller
                 'seri_number'=>$request->seri_number,
                 'work_done_date'=>date('d-m-Y '),
             ]);
-            if($request->unit != 0)
-            {
-                switch($request->unit)
-                { case 1:
-                    $time_w = 'd';
-                    break;
-                    case 2:
-                        $time_w = 'w';
-                        break;
-                    case 3:
-                        $time_w = 'm';
-                        break;
-                    case 4:
-                        $time_w = 'y';
-                        break;
-                    default :
-                        $time_w = 'n';
-                }
-                WarrantiesController::insertWarranties($request->id,$request->warranty_time,$request->warranty_info,$time_w);
-            }
+              
+            
+           
             return response()->json('Update work !!!');
         }
     }

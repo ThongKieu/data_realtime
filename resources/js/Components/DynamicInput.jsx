@@ -5,13 +5,13 @@ import { TrashIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 // import Select from "react-select";
 
 function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
-    const [data, setData] = useState([{ id: 1, warranty_time: "",unit:"KBH" }]);
+    const [data, setData] = useState([{ id: 1, warranty_time: 0,unit:"KBH",warranty_info:"Không Bảo Hành" }]);
     const handleClick = (e) => {
         e.preventDefault();
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
-        setData([...data, { id: newId, warranty_time: "" }]);
+        setData([...data, { id: newId, warranty_time: 0,unit:"KBH",warranty_info:"Không Bảo Hành" }]);
     };
     const optionBH = [
         { id: 0, value: "KBH", label: "KBH" },
@@ -80,6 +80,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                             type="number"
                             min="1"
                             max="30"
+                            value={val.warranty_time}
                             onChange={(e) => handleChange(e, val.id)}
                             className="w-[100%] shadow-none"
                             disabled={disabledAllowed}

@@ -8,6 +8,7 @@ use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class WorksAssignmentController extends Controller
@@ -371,9 +372,7 @@ class WorksAssignmentController extends Controller
         }
         return  'Delete Failse !';
     }
-    
-    function FunctionName() {
-        public function continueWorkAss(Request $request)
+    public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {
             // update bảng đã phân
@@ -395,7 +394,7 @@ class WorksAssignmentController extends Controller
                 'date_book'=>$request->date_book,
                 'phone_number'=>$request->phone_number,
                 'district'=>$request->district,
-                'members_read'=>auth()->id,
+                'members_read'=>Auth::user()->id,
                 'street'=>$request->street,
                 'name_cus'=>$request->name_cus,
             ]);
@@ -411,24 +410,11 @@ class WorksAssignmentController extends Controller
             ]);
             if($request->unit != 0)
             {
-                switch($request->unit)
-                {
-                    case 2:
-                        $time_w = 'w';
-                        break;
-                    case 3:
-                        $time_w = 'm'; 
-                        break;
-                    case 4:
-                        $time_w = 'y'; 
-                        break;
-                    default :
-                        $time_w = 'd';   
-                }
-                WarrantiesController::insertWarranties($request->id,$time_w,$request->warranty_time,$request->warranty_time);
+                
+                WarrantiesController::insertWarranties($request->id,$request->warranty_time,$request->warranty_info,$request->unit);
             }
             return response()->json('Update work !!!');
         }
     }
-    }
+    
 }

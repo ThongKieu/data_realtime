@@ -965,6 +965,7 @@ function Dashboard({ auth }) {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
+                        member_read:auth.user.id,
                         datainput: isDataChanged,
                     };
                     const data_1 = {

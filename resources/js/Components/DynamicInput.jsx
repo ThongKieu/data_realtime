@@ -1,16 +1,17 @@
-import { Button, Input } from "@material-tailwind/react";
+import { Button, Input, Select, Option } from "@material-tailwind/react";
 import React, { useState } from "react";
 import { TrashIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 
-import Select from "react-select";
+// import Select from "react-select";
+
 function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
-    const [data, setData] = useState([{ id: 1, NDBH: "" }]);
+    const [data, setData] = useState([{ id: 1, warranty_time: "",unit:"KBH" }]);
     const handleClick = (e) => {
         e.preventDefault();
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
-        setData([...data, { id: newId, NDBH: "" }]);
+        setData([...data, { id: newId, warranty_time: "" }]);
     };
     const optionBH = [
         { id: 0, value: "KBH", label: "KBH" },
@@ -19,11 +20,10 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         { id: 3, value: "m", label: "Tháng" },
         { id: 4, value: "y", label: "Năm" },
     ];
-    const [selectBH, setSelectBH] = useState();
     const handleSelectChange = (selectedValue, id) => {
         const updatedData = data.map((item) => {
             if (item.id === id) {
-                return { ...item, selectValue: selectedValue };
+                return { ...item, unit: selectedValue };
             }
             return item;
         });
@@ -45,7 +45,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
     };
 
     const handleDelete = (id) => {
-        const updatedData = data.filter((item) => item.id !== id );
+        const updatedData = data.filter((item) => item.id !== id);
         setData(updatedData);
         sendDataToParent(updatedData);
         console.log("xoas", updatedData);
@@ -55,22 +55,28 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         <div className="w-full mt-0">
             {data.map((val) => (
                 <div key={val.id} className="flex justify-between gap-1 mb-2">
-                    <div className="w-[120px]">
+                    <div>
                         <Select
-                            value={val.selectValue}
-                            options={optionBH}
+                            value={val.unit}
+                            label="Bảo Hành"
                             onChange={
                                 (selectedValue) =>
                                     handleSelectChange(selectedValue, val.id) // Truyền id của item vào handleSelectChange
                             }
-                            className="border-none shadow-none"
-                        />
+                            disabled={disabledAllowed}
+                        >
+                            {optionBH.map((option) => (
+                                <Option key={option.value} value={option.value}>
+                                    {option.label}
+                                </Option>
+                            ))}
+                        </Select>
                     </div>
                     <div className="flex-none">
                         <Input
                             label="Thời Gian Bảo Hành"
-                            id="info_BH"
-                            name="info_BH"
+                            id="warranty_time"
+                            name="warranty_time"
                             type="number"
                             min="1"
                             max="30"
@@ -82,8 +88,8 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                     <div className="flex-1">
                         <Input
                             label="Nội Dung Bảo Hành"
-                            name="NDBH"
-                            value={val.fname}
+                            name="warranty_info"
+                            value={val.warranty_info}
                             onChange={(e) => handleChange(e, val.id)}
                             disabled={disabledAllowed}
                             className="mr-1 w-[100%] shadow-none"

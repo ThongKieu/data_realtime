@@ -105,7 +105,7 @@ function Dashboard({ auth }) {
             if (response.status == 200) {
                 console.log("push on thanh cong");
             }
-        } catch (error) {}
+        } catch (error) { }
     };
     // ---------------lay du lieu cong viec chua phan----------------------------------------------
     const fetchData = async () => {
@@ -570,13 +570,10 @@ function Dashboard({ auth }) {
                     const name_cus = text.name_cus;
                     const district = text.district;
                     const work_note = text.work_note;
-                    const data = `${work_content ? work_content + " " : ""} ${
-                        street ? street + " " : ""
-                    } ${phone_number ? phone_number + " " : ""} ${
-                        name_cus ? name_cus + " " : ""
-                    } ${district ? district + " " : ""} ${
-                        work_note ? work_note + " " : ""
-                    } `;
+                    const data = `${work_content ? work_content + " " : ""} ${street ? street + " " : ""
+                        } ${phone_number ? phone_number + " " : ""} ${name_cus ? name_cus + " " : ""
+                        } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""
+                        } `;
 
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
@@ -1285,7 +1282,7 @@ function Dashboard({ auth }) {
                             socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
                         }
-                    } catch (error) {}
+                    } catch (error) { }
                 };
 
                 const handleSentPhanTho = async (e) => {
@@ -1714,7 +1711,7 @@ function Dashboard({ auth }) {
                                 onKeyDown={handleKeyPress}
                                 cellClassName={(params) =>
                                     selectedCell.row === params.rowIndex &&
-                                    selectedCell.col === params.colIndex
+                                        selectedCell.col === params.colIndex
                                         ? "selected-cell"
                                         : ""
                                 }

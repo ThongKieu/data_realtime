@@ -9,6 +9,7 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
     console.log("user connected");
+    // console.log("initial transport", socket.conn.transport.name);
     // ... your code
     // socket.on("sendChatToServer", (message) => {
     //     console.log(message);

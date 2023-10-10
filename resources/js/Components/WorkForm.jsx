@@ -9,6 +9,10 @@ import {
 } from "@material-tailwind/react";
 
 function WorkForm({ cardExpires, handleChange, vatCard,children,disabledAllowed }) {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    });
     return (
         <form className="flex flex-col gap-4 mt-2">
             {/* Các trường input */}

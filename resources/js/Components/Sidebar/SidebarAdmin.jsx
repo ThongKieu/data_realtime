@@ -253,12 +253,14 @@ export function SidebarAdmin() {
                       Gửi ZNS Cảm Ơn
                     </ListItem>
                   </Link>
+                  <Link href={route("admin/zalo-zns-quotes")}>
                   <ListItem>
                     <ListItemPrefix>
                       <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                     </ListItemPrefix>
                     Gửi ZNS Báo Giá
                   </ListItem>
+                  </Link>
                   <ListItem>
                     <ListItemPrefix>
                       <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />

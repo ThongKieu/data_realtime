@@ -39,7 +39,7 @@ function Tab1() {
                         "template_id": "231677",
                         "template_data": {
                             "date": row[2],
-                            "code": "240305",
+                            "code": "120199",
                             "customer_name": row[1],
                             "status": "Thành công",
                             "warranty": row[3] + " " + row[4]
@@ -86,16 +86,14 @@ function Tab1() {
                 </Typography>
                 <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
                     <Input labelProps={{ className: "hidden" }} type="file" accept=".xlsx, .xls" className="pl-0 border-none" onChange={handleFileUpload} />
-                    <Button className="mt-12" fullWidthcolor="green" onClick={() => {
+                    <Button className="mt-10" fullWidth color="green" onClick={() => {
                         if (excelData.length == 0) {
                             setShowAlertFailed(true);
                         } else {
                             // console.log(excelData);
                             sendZNSThanksMany();
                         }
-                    }}>
-                        Gửi Thông Báo
-                    </Button>
+                    }}>Gửi Thông Báo</Button>
                 </form>
             </Card>
         </div>
@@ -157,7 +155,7 @@ function Tab2() {
             const response = await fetch("https://business.openapi.zalo.me/message/template", {
                 method: "POST",
                 headers: {
-                    'access_token': 'XWTmFRjSYMsA0NGri5k7Q8a2UJAmHTOqurj71zzv-Ltb9MCCYpkQ1zW75ZoI1gW7_HfNCS4RyMgNGqmmx7ZW0Bnv7HxyI8S-enXuB-akrog1Cqy2mnpz2lW4H5V8MFPGa4GENzjvXrU3G05x_56mQBvSFcI30fCwnnuX7hGqZqNl4WnZi0g6EjOp31pcFRGte6TBSvXxuItbAbjpcY7tVi4jVpgEAVq-i0e4681QfXZQOLemjat95yzBSn3oUymqZrf23jTMlLUGSoLPeMEOLfvw50VjUOqVa5mfJ_T6c6Ys6HLgvGgaSfXMAYl5Leakg6KA1jX_zGcKL0WZvLgg6wTi333SKQOob5e8FwjAd6NQSJPvjsl9QFWpDaEm38vut3eWQ84Vd5xuGZq5e5wr8C1cBolaLhSl2MdBQRj0YMq',
+                    'access_token': '-BJuVgccsJ_qilnseg7NElUnyN6YlxD6WStALvwrbbkyvUXKilU16gM3eocDazrfgONtTVJ9e6ZRliTJ-lMLPl66xL6YzvyOZ-_0LAk6kbMCuEvaX_d8NucmhdQUr_H2WR-_TOpwt6_Hk_rVmAwMOUl3iqFMiUvesCkCGCk2gNRB-fTutf7tITRci7_VbSvnwDgOU-oRsb3byR0G-fMN1_hzt2d5cgG8mjtxFik4WGFawjOMvuA2FU7bl6Zff9r9_VRyHj6EmWY5dvSxhe_hTRpLp5USeOrPjF7GHe6hYdo1t_nlhwk78PxFyM_AhPLbmxJrRDxnh7M8v_1cjAEjUPBkyIp3evS6n_JgCDFibYVtc-eyrCd93FU5xnFnoBi3tAdx3k7EdWxJXUGUXCdQAx2Yc0eqT6KW4tYfkja_',
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -165,7 +163,7 @@ function Tab2() {
                     "template_id": "231677",
                     "template_data": {
                         "date": date,
-                        "code": "240305",
+                        "code": "Không phiếu thu",
                         "customer_name": nameCustomer,
                         "status": "Thành công",
                         "warranty": time + " " + typeOfTime
@@ -237,26 +235,26 @@ function Tab2() {
                             Gửi Thông Báo
                         </Button>
                     </form>
-                    <form className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96" style={{ border: '2px solid #ccc', padding: '20px', borderRadius: '5px' }}>
+                    <form className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96 h-auto" style={{ border: '2px solid #ccc', padding: '20px', borderRadius: '5px' }}>
                         <Typography color="gray" className="mt-1 font-bold">
                             Thợ Việt chân thành cảm ơn!
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Quý Khách đã quan tâm và sử dụng dịch vụ! Quý Khách vui lòng cài đặt ứng dụng Thợ Việt để theo dõi lịch sử công việc, bảo hành điện tử dễ dàng, tiện lợi !
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Mã đơn:
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Trạng thái: Thành Công
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Ngày làm: {date}
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Thời gian bảo hành:
                         </Typography>
-
+                  
                         <Button className="mt-6" fullWidth color="green" >
                             Liên Hệ Bộ Phận CSKH
                         </Button>

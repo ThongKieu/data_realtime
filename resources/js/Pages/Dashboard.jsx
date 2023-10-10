@@ -336,7 +336,6 @@ function Dashboard({ auth }) {
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
-                console.log("hasData", hasData.work_note, data);
 
                 return (
                     <div className="text-center">
@@ -825,7 +824,6 @@ function Dashboard({ auth }) {
             type: "singleSelect",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
-                console.log(params.row);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -910,7 +908,14 @@ function Dashboard({ auth }) {
             headerName: "Chi",
             width: 100,
             editable: false,
-            type: "text",
+            type: "number",
+            valueFormatter: ({ value }) => {
+                // Định dạng giá tiền ở đây, ví dụ: 1,000,000 VND
+                return new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(value);
+              },
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const [isDataChanged, setIsDataChanged] = useState("");
@@ -932,7 +937,6 @@ function Dashboard({ auth }) {
                 const handleDataFromChild = (data) => {
                     setIsDataChanged(data);
                 };
-                console.log("isDataChanged---", isDataChanged);
                 const handleFileChangeVt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
@@ -952,7 +956,7 @@ function Dashboard({ auth }) {
                 console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
                 const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
-                const [valueRadio, setValueRadio] = useState("1");
+                const [valueRadio, setValueRadio] = useState("0");
                 const handleRadioChangeAllow = (e) => {
                     const value = e.target.value;
                     setIsAllowed(value === "1");
@@ -965,9 +969,10 @@ function Dashboard({ auth }) {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
-                        member_read:auth.user.id,
+                        member_read: auth.user.id,
                         datainput: isDataChanged,
                     };
+                    console.log('Data 0: ', data_0);
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
@@ -983,11 +988,6 @@ function Dashboard({ auth }) {
                 };
 
                 const dataBtnChi = [
-                    // {
-                    //     id: "BtnHuy",
-                    //     content: "Báo hủy",
-                    //     className: "text-red-500 rounded-none border-red-500",
-                    // },
                     {
                         id: "BtnTraLich",
                         content: "Trả Lịch",
@@ -1007,11 +1007,15 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-
+                const formatter = new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  });
                 return (
                     <div>
                         <Button onClick={handleOpenSpending_total}>
-                            {params.row.spending_total}
+
+                            {formatter.format(params.row.spending_total)}
                         </Button>
                         <Dialog
                             open={openSpending_total}
@@ -1063,7 +1067,7 @@ function Dashboard({ auth }) {
                                             }
                                         />
                                     </div>
-                                    <div className="flex justify-center gap-4 ">
+                                    <div className="flex justify-center gap-4 align-middle ">
                                         <div className="w-full ">
                                             <div className="flex justify-center w-full">
                                                 {vatCard ? (
@@ -1086,32 +1090,35 @@ function Dashboard({ auth }) {
                                                             className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
                                                             disabled={isAllowed}
                                                         />
-                                                        <i className="text-[10px]">
-                                                            (Hình Vật Tư)
-                                                        </i>
-                                                        <div className="flex flex-row">
-                                                            {previewImgVt.map(
-                                                                (
-                                                                    preview,
-                                                                    index
-                                                                ) => (
-                                                                    <img
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        src={
-                                                                            preview
-                                                                        }
-                                                                        alt={`Preview ${index}`}
-                                                                        style={{
-                                                                            width: "100px",
-                                                                            height: "auto",
-                                                                            margin: "5px",
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            )}
-                                                        </div>
+                                                        {previewImgVt ? (
+                                                            <i className="text-[10px]">
+                                                                (Hình Vật Tư)
+                                                            </i>
+                                                        ) : (
+                                                            <div className="flex flex-row">
+                                                                {previewImgVt.map(
+                                                                    (
+                                                                        preview,
+                                                                        index
+                                                                    ) => (
+                                                                        <img
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            src={
+                                                                                preview
+                                                                            }
+                                                                            alt={`Preview ${index}`}
+                                                                            style={{
+                                                                                width: "100px",
+                                                                                height: "auto",
+                                                                                margin: "5px",
+                                                                            }}
+                                                                        />
+                                                                    )
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </Button>
                                                 )}
                                                 {vatCard ? (
@@ -1162,6 +1169,19 @@ function Dashboard({ auth }) {
                                                         </div>
                                                     </Button>
                                                 )}
+                                                <div className="p-1 ">
+                                                    <Input
+                                                        label="Số Phiếu Thu"
+                                                        id="seri_number"
+                                                        name="seri_number"
+                                                        value={
+                                                            cardExpires.seri_number
+                                                        }
+                                                        onChange={handleChange}
+                                                        // disabled="{disabledAllowed || isAllowedBH}"
+                                                        className="mr-1 w-[100%] shadow-none"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1194,7 +1214,7 @@ function Dashboard({ auth }) {
             headerName: "Thu",
             width: 100,
             editable: false,
-            type: "text",
+            type: "number",
             // renderCell: (params) => {
             //     return (
             //         <div>
@@ -1207,7 +1227,7 @@ function Dashboard({ auth }) {
         },
         {
             field: "seri_number",
-            headerName: "Phiếu Thu",
+            headerName: "Số Phiếu Thu",
             width: 100,
             editable: false,
             type: "text",
@@ -1236,7 +1256,6 @@ function Dashboard({ auth }) {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
                 const [cardExpires, setCardExpires] = useState(params.row);
-                console.log(params.row);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1245,7 +1264,6 @@ function Dashboard({ auth }) {
                     }));
                     console.log(value);
                 };
-                // console.log('-----------', selectPhanTho);
                 const handleSentDeleteDone = async () => {
                     try {
                         let data = {

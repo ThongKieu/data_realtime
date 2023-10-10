@@ -336,10 +336,8 @@ class WorksAssignmentController extends Controller
         if ($request->ac) {
             switch ($request->ac) {
                 case ('1'):
-                    $content =Work::where('id','=',$id_cus) -> update(['work_content'=>$request->work_content,'work_note'=>$request->work_note,'street'=>$request->street,'district'=>$request->district,'phone_number'=>$request->phone_number]);
-                    if($request->warranties != null)
-                    {
-
+                    $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content, 'work_note' => $request->work_note, 'street' => $request->street, 'district' => $request->district, 'phone_number' => $request->phone_number]);
+                    if ($request->warranties != null) {
                     }
                     $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content]);
                     break;
@@ -388,34 +386,55 @@ class WorksAssignmentController extends Controller
             }
             $up =  WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
-        }
-        else{
-            
-
+        } else {
             $id_cus = $request->id_cus;
-            $up_work = Work::where('id','=',$id_cus)-> update([
-                'work_content'=>$request->work_content,
-                'date_book'=>$request->date_book,
-                'phone_number'=>$request->phone_number,
-                'district'=>$request->district,
-                'members_read'=>$request->members_read,
-                'street'=>$request->street,
-                'name_cus'=>$request->name_cus,
+            $up_work = Work::where('id', '=', $id_cus)->update([
+                'work_content' => $request->work_content,
+                'date_book' => $request->date_book,
+                'phone_number' => $request->phone_number,
+                'district' => $request->district,
+                'members_read' => $request->members_read,
+                'street' => $request->street,
+                'name_cus' => $request->name_cus,
             ]);
-            $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
-            ->update([
-                'status_work' => 2,
-                'real_note' =>$request->real_note,
-                'spending_total'=>$request->spending_total,
-                'income_total'=>$request->income_total,
-                // 'bill_imag',
-                'seri_number'=>$request->seri_number,
-                'work_done_date'=>date('d-m-Y '),
-            ]);
-              
-            
+
+            if ($request->hasFile('bill_imag')) {
+                $files = '';
+                foreach ($request->file('bill_imag') as $file) {
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
+                    $file->move('assets/images/work', $name);
+                    $files = $files . 'assets/images/work/' . $name . ',';
+                }
+                $serializedArr = json_encode($files);
+                $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
+                    ->update([
+                        'status_work' => 2,
+                        'real_note' => $request->real_note,
+                        'spending_total' => $request->spending_total,
+                        'income_total' => $request->income_total,
+                        'bill_imag' => $serializedArr,
+                        'seri_number' => $request->seri_number,
+                        'work_done_date' => date('d-m-Y '),
+                    ]);
+                    return response()->json('Update work with image !!!');
+            } else {
+                $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
+                    ->update([
+                        'status_work' => 2,
+                        'real_note' => $request->real_note,
+                        'spending_total' => $request->spending_total,
+                        'income_total' => $request->income_total,
+                        // 'bill_imag',
+                        'seri_number' => $request->seri_number,
+                        'work_done_date' => date('d-m-Y '),
+                    ]);
+                    return response()->json('Update work none image !!!');
+            }
+
+
+
+
            
-            return response()->json('Update work !!!');
         }
     }
 }

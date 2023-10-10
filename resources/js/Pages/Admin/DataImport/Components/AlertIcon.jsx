@@ -18,11 +18,11 @@ function Icon() {
         </svg>
     );
 }
-function AlertIcon({ setShowAlertFailed }) {
+function AlertIcon({ setShowAlertFailed, contentAlert }) {
     return (
         <Alert className='pt-3 pb-3 mb-8' icon={<Icon />} color="red" onClose={() => {
             setShowAlertFailed(false);
-        }}>Vui lòng chọn file cần thêm dữ liệu</Alert>
+        }}>{contentAlert}</Alert>
     );
 }
 export default AlertIcon;

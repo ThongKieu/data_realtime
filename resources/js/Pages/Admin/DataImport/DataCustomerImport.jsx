@@ -82,7 +82,7 @@ function DataCustomerImport() {
                 : <div className="flex justify-center min-h-screen mt-5">
                     <Card color="transparent" shadow={false}>
                         {showAlertFailed && (
-                            <AlertIcon setShowAlertFailed={setShowAlertFailed} />
+                            <AlertIcon setShowAlertFailed={setShowAlertFailed}  contentAlert={'Vui lòng chọn file cần thêm dữ liệu !!'}/>
 
                         )}
                         <Typography variant="h4" color="blue-gray">

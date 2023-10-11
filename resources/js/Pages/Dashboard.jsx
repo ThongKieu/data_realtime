@@ -488,7 +488,7 @@ function Dashboard({ auth }) {
                             work_note: work_note,
                         };
 
-                        const response = await fetch("api/web/works", {
+                        const response = await fetch("api/web/cancle/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                             headers: {
@@ -505,12 +505,13 @@ function Dashboard({ auth }) {
                 };
 
                 const handleSentPhanTho = async (e) => {
+                    let data = {
+                        id_cus: params.row.id,
+                        id_worker: selectPhanTho,
+                        work_note: params.row.work_note,
+                        auth_id: auth.user.id,
+                    };
                     try {
-                        let data = {
-                            id_cus: params.row.id,
-                            id_worker: selectPhanTho,
-                            work_note: params.row.work_note,
-                        };
                         const response = await fetch(
                             "api/web/work-assignment",
                             {
@@ -963,11 +964,12 @@ function Dashboard({ auth }) {
                     try {
                         let data = {
                             id: params.id,
-                            id_auth: auth.user.id,
-                            work_note: work_note,
+                            id_cus: params.row.id_cus,
+                            real_note: params.row.real_note,
+                            auth_id: auth.user.id,
                         };
                         const response = await fetch(
-                            "api/web/cancle/workassigment",
+                            "api/web/update/work-assignment-cancle",
                             {
                                 method: "POST",
                                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('id_work_ass');
             $table->integer('id_auth');
-            $table->string('info_check',10000)->nullable();
+            $table->tinyInteger('status_check')->default(0);
+            $table->string('info_check',1000)->nullable();
             $table->timestamps();
         });
     }

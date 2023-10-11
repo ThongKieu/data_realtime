@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::prefix('web')->group(function () {
     Route::apiResource('works',WorksController::class);
     Route::apiResource('workers',WorkersController::class);

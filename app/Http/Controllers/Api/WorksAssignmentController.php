@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\CheckWorkByAdminController;
 use App\Http\Controllers\Controller;
 use App\Models\Work;
 use App\Models\Worker;
@@ -16,6 +17,7 @@ class WorksAssignmentController extends Controller
     public function __invoke()
     {
     }
+    
     public function allWorkAssign(Request $request)
     {
         if ($request->dateCheck) {
@@ -308,7 +310,7 @@ class WorksAssignmentController extends Controller
         $workHas->save();
 
 
-        // $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
+        $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
 
         // insert to new checkin check out
         // $newio =  new WorksAssignment();
@@ -316,8 +318,8 @@ class WorksAssignmentController extends Controller
         // $newio -> id_work_has = $id_work_has;
         // $newio -> save();
 
-
-        // CheckWorkByAdminController::create($id_work_has);
+        
+         CheckWorkByAdminController::create($id_work_has, $request->auth_id );
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);
         // $info_noti_push ='Có Lịch Mới';
 

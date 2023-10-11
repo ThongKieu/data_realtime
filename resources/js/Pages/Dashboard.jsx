@@ -105,7 +105,7 @@ function Dashboard({ auth }) {
             if (response.status == 200) {
                 console.log("push on thanh cong");
             }
-        } catch (error) { }
+        } catch (error) {}
     };
     // ---------------lay du lieu cong viec chua phan----------------------------------------------
     const fetchData = async () => {
@@ -225,18 +225,42 @@ function Dashboard({ auth }) {
         }
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
-    const fetchDataUpdateThuchi = async (data, Url_Api) => {
+    const fetchDataUpdateThuchi = async (
+        data,
+        Url_Api,
+        billImageFiles,
+        imageVtFiles
+    ) => {
         try {
+            // Tạo một đối tượng FormData mới
+            const formData = new FormData();
+
+            // Lặp qua tất cả các cặp key-value trong đối tượng data và thêm chúng vào formData
+            for (const key in data) {
+                formData.append(key, data[key]);
+            }
+            // Thêm danh sách các tệp hình `bill_image` vào FormData
+            for (let i = 0; i < billImageFiles.length; i++) {
+                formData.append("bill_imag[]", billImageFiles[i]);
+            }
+
+            // Thêm danh sách các tệp hình `image_vt` vào FormData
+            // for (let i = 0; i < imageVtFiles.length; i++) {
+            //     formData.append("bill_imag[]", imageVtFiles[i]);
+            // }
             const res = await fetch(Url_Api, {
                 method: "POST",
                 headers: {
+                    Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data),
+                mode: "no-cors",
+                body: formData,
             });
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
+                socketD.emit("addWorkTo_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -284,7 +308,6 @@ function Dashboard({ auth }) {
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
         setOpenWorkerNameTableRight(!openWorkerNameTableRight);
-
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -336,7 +359,6 @@ function Dashboard({ auth }) {
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
-                console.log("hasData", hasData.work_note, data);
 
                 return (
                     <div className="text-center">
@@ -571,10 +593,13 @@ function Dashboard({ auth }) {
                     const name_cus = text.name_cus;
                     const district = text.district;
                     const work_note = text.work_note;
-                    const data = `${work_content ? work_content + " " : ""} ${street ? street + " " : ""
-                        } ${phone_number ? phone_number + " " : ""} ${name_cus ? name_cus + " " : ""
-                        } ${district ? district + " " : ""} ${work_note ? work_note + " " : ""
-                        } `;
+                    const data = `${work_content ? work_content + " " : ""} ${
+                        street ? street + " " : ""
+                    } ${phone_number ? phone_number + " " : ""} ${
+                        name_cus ? name_cus + " " : ""
+                    } ${district ? district + " " : ""} ${
+                        work_note ? work_note + " " : ""
+                    } `;
 
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
@@ -822,7 +847,6 @@ function Dashboard({ auth }) {
             type: "singleSelect",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
-                console.log(params.row);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -905,15 +929,16 @@ function Dashboard({ auth }) {
         {
             field: "spending_total",
             headerName: "Chi",
-            width: 100,
+            width: 120,
             editable: false,
-            type: "text",
+            type: "number",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const [isDataChanged, setIsDataChanged] = useState("");
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
+                console.log("previewImg: ", previewImgPt);
                 const [openSpending_total, setOpenSpending_total] =
                     useState(false);
                 const handleOpenSpending_total = () =>
@@ -929,7 +954,6 @@ function Dashboard({ auth }) {
                 const handleDataFromChild = (data) => {
                     setIsDataChanged(data);
                 };
-                console.log("isDataChanged---", isDataChanged);
                 const handleFileChangeVt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
@@ -949,7 +973,7 @@ function Dashboard({ auth }) {
                 console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
                 const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
-                const [valueRadio, setValueRadio] = useState("1");
+                const [valueRadio, setValueRadio] = useState("0");
                 const handleRadioChangeAllow = (e) => {
                     const value = e.target.value;
                     setIsAllowed(value === "1");
@@ -962,15 +986,24 @@ function Dashboard({ auth }) {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
-                        member_read:auth.user.id,
+                        member_read: auth.user.id,
                         datainput: isDataChanged,
                     };
+                    const billImageFiles =
+                        document.getElementById("image_bill").files;
+                    const imageVtFiles =
+                        document.getElementById("image_Vt").files;
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
                     };
                     if (valueRadio === "0") {
-                        fetchDataUpdateThuchi(data_0, UrlApi);
+                        fetchDataUpdateThuchi(
+                            data_0,
+                            UrlApi,
+                            billImageFiles,
+                            imageVtFiles
+                        );
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
@@ -980,11 +1013,6 @@ function Dashboard({ auth }) {
                 };
 
                 const dataBtnChi = [
-                    // {
-                    //     id: "BtnHuy",
-                    //     content: "Báo hủy",
-                    //     className: "text-red-500 rounded-none border-red-500",
-                    // },
                     {
                         id: "BtnTraLich",
                         content: "Trả Lịch",
@@ -1004,11 +1032,15 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-
+                // dinh dang tien te
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
                 return (
-                    <div>
-                        <Button onClick={handleOpenSpending_total}>
-                            {params.row.spending_total}
+                    <div className="w-full">
+                        <Button onClick={handleOpenSpending_total} variant="outlined">
+                            {formatter.format(params.row.spending_total)}
                         </Button>
                         <Dialog
                             open={openSpending_total}
@@ -1060,7 +1092,7 @@ function Dashboard({ auth }) {
                                             }
                                         />
                                     </div>
-                                    <div className="flex justify-center gap-4 ">
+                                    <div className="flex justify-center gap-4 align-middle ">
                                         <div className="w-full ">
                                             <div className="flex justify-center w-full">
                                                 {vatCard ? (
@@ -1073,7 +1105,7 @@ function Dashboard({ auth }) {
                                                         disabled={isAllowed}
                                                     >
                                                         <input
-                                                            id="hinh"
+                                                            id="image_Vt"
                                                             type="file"
                                                             accept=".jpg, .jpeg, .png"
                                                             onChange={
@@ -1083,32 +1115,35 @@ function Dashboard({ auth }) {
                                                             className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
                                                             disabled={isAllowed}
                                                         />
-                                                        <i className="text-[10px]">
-                                                            (Hình Vật Tư)
-                                                        </i>
-                                                        <div className="flex flex-row">
-                                                            {previewImgVt.map(
-                                                                (
-                                                                    preview,
-                                                                    index
-                                                                ) => (
-                                                                    <img
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        src={
-                                                                            preview
-                                                                        }
-                                                                        alt={`Preview ${index}`}
-                                                                        style={{
-                                                                            width: "100px",
-                                                                            height: "auto",
-                                                                            margin: "5px",
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            )}
-                                                        </div>
+                                                        {previewImgVt ? (
+                                                            <i className="text-[10px]">
+                                                                (Hình Vật Tư)
+                                                            </i>
+                                                        ) : (
+                                                            <div className="flex flex-row">
+                                                                {previewImgVt.map(
+                                                                    (
+                                                                        preview,
+                                                                        index
+                                                                    ) => (
+                                                                        <img
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            src={
+                                                                                preview
+                                                                            }
+                                                                            alt={`Preview ${index}`}
+                                                                            style={{
+                                                                                width: "100px",
+                                                                                height: "auto",
+                                                                                margin: "5px",
+                                                                            }}
+                                                                        />
+                                                                    )
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </Button>
                                                 )}
                                                 {vatCard ? (
@@ -1121,7 +1156,7 @@ function Dashboard({ auth }) {
                                                         disabled={isAllowed}
                                                     >
                                                         <input
-                                                            id="hinh"
+                                                            id="image_bill"
                                                             type="file"
                                                             accept=".jpg, .jpeg, .png"
                                                             onChange={
@@ -1159,6 +1194,20 @@ function Dashboard({ auth }) {
                                                         </div>
                                                     </Button>
                                                 )}
+                                                <div className="p-1 ">
+                                                    <Input
+                                                        label="Số Phiếu Thu"
+                                                        id="seri_number"
+                                                        name="seri_number"
+                                                        value={
+                                                            cardExpires.seri_number
+                                                        }
+                                                        defaultValue="k pt"
+                                                        onChange={handleChange}
+                                                        // disabled="{disabledAllowed || isAllowedBH}"
+                                                        className="mr-1 w-[100%] shadow-none"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1191,23 +1240,42 @@ function Dashboard({ auth }) {
             headerName: "Thu",
             width: 100,
             editable: false,
-            type: "text",
-            // renderCell: (params) => {
-            //     return (
-            //         <div>
-            //             <p>
-            //                 {params.row.income_total}
-            //             </p>
-            //         </div>
-            //     );
-            // },
+            type: "number",
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <span className="text-center">
+                        {formatter.format(params.row.income_total)}
+                    </span>
+                );
+            },
         },
         {
             field: "seri_number",
-            headerName: "Phiếu Thu",
+            headerName: "Số Phiếu Thu",
             width: 100,
             editable: false,
-            type: "text",
+            type: "number",
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    currencyDisplay: "code", // Hiển thị mã tiền tệ thay vì ký hiệu
+                  });
+
+                  const formattedValue = formatter.format(params.row.seri_number);
+
+                  // Loại bỏ ký hiệu đ (đồng) sau định dạng
+                  const formattedWithoutVND = formattedValue.replace("VND", "");
+                return (
+                    <span className="text-red-500">
+                         {formattedWithoutVND}
+                    </span>
+                );
+            },
         },
         {
             field: "actions",
@@ -1233,7 +1301,6 @@ function Dashboard({ auth }) {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
                 const [cardExpires, setCardExpires] = useState(params.row);
-                console.log(params.row);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1242,7 +1309,6 @@ function Dashboard({ auth }) {
                     }));
                     console.log(value);
                 };
-                // console.log('-----------', selectPhanTho);
                 const handleSentDeleteDone = async () => {
                     try {
                         let data = {
@@ -1264,7 +1330,7 @@ function Dashboard({ auth }) {
                             socketD.emit("addWorkTo_Server", "xoalichDone");
                             handleOpen();
                         }
-                    } catch (error) { }
+                    } catch (error) {}
                 };
 
                 const handleSentPhanTho = async (e) => {
@@ -1615,6 +1681,43 @@ function Dashboard({ auth }) {
         }
     };
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
+    const dataGridLichChuaPhan = [
+        {
+            id: "workDN",
+            rowsDataGrid: workDataDN,
+            contentDataGird: "Điện Nước",
+        },
+        {
+            id: "workDL",
+            rowsDataGrid: workDataDL,
+            contentDataGird: "Điện Lạnh",
+        },
+        {
+            id: "workDG",
+            rowsDataGrid: workDataDG,
+            contentDataGird: "Đồ Gỗ",
+        },
+        {
+            id: "workNLMT",
+            rowsDataGrid: workDataNLMT,
+            contentDataGird: "Năng Lượng Mặt Trời",
+        },
+        {
+            id: "workXD",
+            rowsDataGrid: workDataXD,
+            contentDataGird: "Xây Dựng",
+        },
+        {
+            id: "workVC",
+            rowsDataGrid: workDataVC,
+            contentDataGird: "Vận Chuyển",
+        },
+        {
+            id: "workHX",
+            rowsDataGrid: workDataHX,
+            contentDataGird: "Cơ Khí",
+        },
+    ];
     //------------------------------------data dataGrid---------------------------------------------
     const dataGrid = [
         {
@@ -1669,135 +1772,42 @@ function Dashboard({ auth }) {
                 className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card
+               <Card
                     className={
                         "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
                 >
-                    <div>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={DN}
-                        >
-                            Điện Nước
-                        </Typography>
-                        {/* bang ben trai  */}
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataDN}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                                onKeyDown={handleKeyPress}
-                                cellClassName={(params) =>
-                                    selectedCell.row === params.rowIndex &&
-                                        selectedCell.col === params.colIndex
-                                        ? "selected-cell"
-                                        : ""
-                                }
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={DL}
-                        >
-                            Điện Lạnh
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataDL}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={DG}
-                        >
-                            Điện Gỗ
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataDG}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={NLMT}
-                        >
-                            Năng Lượng Mặt Trời
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataNLMT}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={XD}
-                        >
-                            Xây Dựng
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataXD}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={VC}
-                        >
-                            Vận Chuyển
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataVC}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                        <Typography
-                            className="p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium"
-                            ref={HX}
-                        >
-                            Cơ Khí
-                        </Typography>
-                        <Box sx={{ width: 1 }}>
-                            <DataGrid
-                                rows={workDataHX}
-                                columns={columns}
-                                hideFooterPagination={true}
-                                slotProps={{
-                                    className: "text-center",
-                                }}
-                            />
-                        </Box>
-                    </div>
+                    {isLoading ? (
+                        <div className="flex justify-center p-2 align-middle ">
+                            <Spinner className="w-6 h-6" color="amber" />
+                            <p className="pl-2 text-center text-black">
+                                Loading...
+                            </p>
+                        </div>
+                    ) : (
+                        <div>
+                            {dataGridLichChuaPhan.map((result) => {
+                                return (
+                                    <div id={result.id}>
+                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                            {result.contentDataGird}
+                                        </Typography>
+                                        <Box>
+                                            <DataGrid
+                                                rows={result.rowsDataGrid}
+                                                columns={columns}
+                                                hideFooterPagination={true}
+                                                containerProps={{
+                                                    className: "hidden",
+                                                }}
+                                            />
+                                        </Box>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </Card>
-
                 <Card
                     className={
                         "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"

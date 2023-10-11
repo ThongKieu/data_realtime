@@ -1082,12 +1082,18 @@ function Dashboard({ auth }) {
                 };
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
+                    const jsonObject = {};
+                    for (const item of isDataChanged) {
+                        jsonObject[item.id] = item;
+                        console.log(JSON.stringify(jsonObject[item.id].id));
+                    }
+
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        datainput: isDataChanged,
+                        datainput: jsonObject,
                     };
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;

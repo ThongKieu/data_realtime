@@ -933,7 +933,143 @@ function Dashboard({ auth }) {
             editable: false,
             type: "number",
             renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <span className="text-center">
+                        {formatter.format(params.row.spending_total)}
+                    </span>
+                );
+            },
+        },
+        {
+            field: "income_total",
+            headerName: "Thu",
+            width: 100,
+            editable: false,
+            type: "number",
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <span className="text-center">
+                        {formatter.format(params.row.income_total)}
+                    </span>
+                );
+            },
+        },
+
+        {
+            field: "actions",
+            type: "actions",
+            headerName: "Chức Năng",
+            width: 150,
+            editable: false,
+            cellClassName: "actions",
+            renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [openHuy, setOpenHuy] = useState(false);
+                const handleOpenHuy = () => setOpenHuy(!openHuy);
+                const [openAdminCheck, setOpenAdminCheck] = useState(false);
+                const handleOpenAdminCheck = () =>
+                    setOpenAdminCheck(!openAdminCheck);
+                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
+                const handleOpenUpdateThuChi = () =>
+                    setOpenUpdateThuChi(!openUpdateThuChi);
+                const [work_note, setWorkNote] = useState();
+                const handleChange = (e) => {
+                    const { name, value } = e.target;
+                    setIsDataChanged(true);
+                    setCardExpires((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                };
+                const handleSentDeleteDone = async () => {
+                    try {
+                        let data = {
+                            id: params.id,
+                            id_auth: auth.user.id,
+                            work_note: work_note,
+                        };
+                        const response = await fetch(
+                            "api/web/cancle/workassigment",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            handleOpen();
+                        }
+                    } catch (error) {}
+                };
+
+                const dataRadio = [
+                    {
+                        id: "ThoDN",
+                        name: "XNTTNV",
+                        label: "Điện Nước",
+                        value: "0",
+                        checked: '{formData.kind_work === "0"}',
+                    },
+                    {
+                        id: "ThoDL",
+                        name: "XNTTNV",
+                        label: "Điện Lạnh",
+                        value: "1",
+                        checked: '{formData.kind_work === "1"}',
+                    },
+                    {
+                        id: "ThoDG",
+                        name: "XNTTNV",
+                        label: "Đồ Gỗ",
+                        value: "2",
+                        checked: '{formData.kind_work === "2"}',
+                    },
+                    {
+                        id: "ThoXD",
+                        name: "XNTTNV",
+                        label: "Xây Dựng",
+                        value: "3",
+                        checked: '{formData.kind_work === "3"}',
+                    },
+                    {
+                        id: "ThoNLMT",
+                        name: "XNTTNV",
+                        label: "Năng Lượng Mặt Trời",
+                        value: "4",
+                        checked: '{formData.kind_work === "4"}',
+                    },
+                    {
+                        id: "ThoVC",
+                        name: "XNTTNV",
+                        label: "Vận Chuyển",
+                        value: "5",
+                        checked: '{formData.kind_work === "5"}',
+                    },
+                    {
+                        id: "ThoHX",
+                        name: "XNTTNV",
+                        label: "Cơ Khí",
+                        value: "6",
+                        checked: '{formData.kind_work === "6"}',
+                    },
+                ];
+                // cho phep su dung cac nut
+                const isButtonDisabled = (permissionValue, valuePermiss) => {
+                    return permissionValue !== valuePermiss;
+                };
+                // --------- thu chi ----------------------------
+
                 const [isDataChanged, setIsDataChanged] = useState("");
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
@@ -943,14 +1079,7 @@ function Dashboard({ auth }) {
                     useState(false);
                 const handleOpenSpending_total = () =>
                     setOpenSpending_total(!openSpending_total);
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setIsDataChanged(true);
-                    setCardExpires((prevData) => ({
-                        ...prevData,
-                        [name]: value,
-                    }));
-                };
+
                 const handleDataFromChild = (data) => {
                     setIsDataChanged(data);
                 };
@@ -1037,11 +1166,132 @@ function Dashboard({ auth }) {
                     style: "currency",
                     currency: "VND",
                 });
+
                 return (
-                    <div className="w-full">
-                        <Button onClick={handleOpenSpending_total} variant="outlined">
-                            {formatter.format(params.row.spending_total)}
-                        </Button>
+                    <div>
+                        <div className="flex">
+                            <Tooltip content="Admin Check">
+                                <Button
+                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                    onClick={handleOpenAdminCheck}
+                                    disabled={isButtonDisabled(
+                                        auth.user.permission,
+                                        1
+                                    )}
+                                    variant="outlined"
+                                >
+                                    <EyeIcon />
+                                </Button>
+                            </Tooltip>
+                            <Tooltip content="Thu Hồi Lịch">
+                                <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
+                            </Tooltip>
+                            <Tooltip content="Hủy Lịch">
+                                <TrashIcon
+                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                    onClick={handleOpenHuy}
+                                />
+                            </Tooltip>
+                            <Tooltip content="Nhập Thu Chi">
+                                <ArrowUpTrayIcon
+                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                    onClick={handleOpenSpending_total}
+                                />
+                            </Tooltip>
+                        </div>
+                        {/*----------------------------- dialog form Huy ----------- */}
+                        <Dialog open={openHuy} handler={handleOpenHuy}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lý do hủy</DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenHuy}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do hủy"
+                                        className="shadow-none"
+                                        onChange={(e) =>
+                                            setWorkNote(e.target.value)
+                                        }
+                                    />
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="red"
+                                    onClick={handleSentDeleteDone}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        {/* ----------------ADMIN CHECK ------------ */}
+                        <Dialog
+                            open={openAdminCheck}
+                            handler={handleOpenAdminCheck}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>
+                                    XÁC NHẬN THÔNG TIN THỢ BÁO
+                                </DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenAdminCheck}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
+                                >
+                                    <div className="gap-4 ">
+                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
+                                            <label htmlFor="Nội Dung Bảo Hành">
+                                                Nội Dung Bảo Hành:
+                                            </label>
+                                            <p className="pl-5">
+                                                Không có thông tin bảo hành !
+                                            </p>
+                                        </Card>
+
+                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
+                                            {dataRadio.map((result) => (
+                                                <Radio
+                                                    id={result.id}
+                                                    name={result.name}
+                                                    label={result.label}
+                                                    value={result.value}
+                                                    checked={result.checked}
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                            ))}
+                                        </Card>
+                                    </div>
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row justify-center pt-2">
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
+                                        <Button
+                                            size="sm"
+                                            className="px-3 py-2 mx-4 shadow-none"
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận Thông Tin
+                                        </Button>
+                                    </div>
+                                </WorkForm>
+                            </DialogBody>
+                        </Dialog>
+                        {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <Dialog
                             open={openSpending_total}
                             handler={handleOpenSpending_total}
@@ -1227,422 +1477,6 @@ function Dashboard({ auth }) {
                                                 {result.content}
                                             </Button>
                                         ))}
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
-                        </Dialog>
-                    </div>
-                );
-            },
-        },
-        {
-            field: "income_total",
-            headerName: "Thu",
-            width: 100,
-            editable: false,
-            type: "number",
-            renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
-                return (
-                    <span className="text-center">
-                        {formatter.format(params.row.income_total)}
-                    </span>
-                );
-            },
-        },
-        {
-            field: "seri_number",
-            headerName: "Số Phiếu Thu",
-            width: 100,
-            editable: false,
-            type: "number",
-            renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    currencyDisplay: "code", // Hiển thị mã tiền tệ thay vì ký hiệu
-                  });
-
-                  const formattedValue = formatter.format(params.row.seri_number);
-
-                  // Loại bỏ ký hiệu đ (đồng) sau định dạng
-                  const formattedWithoutVND = formattedValue.replace("VND", "");
-                return (
-                    <span className="text-red-500">
-                         {formattedWithoutVND}
-                    </span>
-                );
-            },
-        },
-        {
-            field: "actions",
-            type: "actions",
-            headerName: "Chức Năng",
-            width: 150,
-            editable: false,
-            cellClassName: "actions",
-            renderCell: (params) => {
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => setOpen(!open);
-                const [openTho, setOpenTho] = useState(false);
-                const handleOpenTho = () => setOpenTho(!openTho);
-                const [openAdminCheck, setOpenAdminCheck] = useState(false);
-                const handleOpenAdminCheck = () =>
-                    setOpenAdminCheck(!openAdminCheck);
-                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-                const handleOpenUpdateThuChi = () =>
-                    setOpenUpdateThuChi(!openUpdateThuChi);
-                const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho] = useState(null);
-                const handleSelectChange = (selectedValue) => {
-                    setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
-                };
-                const [cardExpires, setCardExpires] = useState(params.row);
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setCardExpires((prevData) => ({
-                        ...prevData,
-                        [name]: value,
-                    }));
-                    console.log(value);
-                };
-                const handleSentDeleteDone = async () => {
-                    try {
-                        let data = {
-                            id: params.id,
-                            id_auth: auth.user.id,
-                            work_note: work_note,
-                        };
-                        const response = await fetch(
-                            "api/web/cancle/workassigment",
-                            {
-                                method: "POST",
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
-                        );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalichDone");
-                            handleOpen();
-                        }
-                    } catch (error) {}
-                };
-
-                const handleSentPhanTho = async (e) => {
-                    console.log("selectPhanTho", selectPhanTho.value);
-                    try {
-                        let data = {
-                            id_works: params.row.id,
-                            id_worker: selectPhanTho,
-                            work_note: params.row.work_note,
-                        };
-                        console.log("handleSentPhanTho", data);
-                        const response = await fetch(
-                            "api/web/work-assignment",
-                            {
-                                method: "POST",
-                                body: data, // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
-                        );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
-                            handleOpenTho();
-                            console.log("handleSentPhanTho1", data);
-                        } else {
-                            console.log("chua dau");
-                        }
-                    } catch (error) {
-                        console.log("lixo", error);
-                    }
-                };
-                const vatCard = params.row.bill_image === null;
-                const dataRadio = [
-                    {
-                        id: "ThoDN",
-                        name: "XNTTNV",
-                        label: "Điện Nước",
-                        value: "0",
-                        checked: '{formData.kind_work === "0"}',
-                    },
-                    {
-                        id: "ThoDL",
-                        name: "XNTTNV",
-                        label: "Điện Lạnh",
-                        value: "1",
-                        checked: '{formData.kind_work === "1"}',
-                    },
-                    {
-                        id: "ThoDG",
-                        name: "XNTTNV",
-                        label: "Đồ Gỗ",
-                        value: "2",
-                        checked: '{formData.kind_work === "2"}',
-                    },
-                    {
-                        id: "ThoXD",
-                        name: "XNTTNV",
-                        label: "Xây Dựng",
-                        value: "3",
-                        checked: '{formData.kind_work === "3"}',
-                    },
-                    {
-                        id: "ThoNLMT",
-                        name: "XNTTNV",
-                        label: "Năng Lượng Mặt Trời",
-                        value: "4",
-                        checked: '{formData.kind_work === "4"}',
-                    },
-                    {
-                        id: "ThoVC",
-                        name: "XNTTNV",
-                        label: "Vận Chuyển",
-                        value: "5",
-                        checked: '{formData.kind_work === "5"}',
-                    },
-                    {
-                        id: "ThoHX",
-                        name: "XNTTNV",
-                        label: "Cơ Khí",
-                        value: "6",
-                        checked: '{formData.kind_work === "6"}',
-                    },
-                ];
-                // cho phep su dung cac nut
-                const isButtonDisabled = (permissionValue, valuePermiss) => {
-                    return permissionValue !== valuePermiss;
-                };
-                return (
-                    <div>
-                        <div className="flex">
-                            <Tooltip content="Admin Check">
-                                <Button
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                    onClick={handleOpenAdminCheck}
-                                    disabled={isButtonDisabled(
-                                        auth.user.permission,
-                                        1
-                                    )}
-                                    variant="outlined"
-                                >
-                                    <EyeIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip content="Thu Hồi Lịch">
-                                <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
-                            </Tooltip>
-                            <Tooltip content="Hủy Lịch">
-                                <TrashIcon
-                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                    onClick={handleOpen}
-                                />
-                            </Tooltip>
-                            <Tooltip content="Cập Nhật Dữ Liệu">
-                                <ArrowUpTrayIcon
-                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={handleOpenUpdateThuChi}
-                                />
-                            </Tooltip>
-                        </div>
-                        <Dialog
-                            open={openTho}
-                            handler={handleOpenTho}
-                            className="bg-transparent "
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lựa Chọn Thợ</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenTho}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <Select
-                                    value={selectPhanTho}
-                                    options={infoWorkerDashboard}
-                                    onChange={(selectedValue) =>
-                                        handleSelectChange(selectedValue)
-                                    }
-                                    isMulti
-                                    className="shadow-none"
-                                />
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="green"
-                                    onClick={handleSentPhanTho}
-                                >
-                                    Phân Thợ
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-                        <Dialog open={open} handler={handleOpen}>
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lý do hủy</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpen}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <div className="grid gap-6">
-                                    {/* <input type="text" value={params.id} /> */}
-                                    <Textarea
-                                        label="Lý do hủy"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleSentDeleteDone}
-                                >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-
-                        <Dialog
-                            open={openAdminCheck}
-                            handler={handleOpenAdminCheck}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    XÁC NHẬN THÔNG TIN THỢ BÁO
-                                </DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenAdminCheck}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <div className="gap-4 ">
-                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                            <label htmlFor="Nội Dung Bảo Hành">
-                                                Nội Dung Bảo Hành:
-                                            </label>
-                                            <p className="pl-5">
-                                                Không có thông tin bảo hành !
-                                            </p>
-                                        </Card>
-
-                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
-                                            {dataRadio.map((result) => (
-                                                <Radio
-                                                    id={result.id}
-                                                    name={result.name}
-                                                    label={result.label}
-                                                    value={result.value}
-                                                    checked={result.checked}
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                            ))}
-                                        </Card>
-                                    </div>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 shadow-none"
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận Thông Tin
-                                        </Button>
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
-                        </Dialog>
-                        <Dialog
-                            open={openUpdateThuChi}
-                            handler={handleOpenUpdateThuChi}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    CẬP NHẬT THÔNG TIN THỢ
-                                </DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenUpdateThuChi}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Đã Làm"
-                                                value="0"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Vật Tư
-                                            </Button>
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Phiếu Thu
-                                            </Button>
-                                        </div>
-                                    </div>
-                                    <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                        <label htmlFor="Nội Dung Bảo Hành">
-                                            Nội Dung Bảo Hành:
-                                        </label>
-                                        <p className="pl-5">
-                                            Không có thông tin bảo hành !
-                                        </p>
-                                    </Card>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 "
-                                            variant="outlined"
-                                        >
-                                            Cập nhật
-                                        </Button>
                                     </div>
                                 </WorkForm>
                             </DialogBody>

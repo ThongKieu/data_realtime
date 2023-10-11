@@ -450,6 +450,10 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
+                if($request->datainut != null)
+                {
+                    dd($request->datainut);
+                }
                 return response()->json('Update work with image !!!');
             } else {
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
@@ -461,6 +465,10 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
+                if($request->datainut != null)
+                {
+                    dd($request->datainut);
+                }
                 return response()->json('Update work none image !!!');
             }
         }

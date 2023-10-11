@@ -160,8 +160,8 @@ class WorksController extends Controller
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                $file->move('assets/images/work', $name);
-                $files = $files . 'assets/images/work/' . $name . ',';
+                $file->move('assets/images/work/'.$id, $name);
+                $files = $files . 'assets/images/work/'.$id .'/' . $name . ',';
             }
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);

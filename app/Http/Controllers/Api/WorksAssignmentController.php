@@ -397,25 +397,26 @@ class WorksAssignmentController extends Controller
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
+            if ($request->hasFile('seri_imag')) {
+                $file_na = '';
+                foreach ($request->file('seri_imag') as $files_seri) {
+                    $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
+                    $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
+                    $file_na = 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri;
+                }
+                $serializedArr = json_encode($file_na);
+                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $serializedArr]);
+            }
 
             if ($request->hasFile('bill_imag')) {
                 // dd($request->all());
                 $files = '';
                 foreach ($request->file('bill_imag') as $file) {
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                    $file->move('assets/images/work_assignment/'.$request->id, $name);
-                    $files = $files . 'assets/images/work_assignment/'.$request->id.'/' . $name . ',';
+                    $file->move('assets/images/work_assignment/' . $request->id, $name);
+                    $files = $files . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
                 }
                 $serializedArr = json_encode($files);
-                if ($request->hasFile('seri_imag')) {
-                    $file_na ='';
-                    foreach ($request->file('seri_imag') as $files_seri) {
-                        $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
-                        $files_seri->move('assets/images/work_assignment/'.$request->id.'/seri_imag', $name_seri);
-                        $file_na = 'assets/images/work_assignment/'.$request->id.'/seri_imag/' . $name_seri;
-                    }
-                    WorksAssignment::where('id', '=', $request->id)->update([ 'seri_imag' =>  $file_na]);
-                }
 
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
@@ -427,7 +428,7 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                    return response()->json('Update work with image !!!');
+                return response()->json('Update work with image !!!');
             } else {
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
@@ -439,13 +440,8 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                    return response()->json('Update work none image !!!');
+                return response()->json('Update work none image !!!');
             }
-
-
-
-
-
         }
     }
 }

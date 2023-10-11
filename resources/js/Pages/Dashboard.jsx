@@ -245,9 +245,9 @@ function Dashboard({ auth }) {
             }
 
             // Thêm danh sách các tệp hình `image_vt` vào FormData
-            // for (let i = 0; i < imageVtFiles.length; i++) {
-            //     formData.append("bill_imag[]", imageVtFiles[i]);
-            // }
+            for (let i = 0; i < imageVtFiles?.length; i++) {
+                formData.append("bill_imag[]", imageVtFiles[i]);
+            }
             const res = await fetch(Url_Api, {
                 method: "POST",
                 headers: {
@@ -269,41 +269,10 @@ function Dashboard({ auth }) {
         }
     };
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
-    const handleKeyPress = (e) => {
-        const { row, col } = selectedCell;
 
-        switch (e.key) {
-            case "ArrowUp":
-                setSelectedCell({ row: Math.max(row - 1, 0), col });
-                break;
-            case "ArrowDown":
-                setSelectedCell({
-                    row: Math.min(row + 1, rows.length - 1),
-                    col,
-                });
-                break;
-            case "ArrowLeft":
-                setSelectedCell({ row, col: Math.max(col - 1, 0) });
-                break;
-            case "ArrowRight":
-                setSelectedCell({
-                    row,
-                    col: Math.min(col + 1, columns.length - 1),
-                });
-                break;
-            default:
-                break;
-        }
-    };
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-    const [openTho, setOpenTho] = useState(false);
-    const handleOpenTho = () => setOpenTho(!openTho);
-    const [openAdminCheck, setOpenAdminCheck] = useState(false);
-    const handleOpenAdminCheck = () => setOpenAdminCheck(!openAdminCheck);
-    const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-    const handleOpenUpdateThuChi = () => setOpenUpdateThuChi(!openUpdateThuChi);
     const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
@@ -947,7 +916,7 @@ function Dashboard({ auth }) {
         {
             field: "income_total",
             headerName: "Thu",
-            width: 100,
+            width: 120,
             editable: false,
             type: "number",
             renderCell: (params) => {
@@ -962,7 +931,6 @@ function Dashboard({ auth }) {
                 );
             },
         },
-
         {
             field: "actions",
             type: "actions",
@@ -1119,7 +1087,7 @@ function Dashboard({ auth }) {
                         datainput: isDataChanged,
                     };
                     const billImageFiles =
-                        document.getElementById("image_bill").files;
+                        document.getElementById("image_Pt").files;
                     const imageVtFiles =
                         document.getElementById("image_Vt").files;
                     const data_1 = {
@@ -1161,11 +1129,7 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-                // dinh dang tien te
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
+
 
                 return (
                     <div>
@@ -1333,7 +1297,6 @@ function Dashboard({ auth }) {
                                     vatCard={vatCard}
                                     disabledAllowed={isAllowed}
                                 >
-                                    {" "}
                                     <div className="flex justify-between w-full my-2 text-sm">
                                         <DynamicTwoInput
                                             disabledAllowed={isAllowed}
@@ -1406,7 +1369,7 @@ function Dashboard({ auth }) {
                                                         disabled={isAllowed}
                                                     >
                                                         <input
-                                                            id="image_bill"
+                                                            id="image_Pt"
                                                             type="file"
                                                             accept=".jpg, .jpeg, .png"
                                                             onChange={
@@ -1606,7 +1569,7 @@ function Dashboard({ auth }) {
                 className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
-               <Card
+                <Card
                     className={
                         "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
@@ -1681,7 +1644,7 @@ function Dashboard({ auth }) {
                 </Card>
             </div>
             <div className="fixed flex mt-1">
-                <div>
+                <div key={auth.user.id}>
                     {dataBtnFixed.map((result) => {
                         return (
                             <Button

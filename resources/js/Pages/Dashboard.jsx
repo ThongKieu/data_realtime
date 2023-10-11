@@ -204,7 +204,7 @@ function Dashboard({ auth }) {
     };
     const fetchDataWorkDone = async (data) => {
         try {
-            const res = await fetch("api/web/update/work-assignment", {
+            const res = await fetch("api/web/update/work-continue", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

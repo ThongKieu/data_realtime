@@ -29,7 +29,6 @@ class WorksAssignmentController extends Controller
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-           
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
             ->whereBetween('works_assignments.status_work', [0, 3])
@@ -345,37 +344,37 @@ class WorksAssignmentController extends Controller
 
         return response()-> json('Hủy Thành Công!');
     }
-    public function updateWorkAss(Request $request)
-    {
-        $id_cus =  WorksAssignment::where('id', '=', $request->id)->value('id_cus');
-        if ($request->ac) {
-            switch ($request->ac) {
-                case ('1'):
-                    $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content, 'work_note' => $request->work_note, 'street' => $request->street, 'district' => $request->district, 'phone_number' => $request->phone_number]);
-                    if ($request->warranties != null) {
-                    }
-                    $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content]);
-                    break;
-                case ('tobeConti'):
-                    $content = Work::where('id', '=', $id_cus)->update(['work_note' => $request->work_note]);
-                    break;
-                case ('3'):
-                    $content = Work::where('id', '=', $id_cus)->update(['street' => $request->street]);
-                    break;
-                case ('4'):
-                    $content = Work::where('id', '=', $id_cus)->update(['district' => $request->district]);
-                    break;
-                case ('5'):
-                    $content = Work::where('id', '=', $id_cus)->update(['phone_number' => $request->phone_number]);
-                    break;
-            }
-            if (isset($content)) {
-                return response()->json('Update Work done !!! ');
-            }
-            return response()->json('Update Work fail !!!!!!!!!');
-        }
-        return response()->json('Non Action !');
-    }
+    // public function updateWorkAss(Request $request)
+    // {
+    //     $id_cus =  WorksAssignment::where('id', '=', $request->id)->value('id_cus');
+    //     if ($request->ac) {
+    //         switch ($request->ac) {
+    //             case ('1'):
+    //                 $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content, 'work_note' => $request->work_note, 'street' => $request->street, 'district' => $request->district, 'phone_number' => $request->phone_number]);
+    //                 if ($request->warranties != null) {
+    //                 }
+    //                 $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content]);
+    //                 break;
+    //             case ('tobeConti'):
+    //                 $content = Work::where('id', '=', $id_cus)->update(['work_note' => $request->work_note]);
+    //                 break;
+    //             case ('3'):
+    //                 $content = Work::where('id', '=', $id_cus)->update(['street' => $request->street]);
+    //                 break;
+    //             case ('4'):
+    //                 $content = Work::where('id', '=', $id_cus)->update(['district' => $request->district]);
+    //                 break;
+    //             case ('5'):
+    //                 $content = Work::where('id', '=', $id_cus)->update(['phone_number' => $request->phone_number]);
+    //                 break;
+    //         }
+    //         if (isset($content)) {
+    //             return response()->json('Update Work done !!! ');
+    //         }
+    //         return response()->json('Update Work fail !!!!!!!!!');
+    //     }
+    //     return response()->json('Non Action !');
+    // }
     public function insertCancleBook(Request $request)
     {
         $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
@@ -443,7 +442,7 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                if($request->datainut != null)
+                if($request->datainut != '')
                 {
                     dd($request->datainut);
                 }
@@ -458,9 +457,10 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                if($request->datainut != null)
+                if($request->datainut != null || $request->datainut != '')
                 {
                     dd($request->datainut);
+                    
                 }
                 return response()->json('Update work none image !!!');
             }

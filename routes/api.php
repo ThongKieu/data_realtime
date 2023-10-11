@@ -28,7 +28,6 @@ Route::prefix('web')->group(function () {
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
-        Route::post('work-assignment','App\Http\Controllers\Api\WorksAssignmentController@updateWorkAss');
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
         Route::post('work-assignment-cancle','App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');

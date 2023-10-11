@@ -325,10 +325,21 @@ class WorksAssignmentController extends Controller
         // return redirect()->action('WorkController@home');
         return 'OK';
     }
-    public function returnText(Request $request)
+    public function returnWorkFromAss(Request $request)
     {
-
-        dd($request->all());
+        $note = $request->real_note . '-'. $request->worker_name.'- Đã Trả';
+        Work::where('id','=',$request->id_cus)->update(['status_cus'=>0,'work_note'=>$note]);
+        WorksAssignment::where('id','='.$request->id)->update(['status_work'=> 4]);
+        
+        return response()-> json('Trả Lịch Thành Công!');
+    }
+    public function cancleWorkFromAss(Request $request)
+    {
+        $note = $request->real_note;
+        Work::where('id','=',$request->id_cus)->update(['status_cus'=>2,'work_note'=>$note]);
+        WorksAssignment::where('id','='.$request->id)->update(['status_work'=> 5]);
+        
+        return response()-> json('Hủy Thành Công!');
     }
     public function updateWorkAss(Request $request)
     {
@@ -436,7 +447,6 @@ class WorksAssignmentController extends Controller
                         'real_note' => $request->real_note,
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
-                        // 'bill_imag',
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
@@ -444,4 +454,5 @@ class WorksAssignmentController extends Controller
             }
         }
     }
+    
 }

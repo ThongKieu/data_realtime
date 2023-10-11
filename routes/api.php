@@ -29,11 +29,13 @@ Route::prefix('web')->group(function () {
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-assignment','App\Http\Controllers\Api\WorksAssignmentController@updateWorkAss');
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
+        Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
+        Route::post('work-assignment-cancle','App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
     });
     Route::prefix('cancle')->group(function () {
         Route::get('works','App\Http\Controllers\Api\Web\WorksController@getCancleBook');
         Route::post('works','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
-        Route::post('workassigment','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
+        Route::post('workassignment','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
 

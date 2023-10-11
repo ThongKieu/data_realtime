@@ -10,6 +10,8 @@ function Tab1() {
     const [showAlertFailed, setShowAlertFailed] = useState(false);
     const [excelData, setExcelData] = useState([]);
 
+    
+
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -35,7 +37,7 @@ function Tab1() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        "phone": '84' + ((row[0] +'').startsWith('0') ? row[0].substring(1, 10) : row[0]),
+                        "phone": '84' + ((row[0] + '').startsWith('0') ? row[0].substring(1, 10) : row[0]),
                         "template_id": "232211",
                         "template_data": {
                             "date": row[2],
@@ -119,7 +121,7 @@ function Tab2() {
         }
     };
 
-    
+
 
     const classInput_border =
         'className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500  ';
@@ -200,9 +202,9 @@ function Tab2() {
                             <Input value={nameCustomer} disabled size="lg" className={classInput_border} labelProps={{ className: "hidden" }} />
                             <p className="mt-3">Ngày báo giá: </p>
                             <Input size="lg" className={classInput_border} labelProps={{ className: "hidden" }} value={date} onChange={handleChangeInputDate} />
-                            </div>
+                        </div>
                         <Button className="mt-6" fullWidth color="green" onClick={() => {
-                            if (phoneCustomer.length == 0 || date.length == 0 ) {
+                            if (phoneCustomer.length == 0 || date.length == 0) {
                                 setShowAlertFailed(true);
                             } else {
                                 setShowAlertFailed(false);
@@ -217,7 +219,7 @@ function Tab2() {
                             Thợ Việt chân thành cảm ơn!
                         </Typography>
                         <Typography color="gray" className="mt-1 font-normal text-sm">
-                        Thợ Việt chân thành cảm ơn Quý Khách đã quan tâm và sử dụng dịch vụ ! Rất mong nhận được phản hồi của Anh/Chị về chất lượng phục vụ và báo giá của thợ !
+                            Thợ Việt chân thành cảm ơn Quý Khách đã quan tâm và sử dụng dịch vụ ! Rất mong nhận được phản hồi của Anh/Chị về chất lượng phục vụ và báo giá của thợ !
                         </Typography>
                         <Typography color="gray" className="mt-1 font-normal text-sm">
                             Mã đơn:
@@ -244,52 +246,46 @@ function Tab2() {
 }
 function ZaloSendZNSQuotes() {
     const [activeTab, setActiveTab] = useState(1);
+
+    const getCode = () =>{
+        window.location= "https://oauth.zaloapp.com/v4/oa/permission?app_id=2942298461338400530&redirect_uri=https%3A%2F%2Fdata.thoviet.com%2Fadmin%2Ftoken_zns";
+    }
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Gửi ZNS cảm ơn khách hàng" />
             <div className="flex-col min-h-screen mt-5">
                 <div className="flex justify-center row">
                     <div className="h-12">
-                        <Button
-                            className="mr-6 "
-                            style={{ width: "200px" }}
-                            color="green"
-                        >
-                            Lấy token mới
+                        <Button className="mr-6 " style={{ width: "200px" }} color="white" disabled={false} onClick={()=>{
+                            getCode();
+                        }}>
+                            CODE
                         </Button>
                     </div>
-                    <div
-                        className="border border-green-500 rounded-lg h-11"
-                        style={{ width: "600px" }}
-                    >
-                        <Input
-                            value={
-                                "9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"
-                            }
-                            disabled
-                        />
+                    <div className="border border-green-500 rounded-lg h-11" style={{ width: "600px" }}>
+                        <Input value={"9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"} disabled />
                     </div>
                 </div>
                 <div className="flex justify-center row">
                     <div className="h-12">
-                        <Button
-                            className="mr-6"
-                            style={{ width: "200px" }}
-                            color="orange"
-                        >
+                        <Button className="mr-6 " style={{ width: "200px" }} color="green" disabled={false} onClick={()=>{
+                            getCode();
+                        }}>
+                            Lấy token mới
+                        </Button>
+                    </div>
+                    <div className="border border-green-500 rounded-lg h-11" style={{ width: "600px" }}>
+                        <Input value={"9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"} disabled />
+                    </div>
+                </div>
+                <div className="flex justify-center row">
+                    <div className="h-12">
+                        <Button className="mr-6" style={{ width: "200px" }} color="orange" disabled={false}>
                             Lấy token refresh
                         </Button>
                     </div>
-                    <div
-                        className="border border-orange-500 rounded-lg h-11"
-                        style={{ width: "600px" }}
-                    >
-                        <Input
-                            value={
-                                "9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"
-                            }
-                            disabled
-                        />
+                    <div className="border border-orange-500 rounded-lg h-11" style={{ width: "600px" }}>
+                        <Input value={"9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"} disabled />
                     </div>
                 </div>
                 <div className="container mx-auto mt-8">

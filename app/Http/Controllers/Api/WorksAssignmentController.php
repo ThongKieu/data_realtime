@@ -401,11 +401,13 @@ class WorksAssignmentController extends Controller
             if ($request->hasFile('bill_imag')) {
                 $files = '';
                 foreach ($request->file('bill_imag') as $file) {
+                    
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                    $file->move('assets/images/work', $name);
-                    $files = $files . 'assets/images/work/' . $name . ',';
+                    $file->move('assets/images/workas', $name);
+                    $files = $files . 'assets/images/workas/' . $name . ',';
                 }
                 $serializedArr = json_encode($files);
+
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,

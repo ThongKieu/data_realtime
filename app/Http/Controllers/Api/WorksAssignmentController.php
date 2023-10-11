@@ -17,7 +17,7 @@ class WorksAssignmentController extends Controller
     public function __invoke()
     {
     }
-    
+
     public function allWorkAssign(Request $request)
     {
         if ($request->dateCheck) {
@@ -29,10 +29,10 @@ class WorksAssignmentController extends Controller
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->join('check', 'works_assignments.id_worker', '=', 'workers.id')
+
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0,3])
             ->get(
                 [
                     "works_assignments.id",
@@ -58,6 +58,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "workers.sort_name",
                     "workers.add_worker",
+                    "works_assignments.status_admin_check",
                 ]
             );
         $dien_lanh = DB::table('works_assignments')
@@ -91,6 +92,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "workers.sort_name",
                     "workers.add_worker",
+                    "works_assignments.status_admin_check",
                 ]
             );
         $do_go = DB::table('works_assignments')
@@ -124,6 +126,7 @@ class WorksAssignmentController extends Controller
                     "works.name_cus",
                     "workers.sort_name",
                     "workers.add_worker",
+                    "works_assignments.status_admin_check",
                 ]
             );
         $nlmt = DB::table('works_assignments')
@@ -157,6 +160,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "workers.sort_name",
                     "workers.add_worker",
+                    "works_assignments.status_admin_check",
                 ]
             );
         $xay_dung = DB::table('works_assignments')
@@ -190,6 +194,7 @@ class WorksAssignmentController extends Controller
                     "works.name_cus",
                     "workers.sort_name",
                     "workers.add_worker",
+                    "works_assignments.status_admin_check",
                 ]
             );
         $tai_xe = DB::table('works_assignments')
@@ -209,6 +214,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
                     "works_assignments.status_work",
+                    "works_assignments.status_admin_check",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
                     "works.work_content",
@@ -244,6 +250,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
+                    "works_assignments.status_admin_check",
                     "works.work_content",
                     "works.date_book",
                     "works.street",
@@ -321,7 +328,7 @@ class WorksAssignmentController extends Controller
         // $newio -> id_work_has = $id_work_has;
         // $newio -> save();
 
-        
+
         //  CheckWorkByAdminController::create($id_work_has, $request->auth_id );
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);
         // $info_noti_push ='Có Lịch Mới';
@@ -380,7 +387,7 @@ class WorksAssignmentController extends Controller
     {
         $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5]);
-        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->id_auth]);
+        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->auth_id]);
 
         if ($up) {
             return 'Delete work done !';

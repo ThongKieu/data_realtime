@@ -47,7 +47,6 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         setData(updatedData);
         sendDataToParent(updatedData);
         setIsAllowedBH(selectedValue == "KBH");
-        console.log("updatedData11111", selectedValue);
     };
     const handleChange = (e, id) => {
         const { name, value } = e.target;
@@ -119,7 +118,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                         color="red"
                         className="px-2 py-0 mx-1 "
                         disabled={disabledAllowed || isAllowedBH}
-                        onClick={(e) => handleDelete(val.id)}
+                        onClick={(e) => handleDelete(e,val.id)}
                     >
                         <TrashIcon className="w-5 h-5" />
                     </Button>

@@ -74,7 +74,7 @@ function Dashboard({ auth }) {
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                fetchDataWorkDone(data);
+                // fetchDataWorkDone(data);
             }
         });
         return () => {
@@ -484,7 +484,7 @@ function Dashboard({ auth }) {
                     try {
                         let data = {
                             id: params.id,
-                            id_auth: auth.user.id,
+                            auth_id: auth.user.id,
                             work_note: work_note,
                         };
 
@@ -509,6 +509,7 @@ function Dashboard({ auth }) {
                         id_cus: params.row.id,
                         id_worker: selectPhanTho,
                         work_note: params.row.work_note,
+
                         auth_id: auth.user.id,
                     };
                     try {
@@ -1046,7 +1047,6 @@ function Dashboard({ auth }) {
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
-                console.log("previewImg: ", previewImgPt);
                 const [openSpending_total, setOpenSpending_total] =
                     useState(false);
                 const handleOpenSpending_total = () =>
@@ -1107,7 +1107,7 @@ function Dashboard({ auth }) {
                         fetchDataUpdateThuchi(data_1, UrlApi);
                         console.log("cardExpires data_1", data_1);
                     }
-                    handleOpenSpending_total();
+                    // handleOpenSpending_total();
                 };
                 const handleThuHoi = async (e) => {
                     e.preventDefault();
@@ -1158,40 +1158,59 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
+                const check_admin = params.row.status_admin_check === 1;
                 return (
                     <div>
                         <div className="flex">
-                            <Tooltip content="Admin Check">
-                                <Button
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                    onClick={handleOpenAdminCheck}
-                                    disabled={isButtonDisabled(
-                                        auth.user.permission,
-                                        1
-                                    )}
-                                    variant="outlined"
-                                >
-                                    <EyeIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip content="Thu Hồi Lịch">
-                                <ArrowPathIcon
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                    onClick={handleOpenThuHoi}
-                                />
-                            </Tooltip>
-                            <Tooltip content="Hủy Lịch">
-                                <TrashIcon
-                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                    onClick={handleOpenHuy}
-                                />
-                            </Tooltip>
-                            <Tooltip content="Nhập Thu Chi">
-                                <ArrowUpTrayIcon
-                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={handleOpenSpending_total}
-                                />
-                            </Tooltip>
+                            {check_admin ? (
+                                <Tooltip content="Admin Check">
+                                    <Button
+                                        className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                        onClick={handleOpenAdminCheck}
+                                        disabled={isButtonDisabled(
+                                            auth.user.permission,
+                                            1
+                                        )}
+                                        variant="outlined"
+                                    >
+                                        <EyeIcon />
+                                    </Button>
+                                </Tooltip>
+                            ) : (
+                                <div className="flex w-full">
+                                    <Tooltip content="Admin Check">
+                                        <Button
+                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                            onClick={handleOpenAdminCheck}
+                                            disabled={isButtonDisabled(
+                                                auth.user.permission,
+                                                1
+                                            )}
+                                            variant="outlined"
+                                        >
+                                            <EyeIcon />
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip content="Thu Hồi Lịch">
+                                        <ArrowPathIcon
+                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                            onClick={handleOpenThuHoi}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Hủy Lịch">
+                                        <TrashIcon
+                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                            onClick={handleOpenHuy}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Nhập Thu Chi">
+                                        <ArrowUpTrayIcon
+                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                            onClick={handleOpenSpending_total}
+                                        />
+                                    </Tooltip>
+                                </div>
+                            )}
                         </div>
                         {/*----------------------------- dialog form Huy ----------- */}
                         <Dialog open={openHuy} handler={handleOpenHuy}>

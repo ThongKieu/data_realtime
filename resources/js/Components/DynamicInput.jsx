@@ -5,13 +5,28 @@ import { TrashIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 // import Select from "react-select";
 
 function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
-    const [data, setData] = useState([{ id: 1, warranty_time: 0,unit:"KBH",warranty_info:"Không Bảo Hành" }]);
+    const [data, setData] = useState([
+        {
+            id: 1,
+            warranty_time: 0,
+            unit: "KBH",
+            warranty_info: "Không Bảo Hành",
+        },
+    ]);
     const handleClick = (e) => {
         e.preventDefault();
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
-        setData([...data, { id: newId, warranty_time: 0,unit:"KBH",warranty_info:"Không Bảo Hành" }]);
+        setData([
+            ...data,
+            {
+                id: newId,
+                warranty_time: 0,
+                unit: "KBH",
+                warranty_info: "Không Bảo Hành",
+            },
+        ]);
     };
     const optionBH = [
         { id: 0, value: "KBH", label: "KBH" },
@@ -20,7 +35,8 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         { id: 3, value: "m", label: "Tháng" },
         { id: 4, value: "y", label: "Năm" },
     ];
-    const handleSelectChange = (selectedValue, id) => {
+    const [isAllowedBH, setIsAllowedBH] = useState(false);
+    const handleSelectChange = (selectedValue, { id }) => {
         const updatedData = data.map((item) => {
             if (item.id === id) {
                 return { ...item, unit: selectedValue };
@@ -30,7 +46,8 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
 
         setData(updatedData);
         sendDataToParent(updatedData);
-        console.log("updatedData11111", updatedData);
+        setIsAllowedBH(selectedValue == "KBH");
+        console.log("updatedData11111", selectedValue);
     };
     const handleChange = (e, id) => {
         const { name, value } = e.target;
@@ -83,7 +100,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                             value={val.warranty_time}
                             onChange={(e) => handleChange(e, val.id)}
                             className="w-[100%] shadow-none"
-                            disabled={disabledAllowed}
+                            disabled={disabledAllowed || isAllowedBH}
                         />
                     </div>
                     <div className="flex-1">
@@ -92,7 +109,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                             name="warranty_info"
                             value={val.warranty_info}
                             onChange={(e) => handleChange(e, val.id)}
-                            disabled={disabledAllowed}
+                            disabled={disabledAllowed || isAllowedBH}
                             className="mr-1 w-[100%] shadow-none"
                         />
                     </div>
@@ -101,8 +118,8 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                         variant="outlined"
                         color="red"
                         className="px-2 py-0 mx-1 "
-                        disabled={disabledAllowed}
-                        onClick={(e) => handleDelete(e, val.id)}
+                        disabled={disabledAllowed || isAllowedBH}
+                        onClick={(e) => handleDelete(val.id)}
                     >
                         <TrashIcon className="w-5 h-5" />
                     </Button>
@@ -113,7 +130,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                 variant="outlined"
                 color="green"
                 className="px-1 py-1 mb-1"
-                disabled={disabledAllowed}
+                disabled={disabledAllowed || isAllowedBH}
             >
                 <PlusCircleIcon className="w-5 h-5" />
             </Button>

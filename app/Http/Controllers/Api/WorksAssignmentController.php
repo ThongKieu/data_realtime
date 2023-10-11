@@ -393,18 +393,19 @@ class WorksAssignmentController extends Controller
                 'date_book' => $request->date_book,
                 'phone_number' => $request->phone_number,
                 'district' => $request->district,
-                'members_read' => $request->members_read,
+                'members_read' => $request->member_read,
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
 
             if ($request->hasFile('bill_imag')) {
+                // dd($request->all());
                 $files = '';
                 foreach ($request->file('bill_imag') as $file) {
                     
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                    $file->move('assets/images/workas', $name);
-                    $files = $files . 'assets/images/workas/' . $name . ',';
+                    $file->move('assets/images/work_assignment', $name);
+                    $files = $files . 'assets/images/work_assignment/' . $name . ',';
                 }
                 $serializedArr = json_encode($files);
 
@@ -436,7 +437,7 @@ class WorksAssignmentController extends Controller
 
 
 
-           
+
         }
     }
 }

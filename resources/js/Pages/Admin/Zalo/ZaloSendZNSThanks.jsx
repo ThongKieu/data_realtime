@@ -1,11 +1,4 @@
-import {
-    Button,
-    Card,
-    Input,
-    Select,
-    Option,
-    Typography,
-} from "@material-tailwind/react";
+import { Button, Card, Input, Select, Option, Typography } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import React, { useState } from "react";
@@ -13,15 +6,77 @@ import * as XLSX from "xlsx";
 import { formattedDate } from "@/Utils/DateTime";
 import AlertIcon from '@/Pages/Admin/DataImport/Components/AlertIcon';
 
-function Tab1({ showAlertFailed, handleFileUpload, file }) {
+function Tab1() {
+    const [showAlertFailed, setShowAlertFailed] = useState(false);
+    const [excelData, setExcelData] = useState([]);
 
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            setShowAlertFailed(false);
+            setExcelData(jsonData);
+        };
+        reader.readAsArrayBuffer(file);
+    };
 
-    // Xử lý logic cho Tab 1
+    const sendZNSThanksMany = () => {
+        excelData.forEach(async (row) => {
+            try {
+                const response = await fetch("https://business.openapi.zalo.me/message/template", {
+                    method: "POST",
+                    headers: {
+                        'access_token': '-BJuVgccsJ_qilnseg7NElUnyN6YlxD6WStALvwrbbkyvUXKilU16gM3eocDazrfgONtTVJ9e6ZRliTJ-lMLPl66xL6YzvyOZ-_0LAk6kbMCuEvaX_d8NucmhdQUr_H2WR-_TOpwt6_Hk_rVmAwMOUl3iqFMiUvesCkCGCk2gNRB-fTutf7tITRci7_VbSvnwDgOU-oRsb3byR0G-fMN1_hzt2d5cgG8mjtxFik4WGFawjOMvuA2FU7bl6Zff9r9_VRyHj6EmWY5dvSxhe_hTRpLp5USeOrPjF7GHe6hYdo1t_nlhwk78PxFyM_AhPLbmxJrRDxnh7M8v_1cjAEjUPBkyIp3evS6n_JgCDFibYVtc-eyrCd93FU5xnFnoBi3tAdx3k7EdWxJXUGUXCdQAx2Yc0eqT6KW4tYfkja_',
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        "phone": '84' + ((row[0] + '').startsWith('0') ? row[0].substring(1, 10) : row[0]),
+                        "template_id": "231677",
+                        "template_data": {
+                            "date": row[2],
+                            "code": "120199",
+                            "customer_name": row[1],
+                            "status": "Thành công",
+                            "warranty": row[3] + " " + row[4]
+                        },
+                        "tracking_id": "120199"
+                    })
+                });
+                if (response.ok) {
+                    const responseJson = await response.json();
+                    console.log(responseJson);
+                    switch (responseJson.error) {
+                        case 0:
+                            alert('Gửi thành công !!')
+                            break;
+                        case -108:
+                            alert('Số liên hệ không hợp lệ !!')
+                            break;
+                        case -137:
+                            alert('Thanh toán ZCA thất bại (Ví không đủ số dư !!)')
+                            break;
+                        default:
+                            alert('Lỗi không xác định vui lòng liên hệ ADMIN !!)')
+                            break;
+                    }
+                } else {
+                    console.error("Lỗi response !!: ", response.statusText);
+                }
+            } catch (error) {
+                console.error("Lỗi !!", error);
+            }
+        });
+    }
     return (
         <div>
             <Card color="transparent" shadow={false} className="ml-60">
                 {showAlertFailed && (
-                    <AlertIcon setShowAlertFailed={setShowAlertFailed} />
+                    <div className="w-1/2"><AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Vui lòng chọn file cần thêm dữ liệu !!'} /></div>
                 )}
                 <Typography variant="h4" color="blue-gray">
                     Gửi Thông Báo ZNS Cảm Ơn Theo Danh Sách Khách Hàng
@@ -30,23 +85,15 @@ function Tab1({ showAlertFailed, handleFileUpload, file }) {
                     Vui lòng chọn file danh sách khách hàng
                 </Typography>
                 <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
-                    <Input
-                        labelProps={{ className: "hidden" }}
-                        type="file"
-                        accept=".xlsx, .xls"
-                        className="pl-0 border-none" // Sử dụng lớp CSS 'border-none' của Material Tailwind
-                        onChange={handleFileUpload}
-                    />
-                    <Button
-                        className="mt-12"
-                        fullWidth
-                        color="green"
-                        onClick={() => {
-                            console.log('haha');
-                        }}
-                    >
-                        Gửi Thông Báo
-                    </Button>
+                    <Input labelProps={{ className: "hidden" }} type="file" accept=".xlsx, .xls" className="pl-0 border-none" onChange={handleFileUpload} />
+                    <Button className="mt-10" fullWidth color="green" onClick={() => {
+                        if (excelData.length == 0) {
+                            setShowAlertFailed(true);
+                        } else {
+                            // console.log(excelData);
+                            sendZNSThanksMany();
+                        }
+                    }}>Gửi Thông Báo</Button>
                 </form>
             </Card>
         </div>
@@ -63,7 +110,7 @@ function Tab2() {
 
     const handleInputChangePhoneCustomer = (event) => {
         if (event && event.target && event.target.value) {
-            if(event.target.value.length <= 10){
+            if (event.target.value.length <= 10) {
                 setPhoneCustomer(event.target.value);
             }
         }
@@ -83,7 +130,7 @@ function Tab2() {
 
     const handleInputChangeTime = (event) => {
         if (event && event.target && event.target.value) {
-            if(event.target.value.length <= 2){
+            if (event.target.value.length <= 2) {
                 setTime(event.target.value);
             }
         }
@@ -108,15 +155,15 @@ function Tab2() {
             const response = await fetch("https://business.openapi.zalo.me/message/template", {
                 method: "POST",
                 headers: {
-                    'access_token': 'XWTmFRjSYMsA0NGri5k7Q8a2UJAmHTOqurj71zzv-Ltb9MCCYpkQ1zW75ZoI1gW7_HfNCS4RyMgNGqmmx7ZW0Bnv7HxyI8S-enXuB-akrog1Cqy2mnpz2lW4H5V8MFPGa4GENzjvXrU3G05x_56mQBvSFcI30fCwnnuX7hGqZqNl4WnZi0g6EjOp31pcFRGte6TBSvXxuItbAbjpcY7tVi4jVpgEAVq-i0e4681QfXZQOLemjat95yzBSn3oUymqZrf23jTMlLUGSoLPeMEOLfvw50VjUOqVa5mfJ_T6c6Ys6HLgvGgaSfXMAYl5Leakg6KA1jX_zGcKL0WZvLgg6wTi333SKQOob5e8FwjAd6NQSJPvjsl9QFWpDaEm38vut3eWQ84Vd5xuGZq5e5wr8C1cBolaLhSl2MdBQRj0YMq',
+                    'access_token': '-BJuVgccsJ_qilnseg7NElUnyN6YlxD6WStALvwrbbkyvUXKilU16gM3eocDazrfgONtTVJ9e6ZRliTJ-lMLPl66xL6YzvyOZ-_0LAk6kbMCuEvaX_d8NucmhdQUr_H2WR-_TOpwt6_Hk_rVmAwMOUl3iqFMiUvesCkCGCk2gNRB-fTutf7tITRci7_VbSvnwDgOU-oRsb3byR0G-fMN1_hzt2d5cgG8mjtxFik4WGFawjOMvuA2FU7bl6Zff9r9_VRyHj6EmWY5dvSxhe_hTRpLp5USeOrPjF7GHe6hYdo1t_nlhwk78PxFyM_AhPLbmxJrRDxnh7M8v_1cjAEjUPBkyIp3evS6n_JgCDFibYVtc-eyrCd93FU5xnFnoBi3tAdx3k7EdWxJXUGUXCdQAx2Yc0eqT6KW4tYfkja_',
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "phone": '84' + (phoneCustomer.startsWith('0') ? phoneCustomer.substring(1,10) : phoneCustomer),
+                    "phone": '84' + (phoneCustomer.startsWith('0') ? phoneCustomer.substring(1, 10) : phoneCustomer),
                     "template_id": "231677",
                     "template_data": {
                         "date": date,
-                        "code": "240305",
+                        "code": "Không phiếu thu",
                         "customer_name": nameCustomer,
                         "status": "Thành công",
                         "warranty": time + " " + typeOfTime
@@ -127,8 +174,7 @@ function Tab2() {
             if (response.ok) {
                 const responseJson = await response.json();
                 console.log(responseJson);
-                switch(responseJson.error)
-                {
+                switch (responseJson.error) {
                     case 0:
                         alert('Gửi thành công !!')
                         break;
@@ -162,10 +208,10 @@ function Tab2() {
                 </Typography>
                 <div className="flex row">
                     <form className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96 mr-40">
-                    {showAlertFailed && (<AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Vui lòng nhập đủ thông tin khách hàng !!'}/>)}
+                        {showAlertFailed && (<AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Vui lòng nhập đủ thông tin khách hàng !!'} />)}
                         <div className="flex flex-col mb-4 ">
                             <p>Số liên hệ khách hàng: </p>
-                            <Input value={phoneCustomer} onChange={handleInputChangePhoneCustomer} type="number"  size="lg" className={`mb-4` + classInput_border + `[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} labelProps={{ className: "hidden" }}  />
+                            <Input value={phoneCustomer} onChange={handleInputChangePhoneCustomer} type="number" size="lg" className={`mb-4` + classInput_border + `[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} labelProps={{ className: "hidden" }} />
                             <p className="mt-3">Tên khách hàng: </p>
                             <Input value={nameCustomer} disabled size="lg" className={classInput_border} labelProps={{ className: "hidden" }} />
                             <p className="mt-3">Ngày làm: </p>
@@ -180,35 +226,35 @@ function Tab2() {
                         </div>
                         <Button className="mt-6" fullWidth color="green" onClick={() => {
                             if (phoneCustomer.length == 0 || date.length == 0 || typeOfTime.length == 0 || time.length == 0) {
-                                setShowAlertFailed(true);                              
+                                setShowAlertFailed(true);
                             } else {
-                                setShowAlertFailed(false);    
+                                setShowAlertFailed(false);
                                 sendZNSThanksOnly();
                             }
                         }}>
                             Gửi Thông Báo
                         </Button>
                     </form>
-                    <form className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96" style={{ border: '2px solid #ccc', padding: '20px', borderRadius: '5px' }}>
+                    <form className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96 h-auto" style={{ border: '2px solid #ccc', padding: '20px', borderRadius: '5px' }}>
                         <Typography color="gray" className="mt-1 font-bold">
                             Thợ Việt chân thành cảm ơn!
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Quý Khách đã quan tâm và sử dụng dịch vụ! Quý Khách vui lòng cài đặt ứng dụng Thợ Việt để theo dõi lịch sử công việc, bảo hành điện tử dễ dàng, tiện lợi !
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Mã đơn:
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Trạng thái: Thành Công
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Ngày làm: {date}
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-sm">
                             Thời gian bảo hành:
                         </Typography>
-
+                  
                         <Button className="mt-6" fullWidth color="green" >
                             Liên Hệ Bộ Phận CSKH
                         </Button>
@@ -225,29 +271,6 @@ function Tab2() {
 }
 function ZaloSendZNSThanks() {
     const [activeTab, setActiveTab] = useState(1);
-    const [file, setFile] = useState(null);
-    const [showAlertFailed, setShowAlertFailed] = useState(false);
-
-    const handleFileUpload = async (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-
-            // Lấy dữ liệu từ file Excel
-            const firstSheetName = workbook.SheetNames[0];
-            const sheetData = XLSX.utils.sheet_to_json(
-                workbook.Sheets[firstSheetName]
-            );
-
-            // Xử lý dữ liệu ở đây (ví dụ: lưu vào state của React)
-            setFile(file);
-            setShowAlertFailed(false);
-        };
-        reader.readAsArrayBuffer(file);
-    };
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Gửi ZNS cảm ơn khách hàng" />
@@ -322,15 +345,7 @@ function ZaloSendZNSThanks() {
                         </li>
                     </ul>
                     <div className="p-4 bg-white border border-t-0 rounded-b">
-                        {activeTab === 1 ? (
-                            <Tab1
-                                setShowAlertFailed={setShowAlertFailed}
-                                handleFileUpload={handleFileUpload}
-                                file={file}
-                            />
-                        ) : (
-                            <Tab2 />
-                        )}
+                        {activeTab === 1 ? (<Tab1 />) : (<Tab2 />)}
                     </div>
                 </div>
             </div>

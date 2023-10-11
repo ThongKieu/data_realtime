@@ -29,7 +29,7 @@ class WorksAssignmentController extends Controller
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->join('check', 'works_assignments.id_worker', '=', 'workers.id')
+           
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
             ->whereBetween('works_assignments.status_work', [0, 3])
@@ -443,6 +443,10 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
+                if($request->datainut != null)
+                {
+                    dd($request->datainut);
+                }
                 return response()->json('Update work with image !!!');
             } else {
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
@@ -454,6 +458,10 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
+                if($request->datainut != null)
+                {
+                    dd($request->datainut);
+                }
                 return response()->json('Update work none image !!!');
             }
         }

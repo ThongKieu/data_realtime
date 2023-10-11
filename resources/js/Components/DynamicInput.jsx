@@ -67,11 +67,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         sendDataToParent(updatedData);
         console.log("xoas", updatedData);
     };
-    // dinh dang tien te
-    const formatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
+
     return (
         <div className="w-full mt-0">
             {data.map((val) => (

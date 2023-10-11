@@ -228,8 +228,8 @@ function Dashboard({ auth }) {
     const fetchDataUpdateThuchi = async (
         data,
         Url_Api,
-        billImageFiles,
-        imageVtFiles
+        seri_imag,
+        bill_imag
     ) => {
         try {
             // Tạo một đối tượng FormData mới
@@ -240,13 +240,13 @@ function Dashboard({ auth }) {
                 formData.append(key, data[key]);
             }
             // Thêm danh sách các tệp hình `bill_image` vào FormData
-            for (let i = 0; i < billImageFiles.length; i++) {
-                formData.append("bill_imag[]", billImageFiles[i]);
+            for (let i = 0; i < seri_imag.length; i++) {
+                formData.append("seri_imag[]", seri_imag[i]);
             }
 
             // Thêm danh sách các tệp hình `image_vt` vào FormData
-            for (let i = 0; i < imageVtFiles?.length; i++) {
-                formData.append("bill_imag[]", imageVtFiles[i]);
+            for (let i = 0; i < bill_imag?.length; i++) {
+                formData.append("bill_imag[]", bill_imag[i]);
             }
             const res = await fetch(Url_Api, {
                 method: "POST",
@@ -1086,9 +1086,9 @@ function Dashboard({ auth }) {
                         member_read: auth.user.id,
                         datainput: isDataChanged,
                     };
-                    const billImageFiles =
+                    const image_Pt =
                         document.getElementById("image_Pt").files;
-                    const imageVtFiles =
+                    const image_Vt =
                         document.getElementById("image_Vt").files;
                     const data_1 = {
                         ac: valueRadio,
@@ -1098,8 +1098,8 @@ function Dashboard({ auth }) {
                         fetchDataUpdateThuchi(
                             data_0,
                             UrlApi,
-                            billImageFiles,
-                            imageVtFiles
+                            image_Pt,
+                            image_Vt
                         );
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {

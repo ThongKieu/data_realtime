@@ -49,10 +49,10 @@ export function SidebarAdmin() {
           </div>
           <List>
             <ListItem>
-              
+
               <ListItemPrefix>
                 <HomeIcon className="w-5 h-5" />
-                
+
               </ListItemPrefix>
               <Link href={route('admin')}>
               Admin
@@ -132,7 +132,7 @@ export function SidebarAdmin() {
                   <Link href={route("admin/data-import-customer")}>
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Thêm Dữ Liệu Khách
                     </ListItem>
@@ -146,7 +146,7 @@ export function SidebarAdmin() {
                   <Link href={route("admin/data-import-worker")}>
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Thêm Dữ Liệu Thợ
                     </ListItem>
@@ -154,7 +154,7 @@ export function SidebarAdmin() {
                   <Link href={route("admin/data-import-price")}>
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Thêm Bảng Giá
                     </ListItem>
@@ -186,7 +186,7 @@ export function SidebarAdmin() {
                   <Link href={route("admin/application-popup")}>
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Popup Chương Trình Khuyến Mãi
                     </ListItem>
@@ -248,7 +248,7 @@ export function SidebarAdmin() {
                   <Link href={route("admin/zalo-zns-thanks")}>
                     <ListItem>
                       <ListItemPrefix>
-                        <ChevronDoubleRightIcon strokeWidth={3} className="h-3 w-5" />
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
                       </ListItemPrefix>
                       Gửi ZNS Cảm Ơn
                     </ListItem>

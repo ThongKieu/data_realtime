@@ -404,14 +404,14 @@ class WorksAssignmentController extends Controller
                 foreach ($request->file('bill_imag') as $file) {
                     
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                    $file->move('assets/images/work_assignment', $name);
-                    $files = $files . 'assets/images/work_assignment/' . $name . ',';
+                    $file->move('assets/images/work_assignment'.$request->id, $name);
+                    $files = $files . 'assets/images/work_assignment/'.$request->id.'/' . $name . ',';
                 }
                 $serializedArr = json_encode($files);
                 if ($request->hasFile('seri_imag')) {
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                    $file->move('assets/images/work_assignment', $name);
-                    $file_na = 'assets/images/work_assignment/' . $name;
+                    $file->move('assets/images/work_assignment'.$request->id, $name);
+                    $file_na = 'assets/images/work_assignment/'.$request->id.'/' . $name;
                     WorksAssignment::where('id', '=', $request->id)->update([ 'seri_imag' =>  $file_na]);
                 }
                 

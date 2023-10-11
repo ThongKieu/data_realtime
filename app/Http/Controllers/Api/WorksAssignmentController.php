@@ -329,16 +329,15 @@ class WorksAssignmentController extends Controller
     {
         $note = $request->real_note . '-'. $request->worker_name.'- Đã Trả';
         Work::where('id','=',$request->id_cus)->update(['status_cus'=>0,'work_note'=>$note]);
-        WorksAssignment::where('id','='.$request->id)->update(['status_work'=> 4]);
-        
+        WorksAssignment::where('id','=',$request->id)->update(['status_work'=> 4]);
         return response()-> json('Trả Lịch Thành Công!');
     }
     public function cancleWorkFromAss(Request $request)
     {
         $note = $request->real_note;
-        Work::where('id','=',$request->id_cus)->update(['status_cus'=>2,'work_note'=>$note]);
-        WorksAssignment::where('id','='.$request->id)->update(['status_work'=> 5]);
-        
+        Work::where('id','=',$request->id_cus)->update(['status_cus'=>2,'work_note'=>$note, 'member_read'=>$request->auth_id]);
+        WorksAssignment::where('id','=',$request->id)->update(['status_work'=> 5,'real_note'=>$note]);
+
         return response()-> json('Hủy Thành Công!');
     }
     public function updateWorkAss(Request $request)
@@ -376,7 +375,7 @@ class WorksAssignmentController extends Controller
     {
         $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5]);
-        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
+        $up = Work::where('id', '=', $id_cus)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->id_auth]);
 
         if ($up) {
             return 'Delete work done !';
@@ -404,7 +403,7 @@ class WorksAssignmentController extends Controller
                 'date_book' => $request->date_book,
                 'phone_number' => $request->phone_number,
                 'district' => $request->district,
-                'members_read' => $request->member_read,
+                'member_read' => $request->member_read,
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
@@ -454,5 +453,5 @@ class WorksAssignmentController extends Controller
             }
         }
     }
-    
+
 }

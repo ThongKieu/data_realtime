@@ -26,7 +26,7 @@ class StoreWorkRequest extends FormRequest
             'date_book'=>'required|min:2,max:11',
             'phone_number'=>'required|min:2,max:11',
             'district'=>'required|min:2,max:250',
-            'members_read'=>'numeric',
+            'member_read'=>'numeric',
             'kind_work'=>'required|numeric',
             'status_cus'=>'required|numeric',
             'flag_status'=>'required|numeric',
@@ -34,7 +34,7 @@ class StoreWorkRequest extends FormRequest
             'street'=>'max:500',
             'name_cus'=>'max:500',
             'work_note'=>'max:1000',
-            
+
         ];
     }
 }

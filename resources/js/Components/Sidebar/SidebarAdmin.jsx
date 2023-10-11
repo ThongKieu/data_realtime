@@ -29,8 +29,6 @@ export function SidebarAdmin() {
   const sidebarStyles = isSidebarOpen
     ? 'w-64 transition-all duration-300 transform translate-x-0' // mở
     : 'w-0 transition-all duration-300 transform -translate-x-64'; // đóng
-
-
   return (
     <div>
       {isSidebarOpen === false ?

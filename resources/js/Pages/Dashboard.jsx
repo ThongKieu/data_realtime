@@ -942,6 +942,8 @@ function Dashboard({ auth }) {
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const [openHuy, setOpenHuy] = useState(false);
                 const handleOpenHuy = () => setOpenHuy(!openHuy);
+                const [openThuHoi, setOpenThuHoi] = useState(false);
+                const handleOpenThuHoi = () => setOpenThuHoi(!openThuHoi);
                 const [openAdminCheck, setOpenAdminCheck] = useState(false);
                 const handleOpenAdminCheck = () =>
                     setOpenAdminCheck(!openAdminCheck);
@@ -1076,7 +1078,6 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
-
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
                     const data_0 = {
@@ -1086,10 +1087,8 @@ function Dashboard({ auth }) {
                         member_read: auth.user.id,
                         datainput: isDataChanged,
                     };
-                    const image_Pt =
-                        document.getElementById("image_Pt").files;
-                    const image_Vt =
-                        document.getElementById("image_Vt").files;
+                    const image_Pt = document.getElementById("image_Pt").files;
+                    const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
@@ -1108,7 +1107,35 @@ function Dashboard({ auth }) {
                     }
                     handleOpenSpending_total();
                 };
-
+                const handleThuHoi = async (e) => {
+                    e.preventDefault();
+                    console.log("thu hoi lich");
+                    let data = {
+                        id: params.id,
+                        id_cus: params.row.id_cus,
+                        auth_id: auth.user.id,
+                        real_note: params.row.real_note,
+                    };
+                    console.log("data______", data);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/work-assignment-return",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "Thu hoi lich");
+                            handleThuHoi();
+                        }
+                    } catch (error) {
+                        console.log("Loi", error);
+                    }
+                };
                 const dataBtnChi = [
                     {
                         id: "BtnTraLich",
@@ -1129,8 +1156,6 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-
-
                 return (
                     <div>
                         <div className="flex">
@@ -1148,7 +1173,10 @@ function Dashboard({ auth }) {
                                 </Button>
                             </Tooltip>
                             <Tooltip content="Thu Hồi Lịch">
-                                <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
+                                <ArrowPathIcon
+                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                    onClick={handleOpenThuHoi}
+                                />
                             </Tooltip>
                             <Tooltip content="Hủy Lịch">
                                 <TrashIcon
@@ -1188,6 +1216,36 @@ function Dashboard({ auth }) {
                                     variant="gradient"
                                     color="red"
                                     onClick={handleSentDeleteDone}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        {/*----------------------------- dialog form Thu Hoi ----------- */}
+                        <Dialog open={openThuHoi} handler={handleOpenThuHoi}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lý Do Thu Hồi</DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenThuHoi}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do thu hồi"
+                                        className="shadow-none"
+                                        onChange={(e) =>
+                                            setWorkNote(e.target.value)
+                                        }
+                                    />
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="red"
+                                    onClick={handleThuHoi}
                                 >
                                     Xác nhận
                                 </Button>

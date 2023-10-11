@@ -126,7 +126,7 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
         $co_khi    =   DB::table('works')
-            ->join('users', 'works.members_read', '=', 'users.id')
+            ->join('users', 'works.member_read', '=', 'users.id')
             ->where('works.date_book', '=', $today)
             ->where('works.status_cus', '=', 2)
             ->limit(100)
@@ -212,7 +212,7 @@ class WorksController extends Controller
 
     {
         // dd($request);
-        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
+        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->id_auth]);
         if ($up) {
             return 'Delete work done !';
         }

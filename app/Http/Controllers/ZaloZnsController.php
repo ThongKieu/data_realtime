@@ -37,35 +37,15 @@ class ZaloZnsController extends Controller
         $time = strtotime(Carbon::now());
         // return view('admin.zalozns_dkbh',compact('code_all','time'));
     }
-    public function getCode(Request $req)
-    {   $code_all = ZaloZns::all();
-        $code_token = $req->code;
-        if($code_all->count()==0){
-            if($req->code)
-            {
-                $newzns_code = new ZaloZns();
-                $newzns_code ->code = $req->code;
-                $newzns_code->save();
-                $code_token = $req->code;
-                // return view('admin.token_zns',compact('code_token'));
-            }
-            else
-                dd('Không lấy được code');
-        }
-        else
-        {   
-            $update_code = ZaloZns::where('id','=',1)->update(['code'=>$req->code]);
-            // $update_code->code = $req->code;
-            // return view('admin.token_zns',compact('code_token'));
-
-        }
-           
-       
+    
+    public function getCode(Request $request)
+    {     
+        $update_code = ZaloZns::where('id','=',1)->update(['code'=>$request->code]);
     }
+
     public function addAccess(Request $req)
     {
        dd($req);
-        
     }
     public function save_token(Request $req)
     {

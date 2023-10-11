@@ -402,6 +402,7 @@ class WorksAssignmentController extends Controller
                 // dd($request->all());
                 $files = '';
                 foreach ($request->file('bill_imag') as $file) {
+                    
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
                     $file->move('assets/images/work_assignment', $name);
                     $files = $files . 'assets/images/work_assignment/' . $name . ',';

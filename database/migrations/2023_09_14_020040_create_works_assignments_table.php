@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('bill_imag', 1000)->nullable()->comment('Hình phiếu chi, vật tư');
             $table ->tinyInteger('status_work')->default(0)->comment ('0: đang làm; 1: Mai làm tiếp ; 2:Đã xong; 3:Khảo sát; 4: Đã Trả ; 5: Khách Hủy');
 			$table ->tinyInteger('check_in')->default(0)->comment ('0: Chưa checkin; 1: Đã checkin');
+            $table ->tinyInteger('status_admin_check')->default(0)->comment ('0: Chưa kiểm tra; 1: Đã kiểm tra');
+            $table ->integer('admin_check')->default(0);
             $table->string('seri_number')->nullable();
             $table->string('work_done_date')->nullable();
             $table->timestamps();

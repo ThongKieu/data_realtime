@@ -29,6 +29,7 @@ class WorksAssignmentController extends Controller
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
+            ->join('check', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
             ->whereBetween('works_assignments.status_work', [0, 3])
@@ -299,12 +300,14 @@ class WorksAssignmentController extends Controller
                 'id_worker' => $id_worker[0]['value'],
                 'id_phu' => $id_worker[1]['value'],
                 'real_note' => $work_note,
+                'admin_check'=>$request->auth_id,
             ]);
         } else {
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker[0]['value'],
                 'real_note' => $work_note,
+                'admin_check'=>$request->auth_id,
             ]);
         }
         $workHas->save();
@@ -319,7 +322,7 @@ class WorksAssignmentController extends Controller
         // $newio -> save();
 
         
-         CheckWorkByAdminController::create($id_work_has, $request->auth_id );
+        //  CheckWorkByAdminController::create($id_work_has, $request->auth_id );
         // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);
         // $info_noti_push ='Có Lịch Mới';
 

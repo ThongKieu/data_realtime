@@ -49,7 +49,7 @@ const TABS = [
 const TABLE_HEAD = ["Tên Thợ", "Tài Khoản", "Đăng Nhập Lần Cuối", "ID Điện Thoại", "Đăng Nhập Sai", "Trạng Thái", "Sửa Tài Khoản", "Đổi Mật Khẩu"];
 
 
-function Account() {
+function WorkerAccount() {
   const [accountData, setAccountData] = useState([]);
   const [test, setTest] = useState("");
   const handleClick = () => {
@@ -234,4 +234,4 @@ function Account() {
   );
 }
 
-export default Account;
+export default WorkerAccount;

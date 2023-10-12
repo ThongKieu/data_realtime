@@ -15,7 +15,7 @@ function DataCustomerImport() {
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
-   
+
 
 
     const handleFileUpload = async (event) => {
@@ -33,7 +33,7 @@ function DataCustomerImport() {
             // Xử lý dữ liệu ở đây (ví dụ: lưu vào state của React)
             setFile(file);
             setShowAlertFailed(false);
-    
+
         };
         reader.readAsArrayBuffer(file);
     };
@@ -82,7 +82,7 @@ function DataCustomerImport() {
                 : <div className="flex justify-center min-h-screen mt-5">
                     <Card color="transparent" shadow={false}>
                         {showAlertFailed && (
-                            <AlertIcon setShowAlertFailed={setShowAlertFailed}  contentAlert={'Vui lòng chọn file cần thêm dữ liệu !!'}/>
+                            <AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Vui lòng chọn file cần thêm dữ liệu !!'} />
 
                         )}
                         <Typography variant="h4" color="blue-gray">
@@ -100,7 +100,6 @@ function DataCustomerImport() {
                                 onChange={handleFileUpload}
                             />
                             <Button className="mt-12" fullWidth color="green" onClick={() => {
-
                                 if (file != null) {
                                     uploadFile();
                                 } else {

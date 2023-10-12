@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         // Worker
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
+        Route::get('/worker-check-call',function(){return Inertia::render('Admin/Worker/WorkerCheckCall');})->name('admin/worker-check-call');
         // Data
         Route::get('/data-import-customer',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-import-customer');
         Route::get('/data-import-worker',function(){return Inertia::render('Admin/DataImport/DataWorkerImport');})->name('admin/data-import-worker');

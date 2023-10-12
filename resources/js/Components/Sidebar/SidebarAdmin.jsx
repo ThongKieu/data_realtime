@@ -49,13 +49,13 @@ export function SidebarAdmin() {
           </div>
           <List>
             <ListItem>
-              
+
               <ListItemPrefix>
                 <HomeIcon className="w-5 h-5" />
-                
+
               </ListItemPrefix>
               <Link href={route('admin')}>
-              Admin
+                Admin
               </Link>
             </ListItem>
             <Accordion
@@ -79,15 +79,15 @@ export function SidebarAdmin() {
               </ListItem>
               <AccordionBody className="py-1">
                 <List className="p-0">
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Kiểm Tra Liên Hệ
-                  </ListItem>
-                  <Link
-                    href={route("admin/worker-list")}
-                  >
+                  <Link href={route("admin/worker-check-call")}>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Kiểm Tra Liên Hệ
+                    </ListItem>
+                  </Link>
+                  <Link href={route("admin/worker-list")}>
                     <ListItem>
                       <ListItemPrefix>
                         <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
@@ -95,9 +95,7 @@ export function SidebarAdmin() {
                       Danh Sách Thợ
                     </ListItem>
                   </Link>
-                  <Link
-                    href={route("admin/worker-account")}
-                  >
+                  <Link href={route("admin/worker-account")}>
                     <ListItem>
                       <ListItemPrefix>
                         <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
@@ -254,12 +252,12 @@ export function SidebarAdmin() {
                     </ListItem>
                   </Link>
                   <Link href={route("admin/zalo-zns-quotes")}>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
-                    </ListItemPrefix>
-                    Gửi ZNS Báo Giá
-                  </ListItem>
+                    <ListItem>
+                      <ListItemPrefix>
+                        <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                      </ListItemPrefix>
+                      Gửi ZNS Báo Giá
+                    </ListItem>
                   </Link>
                   <ListItem>
                     <ListItemPrefix>

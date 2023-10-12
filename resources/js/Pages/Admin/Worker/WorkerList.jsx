@@ -27,7 +27,7 @@ import {
 import { host } from "@/Utils/UrlApi";
 
 
-function Worker({ auth }) {
+function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
@@ -635,4 +635,4 @@ function Worker({ auth }) {
     );
 }
 
-export default Worker;
+export default WorkerList;

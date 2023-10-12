@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Web;
+namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;

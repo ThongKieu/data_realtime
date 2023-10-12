@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 
 class WarrantiesController extends Controller
 {
-    public static function insertWarranties($id_work_has,    $warranty_time,    $warranty_info,    $unit)
+    public static function insertWarranties(Request $req)
     {
-        switch($unit)
+        switch($req->unit)
                 {
                     case 1:
                         $time_w = 'd';
@@ -22,21 +22,26 @@ class WarrantiesController extends Controller
                         $time_w = 'w';
                         break;
                     case 3:
-                        $time_w = 'm'; 
+                        $time_w = 'm';
                         break;
                     case 4:
-                        $time_w = 'y'; 
+                        $time_w = 'y';
                         break;
                     default :
-                        $time_w = 'n';   
+                        $time_w = 'n';
                 }
         $i = new Warranties([
-            'id_work_has'=>$id_work_has,
-            'warranty_time'=> $warranty_time,
-            'warranty_info' => $warranty_info,
+            'id_work_has'=>$req->id_work_has,
+            'warranty_time'=> $req->warranty_time,
+            'warranty_info' => $req->warranty_info,
             'unit'=> $time_w,
         ]);
         $i->save();
+        if($i)
+        {
+            return 'ok';
+        }
+        return 'non ok';
     }
     public function infoWarranty(Request $req)
     {

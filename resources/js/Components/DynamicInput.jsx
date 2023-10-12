@@ -7,7 +7,7 @@ import { TrashIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
     const [data, setData] = useState([
         {
-            id: 1,
+            id: 0,
             warranty_time: 0,
             unit: "KBH",
             warranty_info: "Không Bảo Hành",
@@ -18,12 +18,15 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
-        setData(...data, {
-            id: newId,
-            warranty_time: 0,
-            unit: "KBH",
-            warranty_info: "Không Bảo Hành",
-        });
+        setData([
+            ...data,
+            {
+                id: newId,
+                warranty_time: 0,
+                unit: "KBH",
+                warranty_info: "Không Bảo Hành",
+            },
+        ]);
     };
     const optionBH = [
         { id: 0, value: "KBH", label: "KBH" },
@@ -38,11 +41,10 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             if (item.id === id) {
                 return { ...item, unit: selectedValue };
             }
+            console.log(selectedValue);
             return item;
         });
-
         setData(updatedData);
-        sendDataToParent(updatedData);
         setIsAllowedBH(selectedValue == "KBH");
     };
     const handleChange = (e, id) => {
@@ -53,84 +55,72 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             }
             return item;
         });
-        setData(updatedData);
-        sendDataToParent(updatedData);
+        setData( updatedData);
     };
-
     const handleDelete = (id) => {
         const updatedData = data.filter((item) => item.id !== id);
-        setData(updatedData);
-        sendDataToParent(updatedData);
+        setData( updatedData);
         console.log("xoas", updatedData);
     };
-
+    sendDataToParent(data);
+    // Trả về dữ liệu JSON
     return (
         <div className="w-full mt-0">
             {data.map((val) => (
-                    <div
-                        key={val.id}
-                        className="flex justify-between gap-1 mb-2"
-                    >
-                        <div>
-                            <Select
-                                value={val.unit}
-                                label="Bảo Hành"
-                                onChange={
-                                    (selectedValue) =>
-                                        handleSelectChange(
-                                            selectedValue,
-                                            val.id
-                                        ) // Truyền id của item vào handleSelectChange
-                                }
-                                disabled={disabledAllowed}
-                            >
-                                {optionBH.map((option) => (
-                                    <Option
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div className="flex-none">
-                            <Input
-                                label="Thời Gian Bảo Hành"
-                                id="warranty_time"
-                                name="warranty_time"
-                                type="number"
-                                min="1"
-                                max="30"
-                                value={val.warranty_time}
-                                onChange={(e) => handleChange(e, val.id)}
-                                className="w-[100%] shadow-none"
-                                disabled={disabledAllowed || isAllowedBH}
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <Input
-                                label="Nội Dung Bảo Hành"
-                                name="warranty_info"
-                                value={val.warranty_info}
-                                onChange={(e) => handleChange(e, val.id)}
-                                disabled={disabledAllowed || isAllowedBH}
-                                className="mr-1 w-[100%] shadow-none"
-                            />
-                        </div>
-
-                        <Button
-                            variant="outlined"
-                            color="red"
-                            className="px-2 py-0 mx-1 "
-                            disabled={disabledAllowed || isAllowedBH}
-                            onClick={(e) => handleDelete(e, val.id)}
+                <div key={val.id} className="flex justify-between gap-1 mb-2">
+                    <div>
+                        <Select
+                            value={val.unit}
+                            label="Bảo Hành"
+                            onChange={
+                                (selectedValue) =>
+                                    handleSelectChange(selectedValue, val.id) // Truyền id của item vào handleSelectChange
+                            }
+                            disabled={disabledAllowed}
                         >
-                            <TrashIcon className="w-5 h-5" />
-                        </Button>
+                            {optionBH.map((option) => (
+                                <Option key={option.value} value={option.value}>
+                                    {option.label}
+                                </Option>
+                            ))}
+                        </Select>
                     </div>
-                ))
-            }
+                    <div className="flex-none">
+                        <Input
+                            label="Thời Gian Bảo Hành"
+                            id="warranty_time"
+                            name="warranty_time"
+                            type="number"
+                            min="1"
+                            max="30"
+                            value={val.warranty_time}
+                            onChange={(e) => handleChange(e, val.id)}
+                            className="w-[100%] shadow-none"
+                            disabled={disabledAllowed || isAllowedBH}
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <Input
+                            label="Nội Dung Bảo Hành"
+                            name="warranty_info"
+                            value={val.warranty_info}
+                            onChange={(e) => handleChange(e, val.id)}
+                            disabled={disabledAllowed || isAllowedBH}
+                            className="mr-1 w-[100%] shadow-none"
+                        />
+                    </div>
+
+                    <Button
+                        variant="outlined"
+                        color="red"
+                        className="px-2 py-0 mx-1 "
+                        disabled={disabledAllowed || isAllowedBH}
+                        onClick={(e) => handleDelete(val.id)}
+                    >
+                        <TrashIcon className="w-5 h-5" />
+                    </Button>
+                </div>
+            ))}
             <Button
                 onClick={handleClick}
                 variant="outlined"

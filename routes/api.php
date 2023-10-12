@@ -31,6 +31,7 @@ Route::prefix('web')->group(function () {
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
         Route::post('work-assignment-cancle','App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
+        Route::post('work-assignment-warranties','App\Http\Controllers\Api\WarrantiesController@insertWarranties');
     });
     Route::prefix('cancle')->group(function () {
         Route::get('works','App\Http\Controllers\Api\Web\WorksController@getCancleBook');

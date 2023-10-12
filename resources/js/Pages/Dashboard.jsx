@@ -1043,7 +1043,7 @@ function Dashboard({ auth }) {
                 };
                 // --------- thu chi ----------------------------
 
-                const [isDataChanged, setIsDataChanged] = useState("");
+                const [isDataChanged, setIsDataChanged] = useState([]);
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
@@ -1080,21 +1080,54 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
+                // ---------- ------- - cần tối ưu code ----------------------------------
+                const handleValueBh = () => {
+                    isDataChanged.forEach(async (data) => {
+                        const dataBh = {
+                            id_work_has: params.id,
+                            warranty_time: data.warranty_time,
+                            warranty_info: data.warranty_info,
+                            unit: data.unit,
+                        };
+                        try {
+                            const res = await fetch(
+                                "api/web/update/work-assignment-warranties",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(dataBh),
+                                }
+                            );
+
+                            if (res.ok) {
+                                console.log("Đã Gửi Thông Tin Bảo Hành");
+                            } else {
+                                console.error(
+                                    "Lỗi khi gửi dữ liệu:",
+                                    res.statusText
+                                );
+                            }
+                        } catch (error) {
+                            console.error(
+                                "Error fetching data lỗi rồi:",
+                                error
+                            );
+                        }
+                    });
+                };
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
-                    const jsonObject = {};
-                    for (const item of isDataChanged) {
-                        jsonObject[item.id] = item;
-                        console.log(JSON.stringify(jsonObject[item.id].id));
-                    }
-
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        datainput: jsonObject,
+
                     };
+                    console.log("dadasdadsa", typeof isDataChanged);
+                    console.log("dadasdadsa", isDataChanged);
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {
@@ -1108,6 +1141,7 @@ function Dashboard({ auth }) {
                             image_Pt,
                             image_Vt
                         );
+                        handleValueBh();
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
@@ -1218,35 +1252,79 @@ function Dashboard({ auth }) {
                                 </div>
                             )}
                         </div>
-                        {/*----------------------------- dialog form Huy ----------- */}
-                        <Dialog open={openHuy} handler={handleOpenHuy}>
+                        {/* ----------------ADMIN CHECK ------------ */}
+                        <Dialog
+                            open={openAdminCheck}
+                            handler={handleOpenAdminCheck}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
+                        >
                             <div className="flex items-center justify-between">
-                                <DialogHeader>Lý do hủy</DialogHeader>
+                                <DialogHeader>
+                                    XÁC NHẬN THÔNG TIN THỢ BÁO
+                                </DialogHeader>
                                 <XMarkIcon
                                     className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenHuy}
+                                    onClick={handleOpenAdminCheck}
                                 />
                             </div>
                             <DialogBody divider>
-                                <div className="grid gap-6">
-                                    <Textarea
-                                        label="Lý do hủy"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleSentDeleteDone}
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
                                 >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
+                                    <div className="gap-4 ">
+                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
+                                            <div className="p-2 border border-green-500">
+                                                <label htmlFor="Nội Dung Bảo Hành">
+                                                    Nội Dung Bảo Hành:
+                                                </label>
+                                                <p className="pl-5">
+                                                    Không có thông tin bảo hành
+                                                    !
+                                                </p>
+                                            </div>
+                                            <div className="p-2 border border-green-500">
+                                                <p>{params.row.bill_imag}ddd</p>
+                                                <img
+                                                    src={params.row.bill_imag}
+                                                    alt=""
+                                                    srcset=""
+                                                    className="h-full w-50"
+                                                />
+                                            </div>
+                                        </Card>
+                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
+                                            {dataRadio.map((result, index) => (
+                                                <Radio
+                                                    key={index}
+                                                    id={result.id}
+                                                    name={result.name}
+                                                    label={result.label}
+                                                    value={result.value}
+                                                    checked={result.checked}
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                            ))}
+                                        </Card>
+                                    </div>
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row justify-center pt-2">
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
+                                        <Button
+                                            size="sm"
+                                            className="px-3 py-2 mx-4 shadow-none"
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận Thông Tin
+                                        </Button>
+                                    </div>
+                                </WorkForm>
+                            </DialogBody>
                         </Dialog>
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <Dialog open={openThuHoi} handler={handleOpenThuHoi}>
@@ -1278,67 +1356,35 @@ function Dashboard({ auth }) {
                                 </Button>
                             </DialogFooter>
                         </Dialog>
-                        {/* ----------------ADMIN CHECK ------------ */}
-                        <Dialog
-                            open={openAdminCheck}
-                            handler={handleOpenAdminCheck}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
+                        {/*----------------------------- dialog form Huy ----------- */}
+                        <Dialog open={openHuy} handler={handleOpenHuy}>
                             <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    XÁC NHẬN THÔNG TIN THỢ BÁO
-                                </DialogHeader>
+                                <DialogHeader>Lý do hủy</DialogHeader>
                                 <XMarkIcon
                                     className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenAdminCheck}
+                                    onClick={handleOpenHuy}
                                 />
                             </div>
                             <DialogBody divider>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <div className="gap-4 ">
-                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                            <label htmlFor="Nội Dung Bảo Hành">
-                                                Nội Dung Bảo Hành:
-                                            </label>
-                                            <p className="pl-5">
-                                                Không có thông tin bảo hành !
-                                            </p>
-                                        </Card>
-
-                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
-                                            {dataRadio.map((result) => (
-                                                <Radio
-                                                    id={result.id}
-                                                    name={result.name}
-                                                    label={result.label}
-                                                    value={result.value}
-                                                    checked={result.checked}
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                            ))}
-                                        </Card>
-                                    </div>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 shadow-none"
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận Thông Tin
-                                        </Button>
-                                    </div>
-                                </WorkForm>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do hủy"
+                                        className="shadow-none"
+                                        onChange={(e) =>
+                                            setWorkNote(e.target.value)
+                                        }
+                                    />
+                                </div>
                             </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="red"
+                                    onClick={handleSentDeleteDone}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </DialogFooter>
                         </Dialog>
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <Dialog
@@ -1513,6 +1559,7 @@ function Dashboard({ auth }) {
                                     <div className="flex flex-row-reverse pt-2">
                                         {dataBtnChi.map((result) => (
                                             <Button
+                                                key={result.id}
                                                 id={result.id}
                                                 size="sm"
                                                 className={
@@ -1668,9 +1715,9 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div>
-                            {dataGridLichChuaPhan.map((result) => {
+                            {dataGridLichChuaPhan.map((result, index) => {
                                 return (
-                                    <div id={result.id}>
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1704,9 +1751,9 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div>
-                            {dataGrid.map((result) => {
+                            {dataGrid.map((result, index) => {
                                 return (
-                                    <div id={result.id}>
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1730,9 +1777,10 @@ function Dashboard({ auth }) {
             </div>
             <div className="fixed flex mt-1">
                 <div key={auth.user.id}>
-                    {dataBtnFixed.map((result) => {
+                    {dataBtnFixed.map((result, index) => {
                         return (
                             <Button
+                                key={index}
                                 id={result.id}
                                 className={`p-2 mx-1 text-green-700 border border-green-700 rounded-tr-none rounded-bl-none shadow-none focus:bg-green-700 focus:text-white `}
                                 onClick={() => {

@@ -74,7 +74,7 @@ function Dashboard({ auth }) {
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                fetchDataWorkDone(data);
+                // fetchDataWorkDone(data);
             }
         });
         return () => {
@@ -204,7 +204,7 @@ function Dashboard({ auth }) {
     };
     const fetchDataWorkDone = async (data) => {
         try {
-            const res = await fetch("api/web/update/work-assignment", {
+            const res = await fetch("api/web/update/work-continue", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -228,8 +228,8 @@ function Dashboard({ auth }) {
     const fetchDataUpdateThuchi = async (
         data,
         Url_Api,
-        billImageFiles,
-        imageVtFiles
+        seri_imag,
+        bill_imag
     ) => {
         try {
             // Tạo một đối tượng FormData mới
@@ -240,14 +240,14 @@ function Dashboard({ auth }) {
                 formData.append(key, data[key]);
             }
             // Thêm danh sách các tệp hình `bill_image` vào FormData
-            for (let i = 0; i < billImageFiles.length; i++) {
-                formData.append("bill_imag[]", billImageFiles[i]);
+            for (let i = 0; i < seri_imag.length; i++) {
+                formData.append("seri_imag[]", seri_imag[i]);
             }
 
             // Thêm danh sách các tệp hình `image_vt` vào FormData
-            // for (let i = 0; i < imageVtFiles.length; i++) {
-            //     formData.append("bill_imag[]", imageVtFiles[i]);
-            // }
+            for (let i = 0; i < bill_imag?.length; i++) {
+                formData.append("bill_imag[]", bill_imag[i]);
+            }
             const res = await fetch(Url_Api, {
                 method: "POST",
                 headers: {
@@ -269,41 +269,10 @@ function Dashboard({ auth }) {
         }
     };
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
-    const handleKeyPress = (e) => {
-        const { row, col } = selectedCell;
 
-        switch (e.key) {
-            case "ArrowUp":
-                setSelectedCell({ row: Math.max(row - 1, 0), col });
-                break;
-            case "ArrowDown":
-                setSelectedCell({
-                    row: Math.min(row + 1, rows.length - 1),
-                    col,
-                });
-                break;
-            case "ArrowLeft":
-                setSelectedCell({ row, col: Math.max(col - 1, 0) });
-                break;
-            case "ArrowRight":
-                setSelectedCell({
-                    row,
-                    col: Math.min(col + 1, columns.length - 1),
-                });
-                break;
-            default:
-                break;
-        }
-    };
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-    const [openTho, setOpenTho] = useState(false);
-    const handleOpenTho = () => setOpenTho(!openTho);
-    const [openAdminCheck, setOpenAdminCheck] = useState(false);
-    const handleOpenAdminCheck = () => setOpenAdminCheck(!openAdminCheck);
-    const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-    const handleOpenUpdateThuChi = () => setOpenUpdateThuChi(!openUpdateThuChi);
     const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
@@ -515,11 +484,11 @@ function Dashboard({ auth }) {
                     try {
                         let data = {
                             id: params.id,
-                            id_auth: auth.user.id,
+                            auth_id: auth.user.id,
                             work_note: work_note,
                         };
 
-                        const response = await fetch("api/web/works", {
+                        const response = await fetch("api/web/cancle/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                             headers: {
@@ -536,12 +505,14 @@ function Dashboard({ auth }) {
                 };
 
                 const handleSentPhanTho = async (e) => {
+                    let data = {
+                        id_cus: params.row.id,
+                        id_worker: selectPhanTho,
+                        work_note: params.row.work_note,
+
+                        auth_id: auth.user.id,
+                    };
                     try {
-                        let data = {
-                            id_cus: params.row.id,
-                            id_worker: selectPhanTho,
-                            work_note: params.row.work_note,
-                        };
                         const response = await fetch(
                             "api/web/work-assignment",
                             {
@@ -933,16 +904,55 @@ function Dashboard({ auth }) {
             editable: false,
             type: "number",
             renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <span className="text-center">
+                        {formatter.format(params.row.spending_total)}
+                    </span>
+                );
+            },
+        },
+        {
+            field: "income_total",
+            headerName: "Thu",
+            width: 120,
+            editable: false,
+            type: "number",
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <span className="text-center">
+                        {formatter.format(params.row.income_total)}
+                    </span>
+                );
+            },
+        },
+        {
+            field: "actions",
+            type: "actions",
+            headerName: "Chức Năng",
+            width: 150,
+            editable: false,
+            cellClassName: "actions",
+            renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
-                const [isDataChanged, setIsDataChanged] = useState("");
-                const [selectedFiles, setSelectedFiles] = useState([]);
-                const [previewImgVt, setPreviewImgVt] = useState([]);
-                const [previewImgPt, setPreviewImgPt] = useState([]);
-                console.log("previewImg: ", previewImgPt);
-                const [openSpending_total, setOpenSpending_total] =
-                    useState(false);
-                const handleOpenSpending_total = () =>
-                    setOpenSpending_total(!openSpending_total);
+                const [openHuy, setOpenHuy] = useState(false);
+                const handleOpenHuy = () => setOpenHuy(!openHuy);
+                const [openThuHoi, setOpenThuHoi] = useState(false);
+                const handleOpenThuHoi = () => setOpenThuHoi(!openThuHoi);
+                const [openAdminCheck, setOpenAdminCheck] = useState(false);
+                const handleOpenAdminCheck = () =>
+                    setOpenAdminCheck(!openAdminCheck);
+                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
+                const handleOpenUpdateThuChi = () =>
+                    setOpenUpdateThuChi(!openUpdateThuChi);
+                const [work_note, setWorkNote] = useState();
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setIsDataChanged(true);
@@ -951,6 +961,97 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
+                const handleSentDeleteDone = async () => {
+                    try {
+                        let data = {
+                            id: params.id,
+                            id_cus: params.row.id_cus,
+                            real_note: params.row.real_note,
+                            auth_id: auth.user.id,
+                        };
+                        const response = await fetch(
+                            "api/web/update/work-assignment-cancle",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            handleOpen();
+                        }
+                    } catch (error) {}
+                };
+
+                const dataRadio = [
+                    {
+                        id: "ThoDN",
+                        name: "XNTTNV",
+                        label: "Điện Nước",
+                        value: "0",
+                        checked: '{formData.kind_work === "0"}',
+                    },
+                    {
+                        id: "ThoDL",
+                        name: "XNTTNV",
+                        label: "Điện Lạnh",
+                        value: "1",
+                        checked: '{formData.kind_work === "1"}',
+                    },
+                    {
+                        id: "ThoDG",
+                        name: "XNTTNV",
+                        label: "Đồ Gỗ",
+                        value: "2",
+                        checked: '{formData.kind_work === "2"}',
+                    },
+                    {
+                        id: "ThoXD",
+                        name: "XNTTNV",
+                        label: "Xây Dựng",
+                        value: "3",
+                        checked: '{formData.kind_work === "3"}',
+                    },
+                    {
+                        id: "ThoNLMT",
+                        name: "XNTTNV",
+                        label: "Năng Lượng Mặt Trời",
+                        value: "4",
+                        checked: '{formData.kind_work === "4"}',
+                    },
+                    {
+                        id: "ThoVC",
+                        name: "XNTTNV",
+                        label: "Vận Chuyển",
+                        value: "5",
+                        checked: '{formData.kind_work === "5"}',
+                    },
+                    {
+                        id: "ThoHX",
+                        name: "XNTTNV",
+                        label: "Cơ Khí",
+                        value: "6",
+                        checked: '{formData.kind_work === "6"}',
+                    },
+                ];
+                // cho phep su dung cac nut
+                const isButtonDisabled = (permissionValue, valuePermiss) => {
+                    return permissionValue !== valuePermiss;
+                };
+                // --------- thu chi ----------------------------
+
+                const [isDataChanged, setIsDataChanged] = useState([]);
+                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [previewImgVt, setPreviewImgVt] = useState([]);
+                const [previewImgPt, setPreviewImgPt] = useState([]);
+                const [openSpending_total, setOpenSpending_total] =
+                    useState(false);
+                const handleOpenSpending_total = () =>
+                    setOpenSpending_total(!openSpending_total);
+
                 const handleDataFromChild = (data) => {
                     setIsDataChanged(data);
                 };
@@ -979,7 +1080,43 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
+                // ---------- ------- - cần tối ưu code ----------------------------------
+                const handleValueBh = () => {
+                    isDataChanged.forEach(async (data) => {
+                        const dataBh = {
+                            id_work_has: params.id,
+                            warranty_time: data.warranty_time,
+                            warranty_info: data.warranty_info,
+                            unit: data.unit,
+                        };
+                        try {
+                            const res = await fetch(
+                                "api/web/update/work-assignment-warranties",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(dataBh),
+                                }
+                            );
 
+                            if (res.ok) {
+                                console.log("Đã Gửi Thông Tin Bảo Hành");
+                            } else {
+                                console.error(
+                                    "Lỗi khi gửi dữ liệu:",
+                                    res.statusText
+                                );
+                            }
+                        } catch (error) {
+                            console.error(
+                                "Error fetching data lỗi rồi:",
+                                error
+                            );
+                        }
+                    });
+                };
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
                     const data_0 = {
@@ -987,12 +1124,12 @@ function Dashboard({ auth }) {
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        datainput: isDataChanged,
+
                     };
-                    const billImageFiles =
-                        document.getElementById("image_bill").files;
-                    const imageVtFiles =
-                        document.getElementById("image_Vt").files;
+                    console.log("dadasdadsa", typeof isDataChanged);
+                    console.log("dadasdadsa", isDataChanged);
+                    const image_Pt = document.getElementById("image_Pt").files;
+                    const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
@@ -1001,17 +1138,46 @@ function Dashboard({ auth }) {
                         fetchDataUpdateThuchi(
                             data_0,
                             UrlApi,
-                            billImageFiles,
-                            imageVtFiles
+                            image_Pt,
+                            image_Vt
                         );
+                        handleValueBh();
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
                         console.log("cardExpires data_1", data_1);
                     }
-                    handleOpenSpending_total();
+                    // handleOpenSpending_total();
                 };
-
+                const handleThuHoi = async (e) => {
+                    e.preventDefault();
+                    console.log("thu hoi lich");
+                    let data = {
+                        id: params.id,
+                        id_cus: params.row.id_cus,
+                        auth_id: auth.user.id,
+                        real_note: params.row.real_note,
+                    };
+                    console.log("data______", data);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/work-assignment-return",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "Thu hoi lich");
+                            handleThuHoi();
+                        }
+                    } catch (error) {
+                        console.log("Loi", error);
+                    }
+                };
                 const dataBtnChi = [
                     {
                         id: "BtnTraLich",
@@ -1032,16 +1198,195 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
-                // dinh dang tien te
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
+                const check_admin = params.row.status_admin_check === 1;
                 return (
-                    <div className="w-full">
-                        <Button onClick={handleOpenSpending_total} variant="outlined">
-                            {formatter.format(params.row.spending_total)}
-                        </Button>
+                    <div>
+                        <div className="flex">
+                            {check_admin ? (
+                                <Tooltip content="Admin Check">
+                                    <Button
+                                        className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                        onClick={handleOpenAdminCheck}
+                                        disabled={isButtonDisabled(
+                                            auth.user.permission,
+                                            1
+                                        )}
+                                        variant="outlined"
+                                    >
+                                        <EyeIcon />
+                                    </Button>
+                                </Tooltip>
+                            ) : (
+                                <div className="flex w-full">
+                                    <Tooltip content="Admin Check">
+                                        <Button
+                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                            onClick={handleOpenAdminCheck}
+                                            disabled={isButtonDisabled(
+                                                auth.user.permission,
+                                                1
+                                            )}
+                                            variant="outlined"
+                                        >
+                                            <EyeIcon />
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip content="Thu Hồi Lịch">
+                                        <ArrowPathIcon
+                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                            onClick={handleOpenThuHoi}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Hủy Lịch">
+                                        <TrashIcon
+                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                            onClick={handleOpenHuy}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Nhập Thu Chi">
+                                        <ArrowUpTrayIcon
+                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                            onClick={handleOpenSpending_total}
+                                        />
+                                    </Tooltip>
+                                </div>
+                            )}
+                        </div>
+                        {/* ----------------ADMIN CHECK ------------ */}
+                        <Dialog
+                            open={openAdminCheck}
+                            handler={handleOpenAdminCheck}
+                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
+                        >
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>
+                                    XÁC NHẬN THÔNG TIN THỢ BÁO
+                                </DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenAdminCheck}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <WorkForm
+                                    cardExpires={cardExpires}
+                                    handleChange={handleChange}
+                                    vatCard={vatCard}
+                                >
+                                    <div className="gap-4 ">
+                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
+                                            <div className="p-2 border border-green-500">
+                                                <label htmlFor="Nội Dung Bảo Hành">
+                                                    Nội Dung Bảo Hành:
+                                                </label>
+                                                <p className="pl-5">
+                                                    Không có thông tin bảo hành
+                                                    !
+                                                </p>
+                                            </div>
+                                            <div className="p-2 border border-green-500">
+                                                <p>{params.row.bill_imag}ddd</p>
+                                                <img
+                                                    src={params.row.bill_imag}
+                                                    alt=""
+                                                    srcset=""
+                                                    className="h-full w-50"
+                                                />
+                                            </div>
+                                        </Card>
+                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
+                                            {dataRadio.map((result, index) => (
+                                                <Radio
+                                                    key={index}
+                                                    id={result.id}
+                                                    name={result.name}
+                                                    label={result.label}
+                                                    value={result.value}
+                                                    checked={result.checked}
+                                                    onChange={handleChange}
+                                                    className="w-1 h-1 p-1"
+                                                />
+                                            ))}
+                                        </Card>
+                                    </div>
+                                    <Divider className="pt-2" />
+                                    <div className="flex flex-row justify-center pt-2">
+                                        <Typography className="font-medium text-red-700">
+                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
+                                            Trước Khi Xác Nhận!!
+                                        </Typography>
+                                        <Button
+                                            size="sm"
+                                            className="px-3 py-2 mx-4 shadow-none"
+                                            variant="outlined"
+                                        >
+                                            Xác Nhận Thông Tin
+                                        </Button>
+                                    </div>
+                                </WorkForm>
+                            </DialogBody>
+                        </Dialog>
+                        {/*----------------------------- dialog form Thu Hoi ----------- */}
+                        <Dialog open={openThuHoi} handler={handleOpenThuHoi}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lý Do Thu Hồi</DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenThuHoi}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do thu hồi"
+                                        className="shadow-none"
+                                        onChange={(e) =>
+                                            setWorkNote(e.target.value)
+                                        }
+                                    />
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="red"
+                                    onClick={handleThuHoi}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        {/*----------------------------- dialog form Huy ----------- */}
+                        <Dialog open={openHuy} handler={handleOpenHuy}>
+                            <div className="flex items-center justify-between">
+                                <DialogHeader>Lý do hủy</DialogHeader>
+                                <XMarkIcon
+                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                    onClick={handleOpenHuy}
+                                />
+                            </div>
+                            <DialogBody divider>
+                                <div className="grid gap-6">
+                                    <Textarea
+                                        label="Lý do hủy"
+                                        className="shadow-none"
+                                        onChange={(e) =>
+                                            setWorkNote(e.target.value)
+                                        }
+                                    />
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="space-x-2">
+                                <Button
+                                    variant="gradient"
+                                    color="red"
+                                    onClick={handleSentDeleteDone}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <Dialog
                             open={openSpending_total}
                             handler={handleOpenSpending_total}
@@ -1083,7 +1428,6 @@ function Dashboard({ auth }) {
                                     vatCard={vatCard}
                                     disabledAllowed={isAllowed}
                                 >
-                                    {" "}
                                     <div className="flex justify-between w-full my-2 text-sm">
                                         <DynamicTwoInput
                                             disabledAllowed={isAllowed}
@@ -1156,7 +1500,7 @@ function Dashboard({ auth }) {
                                                         disabled={isAllowed}
                                                     >
                                                         <input
-                                                            id="image_bill"
+                                                            id="image_Pt"
                                                             type="file"
                                                             accept=".jpg, .jpeg, .png"
                                                             onChange={
@@ -1215,6 +1559,7 @@ function Dashboard({ auth }) {
                                     <div className="flex flex-row-reverse pt-2">
                                         {dataBtnChi.map((result) => (
                                             <Button
+                                                key={result.id}
                                                 id={result.id}
                                                 size="sm"
                                                 className={
@@ -1227,422 +1572,6 @@ function Dashboard({ auth }) {
                                                 {result.content}
                                             </Button>
                                         ))}
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
-                        </Dialog>
-                    </div>
-                );
-            },
-        },
-        {
-            field: "income_total",
-            headerName: "Thu",
-            width: 100,
-            editable: false,
-            type: "number",
-            renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
-                return (
-                    <span className="text-center">
-                        {formatter.format(params.row.income_total)}
-                    </span>
-                );
-            },
-        },
-        {
-            field: "seri_number",
-            headerName: "Số Phiếu Thu",
-            width: 100,
-            editable: false,
-            type: "number",
-            renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    currencyDisplay: "code", // Hiển thị mã tiền tệ thay vì ký hiệu
-                  });
-
-                  const formattedValue = formatter.format(params.row.seri_number);
-
-                  // Loại bỏ ký hiệu đ (đồng) sau định dạng
-                  const formattedWithoutVND = formattedValue.replace("VND", "");
-                return (
-                    <span className="text-red-500">
-                         {formattedWithoutVND}
-                    </span>
-                );
-            },
-        },
-        {
-            field: "actions",
-            type: "actions",
-            headerName: "Chức Năng",
-            width: 150,
-            editable: false,
-            cellClassName: "actions",
-            renderCell: (params) => {
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => setOpen(!open);
-                const [openTho, setOpenTho] = useState(false);
-                const handleOpenTho = () => setOpenTho(!openTho);
-                const [openAdminCheck, setOpenAdminCheck] = useState(false);
-                const handleOpenAdminCheck = () =>
-                    setOpenAdminCheck(!openAdminCheck);
-                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-                const handleOpenUpdateThuChi = () =>
-                    setOpenUpdateThuChi(!openUpdateThuChi);
-                const [work_note, setWorkNote] = useState();
-                const [selectPhanTho, setSelectPhanTho] = useState(null);
-                const handleSelectChange = (selectedValue) => {
-                    setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
-                };
-                const [cardExpires, setCardExpires] = useState(params.row);
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setCardExpires((prevData) => ({
-                        ...prevData,
-                        [name]: value,
-                    }));
-                    console.log(value);
-                };
-                const handleSentDeleteDone = async () => {
-                    try {
-                        let data = {
-                            id: params.id,
-                            id_auth: auth.user.id,
-                            work_note: work_note,
-                        };
-                        const response = await fetch(
-                            "api/web/cancle/workassigment",
-                            {
-                                method: "POST",
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
-                        );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalichDone");
-                            handleOpen();
-                        }
-                    } catch (error) {}
-                };
-
-                const handleSentPhanTho = async (e) => {
-                    console.log("selectPhanTho", selectPhanTho.value);
-                    try {
-                        let data = {
-                            id_works: params.row.id,
-                            id_worker: selectPhanTho,
-                            work_note: params.row.work_note,
-                        };
-                        console.log("handleSentPhanTho", data);
-                        const response = await fetch(
-                            "api/web/work-assignment",
-                            {
-                                method: "POST",
-                                body: data, // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
-                        );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalich");
-                            handleOpenTho();
-                            console.log("handleSentPhanTho1", data);
-                        } else {
-                            console.log("chua dau");
-                        }
-                    } catch (error) {
-                        console.log("lixo", error);
-                    }
-                };
-                const vatCard = params.row.bill_image === null;
-                const dataRadio = [
-                    {
-                        id: "ThoDN",
-                        name: "XNTTNV",
-                        label: "Điện Nước",
-                        value: "0",
-                        checked: '{formData.kind_work === "0"}',
-                    },
-                    {
-                        id: "ThoDL",
-                        name: "XNTTNV",
-                        label: "Điện Lạnh",
-                        value: "1",
-                        checked: '{formData.kind_work === "1"}',
-                    },
-                    {
-                        id: "ThoDG",
-                        name: "XNTTNV",
-                        label: "Đồ Gỗ",
-                        value: "2",
-                        checked: '{formData.kind_work === "2"}',
-                    },
-                    {
-                        id: "ThoXD",
-                        name: "XNTTNV",
-                        label: "Xây Dựng",
-                        value: "3",
-                        checked: '{formData.kind_work === "3"}',
-                    },
-                    {
-                        id: "ThoNLMT",
-                        name: "XNTTNV",
-                        label: "Năng Lượng Mặt Trời",
-                        value: "4",
-                        checked: '{formData.kind_work === "4"}',
-                    },
-                    {
-                        id: "ThoVC",
-                        name: "XNTTNV",
-                        label: "Vận Chuyển",
-                        value: "5",
-                        checked: '{formData.kind_work === "5"}',
-                    },
-                    {
-                        id: "ThoHX",
-                        name: "XNTTNV",
-                        label: "Cơ Khí",
-                        value: "6",
-                        checked: '{formData.kind_work === "6"}',
-                    },
-                ];
-                // cho phep su dung cac nut
-                const isButtonDisabled = (permissionValue, valuePermiss) => {
-                    return permissionValue !== valuePermiss;
-                };
-                return (
-                    <div>
-                        <div className="flex">
-                            <Tooltip content="Admin Check">
-                                <Button
-                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                    onClick={handleOpenAdminCheck}
-                                    disabled={isButtonDisabled(
-                                        auth.user.permission,
-                                        1
-                                    )}
-                                    variant="outlined"
-                                >
-                                    <EyeIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip content="Thu Hồi Lịch">
-                                <ArrowPathIcon className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white" />
-                            </Tooltip>
-                            <Tooltip content="Hủy Lịch">
-                                <TrashIcon
-                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                    onClick={handleOpen}
-                                />
-                            </Tooltip>
-                            <Tooltip content="Cập Nhật Dữ Liệu">
-                                <ArrowUpTrayIcon
-                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={handleOpenUpdateThuChi}
-                                />
-                            </Tooltip>
-                        </div>
-                        <Dialog
-                            open={openTho}
-                            handler={handleOpenTho}
-                            className="bg-transparent "
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lựa Chọn Thợ</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenTho}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <Select
-                                    value={selectPhanTho}
-                                    options={infoWorkerDashboard}
-                                    onChange={(selectedValue) =>
-                                        handleSelectChange(selectedValue)
-                                    }
-                                    isMulti
-                                    className="shadow-none"
-                                />
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="green"
-                                    onClick={handleSentPhanTho}
-                                >
-                                    Phân Thợ
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-                        <Dialog open={open} handler={handleOpen}>
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lý do hủy</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpen}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <div className="grid gap-6">
-                                    {/* <input type="text" value={params.id} /> */}
-                                    <Textarea
-                                        label="Lý do hủy"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleSentDeleteDone}
-                                >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-
-                        <Dialog
-                            open={openAdminCheck}
-                            handler={handleOpenAdminCheck}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    XÁC NHẬN THÔNG TIN THỢ BÁO
-                                </DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenAdminCheck}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <div className="gap-4 ">
-                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                            <label htmlFor="Nội Dung Bảo Hành">
-                                                Nội Dung Bảo Hành:
-                                            </label>
-                                            <p className="pl-5">
-                                                Không có thông tin bảo hành !
-                                            </p>
-                                        </Card>
-
-                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
-                                            {dataRadio.map((result) => (
-                                                <Radio
-                                                    id={result.id}
-                                                    name={result.name}
-                                                    label={result.label}
-                                                    value={result.value}
-                                                    checked={result.checked}
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                            ))}
-                                        </Card>
-                                    </div>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 shadow-none"
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận Thông Tin
-                                        </Button>
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
-                        </Dialog>
-                        <Dialog
-                            open={openUpdateThuChi}
-                            handler={handleOpenUpdateThuChi}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    CẬP NHẬT THÔNG TIN THỢ
-                                </DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenUpdateThuChi}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <div className="items-center justify-center gap-4 my-2 text-sm ">
-                                        <div className="flex justify-between w-full">
-                                            <Radio
-                                                id="DN"
-                                                name="kind_work"
-                                                label="Đã Làm"
-                                                value="0"
-                                                checked='{formData.kind_work === "0"}'
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Vật Tư
-                                            </Button>
-                                            <Button
-                                                className="px-1 py-0"
-                                                variant="outlined"
-                                            >
-                                                Phiếu Thu
-                                            </Button>
-                                        </div>
-                                    </div>
-                                    <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                        <label htmlFor="Nội Dung Bảo Hành">
-                                            Nội Dung Bảo Hành:
-                                        </label>
-                                        <p className="pl-5">
-                                            Không có thông tin bảo hành !
-                                        </p>
-                                    </Card>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 "
-                                            variant="outlined"
-                                        >
-                                            Cập nhật
-                                        </Button>
                                     </div>
                                 </WorkForm>
                             </DialogBody>
@@ -1772,7 +1701,7 @@ function Dashboard({ auth }) {
                 className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
-               <Card
+                <Card
                     className={
                         "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
                     }
@@ -1786,9 +1715,9 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div>
-                            {dataGridLichChuaPhan.map((result) => {
+                            {dataGridLichChuaPhan.map((result, index) => {
                                 return (
-                                    <div id={result.id}>
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1822,9 +1751,9 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div>
-                            {dataGrid.map((result) => {
+                            {dataGrid.map((result, index) => {
                                 return (
-                                    <div id={result.id}>
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1847,10 +1776,11 @@ function Dashboard({ auth }) {
                 </Card>
             </div>
             <div className="fixed flex mt-1">
-                <div>
-                    {dataBtnFixed.map((result) => {
+                <div key={auth.user.id}>
+                    {dataBtnFixed.map((result, index) => {
                         return (
                             <Button
+                                key={index}
                                 id={result.id}
                                 className={`p-2 mx-1 text-green-700 border border-green-700 rounded-tr-none rounded-bl-none shadow-none focus:bg-green-700 focus:text-white `}
                                 onClick={() => {

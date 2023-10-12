@@ -7,7 +7,7 @@ import { TrashIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
     const [data, setData] = useState([
         {
-            id: 1,
+            id: 0,
             warranty_time: 0,
             unit: "KBH",
             warranty_info: "Không Bảo Hành",
@@ -41,13 +41,11 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             if (item.id === id) {
                 return { ...item, unit: selectedValue };
             }
+            console.log(selectedValue);
             return item;
         });
-
         setData(updatedData);
-        sendDataToParent(updatedData);
         setIsAllowedBH(selectedValue == "KBH");
-        console.log("updatedData11111", selectedValue);
     };
     const handleChange = (e, id) => {
         const { name, value } = e.target;
@@ -57,17 +55,15 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             }
             return item;
         });
-        setData(updatedData);
-        sendDataToParent(updatedData);
+        setData( updatedData);
     };
-
     const handleDelete = (id) => {
         const updatedData = data.filter((item) => item.id !== id);
-        setData(updatedData);
-        sendDataToParent(updatedData);
+        setData( updatedData);
         console.log("xoas", updatedData);
     };
-
+    sendDataToParent(data);
+    // Trả về dữ liệu JSON
     return (
         <div className="w-full mt-0">
             {data.map((val) => (

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::prefix('web')->group(function () {
     Route::apiResource('works',WorksController::class);
     Route::apiResource('workers',WorkersController::class);
@@ -27,13 +28,15 @@ Route::prefix('web')->group(function () {
     Route::prefix('update')->group(function(){
         Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
-        Route::post('work-assignment','App\Http\Controllers\Api\WorksAssignmentController@updateWorkAss');
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
+        Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
+        Route::post('work-assignment-cancle','App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
+        Route::post('work-assignment-warranties','App\Http\Controllers\Api\WarrantiesController@insertWarranties');
     });
     Route::prefix('cancle')->group(function () {
         Route::get('works','App\Http\Controllers\Api\Web\WorksController@getCancleBook');
         Route::post('works','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
-        Route::post('workassigment','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
+        Route::post('workassignment','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
     });
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
 

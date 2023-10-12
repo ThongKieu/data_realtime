@@ -17,7 +17,7 @@ class Work extends Model
         'phone_number',
         'street',
         'district',
-        'members_read',
+        'member_read',
         'kind_work',
         'status_cus',
         'flag_status',

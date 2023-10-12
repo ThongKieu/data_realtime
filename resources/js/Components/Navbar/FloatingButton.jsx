@@ -53,7 +53,7 @@ function FloatingButton() {
         district: "Khác",
         work_note: "",
         street: "",
-        members_read: 1,
+        member_read: 1,
         kind_work: 0,
         status_cus: 0,
         from_cus: 0,
@@ -122,7 +122,7 @@ function FloatingButton() {
         formData1.append("from_cus", formData.from_cus);
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
-        formData1.append("members_read", formData.members_read);
+        formData1.append("member_read", formData.member_read);
         try {
             const response = await fetch(host+url_API, {
                 method: "POST",

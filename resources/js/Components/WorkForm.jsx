@@ -1,18 +1,10 @@
 import React from "react";
 import {
     Input,
-    Textarea,
-    Button,
-    Radio,
-    Divider,
-    Card,
 } from "@material-tailwind/react";
 
-function WorkForm({ cardExpires, handleChange, vatCard,children,disabledAllowed }) {
-    const formatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
+function WorkForm({ cardExpires, handleChange,children,disabledAllowed }) {
+
     return (
         <form className="flex flex-col gap-4 mt-2">
             {/* Các trường input */}
@@ -133,11 +125,7 @@ function WorkForm({ cardExpires, handleChange, vatCard,children,disabledAllowed 
                     />
                 </div>
             </div>
-
-            {/* Button và Radio */}
-
-                        <main>{children}</main>
-            {/* Thêm các trường input và component khác ở đây */}
+            <main>{children}</main>
         </form>
     );
 }

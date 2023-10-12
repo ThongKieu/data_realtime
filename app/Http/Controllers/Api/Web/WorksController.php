@@ -126,7 +126,7 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
         $co_khi    =   DB::table('works')
-            ->join('users', 'works.members_read', '=', 'users.id')
+            ->join('users', 'works.member_read', '=', 'users.id')
             ->where('works.date_book', '=', $today)
             ->where('works.status_cus', '=', 2)
             ->limit(100)
@@ -160,8 +160,8 @@ class WorksController extends Controller
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                $file->move('assets/images/work', $name);
-                $files = $files . 'assets/images/work/' . $name . ',';
+                $file->move('assets/images/work/'.$id, $name);
+                $files = $files . 'assets/images/work/'.$id .'/' . $name . ',';
             }
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);
@@ -212,7 +212,7 @@ class WorksController extends Controller
 
     {
         // dd($request);
-        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'members_read' => $request->id_auth]);
+        $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->auth_id]);
         if ($up) {
             return 'Delete work done !';
         }

@@ -299,7 +299,7 @@ class WorksAssignmentController extends Controller
         // dd($request);
         $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('kind_worker');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1]);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1,'date_book'=>date('Y-m-d')]);
         // dd($id_worker);
         if ($number > 1) {
             $workHas = new WorksAssignment([

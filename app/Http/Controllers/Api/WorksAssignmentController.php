@@ -483,5 +483,11 @@ class WorksAssignmentController extends Controller
             }
         }
     }
+    public function CheckByAdmin(Request $request) {
+        $val = validator(
+            ['ac'=>'required']
+        );
+        
+    }
 
 }

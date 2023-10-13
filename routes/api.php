@@ -38,14 +38,22 @@ Route::prefix('web')->group(function () {
         Route::post('works','App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
         Route::post('workassignment','App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
     });
+
     Route::get('works_done','App\Http\Controllers\Api\Web\WorksController@indexSetWork');
 
     Route::prefix('work-assignment')->group(function(){
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
+        Route::get('/warranties','App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
+
+    });
+    Route::prefix('quote')->group(function(){
+        Route::get('','App\Http\Controllers\Api\Web\QuoteFlowController@index');
+        Route::post('','App\Http\Controllers\Api\Web\QuoteFlowController@store');
+        Route::post('/update','App\Http\Controllers\Api\Web\QuoteFlowController@update');
     });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
-    Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
+    // Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');
         Route::post('data-worker','App\Http\Controllers\Api\Web\WorkerController@importDataWorker');

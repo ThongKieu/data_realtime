@@ -270,9 +270,11 @@ function Dashboard({ auth }) {
 
     // hàm thêm dấu chấm trong chuỗi
     function addDot(num) {
-        const str = num.toString();
-        const result = str.slice(0, 2) + "." + str.slice(2);
-        return result;
+        if (num) {
+            const str = num.toString();
+            const result = str.slice(0, 2) + "." + str.slice(2);
+            return result;
+        }
     }
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
 
@@ -1133,11 +1135,8 @@ function Dashboard({ auth }) {
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        dataInput: isDataChanged,
+                        // dataInput: isDataChanged,
                     };
-                    console.log("dadasdadsa", typeof isDataChanged);
-                    console.log("dadasdadsa", isDataChanged);
-                    console.log("tung log", isDataChanged[1].warranty_time + 'tung log');
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {
@@ -1151,13 +1150,13 @@ function Dashboard({ auth }) {
                             image_Pt,
                             image_Vt
                         );
-                        // handleValueBh();
+                        handleValueBh();
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
                         console.log("cardExpires data_1", data_1);
                     }
-                    // handleOpenSpending_total();
+                    handleOpenSpending_total();
                 };
                 const handleThuHoi = async (e) => {
                     e.preventDefault();
@@ -1208,7 +1207,30 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
+                // Điều kiện các nút chức năng
                 const check_admin = params.row.status_admin_check === 1;
+                const spending = params.row.spending_total;
+                const income = params.row.income_total;
+                // ------------- cắt chuỗi hình phieu mua vat tu ----------------
+                const hasData = params.row;
+                const data = hasData.bill_imag;
+                const parts = data?.split(",");
+                const filteredArray = parts?.filter(
+                    (item) => item.trim() !== ""
+                );
+                // ------------- cắt chuỗi hình phieu thu----------------
+                const hinhPt = hasData.seri_imag;
+                const partsPt = hinhPt?.split(",");
+                const filteredImgPt = partsPt?.filter(
+                    (item) => item.trim() !== ""
+                );
+                const [imagePt1, setImagePt1] = useState(filteredImgPt);
+
+                const handleImageDelete = (index) => {
+                    const newImages = imagePt1?.filter((_, i) => i !== index);
+
+                    setImagePt1(newImages);
+                };
 
                 return (
                     <div>
@@ -1229,38 +1251,72 @@ function Dashboard({ auth }) {
                                 </Tooltip>
                             ) : (
                                 <div className="flex w-full">
-                                     <Tooltip content="Nhập Thu Chi">
-                                        <ArrowUpTrayIcon
-                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                            onClick={handleOpenSpending_total}
-                                        />
-                                    </Tooltip>
-                                  
-                                    <Tooltip content="Thu Hồi Lịch">
-                                        <ArrowPathIcon
-                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                            onClick={handleOpenThuHoi}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Báo hủy">
-                                        <TrashIcon
-                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                            onClick={handleOpenHuy}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Admin Check">
-                                        <Button
-                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                            onClick={handleOpenAdminCheck}
-                                            disabled={isButtonDisabled(
-                                                auth.user.permission,
-                                                1
-                                            )}
-                                            variant="outlined"
-                                        >
-                                            <EyeIcon />
-                                        </Button>
-                                    </Tooltip>
+                                    {spending || income ? (
+                                        <>
+                                            <Tooltip content="Nhập Thu Chi">
+                                                <ArrowUpTrayIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                                    onClick={
+                                                        handleOpenSpending_total
+                                                    }
+                                                />
+                                            </Tooltip>{" "}
+                                            <Tooltip content="Admin Check">
+                                                <Button
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                                    onClick={
+                                                        handleOpenAdminCheck
+                                                    }
+                                                    disabled={isButtonDisabled(
+                                                        auth.user.permission,
+                                                        1
+                                                    )}
+                                                    variant="outlined"
+                                                >
+                                                    <EyeIcon />
+                                                </Button>
+                                            </Tooltip>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Tooltip content="Nhập Thu Chi">
+                                                <ArrowUpTrayIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                                    onClick={
+                                                        handleOpenSpending_total
+                                                    }
+                                                />
+                                            </Tooltip>
+
+                                            <Tooltip content="Thu Hồi Lịch">
+                                                <ArrowPathIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                                    onClick={handleOpenThuHoi}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip content="Báo hủy">
+                                                <TrashIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                    onClick={handleOpenHuy}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip content="Admin Check">
+                                                <Button
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                                    onClick={
+                                                        handleOpenAdminCheck
+                                                    }
+                                                    disabled={isButtonDisabled(
+                                                        auth.user.permission,
+                                                        1
+                                                    )}
+                                                    variant="outlined"
+                                                >
+                                                    <EyeIcon />
+                                                </Button>
+                                            </Tooltip>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -1304,7 +1360,10 @@ function Dashboard({ auth }) {
                                     <div className="flex items-center w-full text-sm border border-green-500 ">
                                         <div className="w-full text-center">
                                             <span>Số Phiếu Thu:</span>
-                                            <i>{addDot(params.row.seri_number)}</i> <br />
+                                            <i>
+                                                {addDot(params.row.seri_number)}
+                                            </i>{" "}
+                                            <br />
                                         </div>
                                     </div>
                                 </div>
@@ -1322,13 +1381,34 @@ function Dashboard({ auth }) {
                                             <u> Hình Vật Tư:</u>
                                         </i>
                                         <div className="text-center">
-                                            <i>(Không Có Hình)</i>
-                                            <img
-                                                src={params.row.bill_imag}
-                                                alt=""
-                                                srcset=""
-                                                className="h-full w-50"
+                                            <input
+                                                id="image_Vt"
+                                                type="file"
+                                                accept=".jpg, .jpeg, .png"
+                                                onChange={handleFileChangeVt}
+                                                multiple
+                                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                disabled={isAllowed}
                                             />
+                                            {filteredArray == "" ||
+                                            filteredArray == null ? (
+                                                <i>(Không Có Hình)</i>
+                                            ) : (
+                                                <div className="flex flex-wrap">
+                                                    {filteredArray?.map(
+                                                        (item, index) => (
+                                                            <Card>
+                                                                <img
+                                                                    key={index}
+                                                                    className="object-cover object-center w-1/2 p-1 rounded-lg shadow-xl"
+                                                                    src={`${host}${item}`}
+                                                                    alt="nature image"
+                                                                />
+                                                            </Card>
+                                                        )
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex-1 p-2 border border-green-500">
@@ -1336,13 +1416,43 @@ function Dashboard({ auth }) {
                                             <u>Hình Phiếu Thu:</u>
                                         </i>
                                         <div className="text-center">
-                                            <i>(Không Có Hình)</i>
-                                            <img
-                                                src={params.row.bill_imag}
-                                                alt=""
-                                                srcset=""
-                                                className="h-full w-50"
+                                            <input
+                                                id="image_Vt"
+                                                type="file"
+                                                accept=".jpg, .jpeg, .png"
+                                                onChange={handleFileChangeVt}
+                                                multiple
+                                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
+                                                disabled={isAllowed}
                                             />
+                                            {imagePt1 == "" ||
+                                            imagePt1 == null ? (
+                                                <i>(Không Có Hình)</i>
+                                            ) : (
+                                                <div className="grid w-full grid-cols-2 gap-4">
+                                                    {imagePt1.map(
+                                                        (item, index) => (
+                                                            <Card
+                                                                key={index}
+                                                                className="border border-green-500 "
+                                                            >
+                                                                <XMarkIcon
+                                                                    className="w-5 h-5 mr-3 cursor-pointer"
+                                                                    onClick={() =>
+                                                                        handleImageDelete(
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <img
+                                                                    src={`${host}${item}`}
+                                                                    alt="nature image"
+                                                                />
+                                                            </Card>
+                                                        )
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -1359,7 +1469,10 @@ function Dashboard({ auth }) {
                                                 name={result.name}
                                                 label={result.label}
                                                 value={result.value}
-                                                checked={result.checked}
+                                                checked={
+                                                    params.row.kind_work ==
+                                                    result.value
+                                                }
                                                 onChange={handleChange}
                                                 className="w-1 h-1 p-1"
                                             />

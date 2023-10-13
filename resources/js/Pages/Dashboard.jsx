@@ -47,6 +47,7 @@ function Dashboard({ auth }) {
     const [message, setMessage] = useState(auth.user.id);
     // table left
     const [workDataDN, setWorkDataDN] = useState("");
+    const [workDataDNCu, setWorkDataDNCu] = useState("");
     const [workDataDL, setWorkDataDL] = useState("");
     const [workDataDG, setWorkDataDG] = useState("");
     const [workDataNLMT, setWorkDataNLMT] = useState("");
@@ -113,6 +114,7 @@ function Dashboard({ auth }) {
             const response = await fetch("api/web/works");
             const jsonData = await response.json();
             setWorkDataDN(jsonData.dien_nuoc);
+            setWorkDataDNCu(jsonData.dien_nuoc_cu);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
             setWorkDataNLMT(jsonData.nlmt);
@@ -310,6 +312,14 @@ function Dashboard({ auth }) {
             ),
         },
         {
+            field: "date_book",
+            headerName: "Ngày",
+            width: 100,
+            editable: true,
+            tabindex: 0,
+            renderCell: (params) => <span>{params.row.date_book}</span>,
+        },
+        {
             field: "work_note",
             type: "actions",
             headerName: "Ghi Chú",
@@ -328,7 +338,6 @@ function Dashboard({ auth }) {
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
-
                 return (
                     <div className="text-center">
                         {shouldDisplayIconButton && (
@@ -955,7 +964,6 @@ function Dashboard({ auth }) {
                 const [work_note, setWorkNote] = useState();
                 const handleChange = (e) => {
                     const { name, value } = e.target;
-                    setIsDataChanged(true);
                     setCardExpires((prevData) => ({
                         ...prevData,
                         [name]: value,
@@ -1051,10 +1059,7 @@ function Dashboard({ auth }) {
                     useState(false);
                 const handleOpenSpending_total = () =>
                     setOpenSpending_total(!openSpending_total);
-
-                const handleDataFromChild = (data) => {
-                    setIsDataChanged(data);
-                };
+                const handleDataFromChild = (data) => setIsDataChanged(data);
                 const handleFileChangeVt = (e) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
@@ -1124,7 +1129,7 @@ function Dashboard({ auth }) {
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-
+                        dataInput: isDataChanged,
                     };
                     console.log("dadasdadsa", typeof isDataChanged);
                     console.log("dadasdadsa", isDataChanged);
@@ -1141,7 +1146,7 @@ function Dashboard({ auth }) {
                             image_Pt,
                             image_Vt
                         );
-                        handleValueBh();
+                        // handleValueBh();
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
@@ -1268,47 +1273,85 @@ function Dashboard({ auth }) {
                                 />
                             </div>
                             <DialogBody divider>
+                                <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
+                                    <div className="w-full p-2 text-sm border border-green-500 ">
+                                        <div>
+                                            <span>Tên thợ:</span>
+                                            <i className="pl-1">Nguyễn Văn A</i>
+                                        </div>
+                                        <div>
+                                            <span>Mã NV:</span>
+                                            <i className="pl-1">A01</i>
+                                        </div>
+                                        <div>
+                                            <span>Số Điện Thoại:</span>
+                                            <i className="pl-1">094444444</i>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center w-full text-sm border border-green-500 ">
+                                        <div className="w-full text-center">
+                                            <span>Số Phiếu Thu:</span>
+                                            <i>15.222</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-row justify-between w-full mb-5 text-sm">
+                                    <div className="flex-1 p-2 border border-green-500">
+                                        <i>
+                                            <u>Nội Dung Bảo Hành:</u>
+                                        </i>
+                                        <p className="text-center">
+                                            Không có thông tin bảo hành !
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 p-2 border border-green-500 border-x-0">
+                                        <i>
+                                            <u> Hình Vật Tư:</u>
+                                        </i>
+                                        <div className="text-center">
+                                            <i>(Không Có Hình)</i>
+                                            <img
+                                                src={params.row.bill_imag}
+                                                alt=""
+                                                srcset=""
+                                                className="h-full w-50"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 p-2 border border-green-500">
+                                        <i>
+                                            <u>Hình Phiếu Thu:</u>
+                                        </i>
+                                        <div className="text-center">
+                                            <i>(Không Có Hình)</i>
+                                            <img
+                                                src={params.row.bill_imag}
+                                                alt=""
+                                                srcset=""
+                                                className="h-full w-50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                                 <WorkForm
                                     cardExpires={cardExpires}
                                     handleChange={handleChange}
                                     vatCard={vatCard}
                                 >
-                                    <div className="gap-4 ">
-                                        <Card className="flex flex-row w-full px-5 py-2 mt-2 text-sm border">
-                                            <div className="p-2 border border-green-500">
-                                                <label htmlFor="Nội Dung Bảo Hành">
-                                                    Nội Dung Bảo Hành:
-                                                </label>
-                                                <p className="pl-5">
-                                                    Không có thông tin bảo hành
-                                                    !
-                                                </p>
-                                            </div>
-                                            <div className="p-2 border border-green-500">
-                                                <p>{params.row.bill_imag}ddd</p>
-                                                <img
-                                                    src={params.row.bill_imag}
-                                                    alt=""
-                                                    srcset=""
-                                                    className="h-full w-50"
-                                                />
-                                            </div>
-                                        </Card>
-                                        <Card className="flex flex-row justify-between w-full px-5 py-2 mt-5 text-sm border">
-                                            {dataRadio.map((result, index) => (
-                                                <Radio
-                                                    key={index}
-                                                    id={result.id}
-                                                    name={result.name}
-                                                    label={result.label}
-                                                    value={result.value}
-                                                    checked={result.checked}
-                                                    onChange={handleChange}
-                                                    className="w-1 h-1 p-1"
-                                                />
-                                            ))}
-                                        </Card>
-                                    </div>
+                                    <Card className="flex flex-row justify-between w-full px-5 py-2 text-sm border">
+                                        {dataRadio.map((result, index) => (
+                                            <Radio
+                                                key={index}
+                                                id={result.id}
+                                                name={result.name}
+                                                label={result.label}
+                                                value={result.value}
+                                                checked={result.checked}
+                                                onChange={handleChange}
+                                                className="w-1 h-1 p-1"
+                                            />
+                                        ))}
+                                    </Card>
                                     <Divider className="pt-2" />
                                     <div className="flex flex-row justify-center pt-2">
                                         <Typography className="font-medium text-red-700">
@@ -1612,6 +1655,11 @@ function Dashboard({ auth }) {
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
     const dataGridLichChuaPhan = [
         {
+            id: "workDNCu",
+            rowsDataGrid: workDataDNCu,
+            contentDataGird: "Lịch Ngày Trước Chưa Xử Lý",
+        },
+        {
             id: "workDN",
             rowsDataGrid: workDataDN,
             contentDataGird: "Điện Nước",
@@ -1701,11 +1749,7 @@ function Dashboard({ auth }) {
                 className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card
-                    className={
-                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
-                    }
-                >
+                <Card className={" w-full  mt-1 text-white rounded-none"}>
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1739,7 +1783,7 @@ function Dashboard({ auth }) {
                 </Card>
                 <Card
                     className={
-                        "grid w-full grid-flow-col overflow-scroll mt-1 text-white rounded-none"
+                        "grid w-full grid-flow-col mt-1 text-white rounded-none"
                     }
                 >
                     {isLoading ? (

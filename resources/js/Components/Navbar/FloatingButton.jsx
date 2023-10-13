@@ -94,6 +94,7 @@ function FloatingButton() {
         setSelectedFiles(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
+        setPreviewImages([]);
     };
 
     //-------------------- add new order ----------------------------
@@ -137,6 +138,7 @@ function FloatingButton() {
                 socketFTB.emit("addWorkTo_Server", formData1);
                 console.log('ddddd');
                 handleOpen();
+                setFormData('');
             }
         } catch (error) {
             console.log(error);

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
 use Carbon\Carbon;
-use Illuminate\Database\Query\Builder;
+// use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -179,8 +179,8 @@ class WorksController extends Controller
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                $file->move('assets/images/work/'.$id, $name);
-                $files = $files . 'assets/images/work/'.$id .'/' . $name . ',';
+                $file->move('assets/images/work/' . $id, $name);
+                $files = $files . 'assets/images/work/' . $id . '/' . $name . ',';
             }
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);

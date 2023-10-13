@@ -26,7 +26,7 @@ class StoreWorkRequest extends FormRequest
             'date_book'=>'required|min:2,max:11',
             'phone_number'=>'required|min:2,max:11',
             'district'=>'required|min:2,max:250',
-            'member_read'=>'numeric',
+            'member_read'=>'required',
             'kind_work'=>'required|numeric',
             'status_cus'=>'required|numeric',
             'flag_status'=>'required|numeric',

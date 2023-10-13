@@ -299,7 +299,7 @@ class WorksAssignmentController extends Controller
         // dd($request);
         $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('kind_worker');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1]);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1,'date_book'=>date('Y-m-d')]);
         // dd($id_worker);
         if ($number > 1) {
             $workHas = new WorksAssignment([
@@ -424,10 +424,11 @@ class WorksAssignmentController extends Controller
                 foreach ($request->file('seri_imag') as $files_seri) {
                     $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
                     $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
-                    $file_na = 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri;
+                    $file_na = $file_na.'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri .',';
                 }
-                $serializedArr = json_encode($file_na);
-                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $serializedArr]);
+                // $serializedArr1 = json_encode($file_na);
+                // dd($file_na);
+                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
             }
 
             if ($request->hasFile('bill_imag')) {
@@ -438,15 +439,15 @@ class WorksAssignmentController extends Controller
                     $file->move('assets/images/work_assignment/' . $request->id, $name);
                     $files = $files . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
                 }
-                $serializedArr = json_encode($files);
-
+                // $serializedArr = json_encode($files);
+                // dd($serializedArr);
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,
                         'real_note' => $request->real_note,
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
-                        'bill_imag' => $serializedArr,
+                        'bill_imag' => $files,
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);

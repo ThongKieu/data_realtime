@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-import {
-    Card, Input, Button, Typography, Spinner
-} from "@material-tailwind/react";
+import { Card, Input, Button, Typography, Spinner } from "@material-tailwind/react";
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import AlertIcon from '@/Pages/Admin/DataImport/Components/AlertIcon';

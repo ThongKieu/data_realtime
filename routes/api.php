@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\DistrictController;
 // use App\Http\Controllers\Api\Web\PushOnlineController;
 use App\Http\Controllers\Api\Web\WorksController;
-use App\Http\Controllers\Api\Web\WorkersController;
+use App\Http\Controllers\Api\Mobile\WorkersController;
 // use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +26,7 @@ Route::prefix('web')->group(function () {
     Route::post('push-online','App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
     Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
     Route::prefix('update')->group(function(){
-        Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
+        Route::post('worker','App\Http\Controllers\Api\Mobile\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
@@ -47,7 +47,7 @@ Route::prefix('web')->group(function () {
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
-        Route::post('data-customer','App\Http\Controllers\Api\OldCustomersController@importDataCustomer');
+        Route::post('data-customer','App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');
         Route::post('data-worker','App\Http\Controllers\Api\WorkerController@importDataWorker');
     });
     Route::prefix('users')->group(function (){

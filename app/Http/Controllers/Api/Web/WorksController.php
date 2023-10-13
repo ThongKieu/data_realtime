@@ -23,22 +23,14 @@ class WorksController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-
+        // get lịch hôm nay hoặc lịch chọn ngày
         $dien_nuoc = Work::where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 0)
-                    ->where('date_book', '=', $today);
-            })
-            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
             ->get();
         $dien_lanh =   Work::where('kind_work', '=', 1)
             ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 1)
-                    ->where('date_book', '=', $today);
-            })
-            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
             ->get();
         $do_go     =    Work::where('kind_work', '=', 2)
             ->where('status_cus', '=', 0)
@@ -76,9 +68,11 @@ class WorksController extends Controller
                     ->where('date_book', '=', $today);
             })->where('status_cus', '=', 0)
             ->get();
+
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWork = [
             'dien_nuoc' => $dien_nuoc,
+            'dien_nuoc_cu'=>$dien_nuoc,
             'dien_lanh' => $dien_lanh,
             'do_go' => $do_go,
             'nlmt' => $nlmt,
@@ -160,8 +154,8 @@ class WorksController extends Controller
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                $file->move('assets/images/work/'.$id, $name);
-                $files = $files . 'assets/images/work/'.$id .'/' . $name . ',';
+                $file->move('assets/images/work/' . $id, $name);
+                $files = $files . 'assets/images/work/' . $id . '/' . $name . ',';
             }
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);

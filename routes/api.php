@@ -55,7 +55,10 @@ Route::prefix('web')->group(function () {
         Route::get('/','App\Http\Controllers\Api\UsersAdminController@index');
         Route::post('/','App\Http\Controllers\Api\UsersAdminController@create');
     });
-
+    // worker
+    Route::get('all-workers','App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+    Route::get('all-check-call-workers','App\Http\Controllers\Api\Web\CheckCallWorkerController@getAllCheckCallWorkers');
+    
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

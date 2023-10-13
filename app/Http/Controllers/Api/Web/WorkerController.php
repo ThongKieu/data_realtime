@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Imports\WorkerImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Worker;
 
 class WorkerController extends Controller
 {
@@ -18,5 +19,10 @@ class WorkerController extends Controller
             return 'Failed';
         }
 
+    }
+    public function getAllWorkers()
+    {
+        $worker = Worker::all();
+        return $worker;
     }
 }

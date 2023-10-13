@@ -81,7 +81,14 @@ export function SidebarAdmin() {
                     Kiểm Tra Liên Hệ
                   </ListItem>
                 </Link>
-
+                <Link href={route("admin/test-table")}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <ChevronDoubleRightIcon strokeWidth={3} className="w-5 h-3" />
+                    </ListItemPrefix>
+                    Test Table
+                  </ListItem>
+                </Link>
                 <Link
                   href={route("admin/worker-list")}
                 >
@@ -578,6 +585,8 @@ export function SidebarAdmin() {
             </Accordion>
           </List>
         </Card>)} */}
+        
+                                                                    
     </div>
 
   );

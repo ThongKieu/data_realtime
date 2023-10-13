@@ -47,6 +47,11 @@ Route::prefix('web')->group(function () {
         Route::get('/warranties','App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
 
     });
+    Route::prefix('quote')->group(function(){
+        Route::get('','App\Http\Controllers\Api\Web\QuoteFlowController@index');
+        Route::post('','App\Http\Controllers\Api\Web\QuoteFlowController@store');
+        Route::post('/update','App\Http\Controllers\Api\Web\QuoteFlowController@update');
+    });
     Route::get('worker-account','App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
     // Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {

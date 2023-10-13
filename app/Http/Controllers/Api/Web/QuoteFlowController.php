@@ -10,7 +10,16 @@ class QuoteFlowController extends Controller
 {
     //
     public function index() {
+        $q = QuoteFlow::limit(100)->get();
+       
+        return response()->json($q);
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function update(Request $request)
+    {
         
-        return response()->json(QuoteFlow::all()->limit(100));
     }
 }

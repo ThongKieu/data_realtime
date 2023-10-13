@@ -4,7 +4,6 @@ namespace App\Imports;
 
 use App\Models\CheckCallWorker;
 use Maatwebsite\Excel\Concerns\ToModel;
-
 class ImportCheckCallWorker implements ToModel
 {
     /**

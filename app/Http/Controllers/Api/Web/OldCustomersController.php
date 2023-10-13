@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Web;
 
 use App\Http\Controllers\Controller;
 use App\Imports\CustomerImport;

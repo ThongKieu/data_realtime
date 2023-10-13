@@ -35,11 +35,8 @@ import {
 import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
-import { data } from "autoprefixer";
 import { Divider } from "@mui/material";
-import Modal from "@/Components/Modal";
-import PrimaryButton from "@/Components/PrimaryButton";
-import InputDialog from "@/Components/WorkForm";
+
 import WorkForm from "@/Components/WorkForm";
 import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {
@@ -1133,6 +1130,7 @@ function Dashboard({ auth }) {
                     };
                     console.log("dadasdadsa", typeof isDataChanged);
                     console.log("dadasdadsa", isDataChanged);
+                    console.log("tung log", isDataChanged[1].warranty_time + 'tung log');
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {

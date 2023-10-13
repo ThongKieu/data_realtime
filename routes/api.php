@@ -48,7 +48,8 @@ Route::prefix('web')->group(function () {
     Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer','App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');
-        Route::post('data-worker','App\Http\Controllers\Api\WorkerController@importDataWorker');
+        Route::post('data-worker','App\Http\Controllers\Api\Web\WorkerController@importDataWorker');
+        Route::post('data-check-call-worker','App\Http\Controllers\Api\Web\CheckCallWorkerController@importDataCheckCallWorker');
     });
     Route::prefix('users')->group(function (){
         Route::get('/','App\Http\Controllers\Api\UsersAdminController@index');

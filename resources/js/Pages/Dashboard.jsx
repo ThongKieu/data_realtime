@@ -1223,6 +1223,25 @@ function Dashboard({ auth }) {
                                 </Tooltip>
                             ) : (
                                 <div className="flex w-full">
+                                     <Tooltip content="Nhập Thu Chi">
+                                        <ArrowUpTrayIcon
+                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                            onClick={handleOpenSpending_total}
+                                        />
+                                    </Tooltip>
+                                  
+                                    <Tooltip content="Thu Hồi Lịch">
+                                        <ArrowPathIcon
+                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                            onClick={handleOpenThuHoi}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Báo hủy">
+                                        <TrashIcon
+                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                            onClick={handleOpenHuy}
+                                        />
+                                    </Tooltip>
                                     <Tooltip content="Admin Check">
                                         <Button
                                             className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
@@ -1235,24 +1254,6 @@ function Dashboard({ auth }) {
                                         >
                                             <EyeIcon />
                                         </Button>
-                                    </Tooltip>
-                                    <Tooltip content="Thu Hồi Lịch">
-                                        <ArrowPathIcon
-                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                            onClick={handleOpenThuHoi}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Hủy Lịch">
-                                        <TrashIcon
-                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                            onClick={handleOpenHuy}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Nhập Thu Chi">
-                                        <ArrowUpTrayIcon
-                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                            onClick={handleOpenSpending_total}
-                                        />
                                     </Tooltip>
                                 </div>
                             )}

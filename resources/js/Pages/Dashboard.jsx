@@ -270,6 +270,13 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+
+    // hàm thêm dấu chấm trong chuỗi
+    function addDot(num) {
+        const str = num.toString();
+        const result = str.slice(0, 2) + "." + str.slice(2);
+        return result;
+    }
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
 
     // ---------- Dialog ------------------------
@@ -1204,6 +1211,7 @@ function Dashboard({ auth }) {
                     },
                 ];
                 const check_admin = params.row.status_admin_check === 1;
+
                 return (
                     <div>
                         <div className="flex">
@@ -1276,12 +1284,18 @@ function Dashboard({ auth }) {
                                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                                     <div className="w-full p-2 text-sm border border-green-500 ">
                                         <div>
-                                            <span>Tên thợ:</span>
-                                            <i className="pl-1">Nguyễn Văn A</i>
-                                        </div>
-                                        <div>
-                                            <span>Mã NV:</span>
-                                            <i className="pl-1">A01</i>
+                                            <span>Nhân Viên:</span>
+                                            <i className="pl-1">
+                                                {params.row.sort_name}
+                                            </i>
+                                            <i>_</i>
+                                            <i className="pl-1">
+                                                {params.row.worker_name}
+                                            </i>
+                                            <i>_</i>
+                                            <i className="pl-1">
+                                                {params.row.add_worker}
+                                            </i>
                                         </div>
                                         <div>
                                             <span>Số Điện Thoại:</span>
@@ -1291,7 +1305,7 @@ function Dashboard({ auth }) {
                                     <div className="flex items-center w-full text-sm border border-green-500 ">
                                         <div className="w-full text-center">
                                             <span>Số Phiếu Thu:</span>
-                                            <i>15.222</i>
+                                            <i>{addDot(params.row.seri_number)}</i> <br />
                                         </div>
                                     </div>
                                 </div>

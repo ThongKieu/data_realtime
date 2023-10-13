@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,65 +21,89 @@ class WorksController extends Controller
         // get data not set for worker
         if ($request->dateCheck) {
             $today = $request->dateCheck;
+
         } else {
             $today = date('Y-m-d');
         }
-        // get lịch hôm nay hoặc lịch chọn ngày
+        $oldday2=Carbon::now();
+        $dc2 =$oldday2->subDay(1)->isoFormat('YYYY-MM-D');
+
         $dien_nuoc = Work::where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)
             ->where('date_book', '=', $today)
             ->get();
+
+        $dien_nuoc_cu =  Work::where('kind_work', '=', 0)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
         $dien_lanh =   Work::where('kind_work', '=', 1)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
+
+            $dien_lanh_cu =  Work::where('kind_work', '=', 1)
             ->where('status_cus', '=', 0)
-            ->where('date_book', '=', $today)
+            ->where('date_book', '=',$dc2)
             ->get();
         $do_go     =    Work::where('kind_work', '=', 2)
-            ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 2)
-                    ->where('date_book', '=', $today);
-            })
-            ->where('status_cus', '=', 0)
-            ->get();
-        $nlmt      =   Work::where('kind_work', '=', 3)
-            ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 3)
-                    ->where('date_book', '=', $today);
-            })->where('status_cus', '=', 0)
-            ->get();
-        $xay_dung  =    Work::where('kind_work', '=', 4)
-            ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 4)
-                    ->where('date_book', '=', $today);
-            })->where('status_cus', '=', 0)
-            ->get();
-        $tai_xe    =    Work::where('kind_work', '=', 5)
-            ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 5)
-                    ->where('date_book', '=', $today);
-            })->where('status_cus', '=', 0)
-            ->get();
-        $co_khi    =    Work::where('kind_work', '=', 6)
-            ->where('status_cus', '=', 0)
-            ->orWhere(function ($query) use ($today) {
-                $query->where('kind_work', '=', 6)
-                    ->where('date_book', '=', $today);
-            })->where('status_cus', '=', 0)
-            ->get();
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
 
-        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
+        $do_go_cu =  Work::where('kind_work', '=', 2)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
+        $nlmt      =   Work::where('kind_work', '=', 3)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
+
+        $nlmt_cu =  Work::where('kind_work', '=', 3)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
+        $xay_dung  =    Work::where('kind_work', '=', 4)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
+        $xay_dung_cu =  Work::where('kind_work', '=', 4)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
+        $tai_xe    =    Work::where('kind_work', '=', 5)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
+        $tai_xe_cu =  Work::where('kind_work', '=', 5)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
+        $co_khi    =    Work::where('kind_work', '=', 6)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=', $today)
+        ->get();
+        $co_khi_cu =  Work::where('kind_work', '=',6)
+        ->where('status_cus', '=', 0)
+        ->where('date_book', '=',$dc2)
+        ->get();
+        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi) + count($dien_nuoc_cu) + count($dien_lanh_cu) + count($do_go_cu) + count($nlmt_cu) + count($xay_dung_cu) + count($tai_xe_cu) + count($co_khi_cu);
         $dataWork = [
             'dien_nuoc' => $dien_nuoc,
-            'dien_nuoc_cu'=>$dien_nuoc,
+            'dien_nuoc_cu' => $dien_nuoc_cu,
             'dien_lanh' => $dien_lanh,
+            'dien_lanh_cu' => $dien_lanh_cu,
             'do_go' => $do_go,
+            'do_go_cu' => $do_go_cu,
             'nlmt' => $nlmt,
+            'nlmt_cu' => $nlmt_cu,
             'xay_dung' => $xay_dung,
+            'xay_dung_cu' => $xay_dung_cu,
             'tai_xe' => $tai_xe,
+            'tai_xe_cu' => $tai_xe_cu,
             'co_khi' => $co_khi,
+            'co_khi_cu' => $co_khi_cu,
             'dem_lich' => $number,
         ];
         return response()->json($dataWork);

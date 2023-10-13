@@ -3,8 +3,8 @@
 use App\Http\Controllers\Api\DistrictController;
 
 use App\Http\Controllers\Api\Web\WorksController;
-use App\Http\Controllers\Api\Web\WorkersController;
-
+use App\Http\Controllers\Api\Mobile\WorkersController;
+// use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +26,7 @@ Route::prefix('web')->group(function () {
     Route::post('push-online','App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
     Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
     Route::prefix('update')->group(function(){
-        Route::post('worker','App\Http\Controllers\Api\Web\WorkersController@updateWorker');
+        Route::post('worker','App\Http\Controllers\Api\Mobile\WorkersController@updateWorker');
         Route::post('work','App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-continue','App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('work-assignment-return','App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');

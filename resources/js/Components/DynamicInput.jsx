@@ -56,6 +56,7 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             return item;
         });
         setData( updatedData);
+
     };
     const handleDelete = (id) => {
         const updatedData = data.filter((item) => item.id !== id);

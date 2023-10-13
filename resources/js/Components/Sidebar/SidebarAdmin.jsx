@@ -27,8 +27,8 @@ export function SidebarAdmin() {
     setSidebarOpen(!isSidebarOpen);
   };
   const sidebarStyles = isSidebarOpen
-    ? 'w-32 transition-all duration-300 transform translate-x-64' // mở
-    : 'w-64 transition-all duration-300 transform -translate-x-32'; // đóng
+    ? 'w-64 transition-all duration-300 transform translate-x-0' // mở
+    : 'w-0 transition-all duration-300 transform -translate-x-64'; // đóng
   return (
     <div>
         <Bars3Icon className="cursor-pointer w-7 h-7" onClick={toggleSidebar} fill="black" />

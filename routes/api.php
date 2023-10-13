@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DistrictController;
-// use App\Http\Controllers\Api\Web\PushOnlineController;
+
 use App\Http\Controllers\Api\Web\WorksController;
 use App\Http\Controllers\Api\Mobile\WorkersController;
 // use App\Http\Controllers\Api\WorksAssignmentController;
@@ -57,6 +57,7 @@ Route::prefix('web')->group(function () {
     });
 
 });
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

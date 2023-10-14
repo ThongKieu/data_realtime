@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class WorksAssignmentController extends Controller
 {
@@ -483,11 +484,117 @@ class WorksAssignmentController extends Controller
             }
         }
     }
-    public function CheckByAdmin(Request $request) {
-        $val = validator(
-            ['ac'=>'required']
-        );
-        
+    public function checkWorkByAdmin(Request $request) {
+        // dd($request);
+        if($request->ac)
+        {
+            $per = DB::table('users')->where('id','=',$request->auth_id)->value('permission');
+
+            if($per == 1)
+            {
+                switch ( $request->ac)
+                {
+                    case 0:
+                        // Update seri number
+                        WorksAssignment::where('id','=',$request->id)->update(['seri_number'=>$request->seri_number]);
+                        return 'Update Seri';
+                    case 1:
+                        // thay đổi thông tin bảo hành
+                        WorksAssignment::where('id','=',$request->id)->update(['seri_number'=>$request->seri_number]);
+                        return 'Update Seri';
+                    case 2:
+                        $bill_imag = WorksAssignment::where('id','=',$request->id)->value('bill_imag');
+                        $path = $request->bill_imag_del.',';
+                        $set_update_bill = preg_replace($path,'',$bill_imag);
+                        return $set_update_bill;
+                        if($request->hasFile('bill_imag_new'))
+                        {
+
+                            foreach ($request->file('bill_imag_new') as $file) {
+                                $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
+                                $file->move('assets/images/work_assignment/' . $request->id, $name);
+                                $set_update_bill = $set_update_bill . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
+                            }
+                        }
+                        return $set_update_bill;
+                        WorksAssignment::where('id','=',$request->id)->update(['bill_imag'=>$set_update_bill]);
+                        if (File::exists(public_path($request->bill_imag_del))) {
+                            File::delete(public_path($request->bill_imag_del));
+                            // Thông báo rằng hình đã được xóa
+                            return "Update Bill Image Done!";
+                        } else {
+                            // Thông báo nếu không tìm thấy hình ảnh
+                            return "Không tìm thấy hình ảnh!";
+                        }
+
+                    case 3:
+                        $seri_imag = WorksAssignment::where('id','=',$request->id)->value('seri_imag');
+                        $path = $request->seri_imag_del.',';
+                        $set_update_seri = explode($path,$seri_imag);
+                        if($request->hasFile('seri_imag_new'))
+                        {
+
+                            foreach ($request->file('seri_imag_new') as $file) {
+                                $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
+                                    $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
+                                    $set_update_seri = $set_update_seri.'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri .',';
+
+                            }
+                        }
+                        WorksAssignment::where('id','=',$request->id)->update(['bill_imag'=>$set_update_seri]);
+                        if (File::exists(public_path($request->seri_imag_del))) {
+                            File::delete(public_path($request->seri_imag_del));
+                            // Thông báo rằng hình đã được xóa
+                            return "Update Bill Image Done!";
+                        } else {
+                            // Thông báo nếu không tìm thấy hình ảnh
+                            return "Không tìm thấy hình ảnh!";
+                        }
+                    case 4:
+                        //Work content
+                        Work::where('id','=',$request->id_cus)->update(['work_content'=>$request->work_content]);
+                        return 'Update Work_content';
+                    case 5:
+                        //Phone number
+                        Work::where('id','=',$request->id_cus)->update(['phone_number'=>$request->phone_number]);
+                        return 'Update phone_number';
+                    case 6:
+                        //Address
+                        Work::where('id','=',$request->id_cus)->update(['street'=>$request->street]);
+                        return 'Update street';
+                    case 7:
+                        //District
+                        Work::where('id','=',$request->id_cus)->update(['district'=>$request->district]);
+                        return 'Update district';
+                        case 8:
+                        //Name Cus
+
+                            Work::where('id','=',$request->id_cus)->update(['work_note'=>$request->name_cus]);
+                            return 'Update name_cus';
+                        case 9:
+                        //Work Note
+                        Work::where('id','=',$request->id_cus)->update(['work_note'=>$request->work_note]);
+                        return 'Update Work_note';
+                        case 10:
+                        // Incoming money
+                         WorksAssignment::where('id','=',$request->id)->update(['income_total'=>$request->income_total]);
+                        return 'Update income_total';
+                        case 11:
+                            // Spend money
+                             WorksAssignment::where('id','=',$request->id)->update(['spend_total'=>$request->spend_total]);
+                            return 'Update spend_total';
+                    default:
+                        return 'Done With None Update !';
+
+                }
+            }
+            return "101 : Permission Denied !!!!";
+        }
+        else
+        {
+            return "Can't update!";
+        }
+
     }
 
 }

@@ -221,7 +221,7 @@ const navListItems = [
         icon: UserCircleIcon,
         href: "search",
     },
-   
+
 ];
 
 function NavList({ active = false }) {
@@ -236,13 +236,12 @@ function NavList({ active = false }) {
         </NavLink>
     ));
     return (
-        <>
             <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
                 {renderItems}
-                <IdentificationIcon className="h-[18px] w-[18px]" />
+                <IdentificationIcon className="h-[18px] w-[18px] " />
                 <Menu allowHover>
                     <MenuHandler>
-                        <Typography as="span" className="text-sm font-normal">
+                        <Typography as="span" className="text-sm font-normal cursor-pointer">
                             Thông Tin Thợ
                         </Typography>
                     </MenuHandler>
@@ -262,13 +261,10 @@ function NavList({ active = false }) {
                         </NavLink>
                     </MenuList>
                 </Menu>
-            </ul> 
-            <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center ml-3" >
-
                 <ListBulletIcon className="h-[18px] w-[18px] " />
                 <Menu allowHover>
                     <MenuHandler>
-                        <Typography as="span" className="text-sm font-normal">
+                        <Typography as="span" className="text-sm font-normal cursor-pointer">
                             Khác
                         </Typography>
                     </MenuHandler>
@@ -288,7 +284,8 @@ function NavList({ active = false }) {
                         </NavLink>
                     </MenuList>
                 </Menu>
-            </ul></>
+            </ul>
+
 
     );
 }

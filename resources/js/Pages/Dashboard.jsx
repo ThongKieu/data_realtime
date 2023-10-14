@@ -36,7 +36,7 @@ import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { Divider } from "@mui/material";
-
+import AdminCheckDialog from "@/Components/DialogThuChi";
 import WorkForm from "@/Components/WorkForm";
 import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {
@@ -1218,6 +1218,45 @@ function Dashboard({ auth }) {
                 const filteredArray = parts?.filter(
                     (item) => item.trim() !== ""
                 );
+                const [imageVt1, setImageVt1] = useState(filteredArray);
+                const handleImageVtDelete = async (index) => {
+                    const deletedImage = imageVt1[index];
+                    const newImages = imageVt1.filter((_, i) => i !== index);
+                    setImageVt1(newImages);
+                    const dataBody ={
+                        auth_id: auth.user.id,
+                        ac: 2,
+                        id: params.row.id,
+                        bill_imag_del: deletedImage,
+                    }
+                    const jsonData = JSON.stringify(dataBody);
+                    console.log('00000',typeof jsonData);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/check-admin",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            }
+                        );
+
+                        if (response.ok) {
+                            console.log(
+                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                            );
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi yêu cầu xóa hình:",
+                                response.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
+                    }
+                };
                 // ------------- cắt chuỗi hình phieu thu----------------
                 const hinhPt = hasData.seri_imag;
                 const partsPt = hinhPt?.split(",");
@@ -1226,10 +1265,43 @@ function Dashboard({ auth }) {
                 );
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
 
-                const handleImageDelete = (index) => {
-                    const newImages = imagePt1?.filter((_, i) => i !== index);
-
+                const handleImagePtDelete = async (index) => {
+                    const deletedImage = imagePt1[index];
+                    const newImages = imagePt1.filter((_, i) => i !== index);
                     setImagePt1(newImages);
+                    const dataBody ={
+                        auth_id: auth.user.id,
+                        ac: 2,
+                        id: params.row.id,
+                        bill_imag_del: deletedImage,
+                    }
+                    const jsonData = JSON.stringify(dataBody);
+                    console.log('00000',typeof jsonData);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/check-admin",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            }
+                        );
+
+                        if (response.ok) {
+                            console.log(
+                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                            );
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi yêu cầu xóa hình:",
+                                response.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
+                    }
                 };
 
                 return (
@@ -1335,165 +1407,18 @@ function Dashboard({ auth }) {
                                     onClick={handleOpenAdminCheck}
                                 />
                             </div>
-                            <DialogBody divider>
-                                <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
-                                    <div className="w-full p-2 text-sm border border-green-500 ">
-                                        <div>
-                                            <span>Nhân Viên:</span>
-                                            <i className="pl-1">
-                                                {params.row.sort_name}
-                                            </i>
-                                            <i>_</i>
-                                            <i className="pl-1">
-                                                {params.row.worker_name}
-                                            </i>
-                                            <i>_</i>
-                                            <i className="pl-1">
-                                                {params.row.add_worker}
-                                            </i>
-                                        </div>
-                                        <div>
-                                            <span>Số Điện Thoại:</span>
-                                            <i className="pl-1">094444444</i>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center w-full text-sm border border-green-500 ">
-                                        <div className="w-full text-center">
-                                            <span>Số Phiếu Thu:</span>
-                                            <i>
-                                                {addDot(params.row.seri_number)}
-                                            </i>{" "}
-                                            <br />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row justify-between w-full mb-5 text-sm">
-                                    <div className="flex-1 p-2 border border-green-500">
-                                        <i>
-                                            <u>Nội Dung Bảo Hành:</u>
-                                        </i>
-                                        <p className="text-center">
-                                            Không có thông tin bảo hành !
-                                        </p>
-                                    </div>
-                                    <div className="flex-1 p-2 border border-green-500 border-x-0">
-                                        <i>
-                                            <u> Hình Vật Tư:</u>
-                                        </i>
-                                        <div className="text-center">
-                                            <input
-                                                id="image_Vt"
-                                                type="file"
-                                                accept=".jpg, .jpeg, .png"
-                                                onChange={handleFileChangeVt}
-                                                multiple
-                                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                disabled={isAllowed}
-                                            />
-                                            {filteredArray == "" ||
-                                            filteredArray == null ? (
-                                                <i>(Không Có Hình)</i>
-                                            ) : (
-                                                <div className="flex flex-wrap">
-                                                    {filteredArray?.map(
-                                                        (item, index) => (
-                                                            <Card>
-                                                                <img
-                                                                    key={index}
-                                                                    className="object-cover object-center w-1/2 p-1 rounded-lg shadow-xl"
-                                                                    src={`${host}${item}`}
-                                                                    alt="nature image"
-                                                                />
-                                                            </Card>
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 p-2 border border-green-500">
-                                        <i>
-                                            <u>Hình Phiếu Thu:</u>
-                                        </i>
-                                        <div className="text-center">
-                                            <input
-                                                id="image_Vt"
-                                                type="file"
-                                                accept=".jpg, .jpeg, .png"
-                                                onChange={handleFileChangeVt}
-                                                multiple
-                                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                disabled={isAllowed}
-                                            />
-                                            {imagePt1 == "" ||
-                                            imagePt1 == null ? (
-                                                <i>(Không Có Hình)</i>
-                                            ) : (
-                                                <div className="grid w-full grid-cols-2 gap-4">
-                                                    {imagePt1.map(
-                                                        (item, index) => (
-                                                            <Card
-                                                                key={index}
-                                                                className="border border-green-500 "
-                                                            >
-                                                                <XMarkIcon
-                                                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                                                    onClick={() =>
-                                                                        handleImageDelete(
-                                                                            index
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <img
-                                                                    src={`${host}${item}`}
-                                                                    alt="nature image"
-                                                                />
-                                                            </Card>
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <Card className="flex flex-row justify-between w-full px-5 py-2 text-sm border">
-                                        {dataRadio.map((result, index) => (
-                                            <Radio
-                                                key={index}
-                                                id={result.id}
-                                                name={result.name}
-                                                label={result.label}
-                                                value={result.value}
-                                                checked={
-                                                    params.row.kind_work ==
-                                                    result.value
-                                                }
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                        ))}
-                                    </Card>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 shadow-none"
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận Thông Tin
-                                        </Button>
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
+                            <AdminCheckDialog
+                                params={params}
+                                addDot={addDot}
+                                handleFileChangeVt={handleFileChangeVt}
+                                imageVt1={imageVt1}
+                                host={host}
+                                handleImageVtDelete={(index)=>{handleImageVtDelete(index)}}
+                                handleImagePtDelete={(index)=>{handleImagePtDelete(index)}}
+                                imagePt1={imagePt1}
+                                handleChange={handleChange}
+                                cardExpires={cardExpires}
+                            />
                         </Dialog>
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <Dialog open={openThuHoi} handler={handleOpenThuHoi}>

@@ -59,7 +59,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -94,7 +94,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -129,7 +129,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -164,7 +164,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -199,7 +199,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -235,7 +235,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct"
                 ]
             );
         $co_khi = DB::table('works_assignments')
@@ -270,7 +270,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                 ]
             );
 

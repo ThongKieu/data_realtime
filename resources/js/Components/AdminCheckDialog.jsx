@@ -5,13 +5,14 @@ import {
     Typography,
     DialogBody,
     Radio,
+    IconButton,
+    Input,
 } from "@material-tailwind/react";
-import {
-    XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { Divider } from "@mui/material";
+import { XMarkIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { Divider, Hidden } from "@mui/material";
 import WorkForm from "./WorkForm";
-function AdminCheckDialog ({
+import { useState } from "react";
+function AdminCheckDialog({
     params,
     addDot,
     handleFileChangeVt,
@@ -25,6 +26,8 @@ function AdminCheckDialog ({
     vatCard,
     isAllowed,
 }) {
+    const [activePt, setActivePt] = useState(true);
+    const handleSetActive = () => setActivePt(!activePt);
     return (
         <DialogBody divider>
             <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
@@ -39,14 +42,29 @@ function AdminCheckDialog ({
                     </div>
                     <div>
                         <span>Số Điện Thoại:</span>
-                        <i className="pl-1">094444444</i>
+                        <i className="pl-1">{params.row.phone_ct}</i>
                     </div>
                 </div>
-                <div className="flex items-center w-full text-sm border border-green-500 ">
-                    <div className="w-full text-center">
-                        <span>Số Phiếu Thu:</span>
-                        <i>{addDot(params.row.seri_number)}</i> <br />
-                    </div>
+                <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">
+                    <span>Số Phiếu Thu:</span>
+                    <Input
+                        type="text"
+                        value={params.row.seri_number}
+                        disabled={activePt}
+                        labelProps={{
+                            className: "hidden",
+                        }}
+                        className="border"
+                    />
+                    {activePt === true ? (
+                        <IconButton variant="text" onClick={handleSetActive}>
+                            <PencilSquareIcon className="w-5 h-5" />
+                        </IconButton>
+                    ) : (
+                        <IconButton variant="text" onClick={handleSetActive}>
+                            <XMarkIcon className="w-5 h-5" />
+                        </IconButton>
+                    )}
                 </div>
             </div>
             <div className="flex flex-row justify-between w-full mb-5 text-sm">
@@ -140,7 +158,6 @@ function AdminCheckDialog ({
                 handleChange={handleChange}
                 vatCard={vatCard}
             >
-
                 <Divider className="pt-2" />
                 <div className="flex flex-row justify-center pt-2">
                     <Typography className="font-medium text-red-700">
@@ -158,6 +175,6 @@ function AdminCheckDialog ({
             </WorkForm>
         </DialogBody>
     );
-};
+}
 
 export default AdminCheckDialog;

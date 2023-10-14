@@ -36,7 +36,7 @@ import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { Divider } from "@mui/material";
-import AdminCheckDialog from "@/Components/DialogThuChi";
+import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import WorkForm from "@/Components/WorkForm";
 import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {

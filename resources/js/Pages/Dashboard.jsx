@@ -1271,9 +1271,9 @@ function Dashboard({ auth }) {
                     setImagePt1(newImages);
                     const dataBody ={
                         auth_id: auth.user.id,
-                        ac: 2,
+                        ac: 3,
                         id: params.row.id,
-                        bill_imag_del: deletedImage,
+                        seri_imag_del: deletedImage,
                     }
                     const jsonData = JSON.stringify(dataBody);
                     console.log('00000',typeof jsonData);

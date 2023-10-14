@@ -508,7 +508,7 @@ class WorksAssignmentController extends Controller
                         {
                             if($request->bill_imag_del == $set_update_bill[$i])
                             {
-                                $set_update_bill[$i] ='';
+                                $set_update_bill[$i] = null;
                             }
                             $path = $path . $set_update_bill[$i].',';
                         }
@@ -535,13 +535,13 @@ class WorksAssignmentController extends Controller
 
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-                        
+
                         $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                         $path = '';
-                        
+
                         for($i=0;$i< count($set_update_seri);$i++)
                         {
-                            if($request->bill_imag_del == $set_update_seri[$i])
+                            if($request->seri_imag_del == $set_update_seri[$i])
                             {
                                 $set_update_seri[$i] ='';
                             }
@@ -555,7 +555,7 @@ class WorksAssignmentController extends Controller
                                 $set_update_seri = $set_update_seri . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
                             }
                         }
-                        WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $set_update_seri]);
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $path]);
                         if (File::exists(public_path($request->seri_imag_del))) {
                             File::delete(public_path($request->seri_imag_del));
                             // Thông báo rằng hình đã được xóa

@@ -46,14 +46,11 @@ function AdminCheckDialog({
                     </div>
                 </div>
                 <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">
-                    <span>Số Phiếu Thu:</span>
                     <Input
                         type="text"
                         value={params.row.seri_number}
                         disabled={activePt}
-                        labelProps={{
-                            className: "hidden",
-                        }}
+                       label="Số Phiếu Thu"
                         className="border"
                     />
                     {activePt === true ? (

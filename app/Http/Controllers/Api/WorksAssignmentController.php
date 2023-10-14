@@ -436,7 +436,12 @@ class WorksAssignmentController extends Controller
                 }
                 // $serializedArr1 = json_encode($file_na);
                 // dd($file_na);
-                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
+                $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
+                if ($check_ima != null) {
+                    $file_na = $check_ima.$file_na;
+                } else {
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
+                }
             }
 
             if ($request->hasFile('bill_imag')) {
@@ -449,13 +454,18 @@ class WorksAssignmentController extends Controller
                 }
                 // $serializedArr = json_encode($files);
                 // dd($serializedArr);
+                $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
+                if ($check_ima != null) {
+                    $file_na = $check_ima.$file_na;
+                } else {
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $file_na]);
+                }
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,
                         'real_note' => $request->real_note,
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
-                        'bill_imag' => $files,
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
@@ -504,13 +514,11 @@ class WorksAssignmentController extends Controller
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                         $path = '';
                         $set_update_bill = explode(',', $bill_imag);
-                        for($i=0;$i< count($set_update_bill);$i++)
-                        {
-                            if($request->bill_imag_del == $set_update_bill[$i])
-                            {
-                                $set_update_bill[$i] ='';
+                        for ($i = 0; $i < count($set_update_bill); $i++) {
+                            if ($request->bill_imag_del == $set_update_bill[$i]) {
+                                $set_update_bill[$i] = null;
                             }
-                            $path = $path . $set_update_bill[$i].',';
+                            $path = $path . $set_update_bill[$i] . ',';
                         }
                         // $set_update_bill = implode($set_update_bill);
                         // return $path;
@@ -535,17 +543,14 @@ class WorksAssignmentController extends Controller
 
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-                        
-                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                         $path = '';
-                        
-                        for($i=0;$i< count($set_update_seri);$i++)
-                        {
-                            if($request->bill_imag_del == $set_update_seri[$i])
-                            {
-                                $set_update_seri[$i] ='';
+                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
+
+                        for ($i = 0; $i < count($set_update_seri); $i++) {
+                            if ($request->seri_imag_del == $set_update_seri[$i]) {
+                                $set_update_seri[$i] = null;
                             }
-                            $path = $path . $set_update_seri[$i].',';
+                            $path = $path . $set_update_seri[$i] . ',';
                         }
                         if ($request->hasFile('seri_imag_new')) {
 
@@ -555,11 +560,11 @@ class WorksAssignmentController extends Controller
                                 $set_update_seri = $set_update_seri . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
                             }
                         }
-                        WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $set_update_seri]);
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $path]);
                         if (File::exists(public_path($request->seri_imag_del))) {
                             File::delete(public_path($request->seri_imag_del));
                             // Thông báo rằng hình đã được xóa
-                            return "Update Bill Image Done!";
+                            return "Update Seri Image Done!";
                         } else {
                             // Thông báo nếu không tìm thấy hình ảnh
                             return "Không tìm thấy hình ảnh!";

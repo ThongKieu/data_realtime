@@ -227,4 +227,4 @@ const SpendingDialogWrapper = ({
         </Dialog>
     );
 };
-export  default{ButtonBar1,AdminCheckDialogWrapper,ThuHoiDialogWrapper,SpendingDialogWrapper};
+export default{ButtonBar1,AdminCheckDialogWrapper,ThuHoiDialogWrapper,SpendingDialogWrapper};

@@ -8,13 +8,15 @@ import {
     Dialog,
     DialogHeader,
     DialogBody,
-    Textarea,
     DialogFooter,
     Input,
     Tooltip,
     Spinner,
     IconButton,
-    Radio,
+    Menu,
+    MenuHandler,
+    MenuList,
+    MenuItem,
 } from "@material-tailwind/react";
 // -------
 import { DataGrid } from "@mui/x-data-grid";
@@ -30,23 +32,24 @@ import {
     ClipboardDocumentListIcon,
     ArrowUpTrayIcon,
     XMarkIcon,
+    EllipsisVerticalIcon,
+    TicketIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { Divider } from "@mui/material";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
-import WorkForm from "@/Components/WorkForm";
-import DynamicTwoInput from "@/Components/DynamicInput";
-import { ThoDialog } from "@/Components/LichChuaPhanDialog";
-import { ReasonDialog } from "@/Components/LichChuaPhanDialog";
-import { ThuHoiDialog } from "@/Components/LichChuaPhanDialog";
+import {
+    ThoDialog,
+    KhaoSatDialog,
+    ReasonDialog,
+    ThuHoiDialog,
+} from "@/Components/LichChuaPhanDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/LichChuaPhanDialog";
 
-
 // ----
-
 
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
@@ -1211,94 +1214,54 @@ function Dashboard({ auth }) {
                         console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
-
+                const classButtonDaPhan = 'w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white'
                 return (
                     <div>
                         <div className="flex">
-                            {check_admin ? (
-                                <Tooltip content="Admin Check">
-                                    <Button
-                                        className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                        onClick={handleOpenAdminCheck}
-                                        disabled={isButtonDisabled(
-                                            auth.user.permission,
-                                            1
-                                        )}
-                                        variant="outlined"
-                                    >
-                                        <EyeIcon />
-                                    </Button>
-                                </Tooltip>
-                            ) : (
-                                <div className="flex w-full">
-                                    {spending || income ? (
-                                        <>
-                                            <Tooltip content="Nhập Thu Chi">
-                                                <ArrowUpTrayIcon
-                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                                    onClick={
-                                                        handleOpenSpending_total
-                                                    }
-                                                />
-                                            </Tooltip>{" "}
-                                            <Tooltip content="Admin Check">
-                                                <Button
-                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                                    onClick={
-                                                        handleOpenAdminCheck
-                                                    }
-                                                    disabled={isButtonDisabled(
-                                                        auth.user.permission,
-                                                        1
-                                                    )}
-                                                    variant="outlined"
-                                                >
-                                                    <EyeIcon />
-                                                </Button>
-                                            </Tooltip>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Tooltip content="Nhập Thu Chi">
-                                                <ArrowUpTrayIcon
-                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                                    onClick={
-                                                        handleOpenSpending_total
-                                                    }
-                                                />
-                                            </Tooltip>
-
-                                            <Tooltip content="Thu Hồi Lịch">
-                                                <ArrowPathIcon
-                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                                    onClick={handleOpenThuHoi}
-                                                />
-                                            </Tooltip>
-                                            <Tooltip content="Báo hủy">
-                                                <TrashIcon
-                                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                    onClick={handleOpenHuy}
-                                                />
-                                            </Tooltip>
-                                            <Tooltip content="Admin Check">
-                                                <Button
-                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                                    onClick={
-                                                        handleOpenAdminCheck
-                                                    }
-                                                    disabled={isButtonDisabled(
-                                                        auth.user.permission,
-                                                        1
-                                                    )}
-                                                    variant="outlined"
-                                                >
-                                                    <EyeIcon />
-                                                </Button>
-                                            </Tooltip>
-                                        </>
+                            <Tooltip content="Nhập Thu Chi">
+                                <ArrowUpTrayIcon
+                                    className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan}`}
+                                    onClick={handleOpenSpending_total}
+                                />
+                            </Tooltip>
+                            <Tooltip content="Admin Check">
+                                <Button
+                                    className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan}`}
+                                    onClick={handleOpenAdminCheck}
+                                    disabled={isButtonDisabled(
+                                        auth.user.permission,
+                                        1
                                     )}
-                                </div>
-                            )}
+                                    variant="outlined"
+                                >
+                                    <EyeIcon />
+                                </Button>
+                            </Tooltip>
+                            <Menu allowHover>
+                                <MenuHandler>
+                                    <EllipsisVerticalIcon className="w-6 h-6 pt-2 cursor-pointer" />
+                                </MenuHandler>
+                                <MenuList className="flex justify-between">
+                                    <Tooltip content="Thu Hồi Lịch">
+                                        <ArrowPathIcon
+                                            className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
+                                            onClick={handleOpenThuHoi}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Báo hủy">
+                                        <TrashIcon
+                                            className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
+                                            onClick={handleOpenHuy}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content="Khảo Sát">
+                                        <TicketIcon
+                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                            onClick={handleOpenHuy}
+                                        />
+                                    </Tooltip>
+                                </MenuList>
+                            </Menu>
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <Dialog
@@ -1346,6 +1309,13 @@ function Dashboard({ auth }) {
                             handleOpenHuy={handleOpenHuy}
                             setWorkNote={setWorkNote}
                             handleSentDeleteDone={handleSentDeleteDone}
+                        />
+                        {/*----------------------------- dialog form Huy ----------- */}
+                        <KhaoSatDialog
+                            openKS={openHuy}
+                            handleOpenKS={handleOpenHuy}
+                            setWorkNote={setWorkNote}
+                            handleSentKS={handleSentDeleteDone}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <Dialog

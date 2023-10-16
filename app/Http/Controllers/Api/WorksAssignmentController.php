@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\CheckWorkByAdminController;
+use App\Http\Controllers\Api\Web\QuoteFlowController;
 use App\Http\Controllers\Controller;
 use App\Models\QuoteFlow;
 use App\Models\Work;
@@ -377,7 +378,7 @@ class WorksAssignmentController extends Controller
     {
        
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlow::addAuto($request->id, $request->auth_id);   
+        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);   
 
         if ($up == 200) {
             return 'Delete work done !';

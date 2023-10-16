@@ -360,37 +360,7 @@ class WorksAssignmentController extends Controller
 
         return response()->json('Hủy Thành Công!');
     }
-    // public function updateWorkAss(Request $request)
-    // {
-    //     $id_cus =  WorksAssignment::where('id', '=', $request->id)->value('id_cus');
-    //     if ($request->ac) {
-    //         switch ($request->ac) {
-    //             case ('1'):
-    //                 $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content, 'work_note' => $request->work_note, 'street' => $request->street, 'district' => $request->district, 'phone_number' => $request->phone_number]);
-    //                 if ($request->warranties != null) {
-    //                 }
-    //                 $content = Work::where('id', '=', $id_cus)->update(['work_content' => $request->work_content]);
-    //                 break;
-    //             case ('tobeConti'):
-    //                 $content = Work::where('id', '=', $id_cus)->update(['work_note' => $request->work_note]);
-    //                 break;
-    //             case ('3'):
-    //                 $content = Work::where('id', '=', $id_cus)->update(['street' => $request->street]);
-    //                 break;
-    //             case ('4'):
-    //                 $content = Work::where('id', '=', $id_cus)->update(['district' => $request->district]);
-    //                 break;
-    //             case ('5'):
-    //                 $content = Work::where('id', '=', $id_cus)->update(['phone_number' => $request->phone_number]);
-    //                 break;
-    //         }
-    //         if (isset($content)) {
-    //             return response()->json('Update Work done !!! ');
-    //         }
-    //         return response()->json('Update Work fail !!!!!!!!!');
-    //     }
-    //     return response()->json('Non Action !');
-    // }
+   
     public function insertCancleBook(Request $request)
     {
         $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
@@ -439,6 +409,7 @@ class WorksAssignmentController extends Controller
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
                 if ($check_ima != null) {
                     $file_na = $check_ima.$file_na;
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
                 } else {
                     WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
                 }
@@ -456,9 +427,10 @@ class WorksAssignmentController extends Controller
                 // dd($serializedArr);
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                 if ($check_ima != null) {
-                    $file_na = $check_ima.$file_na;
+                    $files = $check_ima.$files;
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
                 } else {
-                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $file_na]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
                 }
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([

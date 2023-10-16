@@ -9,35 +9,42 @@ function QuoteFlow({auth}) {
 
     const [isLoading, setIsLoading] = useState(true);
     const rows = [
-        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35,age2: 35, },
        
       ];
     const [infoBook, setInfoBook] =useState(rows);
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
+        { field: 'id', headerName: 'ID', width: 30 },
         {
           field: 'firstName',
-          headerName: 'First name',
-          width: 150,
+          headerName: 'Nội dung công việc',
+          width: 250,
           editable: true,
         },
         {
           field: 'lastName',
-          headerName: 'Last name',
+          headerName: 'Ngày Đăng ký',
           width: 150,
           editable: true,
         },
         {
           field: 'age',
-          headerName: 'Age',
+          headerName: 'Tên khách',
           type: 'number',
           width: 110,
           editable: true,
         },
         {
+          field: 'age2',
+          headerName: 'Địa chỉ',
+          type: 'number',
+          width: 250,
+          editable: true,
+        },
+        {
           field: 'fullName',
-          headerName: 'Full name',
+          headerName: 'Địa chỉ',
           description: 'This column has a value getter and is not sortable.',
           sortable: false,
           width: 160,
@@ -68,14 +75,14 @@ function QuoteFlow({auth}) {
                         "grid w-full grid-flow-col mt-1 text-white rounded-none"
                     }
                 >
-                    {isLoading ? (
+                    {/* {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
                             <p className="pl-2 text-center text-black">
                                 Loading...
                             </p>
                         </div>
-                    ) : (
+                    ) : ( */}
                         <Box sx={{ height: 400, width: '100%' }}>
                         <DataGrid
                           rows={rows}
@@ -88,11 +95,11 @@ function QuoteFlow({auth}) {
                             },
                           }}
                           pageSizeOptions={[30]}
-                          checkboxSelection
+                          // checkboxSelection
                           disableRowSelectionOnClick
                         />
                       </Box>
-                    )}
+                    {/* )} */}
                     </Card>
    
     </AuthenticatedLayout>

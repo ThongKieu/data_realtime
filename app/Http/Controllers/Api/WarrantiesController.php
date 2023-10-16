@@ -159,7 +159,7 @@ class WarrantiesController extends Controller
 
         $data = Warranties::where('id_work_has','=',$id)->get();
         if($data->count()>0){
-            return response()->json($data);
+            return response()->json(['data'=>$data]);
         }
         else
             return response()->json("Không BH");

@@ -36,7 +36,7 @@ import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { Divider } from "@mui/material";
-
+import AdminCheckDialog from "@/Components/DialogThuChi";
 import WorkForm from "@/Components/WorkForm";
 import DynamicTwoInput from "@/Components/DynamicInput";
 function Dashboard({ auth }) {
@@ -267,6 +267,15 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+
+    // hàm thêm dấu chấm trong chuỗi
+    function addDot(num) {
+        if (num) {
+            const str = num.toString();
+            const result = str.slice(0, 2) + "." + str.slice(2);
+            return result;
+        }
+    }
     const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
 
     // ---------- Dialog ------------------------
@@ -1126,11 +1135,8 @@ function Dashboard({ auth }) {
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        dataInput: isDataChanged,
+                        // dataInput: isDataChanged,
                     };
-                    console.log("dadasdadsa", typeof isDataChanged);
-                    console.log("dadasdadsa", isDataChanged);
-                    console.log("tung log", isDataChanged[1].warranty_time + 'tung log');
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;
                     const data_1 = {
@@ -1144,13 +1150,13 @@ function Dashboard({ auth }) {
                             image_Pt,
                             image_Vt
                         );
-                        // handleValueBh();
+                        handleValueBh();
                         console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
                         console.log("cardExpires data_1", data_1);
                     }
-                    // handleOpenSpending_total();
+                    handleOpenSpending_total();
                 };
                 const handleThuHoi = async (e) => {
                     e.preventDefault();
@@ -1201,7 +1207,103 @@ function Dashboard({ auth }) {
                         handleSubmit: handleUpdateThuChi,
                     },
                 ];
+                // Điều kiện các nút chức năng
                 const check_admin = params.row.status_admin_check === 1;
+                const spending = params.row.spending_total;
+                const income = params.row.income_total;
+                // ------------- cắt chuỗi hình phieu mua vat tu ----------------
+                const hasData = params.row;
+                const data = hasData.bill_imag;
+                const parts = data?.split(",");
+                const filteredArray = parts?.filter(
+                    (item) => item.trim() !== ""
+                );
+                const [imageVt1, setImageVt1] = useState(filteredArray);
+                const handleImageVtDelete = async (index) => {
+                    const deletedImage = imageVt1[index];
+                    const newImages = imageVt1.filter((_, i) => i !== index);
+                    setImageVt1(newImages);
+                    const dataBody ={
+                        auth_id: auth.user.id,
+                        ac: 2,
+                        id: params.row.id,
+                        bill_imag_del: deletedImage,
+                    }
+                    const jsonData = JSON.stringify(dataBody);
+                    console.log('00000',typeof jsonData);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/check-admin",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            }
+                        );
+
+                        if (response.ok) {
+                            console.log(
+                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                            );
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi yêu cầu xóa hình:",
+                                response.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
+                    }
+                };
+                // ------------- cắt chuỗi hình phieu thu----------------
+                const hinhPt = hasData.seri_imag;
+                const partsPt = hinhPt?.split(",");
+                const filteredImgPt = partsPt?.filter(
+                    (item) => item.trim() !== ""
+                );
+                const [imagePt1, setImagePt1] = useState(filteredImgPt);
+
+                const handleImagePtDelete = async (index) => {
+                    const deletedImage = imagePt1[index];
+                    const newImages = imagePt1.filter((_, i) => i !== index);
+                    setImagePt1(newImages);
+                    const dataBody ={
+                        auth_id: auth.user.id,
+                        ac: 2,
+                        id: params.row.id,
+                        bill_imag_del: deletedImage,
+                    }
+                    const jsonData = JSON.stringify(dataBody);
+                    console.log('00000',typeof jsonData);
+                    try {
+                        const response = await fetch(
+                            "api/web/update/check-admin",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            }
+                        );
+
+                        if (response.ok) {
+                            console.log(
+                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                            );
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi yêu cầu xóa hình:",
+                                response.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
+                    }
+                };
+
                 return (
                     <div>
                         <div className="flex">
@@ -1221,37 +1323,72 @@ function Dashboard({ auth }) {
                                 </Tooltip>
                             ) : (
                                 <div className="flex w-full">
-                                    <Tooltip content="Admin Check">
-                                        <Button
-                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
-                                            onClick={handleOpenAdminCheck}
-                                            disabled={isButtonDisabled(
-                                                auth.user.permission,
-                                                1
-                                            )}
-                                            variant="outlined"
-                                        >
-                                            <EyeIcon />
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip content="Thu Hồi Lịch">
-                                        <ArrowPathIcon
-                                            className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                            onClick={handleOpenThuHoi}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Hủy Lịch">
-                                        <TrashIcon
-                                            className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                            onClick={handleOpenHuy}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content="Nhập Thu Chi">
-                                        <ArrowUpTrayIcon
-                                            className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                            onClick={handleOpenSpending_total}
-                                        />
-                                    </Tooltip>
+                                    {spending || income ? (
+                                        <>
+                                            <Tooltip content="Nhập Thu Chi">
+                                                <ArrowUpTrayIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                                    onClick={
+                                                        handleOpenSpending_total
+                                                    }
+                                                />
+                                            </Tooltip>{" "}
+                                            <Tooltip content="Admin Check">
+                                                <Button
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                                    onClick={
+                                                        handleOpenAdminCheck
+                                                    }
+                                                    disabled={isButtonDisabled(
+                                                        auth.user.permission,
+                                                        1
+                                                    )}
+                                                    variant="outlined"
+                                                >
+                                                    <EyeIcon />
+                                                </Button>
+                                            </Tooltip>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Tooltip content="Nhập Thu Chi">
+                                                <ArrowUpTrayIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                                    onClick={
+                                                        handleOpenSpending_total
+                                                    }
+                                                />
+                                            </Tooltip>
+
+                                            <Tooltip content="Thu Hồi Lịch">
+                                                <ArrowPathIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                                    onClick={handleOpenThuHoi}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip content="Báo hủy">
+                                                <TrashIcon
+                                                    className="w-8 h-8 p-1 mr-2 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                    onClick={handleOpenHuy}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip content="Admin Check">
+                                                <Button
+                                                    className="w-8 h-8 p-1 mr-2 text-blue-500 border border-blue-500 rounded cursor-pointer "
+                                                    onClick={
+                                                        handleOpenAdminCheck
+                                                    }
+                                                    disabled={isButtonDisabled(
+                                                        auth.user.permission,
+                                                        1
+                                                    )}
+                                                    variant="outlined"
+                                                >
+                                                    <EyeIcon />
+                                                </Button>
+                                            </Tooltip>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -1270,102 +1407,18 @@ function Dashboard({ auth }) {
                                     onClick={handleOpenAdminCheck}
                                 />
                             </div>
-                            <DialogBody divider>
-                                <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
-                                    <div className="w-full p-2 text-sm border border-green-500 ">
-                                        <div>
-                                            <span>Tên thợ:</span>
-                                            <i className="pl-1">Nguyễn Văn A</i>
-                                        </div>
-                                        <div>
-                                            <span>Mã NV:</span>
-                                            <i className="pl-1">A01</i>
-                                        </div>
-                                        <div>
-                                            <span>Số Điện Thoại:</span>
-                                            <i className="pl-1">094444444</i>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center w-full text-sm border border-green-500 ">
-                                        <div className="w-full text-center">
-                                            <span>Số Phiếu Thu:</span>
-                                            <i>15.222</i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row justify-between w-full mb-5 text-sm">
-                                    <div className="flex-1 p-2 border border-green-500">
-                                        <i>
-                                            <u>Nội Dung Bảo Hành:</u>
-                                        </i>
-                                        <p className="text-center">
-                                            Không có thông tin bảo hành !
-                                        </p>
-                                    </div>
-                                    <div className="flex-1 p-2 border border-green-500 border-x-0">
-                                        <i>
-                                            <u> Hình Vật Tư:</u>
-                                        </i>
-                                        <div className="text-center">
-                                            <i>(Không Có Hình)</i>
-                                            <img
-                                                src={params.row.bill_imag}
-                                                alt=""
-                                                srcset=""
-                                                className="h-full w-50"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 p-2 border border-green-500">
-                                        <i>
-                                            <u>Hình Phiếu Thu:</u>
-                                        </i>
-                                        <div className="text-center">
-                                            <i>(Không Có Hình)</i>
-                                            <img
-                                                src={params.row.bill_imag}
-                                                alt=""
-                                                srcset=""
-                                                className="h-full w-50"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                >
-                                    <Card className="flex flex-row justify-between w-full px-5 py-2 text-sm border">
-                                        {dataRadio.map((result, index) => (
-                                            <Radio
-                                                key={index}
-                                                id={result.id}
-                                                name={result.name}
-                                                label={result.label}
-                                                value={result.value}
-                                                checked={result.checked}
-                                                onChange={handleChange}
-                                                className="w-1 h-1 p-1"
-                                            />
-                                        ))}
-                                    </Card>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row justify-center pt-2">
-                                        <Typography className="font-medium text-red-700">
-                                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại
-                                            Trước Khi Xác Nhận!!
-                                        </Typography>
-                                        <Button
-                                            size="sm"
-                                            className="px-3 py-2 mx-4 shadow-none"
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận Thông Tin
-                                        </Button>
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
+                            <AdminCheckDialog
+                                params={params}
+                                addDot={addDot}
+                                handleFileChangeVt={handleFileChangeVt}
+                                imageVt1={imageVt1}
+                                host={host}
+                                handleImageVtDelete={(index)=>{handleImageVtDelete(index)}}
+                                handleImagePtDelete={(index)=>{handleImagePtDelete(index)}}
+                                imagePt1={imagePt1}
+                                handleChange={handleChange}
+                                cardExpires={cardExpires}
+                            />
                         </Dialog>
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <Dialog open={openThuHoi} handler={handleOpenThuHoi}>

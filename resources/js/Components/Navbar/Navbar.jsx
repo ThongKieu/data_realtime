@@ -20,6 +20,7 @@ import {
     PowerIcon,
     Bars2Icon,
     IdentificationIcon,
+    ListBulletIcon,
 } from "@heroicons/react/24/outline";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
@@ -127,27 +128,7 @@ function ProfileMenu({ propauthprofile }) {
                     />
                 </svg>
             </NavLink>
-            <NavLink
-                href={route("logout")}
-                method="POST"
-                as="button"
-                className="mr-4 ml-2 cursor-pointer py-1.5 font-medium "
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6 text-red-500"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
-                    />
-                </svg>
-            </NavLink>
+
             <Menu
                 open={isMenuOpen}
                 handler={setIsMenuOpen}
@@ -170,9 +151,8 @@ function ProfileMenu({ propauthprofile }) {
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
-                            className={`h-3 w-3 transition-transform ${
-                                isMenuOpen ? "rotate-180" : ""
-                            }`}
+                            className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
+                                }`}
                         />
                     </Button>
                 </MenuHandler>
@@ -194,7 +174,7 @@ function ProfileMenu({ propauthprofile }) {
                                 as="span"
                                 variant="small"
                                 className="font-normal"
-                                // color={isLastItem ? "red" : "inherit"}
+                            // color={isLastItem ? "red" : "inherit"}
                             >
                                 Thông Tin Tài Khoản
                             </Typography>
@@ -215,7 +195,7 @@ function ProfileMenu({ propauthprofile }) {
                                 as="span"
                                 variant="small"
                                 className="font-normal"
-                                // color={isLastItem ? "red" : "inherit"}
+                            // color={isLastItem ? "red" : "inherit"}
                             >
                                 Sign Out
                             </Typography>
@@ -241,6 +221,7 @@ const navListItems = [
         icon: UserCircleIcon,
         href: "search",
     },
+
 ];
 
 function NavList({ active = false }) {
@@ -255,32 +236,57 @@ function NavList({ active = false }) {
         </NavLink>
     ));
     return (
-        <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-            {renderItems}
-            <IdentificationIcon className="h-[18px] w-[18px]" />
-            <Menu allowHover>
-                <MenuHandler>
-                    <Typography as="span" className="text-sm font-normal">
-                        Thông Tin Thợ
-                    </Typography>
-                </MenuHandler>
-                <MenuList className="block">
-                    <NavLink
-                        href={route("locationWorker")}
-                        className="font-normal"
-                    >
-                        <MenuItem className="gap-2 text-black lg:rounded-full">
-                            Vị trí Thợ
-                        </MenuItem>
-                    </NavLink>
-                    <NavLink href={route("WorkerMain")} className="font-normal">
-                        <MenuItem className="gap-2 text-black lg:rounded-full">
+            <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
+                {renderItems}
+                <IdentificationIcon className="h-[18px] w-[18px] " />
+                <Menu allowHover>
+                    <MenuHandler>
+                        <Typography as="span" className="text-sm font-normal cursor-pointer">
                             Thông Tin Thợ
-                        </MenuItem>
-                    </NavLink>
-                </MenuList>
-            </Menu>
-        </ul>
+                        </Typography>
+                    </MenuHandler>
+                    <MenuList className="block">
+                        <NavLink
+                            href={route("locationWorker")}
+                            className="font-normal"
+                        >
+                            <MenuItem className="gap-2 text-black lg:rounded-full">
+                                Vị trí Thợ
+                            </MenuItem>
+                        </NavLink>
+                        <NavLink href={route("WorkerMain")} className="font-normal">
+                            <MenuItem className="gap-2 text-black lg:rounded-full">
+                                Thông Tin Thợ
+                            </MenuItem>
+                        </NavLink>
+                    </MenuList>
+                </Menu>
+                <ListBulletIcon className="h-[18px] w-[18px] " />
+                <Menu allowHover>
+                    <MenuHandler>
+                        <Typography as="span" className="text-sm font-normal cursor-pointer">
+                            Khác
+                        </Typography>
+                    </MenuHandler>
+                    <MenuList className="block">
+                        <NavLink
+                            href={route("quoteflow")}
+                            className="font-normal"
+                        >
+                            <MenuItem className="gap-2 text-black lg:rounded-full">
+                                Thông tin Báo giá
+                            </MenuItem>
+                        </NavLink>
+                        <NavLink href={route("WorkerMain")} className="font-normal">
+                            <MenuItem className="gap-2 text-black lg:rounded-full">
+                                Thông Tin Sản Phẩm
+                            </MenuItem>
+                        </NavLink>
+                    </MenuList>
+                </Menu>
+            </ul>
+
+
     );
 }
 
@@ -315,7 +321,8 @@ function NavbarDefault({ propauth }) {
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
             if (socketDelete) {
-            socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+                socketDelete.emit("addWorkTo_Server", jsonData.num_can)
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }

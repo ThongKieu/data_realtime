@@ -159,18 +159,10 @@ class WarrantiesController extends Controller
 
         $data = Warranties::where('id_work_has','=',$id)->get();
         if($data->count()>0){
-            $output ='';
-            foreach($data as $item)
-            {
-                $time_warranties = WarrantiesController::timeWarranty($item->warranty_time,$item->unit);
-                // dd($time_warranties);
-                $output .='<li>'.$time_warranties. '<br> - '.$item->warranty_info.'</li>';
-            }
-            // dd($output);
-            return $output;
+            return response()->json($data);
         }
         else
-            return "Không BH";
+            return response()->json("Không BH");
     }
     public static function timeWarranty($time,$unit)
     {

@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class WorksAssignmentController extends Controller
 {
@@ -32,7 +33,7 @@ class WorksAssignmentController extends Controller
 
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
-            ->whereBetween('works_assignments.status_work', [0,3])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -43,6 +44,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -77,6 +79,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -111,6 +114,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -145,6 +149,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -179,6 +184,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -213,6 +219,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.status_admin_check",
                     "works_assignments.check_in",
@@ -247,6 +254,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.spending_total",
                     "works_assignments.income_total",
                     "works_assignments.bill_imag",
+                    "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
@@ -299,7 +307,7 @@ class WorksAssignmentController extends Controller
         // dd($request);
         $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('kind_worker');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1,'date_book'=>date('Y-m-d')]);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         // dd($id_worker);
         if ($number > 1) {
             $workHas = new WorksAssignment([
@@ -307,14 +315,14 @@ class WorksAssignmentController extends Controller
                 'id_worker' => $id_worker[0]['value'],
                 'id_phu' => $id_worker[1]['value'],
                 'real_note' => $work_note,
-                'admin_check'=>$request->auth_id,
+                'admin_check' => $request->auth_id,
             ]);
         } else {
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker[0]['value'],
                 'real_note' => $work_note,
-                'admin_check'=>$request->auth_id,
+                'admin_check' => $request->auth_id,
             ]);
         }
         $workHas->save();
@@ -339,18 +347,18 @@ class WorksAssignmentController extends Controller
     }
     public function returnWorkFromAss(Request $request)
     {
-        $note = $request->real_note . '-'. $request->worker_name.'- Đã Trả';
-        Work::where('id','=',$request->id_cus)->update(['status_cus'=>0,'work_note'=>$note]);
-        WorksAssignment::where('id','=',$request->id)->update(['status_work'=> 4]);
-        return response()-> json('Trả Lịch Thành Công!');
+        $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
+        Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
+        WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+        return response()->json('Trả Lịch Thành Công!');
     }
     public function cancleWorkFromAss(Request $request)
     {
         $note = $request->real_note;
-        Work::where('id','=',$request->id_cus)->update(['status_cus'=>2,'work_note'=>$note, 'member_read'=>$request->auth_id]);
-        WorksAssignment::where('id','=',$request->id)->update(['status_work'=> 5,'real_note'=>$note]);
+        Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
+        WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
 
-        return response()-> json('Hủy Thành Công!');
+        return response()->json('Hủy Thành Công!');
     }
     // public function updateWorkAss(Request $request)
     // {
@@ -424,10 +432,16 @@ class WorksAssignmentController extends Controller
                 foreach ($request->file('seri_imag') as $files_seri) {
                     $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
                     $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
-                    $file_na = 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri;
+                    $file_na = $file_na . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
                 }
-                $serializedArr = json_encode($file_na);
-                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $serializedArr]);
+                // $serializedArr1 = json_encode($file_na);
+                // dd($file_na);
+                $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
+                if ($check_ima != null) {
+                    $file_na = $check_ima.$file_na;
+                } else {
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
+                }
             }
 
             if ($request->hasFile('bill_imag')) {
@@ -438,23 +452,28 @@ class WorksAssignmentController extends Controller
                     $file->move('assets/images/work_assignment/' . $request->id, $name);
                     $files = $files . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
                 }
-                $serializedArr = json_encode($files);
-
+                // $serializedArr = json_encode($files);
+                // dd($serializedArr);
+                $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
+                if ($check_ima != null) {
+                    $file_na = $check_ima.$file_na;
+                } else {
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $file_na]);
+                }
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,
                         'real_note' => $request->real_note,
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
-                        'bill_imag' => $serializedArr,
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                    // if($request->datainput != null || $request->datainput != '')
-                    // {
-                    //     dd($request->datainput);
+                // if($request->datainput != null || $request->datainput != '')
+                // {
+                //     dd($request->datainput);
 
-                    // }
+                // }
                 return response()->json('Update work with image !!!');
             } else {
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
@@ -475,5 +494,121 @@ class WorksAssignmentController extends Controller
             }
         }
     }
+    public function checkWorkByAdmin(Request $request)
+    {
+        // dd($request);
+        if ($request->ac) {
+            $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
 
+            if ($per == 1) {
+                switch ($request->ac) {
+                    case 0:
+                        // Update seri number
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
+                        return 'Update Seri';
+                    case 1:
+                        // thay đổi thông tin bảo hành
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
+                        return 'Update Seri';
+                    case 2:
+                        $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
+                        $path = '';
+                        $set_update_bill = explode(',', $bill_imag);
+                        for ($i = 0; $i < count($set_update_bill); $i++) {
+                            if ($request->bill_imag_del == $set_update_bill[$i]) {
+                                $set_update_bill[$i] = null;
+                            }
+                            $path = $path . $set_update_bill[$i] . ',';
+                        }
+                        // $set_update_bill = implode($set_update_bill);
+                        // return $path;
+                        if ($request->hasFile('bill_imag_new')) {
+
+                            foreach ($request->file('bill_imag_new') as $file) {
+                                $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
+                                $file->move('assets/images/work_assignment/' . $request->id, $name);
+                                $path = $path . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
+                            }
+                        }
+                        // return $set_update_bill;
+                        WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $path]);
+                        if (File::exists(public_path($request->bill_imag_del))) {
+                            File::delete(public_path($request->bill_imag_del));
+                            // Thông báo rằng hình đã được xóa
+                            return "Update Bill Image Done!";
+                        } else {
+                            // Thông báo nếu không tìm thấy hình ảnh
+                            return "Không tìm thấy hình ảnh!";
+                        }
+
+                    case 3:
+                        $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
+                        $path = '';
+                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
+
+                        for ($i = 0; $i < count($set_update_seri); $i++) {
+                            if ($request->seri_imag_del == $set_update_seri[$i]) {
+                                $set_update_seri[$i] = null;
+                            }
+                            $path = $path . $set_update_seri[$i] . ',';
+                        }
+                        if ($request->hasFile('seri_imag_new')) {
+
+                            foreach ($request->file('seri_imag_new') as $files_seri) {
+                                $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
+                                $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
+                                $set_update_seri = $set_update_seri . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
+                            }
+                        }
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $path]);
+                        if (File::exists(public_path($request->seri_imag_del))) {
+                            File::delete(public_path($request->seri_imag_del));
+                            // Thông báo rằng hình đã được xóa
+                            return "Update Seri Image Done!";
+                        } else {
+                            // Thông báo nếu không tìm thấy hình ảnh
+                            return "Không tìm thấy hình ảnh!";
+                        }
+                    case 4:
+                        //Work content
+                        Work::where('id', '=', $request->id_cus)->update(['work_content' => $request->work_content]);
+                        return 'Update Work_content';
+                    case 5:
+                        //Phone number
+                        Work::where('id', '=', $request->id_cus)->update(['phone_number' => $request->phone_number]);
+                        return 'Update phone_number';
+                    case 6:
+                        //Address
+                        Work::where('id', '=', $request->id_cus)->update(['street' => $request->street]);
+                        return 'Update street';
+                    case 7:
+                        //District
+                        Work::where('id', '=', $request->id_cus)->update(['district' => $request->district]);
+                        return 'Update district';
+                    case 8:
+                        //Name Cus
+
+                        Work::where('id', '=', $request->id_cus)->update(['work_note' => $request->name_cus]);
+                        return 'Update name_cus';
+                    case 9:
+                        //Work Note
+                        Work::where('id', '=', $request->id_cus)->update(['work_note' => $request->work_note]);
+                        return 'Update Work_note';
+                    case 10:
+                        // Incoming money
+                        WorksAssignment::where('id', '=', $request->id)->update(['income_total' => $request->income_total]);
+                        return 'Update income_total';
+                    case 11:
+                        // Spend money
+                        WorksAssignment::where('id', '=', $request->id)->update(['spend_total' => $request->spend_total]);
+                        return 'Update spend_total';
+                    default:
+                        return 'Done With None Update !';
+                }
+            }
+            return "101 : Permission Denied !!!!";
+        } else {
+            return "Can't update!";
+        }
+    }
 }

@@ -1,7 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import React, { useEffect, useState, useRef } from "react";
-import Select from "react-select";
 import {
     Button,
     Card,
@@ -36,9 +35,19 @@ import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { Divider } from "@mui/material";
-import AdminCheckDialog from "@/Components/DialogThuChi";
+import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import WorkForm from "@/Components/WorkForm";
 import DynamicTwoInput from "@/Components/DynamicInput";
+import { ThoDialog } from "@/Components/LichChuaPhanDialog";
+import { ReasonDialog } from "@/Components/LichChuaPhanDialog";
+import { ThuHoiDialog } from "@/Components/LichChuaPhanDialog";
+import SpendingDialog from "@/Components/SpendingDialog";
+import { HuyDialog } from "@/Components/LichChuaPhanDialog";
+
+
+// ----
+
+
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
@@ -621,69 +630,21 @@ function Dashboard({ auth }) {
                                 />
                             </Tooltip>
                         </div>
-                        <Dialog
+                        <ThoDialog
                             open={openTho}
-                            handler={handleOpenTho}
-                            className="lg:min-w-52"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lựa Chọn Thợ</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenTho}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <Select
-                                    value={selectPhanTho}
-                                    options={infoWorkerDashboard}
-                                    onChange={(selectedValue) =>
-                                        handleSelectChange(selectedValue)
-                                    }
-                                    isMulti
-                                    className="border-none shadow-none"
-                                />
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="green"
-                                    onClick={handleSentPhanTho}
-                                >
-                                    Phân Thợ
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-                        <Dialog open={open} handler={handleOpen}>
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lý do hủy</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpen}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <div className="grid gap-6">
-                                    {/* <input type="text" value={params.id} /> */}
-                                    <Textarea
-                                        label="Lý do hủy"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleSentDelete}
-                                >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
+                            handleOpenTho={handleOpenTho}
+                            selectPhanTho={selectPhanTho}
+                            infoWorkerDashboard={infoWorkerDashboard}
+                            handleSelectChange={handleSelectChange}
+                            handleSentPhanTho={handleSentPhanTho}
+                        />
+                        <ReasonDialog
+                            open={open}
+                            handleOpen={handleOpen}
+                            params={params}
+                            setWorkNote={setWorkNote}
+                            handleSentDelete={handleSentDelete}
+                        />
                     </div>
                 );
             },
@@ -840,7 +801,6 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
-                const shouldDisplayIconButton = params.row.worker_name === null;
                 return (
                     <div>
                         <p onClick={handleOpenWorkerNameTableRight}>
@@ -999,64 +959,11 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
-
-                const dataRadio = [
-                    {
-                        id: "ThoDN",
-                        name: "XNTTNV",
-                        label: "Điện Nước",
-                        value: "0",
-                        checked: '{formData.kind_work === "0"}',
-                    },
-                    {
-                        id: "ThoDL",
-                        name: "XNTTNV",
-                        label: "Điện Lạnh",
-                        value: "1",
-                        checked: '{formData.kind_work === "1"}',
-                    },
-                    {
-                        id: "ThoDG",
-                        name: "XNTTNV",
-                        label: "Đồ Gỗ",
-                        value: "2",
-                        checked: '{formData.kind_work === "2"}',
-                    },
-                    {
-                        id: "ThoXD",
-                        name: "XNTTNV",
-                        label: "Xây Dựng",
-                        value: "3",
-                        checked: '{formData.kind_work === "3"}',
-                    },
-                    {
-                        id: "ThoNLMT",
-                        name: "XNTTNV",
-                        label: "Năng Lượng Mặt Trời",
-                        value: "4",
-                        checked: '{formData.kind_work === "4"}',
-                    },
-                    {
-                        id: "ThoVC",
-                        name: "XNTTNV",
-                        label: "Vận Chuyển",
-                        value: "5",
-                        checked: '{formData.kind_work === "5"}',
-                    },
-                    {
-                        id: "ThoHX",
-                        name: "XNTTNV",
-                        label: "Cơ Khí",
-                        value: "6",
-                        checked: '{formData.kind_work === "6"}',
-                    },
-                ];
                 // cho phep su dung cac nut
                 const isButtonDisabled = (permissionValue, valuePermiss) => {
                     return permissionValue !== valuePermiss;
                 };
                 // --------- thu chi ----------------------------
-
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const [selectedFiles, setSelectedFiles] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
@@ -1135,7 +1042,6 @@ function Dashboard({ auth }) {
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
-                        // dataInput: isDataChanged,
                     };
                     const image_Pt = document.getElementById("image_Pt").files;
                     const image_Vt = document.getElementById("image_Vt").files;
@@ -1223,14 +1129,14 @@ function Dashboard({ auth }) {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
                     setImageVt1(newImages);
-                    const dataBody ={
+                    const dataBody = {
                         auth_id: auth.user.id,
                         ac: 2,
                         id: params.row.id,
                         bill_imag_del: deletedImage,
-                    }
+                    };
                     const jsonData = JSON.stringify(dataBody);
-                    console.log('00000',typeof jsonData);
+                    console.log("00000", typeof jsonData);
                     try {
                         const response = await fetch(
                             "api/web/update/check-admin",
@@ -1245,7 +1151,8 @@ function Dashboard({ auth }) {
 
                         if (response.ok) {
                             console.log(
-                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                                "Hình đã được xóa thành công từ máy chủ",
+                                dataBody
                             );
                         } else {
                             console.error(
@@ -1269,14 +1176,14 @@ function Dashboard({ auth }) {
                     const deletedImage = imagePt1[index];
                     const newImages = imagePt1.filter((_, i) => i !== index);
                     setImagePt1(newImages);
-                    const dataBody ={
+                    const dataBody = {
                         auth_id: auth.user.id,
-                        ac: 2,
+                        ac: 3,
                         id: params.row.id,
-                        bill_imag_del: deletedImage,
-                    }
+                        seri_imag_del: deletedImage,
+                    };
                     const jsonData = JSON.stringify(dataBody);
-                    console.log('00000',typeof jsonData);
+                    console.log("00000", typeof jsonData);
                     try {
                         const response = await fetch(
                             "api/web/update/check-admin",
@@ -1291,7 +1198,8 @@ function Dashboard({ auth }) {
 
                         if (response.ok) {
                             console.log(
-                                "Hình đã được xóa thành công từ máy chủ",dataBody
+                                "Hình đã được xóa thành công từ máy chủ",
+                                dataBody
                             );
                         } else {
                             console.error(
@@ -1413,73 +1321,32 @@ function Dashboard({ auth }) {
                                 handleFileChangeVt={handleFileChangeVt}
                                 imageVt1={imageVt1}
                                 host={host}
-                                handleImageVtDelete={(index)=>{handleImageVtDelete(index)}}
-                                handleImagePtDelete={(index)=>{handleImagePtDelete(index)}}
+                                handleImageVtDelete={(index) => {
+                                    handleImageVtDelete(index);
+                                }}
+                                handleImagePtDelete={(index) => {
+                                    handleImagePtDelete(index);
+                                }}
                                 imagePt1={imagePt1}
                                 handleChange={handleChange}
                                 cardExpires={cardExpires}
+                                auth={auth}
                             />
                         </Dialog>
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
-                        <Dialog open={openThuHoi} handler={handleOpenThuHoi}>
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lý Do Thu Hồi</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenThuHoi}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <div className="grid gap-6">
-                                    <Textarea
-                                        label="Lý do thu hồi"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleThuHoi}
-                                >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
+                        <ThuHoiDialog
+                            openThuHoi={openThuHoi}
+                            handleOpenThuHoi={handleOpenThuHoi}
+                            setWorkNote={setWorkNote}
+                            handleThuHoi={handleThuHoi}
+                        />
                         {/*----------------------------- dialog form Huy ----------- */}
-                        <Dialog open={openHuy} handler={handleOpenHuy}>
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Lý do hủy</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenHuy}
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <div className="grid gap-6">
-                                    <Textarea
-                                        label="Lý do hủy"
-                                        className="shadow-none"
-                                        onChange={(e) =>
-                                            setWorkNote(e.target.value)
-                                        }
-                                    />
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="space-x-2">
-                                <Button
-                                    variant="gradient"
-                                    color="red"
-                                    onClick={handleSentDeleteDone}
-                                >
-                                    Xác nhận
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
+                        <HuyDialog
+                            openHuy={openHuy}
+                            handleOpenHuy={handleOpenHuy}
+                            setWorkNote={setWorkNote}
+                            handleSentDeleteDone={handleSentDeleteDone}
+                        />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <Dialog
                             open={openSpending_total}
@@ -1493,182 +1360,20 @@ function Dashboard({ auth }) {
                                     onClick={handleOpenSpending_total}
                                 />
                             </div>
-                            <DialogBody divider>
-                                <div className="flex justify-center w-full mb-4">
-                                    <Card className="flex flex-row w-[50%] border justify-between px-10">
-                                        <Radio
-                                            id="HT"
-                                            name="status_work"
-                                            label="Hoàn Thành"
-                                            value="0"
-                                            checked={!isAllowed} // Đảo ngược trạng thái, checked là true khi isAllowed là false
-                                            onChange={handleRadioChangeAllow}
-                                            className="w-1 h-1 p-1"
-                                        />
-                                        <Radio
-                                            id="MLT"
-                                            name="status_work"
-                                            label="Mai Làm Tiếp"
-                                            value="1"
-                                            checked={isAllowed} // checked là true khi isAllowed là true
-                                            onChange={handleRadioChangeAllow}
-                                            className="w-1 h-1 p-1"
-                                        />
-                                    </Card>
-                                </div>
-                                <WorkForm
-                                    cardExpires={cardExpires}
-                                    handleChange={handleChange}
-                                    vatCard={vatCard}
-                                    disabledAllowed={isAllowed}
-                                >
-                                    <div className="flex justify-between w-full my-2 text-sm">
-                                        <DynamicTwoInput
-                                            disabledAllowed={isAllowed}
-                                            sendDataToParent={
-                                                handleDataFromChild
-                                            }
-                                        />
-                                    </div>
-                                    <div className="flex justify-center gap-4 align-middle ">
-                                        <div className="w-full ">
-                                            <div className="flex justify-center w-full">
-                                                {vatCard ? (
-                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                        {params.row.bill_image}
-                                                    </Card>
-                                                ) : (
-                                                    <Button
-                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
-                                                        disabled={isAllowed}
-                                                    >
-                                                        <input
-                                                            id="image_Vt"
-                                                            type="file"
-                                                            accept=".jpg, .jpeg, .png"
-                                                            onChange={
-                                                                handleFileChangeVt
-                                                            }
-                                                            multiple
-                                                            className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                            disabled={isAllowed}
-                                                        />
-                                                        {previewImgVt ? (
-                                                            <i className="text-[10px]">
-                                                                (Hình Vật Tư)
-                                                            </i>
-                                                        ) : (
-                                                            <div className="flex flex-row">
-                                                                {previewImgVt.map(
-                                                                    (
-                                                                        preview,
-                                                                        index
-                                                                    ) => (
-                                                                        <img
-                                                                            key={
-                                                                                index
-                                                                            }
-                                                                            src={
-                                                                                preview
-                                                                            }
-                                                                            alt={`Preview ${index}`}
-                                                                            style={{
-                                                                                width: "100px",
-                                                                                height: "auto",
-                                                                                margin: "5px",
-                                                                            }}
-                                                                        />
-                                                                    )
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </Button>
-                                                )}
-                                                {vatCard ? (
-                                                    <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                        {params.row.bill_image}
-                                                    </Card>
-                                                ) : (
-                                                    <Button
-                                                        className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
-                                                        disabled={isAllowed}
-                                                    >
-                                                        <input
-                                                            id="image_Pt"
-                                                            type="file"
-                                                            accept=".jpg, .jpeg, .png"
-                                                            onChange={
-                                                                handleFileChangePt
-                                                            }
-                                                            multiple
-                                                            className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                            disabled={isAllowed}
-                                                        />
-                                                        <i className="text-[10px]">
-                                                            (Hình Phiếu Thu)
-                                                        </i>
-                                                        <div className="flex flex-row flex-wrap justify-center">
-                                                            {previewImgPt.map(
-                                                                (
-                                                                    preview,
-                                                                    index
-                                                                ) => (
-                                                                    <img
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        src={
-                                                                            preview
-                                                                        }
-                                                                        alt={`Preview ${index}`}
-                                                                        style={{
-                                                                            width: "100px",
-                                                                            height: "auto",
-                                                                            margin: "5px",
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </Button>
-                                                )}
-                                                <div className="p-1 ">
-                                                    <Input
-                                                        label="Số Phiếu Thu"
-                                                        id="seri_number"
-                                                        name="seri_number"
-                                                        value={
-                                                            cardExpires.seri_number
-                                                        }
-                                                        defaultValue="k pt"
-                                                        onChange={handleChange}
-                                                        // disabled="{disabledAllowed || isAllowedBH}"
-                                                        className="mr-1 w-[100%] shadow-none"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <Divider className="pt-2" />
-                                    <div className="flex flex-row-reverse pt-2">
-                                        {dataBtnChi.map((result) => (
-                                            <Button
-                                                key={result.id}
-                                                id={result.id}
-                                                size="sm"
-                                                className={
-                                                    `p-3 py-2 mx-4 ` +
-                                                    result.className
-                                                }
-                                                variant="outlined"
-                                                onClick={result.handleSubmit}
-                                            >
-                                                {result.content}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </WorkForm>
-                            </DialogBody>
+                            <SpendingDialog
+                                isAllowed={isAllowed}
+                                handleRadioChangeAllow={handleRadioChangeAllow}
+                                cardExpires={cardExpires}
+                                handleChange={handleChange}
+                                vatCard={vatCard}
+                                handleFileChangeVt={handleFileChangeVt}
+                                previewImgVt={previewImgVt}
+                                handleFileChangePt={handleFileChangePt}
+                                previewImgPt={previewImgPt}
+                                dataBtnChi={dataBtnChi}
+                                params={params}
+                                handleDataFromChild={handleDataFromChild}
+                            />
                         </Dialog>
                     </div>
                 );

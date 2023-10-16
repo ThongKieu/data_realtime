@@ -59,7 +59,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -94,7 +94,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -129,7 +129,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -164,7 +164,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -199,7 +199,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -235,7 +235,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct"
                 ]
             );
         $co_khi = DB::table('works_assignments')
@@ -270,7 +270,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker",
+                    "workers.add_worker","workers.phone_ct",
                 ]
             );
 
@@ -515,12 +515,15 @@ class WorksAssignmentController extends Controller
 
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-                        $path = '';
-                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
 
-                        for ($i = 0; $i < count($set_update_seri); $i++) {
-                            if ($request->seri_imag_del == $set_update_seri[$i]) {
-                                $set_update_seri[$i] = null;
+                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
+                        $path = '';
+
+                        for($i=0;$i< count($set_update_seri);$i++)
+                        {
+                            if($request->bill_imag_del == $set_update_seri[$i])
+                            {
+                                $set_update_seri[$i] ='';
                             }
                             $path = $path . $set_update_seri[$i] . ',';
                         }

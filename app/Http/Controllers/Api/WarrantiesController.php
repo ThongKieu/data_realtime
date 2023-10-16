@@ -154,10 +154,10 @@ class WarrantiesController extends Controller
         else
             return 'Không bảo hành';
     }
-    public static function getAllWarranties($id)
+    public static function getAllWarranties(Request $re)
     {
-
-        $data = Warranties::where('id_work_has','=',$id)->get();
+        // dd($re->all());
+        $data = Warranties::where('id_work_has','=',$re->id)->get();
         if($data->count()>0){
             return response()->json(['data'=>$data]);
         }

@@ -27,7 +27,7 @@ class QuoteFlowController extends Controller
             'id_work_has'=> $id_work_as,
             'staff_in_create_id'=>$auth_id,
         ]);
-        return 'Ok !';
+        return response()->json(['code'=>200]);
     }
     
 }

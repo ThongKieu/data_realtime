@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\CheckWorkByAdminController;
 use App\Http\Controllers\Api\Web\QuoteFlowController;
 use App\Http\Controllers\Controller;
-use App\Models\QuoteFlow;
+use App\Http\Controllers\Api\Web\QuoteFlowController;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
@@ -362,7 +362,7 @@ class WorksAssignmentController extends Controller
 
         return response()->json('Hủy Thành Công!');
     }
-   
+
     public function insertCancleBook(Request $request)
     {
         $id_cus = WorksAssignment::where('id', '=', $request->id)->value('id_cus');
@@ -376,9 +376,9 @@ class WorksAssignmentController extends Controller
     }
     public function insertQuoteFlow(Request $request)
     {
-       
+
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);   
+        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);
 
         if ($up == 200) {
             return 'Delete work done !';

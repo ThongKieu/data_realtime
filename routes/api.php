@@ -46,7 +46,7 @@ Route::prefix('web')->group(function () {
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties','App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
-        Route::post('/quote','App\Http\Controllers\Api\WarrantiesController@insertQuoteFlow');
+        Route::post('/quote','App\Http\Controllers\Api\WorksAssignmentController@insertQuoteFlow');
 
     });
     Route::prefix('quote')->group(function(){
@@ -68,7 +68,7 @@ Route::prefix('web')->group(function () {
     // worker
     Route::get('all-workers','App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
     Route::get('all-check-call-workers','App\Http\Controllers\Api\Web\CheckCallWorkerController@getAllCheckCallWorkers');
-    
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

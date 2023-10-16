@@ -6,6 +6,7 @@ use App\Imports\ImportCheckCallWorker;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\CheckCallWorker;
 
 class CheckCallWorkerController extends Controller
 {
@@ -18,5 +19,10 @@ class CheckCallWorkerController extends Controller
             return 'Failed';
         }
 
+    }
+    public function getAllCheckCallWorkers(Request $request)
+    {
+        $worker = CheckCallWorker::all();
+        return $worker;
     }
 }

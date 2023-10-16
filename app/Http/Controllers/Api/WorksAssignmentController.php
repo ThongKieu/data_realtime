@@ -439,6 +439,7 @@ class WorksAssignmentController extends Controller
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
                 if ($check_ima != null) {
                     $file_na = $check_ima.$file_na;
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
                 } else {
                     WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
                 }
@@ -456,9 +457,10 @@ class WorksAssignmentController extends Controller
                 // dd($serializedArr);
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                 if ($check_ima != null) {
-                    $file_na = $check_ima.$file_na;
+                    $files = $check_ima.$files;
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
                 } else {
-                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $file_na]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
                 }
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
                     ->update([

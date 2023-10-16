@@ -585,8 +585,7 @@ export function SidebarAdmin() {
             </Accordion>
           </List>
         </Card>)} */}
-        
-                                                                    
+  
     </div>
 
   );

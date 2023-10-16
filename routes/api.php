@@ -46,6 +46,7 @@ Route::prefix('web')->group(function () {
         Route::post('','App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('all','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties','App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
+        Route::post('/quote','App\Http\Controllers\Api\WarrantiesController@insertQuoteFlow');
 
     });
     Route::prefix('quote')->group(function(){

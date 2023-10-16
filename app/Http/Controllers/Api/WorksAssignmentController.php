@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\CheckWorkByAdminController;
 use App\Http\Controllers\Controller;
+use App\Models\QuoteFlow;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
@@ -372,6 +373,17 @@ class WorksAssignmentController extends Controller
         }
         return  'Delete Failse !';
     }
+    public function insertQuoteFlow(Request $request)
+    {
+       
+        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        $up     = QuoteFlow::addAuto($request->id, $request->auth_id);   
+
+        if ($up) {
+            return 'Delete work done !';
+        }
+        return  'Delete Failse !';
+    }
     public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {
@@ -562,7 +574,6 @@ class WorksAssignmentController extends Controller
                         return 'Update district';
                     case 8:
                         //Name Cus
-
                         Work::where('id', '=', $request->id_cus)->update(['work_note' => $request->name_cus]);
                         return 'Update name_cus';
                     case 9:

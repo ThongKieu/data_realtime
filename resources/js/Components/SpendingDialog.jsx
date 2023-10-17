@@ -5,6 +5,8 @@ import {
     DialogBody,
     Input,
     Radio,
+    Dialog,
+    DialogHeader
 } from "@material-tailwind/react"; // Thay thế 'your-ui-library' bằng thư viện UI của bạn
 import WorkForm from "./WorkForm";
 import DynamicTwoInput from "./DynamicInput";
@@ -24,10 +26,21 @@ const SpendingDialog = ({
     cardExpires,
     dataBtnChi,
     params,
-    handleDataFromChild
+    handleDataFromChild,
 }) => {
     return (
-
+        <Dialog
+            open={openSpending_total}
+            handler={handleOpenSpending_total}
+            className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
+        >
+            <div className="flex items-center justify-between">
+                <DialogHeader>Nhập Thu Chi</DialogHeader>
+                <XMarkIcon
+                    className="w-5 h-5 mr-3 cursor-pointer"
+                    onClick={handleOpenSpending_total}
+                />
+            </div>
             <DialogBody divider>
                 <div className="flex justify-center w-full mb-4">
                     <Card className="flex flex-row w-[50%] border justify-between px-10">
@@ -179,7 +192,7 @@ const SpendingDialog = ({
                     </div>
                 </WorkForm>
             </DialogBody>
-
+        </Dialog>
     );
 };
 

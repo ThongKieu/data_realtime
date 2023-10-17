@@ -19,7 +19,6 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
         setData([
-            ...data,
             {
                 id: newId,
                 warranty_time: 0,

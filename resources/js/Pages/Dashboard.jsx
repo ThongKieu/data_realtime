@@ -34,6 +34,7 @@ import {
     XMarkIcon,
     EllipsisVerticalIcon,
     TicketIcon,
+    CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
@@ -45,9 +46,9 @@ import {
     KhaoSatDialog,
     ReasonDialog,
     ThuHoiDialog,
-} from "@/Components/LichChuaPhanDialog";
+} from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
-import { HuyDialog } from "@/Components/LichChuaPhanDialog";
+import { HuyDialog } from "@/Components/ColumnRightDialog";
 
 // ----
 
@@ -78,6 +79,10 @@ function Dashboard({ auth }) {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
+        if (socketD) {
+            socketD.emit("pushOnline", message);
+            pushOn();
+        }
         setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
@@ -92,12 +97,6 @@ function Dashboard({ auth }) {
         };
     }, []);
     // --------------------------kiem tra socket io tai khoan online -----------------------------
-    useEffect(() => {
-        if (socketD) {
-            socketD.emit("pushOnline", message);
-            pushOn();
-        }
-    }, [socketD]);
 
     const pushOn = async (data) => {
         try {
@@ -118,10 +117,20 @@ function Dashboard({ auth }) {
         } catch (error) {}
     };
     // ---------------lay du lieu cong viec chua phan----------------------------------------------
-    const fetchData = async () => {
+    const fetchDataDemo = async (url) => {
         try {
-            const response = await fetch("api/web/works");
+            const response = await fetch(url);
             const jsonData = await response.json();
+            return jsonData;
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return null;
+        }
+    };
+    const fetchData = async () => {
+        const url = `api/web/works`;
+        const jsonData = await fetchDataDemo(url);
+        if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDNCu(jsonData.dien_nuoc_cu);
             setWorkDataDL(jsonData.dien_lanh);
@@ -130,16 +139,12 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
-        } catch (error) {
-            console.error("Error fetching data:", error);
         }
     };
     const fetchDateCheck = async (dateCheck) => {
-        try {
-            const response = await fetch(
-                `api/web/works?dateCheck=${dateCheck}`
-            );
-            const jsonData = await response.json();
+        const url = `api/web/works?dateCheck=${dateCheck}`;
+        const jsonData = await fetchDataDemo(url);
+        if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
@@ -147,16 +152,13 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
-            console.log("HDHDHDHDHD", jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
         }
     };
     // --------------------------- lay du lieu lich da phan ----------------------------------
     const fetchDataDaPhan = async () => {
-        try {
-            const response = await fetch("/api/web/work-assignment/all");
-            const jsonData = await response.json();
+        const url = `/api/web/work-assignment/all`;
+        const jsonData = await fetchDataDemo(url);
+        if (jsonData) {
             setWorkDataDN_done(jsonData.dien_nuoc_done);
             setWorkDataDL_done(jsonData.dien_lanh_done);
             setWorkDataDG_done(jsonData.do_go_done);
@@ -165,8 +167,6 @@ function Dashboard({ auth }) {
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
             setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching data:", error);
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -191,9 +191,9 @@ function Dashboard({ auth }) {
     });
     var heightScreenTV = screenSize.height;
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchDataDashboard = async (data) => {
+    const fetchUpdateData = async (data, url) => {
         try {
-            const res = await fetch("api/web/update/work", {
+            const res = await fetch(url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -202,10 +202,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                console.log("Sửa thong tin lịch chưa phân");
                 socketD?.emit("addWorkTo_Server", data);
-                console.log("socketD", socketD);
-                console.log("newSocket ahihi", newSocket);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -213,27 +210,13 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    const fetchDataDashboard = async (data) => {
+        const url = "api/web/update/work";
+        fetchUpdateData(data, url);
+    };
     const fetchDataWorkDone = async (data) => {
-        try {
-            const res = await fetch("api/web/update/work-continue", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (res.ok) {
-                console.log("Sửa thong tin lịch chưa phân");
-                socketD?.emit("addWorkTo_Server", data);
-                console.log("socketD", socketD);
-                console.log("newSocket ahihi", newSocket);
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data lỗi rồi:", error);
-        }
+        const url = "api/web/update/work-continue";
+        fetchUpdateData(data, url);
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
     const fetchDataUpdateThuchi = async (
@@ -245,7 +228,6 @@ function Dashboard({ auth }) {
         try {
             // Tạo một đối tượng FormData mới
             const formData = new FormData();
-
             // Lặp qua tất cả các cặp key-value trong đối tượng data và thêm chúng vào formData
             for (const key in data) {
                 formData.append(key, data[key]);
@@ -288,8 +270,6 @@ function Dashboard({ auth }) {
             return result;
         }
     }
-    const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 });
-
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
@@ -653,6 +633,7 @@ function Dashboard({ auth }) {
             },
         },
     ];
+
     // du lieu bang cong viec da phan ------------------------------------
     const columnsRight = [
         {
@@ -920,16 +901,20 @@ function Dashboard({ auth }) {
             cellClassName: "actions",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
-                const [openHuy, setOpenHuy] = useState(false);
-                const handleOpenHuy = () => setOpenHuy(!openHuy);
-                const [openThuHoi, setOpenThuHoi] = useState(false);
-                const handleOpenThuHoi = () => setOpenThuHoi(!openThuHoi);
-                const [openAdminCheck, setOpenAdminCheck] = useState(false);
-                const handleOpenAdminCheck = () =>
-                    setOpenAdminCheck(!openAdminCheck);
-                const [openUpdateThuChi, setOpenUpdateThuChi] = useState(false);
-                const handleOpenUpdateThuChi = () =>
-                    setOpenUpdateThuChi(!openUpdateThuChi);
+                const useToggle = (initialState) => {
+                    const [open, setOpen] = useState(initialState);
+                    const handleOpen = () => setOpen(!open);
+                    return [open, handleOpen];
+                };
+                // Sử dụng hàm useToggle
+                const [openHuy, handleOpenHuy] = useToggle(false);
+                const [openKS, handleOpenKS] = useToggle(false);
+                const [openThuHoi, handleOpenThuHoi] = useToggle(false);
+                const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);
+                const [openSpending_total, handleOpenSpending_total] =
+                    useToggle(false);
+                const [openUpdateThuChi, handleOpenUpdateThuChi] =
+                    useToggle(false);
                 const [work_note, setWorkNote] = useState();
                 const handleChange = (e) => {
                     const { name, value } = e.target;
@@ -962,37 +947,22 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
-                // cho phep su dung cac nut
-                const isButtonDisabled = (permissionValue, valuePermiss) => {
-                    return permissionValue !== valuePermiss;
-                };
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
+                const handleDataFromChild = (data) => setIsDataChanged(data);
                 const [selectedFiles, setSelectedFiles] = useState([]);
+
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
-                const [openSpending_total, setOpenSpending_total] =
-                    useState(false);
-                const handleOpenSpending_total = () =>
-                    setOpenSpending_total(!openSpending_total);
-                const handleDataFromChild = (data) => setIsDataChanged(data);
-                const handleFileChangeVt = (e) => {
+                const [previewImgKS, setPreviewImgKS] = useState([]);
+                const handleFileChange = (e, setImagePreview) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
-                    const previewsVt = files.map((file) =>
+                    const previews = files.map((file) =>
                         URL.createObjectURL(file)
                     );
-                    setPreviewImgVt(previewsVt);
+                    setImagePreview(previews);
                 };
-                const handleFileChangePt = (e) => {
-                    const files = Array.from(e.target.files);
-                    setSelectedFiles(files);
-                    const previewsPt = files.map((file) =>
-                        URL.createObjectURL(file)
-                    );
-                    setPreviewImgPt(previewsPt);
-                };
-                console.log("params >_<", params);
                 const vatCard = params.row.bill_image === null;
                 const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
                 const [valueRadio, setValueRadio] = useState("0");
@@ -1117,9 +1087,12 @@ function Dashboard({ auth }) {
                     },
                 ];
                 // Điều kiện các nút chức năng
-                const check_admin = params.row.status_admin_check === 1;
+                console.log(params, auth.user.permission);
+                const check_admin = params.row.status_admin_check == 1;
                 const spending = params.row.spending_total;
                 const income = params.row.income_total;
+                const DK1 = auth.user.permission != 1 ? "hidden" : "";
+                const DK2 = spending && income ? "hidden" : "";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
                 const data = hasData.bill_imag;
@@ -1139,7 +1112,6 @@ function Dashboard({ auth }) {
                         bill_imag_del: deletedImage,
                     };
                     const jsonData = JSON.stringify(dataBody);
-                    console.log("00000", typeof jsonData);
                     try {
                         const response = await fetch(
                             "api/web/update/check-admin",
@@ -1214,54 +1186,76 @@ function Dashboard({ auth }) {
                         console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
-                const classButtonDaPhan = 'w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white'
+                const classButtonDaPhan =
+                    "w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white";
                 return (
                     <div>
                         <div className="flex">
-                            <Tooltip content="Nhập Thu Chi">
-                                <ArrowUpTrayIcon
-                                    className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan}`}
-                                    onClick={handleOpenSpending_total}
-                                />
-                            </Tooltip>
-                            <Tooltip content="Admin Check">
-                                <Button
-                                    className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan}`}
-                                    onClick={handleOpenAdminCheck}
-                                    disabled={isButtonDisabled(
-                                        auth.user.permission,
-                                        1
-                                    )}
-                                    variant="outlined"
-                                >
-                                    <EyeIcon />
-                                </Button>
-                            </Tooltip>
-                            <Menu allowHover>
-                                <MenuHandler>
-                                    <EllipsisVerticalIcon className="w-6 h-6 pt-2 cursor-pointer" />
-                                </MenuHandler>
-                                <MenuList className="flex justify-between">
-                                    <Tooltip content="Thu Hồi Lịch">
-                                        <ArrowPathIcon
-                                            className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                            onClick={handleOpenThuHoi}
+                            {check_admin ? (
+                                <>
+                                    <Tooltip content="Nhập Thu Chi">
+                                        <CheckCircleIcon
+                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} `}
+                                            onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
-                                    <Tooltip content="Báo hủy">
-                                        <TrashIcon
-                                            className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                            onClick={handleOpenHuy}
+                                </>
+                            ) : (
+                                <>
+                                    <Tooltip content="Nhập Thu Chi">
+                                        <ArrowUpTrayIcon
+                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} `}
+                                            onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
-                                    <Tooltip content="Khảo Sát">
-                                        <TicketIcon
-                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                            onClick={handleOpenHuy}
-                                        />
+                                    <Tooltip content="Admin Check">
+                                        <Button
+                                            className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
+                                            onClick={handleOpenAdminCheck}
+                                            variant="outlined"
+                                        >
+                                            <EyeIcon />
+                                        </Button>
                                     </Tooltip>
-                                </MenuList>
-                            </Menu>
+                                    <Menu allowHover>
+                                        <MenuHandler>
+                                            <EllipsisVerticalIcon
+                                                className={`w-6 h-6 pt-2 cursor-pointer ${
+                                                    DK1 + DK2
+                                                }`}
+                                            />
+                                        </MenuHandler>
+                                        <MenuList className="flex justify-between">
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Thu Hồi Lịch">
+                                                    <ArrowPathIcon
+                                                        className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
+                                                        onClick={
+                                                            handleOpenThuHoi
+                                                        }
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Báo hủy">
+                                                    <TrashIcon
+                                                        className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
+                                                        onClick={handleOpenHuy}
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Khảo Sát">
+                                                    <TicketIcon
+                                                        className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                        onClick={handleOpenKS}
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </>
+                            )}
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <Dialog
@@ -1281,7 +1275,7 @@ function Dashboard({ auth }) {
                             <AdminCheckDialog
                                 params={params}
                                 addDot={addDot}
-                                handleFileChangeVt={handleFileChangeVt}
+                                handleFileChangeVt={(e) => handleFileChange(e, setPreviewImgVt)}
                                 imageVt1={imageVt1}
                                 host={host}
                                 handleImageVtDelete={(index) => {
@@ -1312,39 +1306,34 @@ function Dashboard({ auth }) {
                         />
                         {/*----------------------------- dialog form Huy ----------- */}
                         <KhaoSatDialog
-                            openKS={openHuy}
-                            handleOpenKS={handleOpenHuy}
+                            openKS={openKS}
+                            handleOpenKS={handleOpenKS}
                             setWorkNote={setWorkNote}
                             handleSentKS={handleSentDeleteDone}
+                            cardExpires={cardExpires}
+                            handleChange={handleChange}
+                            vatCard={vatCard}
+                            disabledAllowed={isAllowed}
+                            handleFileChange={(e) => handleFileChange(e, setPreviewImgKS)}
+                            previewImages={previewImgKS}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
-                        <Dialog
-                            open={openSpending_total}
-                            handler={handleOpenSpending_total}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>Nhập Thu Chi</DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenSpending_total}
-                                />
-                            </div>
-                            <SpendingDialog
-                                isAllowed={isAllowed}
-                                handleRadioChangeAllow={handleRadioChangeAllow}
-                                cardExpires={cardExpires}
-                                handleChange={handleChange}
-                                vatCard={vatCard}
-                                handleFileChangeVt={handleFileChangeVt}
-                                previewImgVt={previewImgVt}
-                                handleFileChangePt={handleFileChangePt}
-                                previewImgPt={previewImgPt}
-                                dataBtnChi={dataBtnChi}
-                                params={params}
-                                handleDataFromChild={handleDataFromChild}
-                            />
-                        </Dialog>
+                        <SpendingDialog
+                            openSpending_total={openSpending_total}
+                            handleOpenSpending_total={handleOpenSpending_total}
+                            isAllowed={isAllowed}
+                            handleRadioChangeAllow={handleRadioChangeAllow}
+                            cardExpires={cardExpires}
+                            handleChange={handleChange}
+                            vatCard={vatCard}
+                            handleFileChangeVt={(e) => handleFileChange(e, setPreviewImgVt)}
+                            previewImgVt={previewImgVt}
+                            handleFileChangePt={(e) => handleFileChange(e, setPreviewImgPt)}
+                            previewImgPt={previewImgPt}
+                            dataBtnChi={dataBtnChi}
+                            params={params}
+                            handleDataFromChild={handleDataFromChild}
+                        />
                     </div>
                 );
             },
@@ -1366,6 +1355,7 @@ function Dashboard({ auth }) {
         setSelectedDate(event.target.value);
     };
     // ----------------------------nut scrollView trong bang --------------------------
+    const DNCU = useRef(null);
     const DN = useRef(null);
     const DL = useRef(null);
     const DG = useRef(null);
@@ -1373,6 +1363,7 @@ function Dashboard({ auth }) {
     const XD = useRef(null);
     const VC = useRef(null);
     const HX = useRef(null);
+
     const scrollView = (ref) => {
         if (ref && ref.current) {
             ref.current.scrollIntoView({ behavior: "smooth" });
@@ -1384,41 +1375,49 @@ function Dashboard({ auth }) {
             id: "workDNCu",
             rowsDataGrid: workDataDNCu,
             contentDataGird: "Lịch Ngày Trước Chưa Xử Lý",
+            ref: DNCU,
         },
         {
             id: "workDN",
             rowsDataGrid: workDataDN,
             contentDataGird: "Điện Nước",
+            ref: DN,
         },
         {
             id: "workDL",
             rowsDataGrid: workDataDL,
             contentDataGird: "Điện Lạnh",
+            ref: DL,
         },
         {
             id: "workDG",
             rowsDataGrid: workDataDG,
             contentDataGird: "Đồ Gỗ",
+            ref: DG,
         },
         {
             id: "workNLMT",
             rowsDataGrid: workDataNLMT,
             contentDataGird: "Năng Lượng Mặt Trời",
+            ref: NLMT,
         },
         {
             id: "workXD",
             rowsDataGrid: workDataXD,
             contentDataGird: "Xây Dựng",
+            ref: XD,
         },
         {
             id: "workVC",
             rowsDataGrid: workDataVC,
             contentDataGird: "Vận Chuyển",
+            ref: VC,
         },
         {
             id: "workHX",
             rowsDataGrid: workDataHX,
             contentDataGird: "Cơ Khí",
+            ref: HX,
         },
     ];
     //------------------------------------data dataGrid---------------------------------------------
@@ -1460,13 +1459,14 @@ function Dashboard({ auth }) {
         },
     ];
     const dataBtnFixed = [
-        { id: 0, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
-        { id: 1, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
-        { id: 2, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
-        { id: 3, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
-        { id: 4, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
-        { id: 5, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
-        { id: 6, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
+        { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
+        { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
+        { id: 2, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
+        { id: 3, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
+        { id: 4, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
+        { id: 5, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
+        { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
+        { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
@@ -1493,12 +1493,14 @@ function Dashboard({ auth }) {
                                         </Typography>
                                         <Box>
                                             <DataGrid
+                                                ref={result.ref}
                                                 rows={result.rowsDataGrid}
                                                 columns={columns}
                                                 hideFooterPagination={true}
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
+                                                disableRowSelectionOnClick
                                             />
                                         </Box>
                                     </div>
@@ -1536,6 +1538,7 @@ function Dashboard({ auth }) {
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
+                                                disableRowSelectionOnClick
                                             />
                                         </Box>
                                     </div>

@@ -14,7 +14,7 @@ import {
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
-import { ThuHoiDialog } from "@/Components/LichChuaPhanDialog";
+import { ThuHoiDialog } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 const ButtonBar1 = ({
     check_admin,

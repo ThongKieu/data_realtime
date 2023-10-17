@@ -6,9 +6,11 @@ import {
     DialogBody,
     Textarea,
     DialogFooter,
+    Input,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
+import FileInput from "./FileInputImage";
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -156,7 +158,17 @@ const HuyDialog = ({
         </Dialog>
     );
 };
-const KhaoSatDialog = ({ openKS, handleOpenKS, setWorkNote, handleSentKS }) => {
+const KhaoSatDialog = ({
+    openKS,
+    handleOpenKS,
+    setWorkNote,
+    handleSentKS,
+    cardExpires,
+    handleChange,
+    disabledAllowed,
+    handleFileChange,
+    previewImages,
+}) => {
     return (
         <Dialog open={openKS} handler={handleOpenKS}>
             <div className="flex items-center justify-between">
@@ -167,13 +179,96 @@ const KhaoSatDialog = ({ openKS, handleOpenKS, setWorkNote, handleSentKS }) => {
                 />
             </div>
             <DialogBody divider>
-                <div className="grid gap-6">
-                    <Textarea
-                        label="Lý do hủy"
-                        className="shadow-none"
-                        onChange={(e) => setWorkNote(e.target.value)}
-                    />
-                </div>
+                <form className="flex flex-col gap-4 mt-2">
+                    {/* Các trường input */}
+                    <div className="flex items-center gap-4 ">
+                        <Input
+                            label="Yêu Cầu Công Việc"
+                            id="work_content"
+                            name="work_content"
+                            value={cardExpires.work_content}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                        <Input
+                            label="Số Điện Thoại"
+                            id="phone_number"
+                            name="phone_number"
+                            value={cardExpires.phone_number}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Input
+                            label="Địa Chỉ"
+                            id="street"
+                            name="street"
+                            value={cardExpires.street}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                        <Input
+                            label="Quận"
+                            id="district"
+                            name="district"
+                            value={cardExpires.district}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Input
+                            label="Tên Khách Hàng"
+                            id="name_cus"
+                            name="name_cus"
+                            value={cardExpires.name_cus}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+
+                        <Input
+                            label="Ngày Làm"
+                            id="date_book"
+                            name="date_book"
+                            value={cardExpires.date_book}
+                            onChange={handleChange}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                            disabled={disabledAllowed}
+                        />
+                    </div>
+                    <div className="grid gap-6">
+                        <Textarea
+                            label="Tình Trạng Thực Tế"
+                            className="shadow-none"
+                            onChange={(e) => setWorkNote(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex items-center justify-center ">
+                        <FileInput
+                            handleFileChange={handleFileChange}
+                            previewImages={previewImages}
+                        />
+                    </div>
+                </form>
             </DialogBody>
             <DialogFooter className="space-x-2">
                 <Button variant="gradient" color="red" onClick={handleSentKS}>

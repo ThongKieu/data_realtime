@@ -10,7 +10,7 @@ function QuoteFlow({auth}) {
     const [isLoading, setIsLoading] = useState(true);
     const rows = [
         { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35,age2: 35, },
-       
+
       ];
     const [infoBook, setInfoBook] =useState(rows);
 
@@ -56,9 +56,9 @@ function QuoteFlow({auth}) {
         try {
             const response = await fetch("/api/web/quote");
             const jsonData = await response.json();
-            
+
             setInfoBook(jsonData);
-            
+
             if(jsonData.lenght > 0)
             {
                 setIsLoading(false);
@@ -101,9 +101,9 @@ function QuoteFlow({auth}) {
                       </Box>
                     {/* )} */}
                     </Card>
-   
+
     </AuthenticatedLayout>
-    
+
   )
 }
 

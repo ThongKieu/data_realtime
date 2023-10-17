@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     Button,
     Card,
@@ -13,10 +13,8 @@ import {
     PencilSquareIcon,
     XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Divider, Hidden } from "@mui/material";
-import WorkForm from "./WorkForm";
-import { useState } from "react";
-import { useEffect } from "react";
+import { Divider } from "@mui/material";
+import EditableInput from "./EditInput";
 function AdminCheckDialog({
     params,
     addDot,
@@ -32,8 +30,30 @@ function AdminCheckDialog({
     isAllowed,
     auth,
 }) {
-    const [activePt, setActivePt] = useState(true);
-    const handleSetActive = () => setActivePt(!activePt);
+    const [activePt, setActivePt] = useState({
+        inputSPT: false,
+        inputBH: false,
+        inputYCCV: false,
+        inputSDT: false,
+        inputDiaChi: false,
+        inputQuan: false,
+        inputTenKH: false,
+        inputNgayLam: false,
+        inputGhiChu: false,
+        inputThuChi: false,
+        // Thêm các trạng thái khác tại đây nếu bạn có nhiều input hơn
+    });
+    const handleSetActive = (field) => {
+        setActivePt({
+            ...activePt,
+            [field]: !activePt[field],
+        });
+    };
+    const containerProps = {
+        className: "min-w-[72px]",
+    };
+
+    // const handleSetActive = () => setActivePt(!activePt);
     const [dataBH, setDataBH] = useState([]);
 
     const fetchDataBH = async () => {
@@ -42,7 +62,7 @@ function AdminCheckDialog({
                 `api/web/work-assignment/warranties?id=${params.row.id}`
             );
             const jsonData = await response.json();
-            if (response.ok) {
+            if (response.ok && jsonData !== "undefined") {
                 const formatJson = jsonData.data.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
@@ -77,22 +97,16 @@ function AdminCheckDialog({
                     </div>
                 </div>
                 <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">
-                    <Input
+                    <EditableInput
                         type="text"
                         value={params.row.seri_number}
-                        disabled={activePt}
                         label="Số Phiếu Thu"
-                        className="border"
+                        onChange={handleChange}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputSPT}
+                        active={activePt.inputSPT}
+                        handleSetActive={() => handleSetActive("inputSPT")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
                 </div>
             </div>
             <div className="flex flex-row justify-between w-full mb-5 text-sm">
@@ -103,37 +117,20 @@ function AdminCheckDialog({
 
                     {dataBH.map((element) => (
                         <div className="flex gap-4">
-                            {element.warranty_time == 0 ? (
-                                <p>{element.warranty_info}</p>
-                            ) : (
-                                <div className="flex p-1">
-                                    <Input
-                                        type="text"
-                                        value={`${element.warranty_time} ${element.unit} ${element.warranty_info}`}
-                                        disabled={activePt}
-                                        label="Số Phiếu Thu"
-                                        className="border"
-                                    />
-                                    {activePt === true ? (
-                                        <IconButton
-                                            variant="text"
-                                            onClick={handleSetActive}
-                                        >
-                                            <PencilSquareIcon className="w-5 h-5" />
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton
-                                            variant="text"
-                                            onClick={handleSetActive}
-                                        >
-                                            <XMarkIcon className="w-5 h-5" />
-                                        </IconButton>
-                                    )}
-                                </div>
-                                // <div>
-                                //     <p>{element.warranty_time} {element.unit} {element.warranty_info}</p>
-                                // </div>
-                            )}
+                            <div className="flex p-1">
+                                <EditableInput
+                                    label="Bảo Hành"
+                                    type="text"
+                                    value={`${element.warranty_time} ${element.unit} ${element.warranty_info}`}
+                                    onChange={handleChange}
+                                    containerProps={containerProps}
+                                    disabled={!activePt.inputBH}
+                                    active={activePt.inputBH}
+                                    handleSetActive={() =>
+                                        handleSetActive("inputBH")
+                                    }
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -221,161 +218,93 @@ function AdminCheckDialog({
             <form className="flex flex-col gap-4 mt-2">
                 {/* Các trường input */}
                 <div className="flex items-center gap-4 ">
-                    <Input
+                    <EditableInput
                         label="Yêu Cầu Công Việc"
                         id="work_content"
                         name="work_content"
-                        value={cardExpires.work_content}
+                        value={cardExpires.work_content} // Thay bằng giá trị thực tế
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none" disabled={activePt}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputYCCV}
+                        active={activePt.inputYCCV}
+                        handleSetActive={() => handleSetActive("inputYCCV")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
-                    <Input
+                    <EditableInput
                         label="Số Điện Thoại"
                         id="phone_number"
                         name="phone_number"
                         value={cardExpires.phone_number}
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none" disabled={activePt}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputSDT}
+                        active={activePt.inputSDT}
+                        handleSetActive={() => handleSetActive("inputSDT")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
                 </div>
                 <div className="flex items-center gap-4">
-                    <Input
+                    <EditableInput
                         label="Địa Chỉ"
                         id="street"
                         name="street"
                         value={cardExpires.street}
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none" disabled={activePt}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputDiaChi}
+                        active={activePt.inputDiaChi}
+                        handleSetActive={() => handleSetActive("inputDiaChi")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
-                    <Input
+                    <EditableInput
                         label="Quận"
                         id="district"
                         name="district"
                         value={cardExpires.district}
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none" disabled={activePt}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputQuan}
+                        active={activePt.inputQuan}
+                        handleSetActive={() => handleSetActive("inputQuan")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
                 </div>
                 <div className="flex items-center gap-4">
-                    <Input
+                    <EditableInput
                         label="Tên Khách Hàng"
                         id="name_cus"
                         name="name_cus"
                         value={cardExpires.name_cus}
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none" disabled={activePt}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputTenKH}
+                        active={activePt.inputTenKH}
+                        handleSetActive={() => handleSetActive("inputTenKH")}
                     />
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
-                    <Input
+                    <EditableInput
                         label="Ngày Làm"
                         id="date_book"
                         name="date_book"
                         value={cardExpires.date_book}
                         onChange={handleChange}
-                        containerProps={{
-                            className: "min-w-[72px]",
-                        }}
-                        className="shadow-none"
-                        disabled={activePt}
-                    />{" "}
-                    {activePt === true ? (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <PencilSquareIcon className="w-5 h-5" />
-                        </IconButton>
-                    ) : (
-                        <IconButton variant="text" onClick={handleSetActive}>
-                            <XMarkIcon className="w-5 h-5" />
-                        </IconButton>
-                    )}
+                        containerProps={containerProps}
+                        disabled={!activePt.inputNgayLam}
+                        active={activePt.inputNgayLam}
+                        handleSetActive={() => handleSetActive("inputNgayLam")}
+                    />
                 </div>
 
                 <div className="flex items-center gap-4 ">
-                    <div className="flex w-full ">
-                        <Input
+                    <div className="flex w-full">
+                        <EditableInput
                             label="Ghi Chú"
                             id="real_note"
                             name="real_note"
                             value={cardExpires.real_note}
                             onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none" disabled={activePt}
+                            containerProps={containerProps}
+                            disabled={!activePt.inputGhiChu}
+                            active={activePt.inputGhiChu}
+                            handleSetActive={() =>
+                                handleSetActive("inputGhiChu")
+                            }
                         />
-                        {activePt === true ? (
-                            <IconButton
-                                variant="text"
-                                onClick={handleSetActive}
-                            >
-                                <PencilSquareIcon className="w-5 h-5" />
-                            </IconButton>
-                        ) : (
-                            <IconButton
-                                variant="text"
-                                onClick={handleSetActive}
-                            >
-                                <XMarkIcon className="w-5 h-5" />
-                            </IconButton>
-                        )}
                     </div>
 
                     <div className="flex items-center w-full gap-4 ">
@@ -388,8 +317,10 @@ function AdminCheckDialog({
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
-                            className="shadow-none"
-                            disabled={activePt}
+                            disabled={!activePt.inputThuChi}
+                            className={`shadow-none ${
+                                activePt.inputThuChi ? "active" : ""
+                            }`}
                         />
 
                         <Input
@@ -401,22 +332,24 @@ function AdminCheckDialog({
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
-                            className="shadow-none"
-                            disabled={activePt}
+                            disabled={!activePt.inputThuChi}
+                            className={`shadow-none ${
+                                activePt.inputThuChi ? "active" : ""
+                            }`}
                         />
-                        {activePt === true ? (
+                        {activePt.inputThuChi ? (
                             <IconButton
                                 variant="text"
-                                onClick={handleSetActive}
+                                onClick={() => handleSetActive("inputThuChi")}
                             >
-                                <PencilSquareIcon className="w-5 h-5" />
+                                <XMarkIcon className="w-5 h-5" />
                             </IconButton>
                         ) : (
                             <IconButton
                                 variant="text"
-                                onClick={handleSetActive}
+                                onClick={() => handleSetActive("inputThuChi")}
                             >
-                                <XMarkIcon className="w-5 h-5" />
+                                <PencilSquareIcon className="w-5 h-5" />
                             </IconButton>
                         )}
                     </div>

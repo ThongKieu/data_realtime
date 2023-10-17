@@ -8,8 +8,9 @@ import {
     Input,
     Radio,
 } from "@material-tailwind/react";
-import { XMarkIcon,PlusIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, PlusIcon } from "@heroicons/react/24/solid";
 
+import FileInput from "../FileInputImage";
 import io from "socket.io-client";
 function formatCardNumber(value) {
     const val = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
@@ -73,7 +74,7 @@ function FloatingButton() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(host+url_API_District);
+            const response = await fetch(host + url_API_District);
             const jsonData = await response.json();
             setOptionsDistrict(jsonData);
         } catch (error) {
@@ -94,7 +95,7 @@ function FloatingButton() {
         setSelectedFiles(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
-        setPreviewImages([]);
+        // setPreviewImages([]);
     };
 
     //-------------------- add new order ----------------------------
@@ -112,6 +113,7 @@ function FloatingButton() {
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
         }
+        console.log('464654654654',selectedFiles);
         formData1.append("work_content", formData.work_content);
         formData1.append("date_book", selectedDate);
         formData1.append("district", selectedOption);
@@ -125,7 +127,7 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
         try {
-            const response = await fetch(host+url_API, {
+            const response = await fetch(host + url_API, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -136,9 +138,9 @@ function FloatingButton() {
             });
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
-                console.log('ddddd');
+                console.log("ddddd");
                 handleOpen();
-                setFormData('');
+                setFormData("");
             }
         } catch (error) {
             console.log(error);
@@ -163,9 +165,9 @@ function FloatingButton() {
                 className="p-3 text-black bg-blue-500 rounded-full "
                 onClick={handleOpen}
             >
-                <PlusIcon className="w-6 h-6"/>
+                <PlusIcon className="w-6 h-6" />
             </Button>
-            <Dialog open={open} handler={handleOpen} >
+            <Dialog open={open} handler={handleOpen}>
                 <div className="flex items-center justify-between">
                     <DialogHeader className=" md:max-lg:text-xs">
                         Thêm Khách Hàng Mới
@@ -270,90 +272,71 @@ function FloatingButton() {
                             </div>
                             <div className="items-center justify-center gap-4 my-4 text-xs ">
                                 <div className="flex justify-between w-full">
-                                <Radio
-                                    id="DN"
-                                    name="kind_work"
-                                    label="Điện Nước"
-                                    value="0"
-                                    checked={formData.kind_work === "0"}
-                                    onChange={handleChange}
-                                />
-                                <Radio
-                                    id="DL"
-                                    name="kind_work"
-                                    label="Điện Lạnh"
-                                    value="1"
-                                    checked={formData.kind_work === "1"}
-                                    onChange={handleChange}
-                                />
-                                <Radio
-                                    id="DG"
-                                    name="kind_work"
-                                    label="Đồ Gỗ"
-                                    value="2"
-                                    checked={formData.kind_work === "2"}
-                                    onChange={handleChange}
-                                />
-                                <Radio
-                                    id="NLMT"
-                                    name="kind_work"
-                                    label="Năng Lượng"
-                                    value="3"
-                                    checked={formData.kind_work === "3"}
-                                    onChange={handleChange}
-                                />
+                                    <Radio
+                                        id="DN"
+                                        name="kind_work"
+                                        label="Điện Nước"
+                                        value="0"
+                                        checked={formData.kind_work === "0"}
+                                        onChange={handleChange}
+                                    />
+                                    <Radio
+                                        id="DL"
+                                        name="kind_work"
+                                        label="Điện Lạnh"
+                                        value="1"
+                                        checked={formData.kind_work === "1"}
+                                        onChange={handleChange}
+                                    />
+                                    <Radio
+                                        id="DG"
+                                        name="kind_work"
+                                        label="Đồ Gỗ"
+                                        value="2"
+                                        checked={formData.kind_work === "2"}
+                                        onChange={handleChange}
+                                    />
+                                    <Radio
+                                        id="NLMT"
+                                        name="kind_work"
+                                        label="Năng Lượng"
+                                        value="3"
+                                        checked={formData.kind_work === "3"}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex justify-between w-full">
-                                <Radio
-                                id="XD"
-                                name="kind_work"
-                                label="Xây Dựng"
-                                value="4"
-                                checked={formData.kind_work === "4"}
-                                onChange={handleChange}
-                            />
-                            <Radio
-                                id="TX"
-                                name="kind_work"
-                                label="Tài Xế"
-                                value="5"
-                                checked={formData.kind_work === "5"}
-                                onChange={handleChange}
-                            />
-                            <Radio
-                                id="HX"
-                                name="kind_work"
-                                label="Cơ Khí"
-                                value="6"
-                                checked={formData.kind_work === "6"}
-                                onChange={handleChange}
-                            />
+                                    <Radio
+                                        id="XD"
+                                        name="kind_work"
+                                        label="Xây Dựng"
+                                        value="4"
+                                        checked={formData.kind_work === "4"}
+                                        onChange={handleChange}
+                                    />
+                                    <Radio
+                                        id="TX"
+                                        name="kind_work"
+                                        label="Tài Xế"
+                                        value="5"
+                                        checked={formData.kind_work === "5"}
+                                        onChange={handleChange}
+                                    />
+                                    <Radio
+                                        id="HX"
+                                        name="kind_work"
+                                        label="Cơ Khí"
+                                        value="6"
+                                        checked={formData.kind_work === "6"}
+                                        onChange={handleChange}
+                                    />
                                 </div>
-
                             </div>
                             <div className="flex items-center justify-center ">
-                                <span className="sr-only">
-                                    Chọn hình ảnh thực tế
-                                </span>
-                                <input
-                                    id="hinh"
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    multiple
-                                    className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                <FileInput
+                                    handleFileChange={handleFileChange}
+                                    previewImages={previewImages}
                                 />
-                                {previewImages.map((preview, index) => (
-                                    <img
-                                        key={index}
-                                        src={preview}
-                                        alt={`Preview ${index}`}
-                                        style={{
-                                            width: "50px",
-                                            height: "auto",
-                                            margin: "5px",
-                                        }}
-                                    />
-                                ))}
                             </div>
                         </div>
                     </DialogBody>

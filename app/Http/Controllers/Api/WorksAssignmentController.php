@@ -527,7 +527,6 @@ class WorksAssignmentController extends Controller
 
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-
                         $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                         $path = '';
 

@@ -23,7 +23,7 @@ class QuoteFlowController extends Controller
     }
     public function getAdminName(Request $re)
     {
-        $name = User::where('id','=',$re -> id)->value('name');
+        $name = User::where('id','=',$re->id)->value('name');
 
         return response()->json($name);
     }

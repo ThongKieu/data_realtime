@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from '@inertiajs/react';
-import { Card, Typography, Input, Button, Spinner } from "@material-tailwind/react";
+import { Card, Typography, Input, Button, Spinner, Select, Option } from "@material-tailwind/react";
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -11,15 +11,16 @@ function QuoteFlow({ auth }) {
 
   const [infoBook, setInfoBook] = useState('');
 
-  const [adminUser, setAdminUser] = useState('');
-  // const [nameAdmin,setNameAdmin] = useState('Chưa có'); 
+  const [adminUser, setAdminUser] = useState([]);
+  const [nameAdmin, setNameAdmin] = useState('Chưa có');
+
 
   const fetchAdminUser = async () => {
     try {
       const response = await fetch("/api/web/users");
       const jsonData = await response.json();
-      setAdminUser(jsonData);
-      console.log(jsonData);
+      setAdminUser(jsonData.users);
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -38,9 +39,17 @@ function QuoteFlow({ auth }) {
       console.error("Error fetching data:", error);
     }
   };
+  useEffect(() => { fetchInfoQuote(), fetchAdminUser() }, []);
+  const getRowClassName = (params) => {
+    return 'centered-row';
+  };
+  const  [selectAmin, setSelectAmin]= useState('0');
+  const pushAdmin= (event)=>{
+    setSelectAmin(event.target.value);
+  };
   // const  = infoBook;
   const columns = [
-    { field: 'id', headerName: 'ID', width: 30 },
+    { field: 'id', headerName: 'ID', width: 20 },
     {
       field: 'work_content',
       headerName: 'Nội dung công việc',
@@ -77,21 +86,106 @@ function QuoteFlow({ auth }) {
       headerName: 'Ng Xử Lý',
       description: 'Nhân Viên đang phụ trách',
       sortable: false,
-      width: 110,
-      renderCell: (params) => {
-        const [nameAdmin, setNameAdmin] = useState('1');
-        console.log(params.row.staff_in_change_id);
-        const check = ()=>{
-          if (params.row.staff_in_change_id == null) {
-            setNameAdmin('hihihih2i');
-          }
+      width: 210,
+      renderCell: ((params) => {
+        if (adminUser && params.row.staff_in_change_id != null) {
+          adminUser.forEach((item, index) => {
+            if (params.row.staff_in_change_id == item.id) {
+              setNameAdmin(item.name);
+
+            }
+          });
+
         }
-        check();
-        return <p>{nameAdmin}</p>
-      },
+
+
+        return <p className='bg-blue-gray-500'>{params.row.staff_in_change_id === null ? (
+          <select
+            className="border border-lg w-full "
+            value={selectAmin}
+            onChange={pushAdmin}
+          >
+            <option> Chưa Chọn </option>
+            {adminUser.map(
+              (nam, index) => (
+                <option
+                  key={index}
+                  value={
+                    nam.id
+                  }
+                  className='w-full'
+                >
+                  {nam.name}
+                </option>
+              )
+            )}
+          </select>
+
+        ) : (
+          <p>{nameAdmin}</p>
+        )} </p>
+      }),
+    },
+    {
+      field: 'total',
+      headerName: 'Tổng báo giá',
+      description: 'Tổng báo giá',
+      width: 150,
+      editable: false,
+
+    },
+
+    {
+      field: 'pripot_percent',
+      headerName: '% Lợi Nhuận',
+      description: '% Lợi Nhuận',
+      width: 150,
+      editable: false,
+
+    },
+    {
+      field: 'date_do',
+      headerName: 'Ngày Làm',
+      description: 'Ngày Làm',
+      width: 150,
+      editable: false,
+
+    },
+    {
+      field: 'status',
+      headerName: 'Trạng thái',
+      description: 'Thông tin trạng thái lịch báo giá',
+      width: 200,
+      editable: false,
+      renderCell: ((params) => {
+        switch (params.row.status) {
+          case 0:
+            return <span style={{ background: 'red',fontWeight: '600',padding:'3px' }}>Chưa Xử Lý</span>;
+          case 1:
+            return <span style={{ background: 'blue',fontWeight: '600',padding:'3px',color:'white' }}>Chưa liên hệ được khách</span>;
+          case 2:
+            return <span style={{ background: 'green',fontWeight: '600',padding:'3px' }}>Đã Gửi Báo Giá</span>;
+          case 3:
+            return <span style={{ background: 'yellowgreen',fontWeight: '600',padding:'3px' }}>Đã Hẹn Ngày Làm</span>;
+          case 4:
+            return <span style={{ background: 'gold',fontWeight: '600',padding:'3px' }}>Khách Chưa Phản Hồi</span>;
+          case 5:
+            return <span style={{ background: 'red' ,fontWeight: '600',padding:'3px'}}>Khách Không Chốt</span>;
+          case 6:
+            return <span style={{ background: 'orange' ,fontWeight: '600',padding:'3px'}}>Thợ Không Làm Được</span>;
+          case 7:
+            return <span style={{ background: 'gold',fontWeight: '600',padding:'3px' }}>Thợ Tự Gửi</span>;
+          case 8:
+            return <span style={{ background: 'red' ,fontWeight: '600',padding:'3px'}}>Chưa Cham Soc</span>;
+          case 9:
+            return <span style={{ background: 'yellowgreen' ,fontWeight: '600',padding:'3px'}}>Đã Chăm Sóc</span>;
+          default:
+            return params.row.status;
+        }
+      }),
     },
   ];
-  useEffect(() => { fetchInfoQuote(), fetchAdminUser() }, []);
+
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Thông tin báo giá lịch" />
@@ -107,7 +201,7 @@ function QuoteFlow({ auth }) {
             </p>
           </div>
         ) : (
-          <Box sx={{ height: 400, width: '100%' }}>
+          <Box sx={{ height: 800, width: '100%' }}>
             <DataGrid
               rows={infoBook}
               columns={columns}
@@ -118,6 +212,7 @@ function QuoteFlow({ auth }) {
                   },
                 },
               }}
+              getRowClassName={getRowClassName}
               pageSizeOptions={[30]}
               // checkboxSelection
               disableRowSelectionOnClick

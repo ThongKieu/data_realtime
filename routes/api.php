@@ -51,6 +51,7 @@ Route::prefix('web')->group(function () {
     });
     Route::prefix('quote')->group(function(){
         Route::get('','App\Http\Controllers\Api\Web\QuoteFlowController@index');
+        Route::get('users','App\Http\Controllers\Api\Web\QuoteFlowController@getAdminName');
         Route::post('','App\Http\Controllers\Api\Web\QuoteFlowController@store');
         Route::post('/update','App\Http\Controllers\Api\Web\QuoteFlowController@update');
     });

@@ -83,6 +83,7 @@ function Dashboard({ auth }) {
             socketD.emit("pushOnline", message);
             pushOn();
         }
+
         setSocketD(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
@@ -762,6 +763,7 @@ function Dashboard({ auth }) {
             width: 30,
             editable: false,
             type: "text",
+
         },
         {
             field: "worker_name",
@@ -1061,74 +1063,110 @@ function Dashboard({ auth }) {
                 const handleCheckAdmin = async (e) => {
                     const UrlApi = "api/web/update/check-admin";
                     const prevData = {
-                        4: params.row.work_content,
-                        5: params.row.phone_number,
-                        6: params.row.street,
-                        7: params.row.district,
-                        8: params.row.name_cus,
-                        9: params.row.real_note,
-                        10: params.row.income_total,
-                        11: params.row.spending_total,
+                        work_content: params.row.work_content,
+                        phone_number: params.row.phone_number,
+                        street: params.row.street,
+                        district: params.row.district,
+                        name_cus: params.row.name_cus,
+                        work_note: params.row.real_note,
+                        income_total: params.row.income_total,
+                        spending_total: params.row.spending_total,
                     };
-                    console.log('??????',prevData);
-                    const data = {
-                        4: {
-                            ac: 4,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            work_content: cardExpires.work_content,
-                        },
-                        5: {
-                            ac: 5,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            phone_number: cardExpires.phone_number,
-                        },
-                        6: {
-                            ac: 6,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            street: cardExpires.street,
-                        },
-                        7: {
-                            ac: 7,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            district: cardExpires.district,
-                        },
-                        8: {
-                            ac: 8,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            work_content: cardExpires.name_cus,
-                        },
-                        9: {
-                            ac: 9,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            Work_note: cardExpires.real_note,
-                        },
-                        10: {
-                            ac: 10,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            street: cardExpires.income_total,
-                        },
-                        11: {
-                            ac: 11,
-                            auth_id: auth.user.id,
-                            id_cus: params.row.id_cus,
-                            district: cardExpires.spending_total,
-                        },
-                    };
-                    console.log('??????!!!!!!!!!',data);
-                    for (let key in data) {
-                        if (data[key][key] !== prevData[key]) {
-                            fetchUpdateData(data[key], UrlApi);
-                            console.log(`data_${key}_workContent`, data[key],prevData[key]);
-                            break;
-                        }
+
+                    if (prevData.work_content !== cardExpires.work_content) {
+                        fetchUpdateData(
+                            {
+                                ac: 4,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                work_content: cardExpires.work_content,
+                            },
+                            UrlApi
+                        );
                     }
+
+                    if (prevData.phone_number !== cardExpires.phone_number) {
+                        fetchUpdateData(
+                            {
+                                ac: 5,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                phone_number: cardExpires.phone_number,
+                            },
+                            UrlApi
+                        );
+                    }
+
+                    if (prevData.street !== cardExpires.street) {
+                        fetchUpdateData(
+                            {
+                                ac: 6,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                street: cardExpires.street,
+                            },
+                            UrlApi
+                        );
+                    }
+
+                    if (prevData.district !== cardExpires.district) {
+                        fetchUpdateData(
+                            {
+                                ac: 7,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                district: cardExpires.district,
+                            },
+                            UrlApi
+                        );
+                    }
+
+                    if (prevData.name_cus !== cardExpires.name_cus) {
+                        fetchUpdateData(
+                            {
+                                ac: 8,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                name_cus: cardExpires.name_cus,
+                            },
+                            UrlApi
+                        );
+                    }
+
+                    if (prevData.work_note !== cardExpires.real_note) {
+                        fetchUpdateData(
+                            {
+                                ac: 9,
+                                auth_id: auth.user.id,
+                                id_cus: params.row.id_cus,
+                                work_note: cardExpires.real_note,
+                            },
+                            UrlApi
+                        );
+                    }
+                    if (prevData.income_total !== cardExpires.income_total) {
+                        fetchUpdateData(
+                            {
+                                ac: 10,
+                                auth_id: auth.user.id,
+                                id: params.row.id,
+                                income_total: cardExpires.income_total,
+                            },
+                            UrlApi
+                        );
+                    }
+                    if (prevData.spending_total !== cardExpires.spending_total) {
+                        fetchUpdateData(
+                            {
+                                ac: 11,
+                                auth_id: auth.user.id,
+                                id: params.row.id,
+                                spending_total: cardExpires.spending_total,
+                            },
+                            UrlApi
+                        );
+                    }
+
                 };
                 const dataBtnChi = [
                     {
@@ -1151,7 +1189,6 @@ function Dashboard({ auth }) {
                     },
                 ];
                 // Điều kiện các nút chức năng
-                console.log(params, auth.user.permission);
                 const check_admin = params.row.status_admin_check == 1;
                 const spending = params.row.spending_total;
                 const income = params.row.income_total;
@@ -1343,7 +1380,7 @@ function Dashboard({ auth }) {
                             cardExpires={cardExpires}
                             auth={auth}
                             handleEdit={() => {
-                                handleCheckAdmin()
+                                handleCheckAdmin();
                             }}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}

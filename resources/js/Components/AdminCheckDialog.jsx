@@ -6,7 +6,8 @@ import {
     DialogBody,
     Dialog,
     IconButton,
-    Input,DialogHeader
+    Input,
+    DialogHeader,
 } from "@material-tailwind/react";
 import {
     XMarkIcon,
@@ -29,7 +30,9 @@ function AdminCheckDialog({
     vatCard,
     isAllowed,
     auth,
-    handleEdit,openAdminCheck,handleOpenAdminCheck
+    handleEdit,
+    openAdminCheck,
+    handleOpenAdminCheck,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -63,13 +66,13 @@ function AdminCheckDialog({
                 `api/web/work-assignment/warranties?id=${params.row.id}`
             );
             const jsonData = await response.json();
-            const data = jsonData.data
-            if (response.ok && data != "undefined") {
+            const data = jsonData.data;
+            if (response.ok && data !== "undefined") {
                 const formatJson = data.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
                     warranty_time: item.warranty_time,
-                    unit: item.unit,
+                    unit: item.unit
                 }));
                 setDataBH(formatJson);
             }
@@ -313,7 +316,6 @@ function AdminCheckDialog({
                             }
                         />
                     </div>
-
                     <div className="flex items-center gap-4 ">
                         <div className="flex w-full">
                             <EditableInput
@@ -331,59 +333,37 @@ function AdminCheckDialog({
                                 handleEdit={handleEdit}
                             />
                         </div>
+                    </div>
+                    <div className="flex items-center w-full gap-4 ">
+                        <EditableInput
+                            label="Tiền Chi"
+                            id="spending_total"
+                            name="spending_total"
+                            value={cardExpires.spending_total}
+                            onChange={handleChange}
+                            containerProps={containerProps}
+                            disabled={!activePt.inputThuChi}
+                            active={activePt.inputThuChi}
+                            handleSetActive={() =>
+                                handleSetActive("inputThuChi")
+                            }
+                            handleEdit={handleEdit}
+                        />
 
-                        <div className="flex items-center w-full gap-4 ">
-                            <Input
-                                label="Tiền Chi"
-                                id="spending_total"
-                                name="spending_total"
-                                value={cardExpires.spending_total}
-                                onChange={handleChange}
-                                containerProps={{
-                                    className: "min-w-[72px]",
-                                }}
-                                disabled={!activePt.inputThuChi}
-                                className={`shadow-none ${
-                                    activePt.inputThuChi ? "active" : ""
-                                }`}
-                                handleEdit={handleEdit}
-                            />
-
-                            <Input
-                                label="Tiền Thu"
-                                id="income_total"
-                                name="income_total"
-                                value={cardExpires.income_total}
-                                onChange={handleChange}
-                                containerProps={{
-                                    className: "min-w-[72px]",
-                                }}
-                                disabled={!activePt.inputThuChi}
-                                className={`shadow-none ${
-                                    activePt.inputThuChi ? "active" : ""
-                                }`}
-                                handleEdit={handleEdit}
-                            />
-                            {activePt.inputThuChi ? (
-                                <IconButton
-                                    variant="text"
-                                    onClick={() =>
-                                        handleSetActive("inputThuChi")
-                                    }
-                                >
-                                    <XMarkIcon className="w-5 h-5" />
-                                </IconButton>
-                            ) : (
-                                <IconButton
-                                    variant="text"
-                                    onClick={() =>
-                                        handleSetActive("inputThuChi")
-                                    }
-                                >
-                                    <PencilSquareIcon className="w-5 h-5" />
-                                </IconButton>
-                            )}
-                        </div>
+                        <EditableInput
+                            label="Tiền Thu"
+                            id="income_total"
+                            name="income_total"
+                            value={cardExpires.income_total}
+                            onChange={handleChange}
+                            containerProps={containerProps}
+                            disabled={!activePt.inputThuChi}
+                            active={activePt.inputThuChi}
+                            handleSetActive={() =>
+                                handleSetActive("inputThuChi")
+                            }
+                            handleEdit={handleEdit}
+                        />
                     </div>
                     <Divider className="pt-2" />
                     <div className="flex flex-row justify-center pt-2">

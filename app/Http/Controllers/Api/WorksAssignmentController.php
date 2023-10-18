@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\CheckWorkByAdminController;
+
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\Web\QuoteFlowController;
+use App\Http\Controllers\Api\CheckWorkByAdminController;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
@@ -377,7 +378,7 @@ class WorksAssignmentController extends Controller
     {
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);
+        $up   = QuoteFlowController::addAuto($request->id,$request->auth_id);
 
         if ($up == 200) {
             return 'Delete work done !';
@@ -581,12 +582,13 @@ class WorksAssignmentController extends Controller
                         return 'Update Work_note';
                     case 10:
                         // Incoming money
+                        // dd($request->all());
                         WorksAssignment::where('id', '=', $request->id)->update(['income_total' => $request->income_total]);
                         return 'Update income_total';
                     case 11:
                         // Spend money
-                        WorksAssignment::where('id', '=', $request->id)->update(['spend_total' => $request->spend_total]);
-                        return 'Update spend_total';
+                        WorksAssignment::where('id', '=', $request->id)->update(['spending_total' => $request->spending_total]);
+                        return 'Update spending_total';
                     default:
                         return 'Done With None Update !';
                 }

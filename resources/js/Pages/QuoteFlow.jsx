@@ -99,7 +99,7 @@ function QuoteFlow({ auth }) {
         }
 
 
-        return <p className='bg-blue-gray-500'>{params.row.staff_in_change_id === null ? (
+        return <p className='bg-blue-gray-500 sr-onlyg'>{params.row.staff_in_change_id === null ? (
           <select
             className="border border-lg w-full "
             value={selectAmin}

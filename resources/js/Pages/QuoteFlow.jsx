@@ -1,106 +1,130 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from '@inertiajs/react';
-import { Card, Typography, Input, Button,Spinner } from "@material-tailwind/react";
+import { Card, Typography, Input, Button, Spinner } from "@material-tailwind/react";
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
-function QuoteFlow({auth}) {
+function QuoteFlow({ auth }) {
 
-    const [isLoading, setIsLoading] = useState(true);
-    const rows = [
-        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35,age2: 35, },
+  const [isLoading, setIsLoading] = useState(true);
 
-      ];
-    const [infoBook, setInfoBook] =useState(rows);
+  const [infoBook, setInfoBook] = useState('');
 
-    const columns = [
-        { field: 'id', headerName: 'ID', width: 30 },
-        {
-          field: 'firstName',
-          headerName: 'Nội dung công việc',
-          width: 250,
-          editable: true,
-        },
-        {
-          field: 'lastName',
-          headerName: 'Ngày Đăng ký',
-          width: 150,
-          editable: true,
-        },
-        {
-          field: 'age',
-          headerName: 'Tên khách',
-          type: 'number',
-          width: 110,
-          editable: true,
-        },
-        {
-          field: 'age2',
-          headerName: 'Địa chỉ',
-          type: 'number',
-          width: 250,
-          editable: true,
-        },
-        {
-          field: 'fullName',
-          headerName: 'Địa chỉ',
-          description: 'This column has a value getter and is not sortable.',
-          sortable: false,
-          width: 160,
-          valueGetter: (params) =>
-            `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        },
-      ];
-      const fetchInfoQuote = async () => {
-        try {
-            const response = await fetch("/api/web/quote");
-            const jsonData = await response.json();
+  const [adminUser, setAdminUser] = useState('');
+  // const [nameAdmin,setNameAdmin] = useState('Chưa có'); 
 
-            setInfoBook(jsonData);
+  const fetchAdminUser = async () => {
+    try {
+      const response = await fetch("/api/web/users");
+      const jsonData = await response.json();
+      setAdminUser(jsonData);
+      console.log(jsonData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const fetchInfoQuote = async () => {
+    try {
+      const response = await fetch("/api/web/quote");
+      const jsonData = await response.json();
 
-            if(jsonData.lenght > 0)
-            {
-                setIsLoading(false);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
+      setInfoBook(jsonData);
+
+      if (jsonData.length > 0) {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  // const  = infoBook;
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 30 },
+    {
+      field: 'work_content',
+      headerName: 'Nội dung công việc',
+      width: 250,
+      editable: true,
+    },
+    {
+      field: 'date_book',
+      headerName: 'Ngày Đăng ký',
+      width: 100,
+      editable: true,
+    },
+    {
+      field: 'add',
+      headerName: 'Địa chỉ',
+      type: 'number',
+      width: 210,
+      editable: false,
+      sortable: false,
+      valueGetter: (params) =>
+        `${params.row.street || ''} ${params.row.district || ''}`,
+    },
+    {
+      field: 'name',
+      headerName: 'Ng Khởi tạo',
+      description: 'Nhân Viên Tạo Báo giá',
+      type: 'number',
+      width: 110,
+      editable: false,
+
+    },
+    {
+      field: 'staff_in_change_id',
+      headerName: 'Ng Xử Lý',
+      description: 'Nhân Viên đang phụ trách',
+      sortable: false,
+      width: 110,
+      renderCell: (params) => {
+        const [nameAdmin, setNameAdmin] = useState('1');
+        console.log(params.row.staff_in_change_id);
+        const check = ()=>{
+          if (params.row.staff_in_change_id == null) {
+            setNameAdmin('hihihih2i');
+          }
         }
-    };
-    useEffect(()=>{fetchInfoQuote()},[]);
+        check();
+        return <p>{nameAdmin}</p>
+      },
+    },
+  ];
+  useEffect(() => { fetchInfoQuote(), fetchAdminUser() }, []);
   return (
     <AuthenticatedLayout user={auth.user}>
-    <Head title="Thông tin báo giá lịch" />
-    <Card className={
-                        "grid w-full grid-flow-col mt-1 text-white rounded-none"
-                    }
-                >
-                    {/* {isLoading ? (
-                        <div className="flex justify-center p-2 align-middle ">
-                            <Spinner className="w-6 h-6" color="amber" />
-                            <p className="pl-2 text-center text-black">
-                                Loading...
-                            </p>
-                        </div>
-                    ) : ( */}
-                        <Box sx={{ height: 400, width: '100%' }}>
-                        <DataGrid
-                          rows={rows}
-                          columns={columns}
-                          initialState={{
-                            pagination: {
-                              paginationModel: {
-                                pageSize: 30,
-                              },
-                            },
-                          }}
-                          pageSizeOptions={[30]}
-                          // checkboxSelection
-                          disableRowSelectionOnClick
-                        />
-                      </Box>
-                    {/* )} */}
-                    </Card>
+      <Head title="Thông tin báo giá lịch" />
+      <Card className={
+        "grid w-full grid-flow-col mt-1 text-white rounded-none"
+      }
+      >
+        {isLoading ? (
+          <div className="flex justify-center p-2 align-middle ">
+            <Spinner className="w-6 h-6" color="amber" />
+            <p className="pl-2 text-center text-black">
+              Loading...
+            </p>
+          </div>
+        ) : (
+          <Box sx={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={infoBook}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 30,
+                  },
+                },
+              }}
+              pageSizeOptions={[30]}
+              // checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </Box>
+        )}
+      </Card>
 
     </AuthenticatedLayout>
 

@@ -378,8 +378,8 @@ class WorksAssignmentController extends Controller
     {
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);
-
+        $up   = QuoteFlowController::addAuto($request->id,$request->auth_id);
+       
         if ($up == 200) {
             return 'Delete work done !';
         }

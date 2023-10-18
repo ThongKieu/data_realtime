@@ -9,7 +9,7 @@ class QuoteFlow extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_work_has',
+        'id_work',
         'staff_in_change_id',
         'staff_in_create_id',
         'total',

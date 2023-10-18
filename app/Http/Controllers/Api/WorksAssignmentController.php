@@ -573,7 +573,7 @@ class WorksAssignmentController extends Controller
                         return 'Update district';
                     case 8:
                         //Name Cus
-                        Work::where('id', '=', $request->id_cus)->update(['work_note' => $request->name_cus]);
+                        Work::where('id', '=', $request->id_cus)->update(['name_cus' => $request->name_cus]);
                         return 'Update name_cus';
                     case 9:
                         //Work Note

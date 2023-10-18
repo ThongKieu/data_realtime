@@ -1,8 +1,9 @@
-import React from 'react';
-import { Input, IconButton} from "@material-tailwind/react"; // Thay thế 'your-ui-library' bằng thư viện UI của bạn
+import React from "react";
+import { Input, IconButton } from "@material-tailwind/react"; // Thay thế 'your-ui-library' bằng thư viện UI của bạn
 import {
     XMarkIcon,
-    PencilSquareIcon,DocumentPlusIcon
+    PencilSquareIcon,
+    DocumentPlusIcon,
 } from "@heroicons/react/24/outline";
 
 const EditableInput = ({
@@ -14,7 +15,8 @@ const EditableInput = ({
     containerProps,
     disabled,
     active,
-    handleSetActive
+    handleSetActive,
+    handleEdit,
 }) => {
     return (
         <>
@@ -26,20 +28,22 @@ const EditableInput = ({
                 onChange={onChange}
                 containerProps={containerProps}
                 disabled={disabled}
-                className={`shadow-none ${active ? 'active' : ''}`}
+                className={`shadow-none ${active ? "active" : ""}`}
             />
+
             {active ? (
                 <IconButton
                     variant="text"
-                    onClick={() => handleSetActive()}
+                    onClick={() => {
+                        handleSetActive();
+                        handleEdit();
+                    }}
+                    className={`shadow-none ${id == 'date_book' ? "hidden" : ""}`}
                 >
                     <DocumentPlusIcon className="w-5 h-5" />
                 </IconButton>
             ) : (
-                <IconButton
-                    variant="text"
-                    onClick={() => handleSetActive()}
-                >
+                <IconButton variant="text" onClick={() => handleSetActive()}  className={`shadow-none ${id == 'date_book' ? "hidden" : ""}`}>
                     <PencilSquareIcon className="w-5 h-5" />
                 </IconButton>
             )}

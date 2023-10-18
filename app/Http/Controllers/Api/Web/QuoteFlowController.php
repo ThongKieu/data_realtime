@@ -22,15 +22,22 @@ class QuoteFlowController extends Controller
     {
 
     }
-    public static function addAuto($id_work_as, $auth_id) {
-        // dd($auth_id);
+    public static function addAuto($id, $auth_id) {
+        // dd($id);
+
         $new = new QuoteFlow([
-            'id_work_has'=> $id_work_as,
+            'id_work'=> $id,
             'staff_in_create_id'=>$auth_id,
             'to_table'=>0
         ]);
+        $new -> save();
+       if($new)
+       {
+         return 200;
+       }
+       else
+            return 'Error!!!';
 
-        return 200;
     }
 
 }

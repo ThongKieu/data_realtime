@@ -9,14 +9,14 @@ class QuoteFlow extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_work_has',
+        'id_work',
         'staff_in_change_id',
         'staff_in_create_id',
         'total',
         'expense',
         'pripot_percent',
         'status',
-        'date_do', 
+        'date_do',
         'to_table',
         'quote_date_do',
     ];

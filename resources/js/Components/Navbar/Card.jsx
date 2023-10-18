@@ -13,7 +13,6 @@ function CardMain() {
         fetchData();
         fetchDataOrderDone();
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            console.log("hell", data);
             if (data != "") {
                 fetchDelete(data);
                 fetchData(data);

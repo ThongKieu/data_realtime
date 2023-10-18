@@ -578,18 +578,11 @@ function Dashboard({ auth }) {
                     } ${district ? district + " " : ""} ${
                         work_note ? work_note + " " : ""
                     } `;
-
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
                     document.body.appendChild(textarea);
-
                     textarea.select();
-
-                    console.log("tam tai", document.execCommand);
                     document.body.removeChild(textarea);
-
-                    // alert('Đã sao chép vào clipboard: ' + data);
-                    console.log("Đã sao chép vào clipboard: " + data);
                 };
                 return (
                     <div>
@@ -951,7 +944,6 @@ function Dashboard({ auth }) {
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
                 const [selectedFiles, setSelectedFiles] = useState([]);
-
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
                 const [previewImgKS, setPreviewImgKS] = useState([]);
@@ -1064,6 +1056,78 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {
                         console.log("Loi", error);
+                    }
+                };
+                const handleCheckAdmin = async (e) => {
+                    const UrlApi = "api/web/update/check-admin";
+                    const prevData = {
+                        4: params.row.work_content,
+                        5: params.row.phone_number,
+                        6: params.row.street,
+                        7: params.row.district,
+                        8: params.row.name_cus,
+                        9: params.row.real_note,
+                        10: params.row.income_total,
+                        11: params.row.spending_total,
+                    };
+                    console.log('??????',prevData);
+                    const data = {
+                        4: {
+                            ac: 4,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            work_content: cardExpires.work_content,
+                        },
+                        5: {
+                            ac: 5,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            phone_number: cardExpires.phone_number,
+                        },
+                        6: {
+                            ac: 6,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            street: cardExpires.street,
+                        },
+                        7: {
+                            ac: 7,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            district: cardExpires.district,
+                        },
+                        8: {
+                            ac: 8,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            work_content: cardExpires.name_cus,
+                        },
+                        9: {
+                            ac: 9,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            Work_note: cardExpires.real_note,
+                        },
+                        10: {
+                            ac: 10,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            street: cardExpires.income_total,
+                        },
+                        11: {
+                            ac: 11,
+                            auth_id: auth.user.id,
+                            id_cus: params.row.id_cus,
+                            district: cardExpires.spending_total,
+                        },
+                    };
+                    console.log('??????!!!!!!!!!',data);
+                    for (let key in data) {
+                        if (data[key][key] !== prevData[key]) {
+                            fetchUpdateData(data[key], UrlApi);
+                            console.log(`data_${key}_workContent`, data[key],prevData[key]);
+                            break;
+                        }
                     }
                 };
                 const dataBtnChi = [
@@ -1258,38 +1322,30 @@ function Dashboard({ auth }) {
                             )}
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
-                        <Dialog
-                            open={openAdminCheck}
-                            handler={handleOpenAdminCheck}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>
-                                    XÁC NHẬN THÔNG TIN THỢ BÁO
-                                </DialogHeader>
-                                <XMarkIcon
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                    onClick={handleOpenAdminCheck}
-                                />
-                            </div>
-                            <AdminCheckDialog
-                                params={params}
-                                addDot={addDot}
-                                handleFileChangeVt={(e) => handleFileChange(e, setPreviewImgVt)}
-                                imageVt1={imageVt1}
-                                host={host}
-                                handleImageVtDelete={(index) => {
-                                    handleImageVtDelete(index);
-                                }}
-                                handleImagePtDelete={(index) => {
-                                    handleImagePtDelete(index);
-                                }}
-                                imagePt1={imagePt1}
-                                handleChange={handleChange}
-                                cardExpires={cardExpires}
-                                auth={auth}
-                            />
-                        </Dialog>
+                        <AdminCheckDialog
+                            openAdminCheck={openAdminCheck}
+                            handleOpenAdminCheck={handleOpenAdminCheck}
+                            params={params}
+                            addDot={addDot}
+                            handleFileChangeVt={(e) =>
+                                handleFileChange(e, setPreviewImgVt)
+                            }
+                            imageVt1={imageVt1}
+                            host={host}
+                            handleImageVtDelete={(index) => {
+                                handleImageVtDelete(index);
+                            }}
+                            handleImagePtDelete={(index) => {
+                                handleImagePtDelete(index);
+                            }}
+                            imagePt1={imagePt1}
+                            handleChange={handleChange}
+                            cardExpires={cardExpires}
+                            auth={auth}
+                            handleEdit={() => {
+                                handleCheckAdmin()
+                            }}
+                        />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
                             openThuHoi={openThuHoi}
@@ -1314,7 +1370,9 @@ function Dashboard({ auth }) {
                             handleChange={handleChange}
                             vatCard={vatCard}
                             disabledAllowed={isAllowed}
-                            handleFileChange={(e) => handleFileChange(e, setPreviewImgKS)}
+                            handleFileChange={(e) =>
+                                handleFileChange(e, setPreviewImgKS)
+                            }
                             previewImages={previewImgKS}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
@@ -1326,9 +1384,13 @@ function Dashboard({ auth }) {
                             cardExpires={cardExpires}
                             handleChange={handleChange}
                             vatCard={vatCard}
-                            handleFileChangeVt={(e) => handleFileChange(e, setPreviewImgVt)}
+                            handleFileChangeVt={(e) =>
+                                handleFileChange(e, setPreviewImgVt)
+                            }
                             previewImgVt={previewImgVt}
-                            handleFileChangePt={(e) => handleFileChange(e, setPreviewImgPt)}
+                            handleFileChangePt={(e) =>
+                                handleFileChange(e, setPreviewImgPt)
+                            }
                             previewImgPt={previewImgPt}
                             dataBtnChi={dataBtnChi}
                             params={params}

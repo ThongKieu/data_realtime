@@ -38,12 +38,13 @@ const EditableInput = ({
                         handleSetActive();
                         handleEdit();
                     }}
-                    className={`shadow-none ${id == 'date_book' ? "hidden" : ""}`}
+                    disabled={id == 'date_book' ? disabled : ""}
+                    className={`shadow-none `}
                 >
                     <DocumentPlusIcon className="w-5 h-5" />
                 </IconButton>
             ) : (
-                <IconButton variant="text" onClick={() => handleSetActive()}  className={`shadow-none ${id == 'date_book' ? "hidden" : ""}`}>
+                <IconButton variant="text" onClick={() => handleSetActive()}  className={`shadow-none `} disabled={id == 'date_book' ? disabled : ""}>
                     <PencilSquareIcon className="w-5 h-5" />
                 </IconButton>
             )}

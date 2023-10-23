@@ -26,7 +26,6 @@ const ButtonBar1 = ({
     handleOpenAdminCheck,
     openAdminCheck,
     params,
-    addDot,
     handleFileChangeVt,
     imageVt1,
     host,
@@ -126,7 +125,6 @@ const AdminCheckDialogWrapper = ({
     openAdminCheck,
     handleOpenAdminCheck,
     params,
-    addDot,
     handleFileChangeVt,
     imageVt1,
     host,
@@ -152,7 +150,6 @@ const AdminCheckDialogWrapper = ({
             </div>
             <AdminCheckDialog
                 params={params}
-                addDot={addDot}
                 handleFileChangeVt={handleFileChangeVt}
                 imageVt1={imageVt1}
                 host={host}

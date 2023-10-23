@@ -262,15 +262,6 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-
-    // hàm thêm dấu chấm trong chuỗi
-    function addDot(num) {
-        if (num) {
-            const str = num.toString();
-            const result = str.slice(0, 2) + "." + str.slice(2);
-            return result;
-        }
-    }
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
@@ -278,6 +269,8 @@ function Dashboard({ auth }) {
         useState(false);
     const handleOpenWorkerNameTableRight = () =>
         setOpenWorkerNameTableRight(!openWorkerNameTableRight);
+    // ----- lay thong tin bao hanh --------
+
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -763,7 +756,36 @@ function Dashboard({ auth }) {
             width: 30,
             editable: false,
             type: "text",
+            renderCell: (params) => {
+                const [TTBH, setDataBH] = useState({});
 
+                const getDataBh = async () => {
+                    try {
+                        const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        setDataBH(data);
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                };
+                useEffect(() => {
+                    getDataBh();
+                }, []);
+
+                return (
+                    <>
+                        {TTBH.map((item) => {
+                            console.log(item);
+                            return (
+                                <p>
+                                    {item.warranty_time} {item.warranty_info}
+                                </p>
+                            );
+                        })}
+                    </>
+                );
+            },
         },
         {
             field: "worker_name",
@@ -966,15 +988,18 @@ function Dashboard({ auth }) {
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
                 // ---------- ------- - cần tối ưu code ----------------------------------
-                const handleValueBh = () => {
-                    isDataChanged.forEach(async (data) => {
-                        const dataBh = {
-                            id_work_has: params.id,
-                            warranty_time: data.warranty_time,
-                            warranty_info: data.warranty_info,
-                            unit: data.unit,
-                        };
-                        try {
+
+                // Các phần khác của component
+
+                const handleValueBh = async () => {
+                    try {
+                        const promises = isDataChanged.map(async (data) => {
+                            const dataBh = {
+                                id_work_has: params.id,
+                                warranty_time: data.warranty_time,
+                                warranty_info: data.warranty_info,
+                                unit: data.unit,
+                            };
                             const res = await fetch(
                                 "api/web/update/work-assignment-warranties",
                                 {
@@ -985,7 +1010,6 @@ function Dashboard({ auth }) {
                                     body: JSON.stringify(dataBh),
                                 }
                             );
-
                             if (res.ok) {
                                 console.log("Đã Gửi Thông Tin Bảo Hành");
                             } else {
@@ -994,14 +1018,13 @@ function Dashboard({ auth }) {
                                     res.statusText
                                 );
                             }
-                        } catch (error) {
-                            console.error(
-                                "Error fetching data lỗi rồi:",
-                                error
-                            );
-                        }
-                    });
+                        });
+                        await Promise.all(promises);
+                    } catch (error) {
+                        console.error("Error fetching data lỗi rồi:", error);
+                    }
                 };
+
                 const handleUpdateThuChi = async (e) => {
                     const UrlApi = "api/web/update/work-continue";
                     const data_0 = {
@@ -1031,6 +1054,7 @@ function Dashboard({ auth }) {
                     }
                     handleOpenSpending_total();
                 };
+
                 const handleThuHoi = async (e) => {
                     e.preventDefault();
                     console.log("thu hoi lich");
@@ -1155,7 +1179,9 @@ function Dashboard({ auth }) {
                             UrlApi
                         );
                     }
-                    if (prevData.spending_total !== cardExpires.spending_total) {
+                    if (
+                        prevData.spending_total !== cardExpires.spending_total
+                    ) {
                         fetchUpdateData(
                             {
                                 ac: 11,
@@ -1166,19 +1192,12 @@ function Dashboard({ auth }) {
                             UrlApi
                         );
                     }
-
                 };
                 const dataBtnChi = [
                     {
                         id: "BtnTraLich",
                         content: "Trả Lịch",
                         className: "text-blue-500 rounded-none border-blue-500",
-                    },
-                    {
-                        id: "BtnKhaoSat",
-                        content: "Khảo Sát",
-                        className:
-                            "text-orange-500 rounded-none border-orange-500",
                     },
                     {
                         id: "BtnCapNhat",
@@ -1363,9 +1382,11 @@ function Dashboard({ auth }) {
                             openAdminCheck={openAdminCheck}
                             handleOpenAdminCheck={handleOpenAdminCheck}
                             params={params}
-                            addDot={addDot}
                             handleFileChangeVt={(e) =>
                                 handleFileChange(e, setPreviewImgVt)
+                            }
+                            handleFileChangePt={(e) =>
+                                handleFileChange(e, setPreviewImgPt)
                             }
                             imageVt1={imageVt1}
                             host={host}
@@ -1382,6 +1403,8 @@ function Dashboard({ auth }) {
                             handleEdit={() => {
                                 handleCheckAdmin();
                             }}
+                            previewImagesVT={previewImgVt}
+                            previewImagesPT={previewImgPt}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog

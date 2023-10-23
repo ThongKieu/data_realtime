@@ -159,10 +159,10 @@ class WarrantiesController extends Controller
         // dd($re->all());
         $data = Warranties::where('id_work_has','=',$re->id)->get();
         if($data->count()>0){
-            return response()->json(['data'=>$data]);
+            return response()->json($data);
         }
         else
-            return response()->json("Không BH");
+            return response()->json($data);
     }
     public static function timeWarranty($time,$unit)
     {

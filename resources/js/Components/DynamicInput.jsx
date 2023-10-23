@@ -13,12 +13,12 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             warranty_info: "Không Bảo Hành",
         },
     ]);
-    const handleClick = (e) => {
-        e.preventDefault();
+    const handleClick = () => {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));
         const newId = maxKey + 1;
-        setData([
+        setData((prevData) => [
+            ...prevData,
             {
                 id: newId,
                 warranty_time: 0,
@@ -40,7 +40,6 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             if (item.id === id) {
                 return { ...item, unit: selectedValue };
             }
-            console.log(selectedValue);
             return item;
         });
         setData(updatedData);
@@ -54,13 +53,13 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
             }
             return item;
         });
-        setData( updatedData);
-
+        setData(updatedData);
     };
     const handleDelete = (id) => {
         const updatedData = data.filter((item) => item.id !== id);
-        setData( updatedData);
-        console.log("xoas", updatedData);
+        setData(updatedData);
+
+        console.log(updatedData);
     };
     sendDataToParent(data);
     // Trả về dữ liệu JSON
@@ -109,16 +108,28 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                             className="mr-1 w-[100%] shadow-none"
                         />
                     </div>
+                    {val.id == 0 ? (
 
-                    <Button
+                        <Button
                         variant="outlined"
                         color="red"
                         className="px-2 py-0 mx-1 "
-                        disabled={disabledAllowed || isAllowedBH}
+                        disabled
                         onClick={(e) => handleDelete(val.id)}
                     >
                         <TrashIcon className="w-5 h-5" />
                     </Button>
+                    ) : (
+                        <Button
+                            variant="outlined"
+                            color="red"
+                            className="px-2 py-0 mx-1 "
+                            disabled={disabledAllowed || isAllowedBH}
+                            onClick={(e) => handleDelete(val.id)}
+                        >
+                            <TrashIcon className="w-5 h-5" />
+                        </Button>
+                    )}
                 </div>
             ))}
             <Button

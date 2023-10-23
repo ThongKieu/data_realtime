@@ -11,15 +11,14 @@ import {
 } from "@material-tailwind/react";
 import {
     XMarkIcon,
-    PencilSquareIcon,
     XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
+import FileInput from "./FileInputImage";
 function AdminCheckDialog({
     params,
-    addDot,
-    handleFileChangeVt,
+    handleFileChangeVt,handleFileChangePt,
     imageVt1,
     host,
     handleImageVtDelete,
@@ -33,6 +32,7 @@ function AdminCheckDialog({
     handleEdit,
     openAdminCheck,
     handleOpenAdminCheck,
+    previewImagesVT,previewImagesPT
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -68,7 +68,7 @@ function AdminCheckDialog({
             const jsonData = await response.json();
             const data = jsonData.data;
             if (response.ok && data !== "undefined") {
-                const formatJson = data.map((item) => ({
+                const formatJson = data?.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
                     warranty_time: item.warranty_time,
@@ -130,9 +130,8 @@ function AdminCheckDialog({
                         <i>
                             <u>Nội Dung Bảo Hành:</u>
                         </i>
-
-                        {dataBH.map((element) => (
-                            <div className="flex gap-4">
+                        {dataBH?.map((element, index) => (
+                            <div className="flex gap-4" key={index}>
                                 <div className="flex p-1">
                                     <EditableInput
                                         label="Bảo Hành"
@@ -155,15 +154,8 @@ function AdminCheckDialog({
                             <u> Hình Vật Tư:</u>
                         </i>
                         <div className="text-center">
-                            <input
-                                id="image_Vt"
-                                type="file"
-                                accept=".jpg, .jpeg, .png"
-                                onChange={handleFileChangeVt}
-                                multiple
-                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                disabled={isAllowed}
-                            />
+                            <FileInput handleFileChange={handleFileChangeVt} previewImages={previewImagesVT}/>
+
                             {imageVt1 == "" || imageVt1 == null ? (
                                 <i>(Không Có Hình)</i>
                             ) : (
@@ -195,15 +187,7 @@ function AdminCheckDialog({
                             <u>Hình Phiếu Thu:</u>
                         </i>
                         <div className="text-center">
-                            <input
-                                id="image_Vt"
-                                type="file"
-                                accept=".jpg, .jpeg, .png"
-                                onChange={handleFileChangeVt}
-                                multiple
-                                className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                disabled={isAllowed}
-                            />
+                        <FileInput handleFileChange={handleFileChangePt} previewImages={previewImagesPT}/>
                             {imagePt1 == "" || imagePt1 == null ? (
                                 <i>(Không Có Hình)</i>
                             ) : (

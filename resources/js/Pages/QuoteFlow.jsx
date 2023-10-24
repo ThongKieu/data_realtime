@@ -30,7 +30,7 @@ import {
   XMarkIcon,
   EllipsisVerticalIcon,
   TicketIcon,
-  CheckCircleIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 
 function QuoteFlow({ auth }) {
@@ -98,140 +98,6 @@ function QuoteFlow({ auth }) {
   // const  = infoBook;
   const columns = [
     { field: "id", headerName: "ID", width: 20 },
-    {
-      field: "work_content",
-      headerName: "Nội dung công việc",
-      minWidth: 400,
-      editable: true,
-    },
-    {
-      field: "date_book",
-      headerName: "Ngày Đăng ký",
-      width: 100,
-      editable: true,
-    },
-    {
-      field: "add",
-      headerName: "Địa chỉ",
-      type: "number",
-      width: 210,
-      editable: false,
-      sortable: false,
-      valueGetter: (params) =>
-        `${params.row.street || ""} ${params.row.district || ""}`,
-    },
-    {
-      field: "name",
-      headerName: "Ng Khởi tạo",
-      description: "Nhân Viên Tạo Báo giá",
-      type: "number",
-      width: 110,
-      editable: false,
-    },
-    {
-      field: "staff_in_change_id",
-      headerName: "Ng Xử Lý",
-      description: "Nhân Viên đang phụ trách",
-      sortable: false,
-      width: 210,
-      renderCell: (params) => {
-        const [nameAdmin, setNameAdmin] = useState();
-
-        useEffect(() => {
-          if (adminUser && params.row.staff_in_change_id !== null) {
-            adminUser.forEach((item, index) => {
-              if (params.row.staff_in_change_id == item.id) {
-                setNameAdmin(item.name);
-              }
-            });
-          }
-        }, [adminUser, params.row.staff_in_change_id]);
-        return (
-          <p className="bg-blue-gray-500 sr-onlyg">
-            {params.row.staff_in_change_id === null ? (
-              <select
-                className="w-full border border-lg "
-                defaultValue={selectAdmin}
-                onChange={handleChangeSelectAdmin}
-              >
-                <option>Chưa Chọn</option>
-                {adminUser.map((nam, index) => (
-                  <option
-                    key={index}
-                    value={nam.id}
-                    className="w-full"
-                  >
-                    {nam.name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <p>{nameAdmin}</p>
-            )}
-          </p>
-        );
-      },
-    },
-    {
-      field: "total",
-      headerName: "Tổng báo giá",
-      description: "Tổng báo giá",
-      width: 150,
-      editable: false,
-      renderCell:(params)=>{
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-          
-      });
-      return (
-        <span className="text-center">
-            {formatter.format(params.row.total)}
-        </span>
-    );
-      },
-    },
-    {
-      field: "expense",
-      headerName: "Tổng báo giá",
-      description: "Tổng báo giá",
-      width: 150,
-      editable: false,
-      renderCell:(params)=>{
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-          
-      });
-      return (
-        <span className="text-center">
-            {formatter.format(params.row.expense)}
-        </span>
-    );
-      },
-    },
-    {
-      field: "pripot_percent",
-      headerName: "% Lợi Nhuận",
-      description: "% Lợi Nhuận",
-      width: 150,
-      editable: false,
-      renderCell:(params)=>{
-      
-      return (
-        <span className="text-center">
-            {params.row.pripot_percent} %
-        </span>
-    );
-      },
-    },
-    {
-      field: "date_do",
-      headerName: "Ngày Làm",
-      description: "Ngày Làm",
-      width: 150,
-      editable: false,
-    },
     {
       field: "status",
       headerName: "Trạng thái",
@@ -366,6 +232,141 @@ function QuoteFlow({ auth }) {
         }
       },
     },
+    {
+      field: "work_content",
+      headerName: "Nội dung công việc",
+      minWidth: 200,
+      editable: true,
+    },
+    {
+      field: "date_book",
+      headerName: "Ngày Đăng ký",
+      width: 100,
+      editable: true,
+    },
+    {
+      field: "add",
+      headerName: "Địa chỉ",
+      type: "number",
+      width: 210,
+      editable: false,
+      sortable: false,
+      valueGetter: (params) =>
+        `${params.row.street || ""} ${params.row.district || ""}`,
+    },
+    {
+      field: "name",
+      headerName: "Ng Khởi tạo",
+      description: "Nhân Viên Tạo Báo giá",
+      type: "number",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "staff_in_change_id",
+      headerName: "Ng Xử Lý",
+      description: "Nhân Viên đang phụ trách",
+      sortable: false,
+      width: 210,
+      renderCell: (params) => {
+        const [nameAdmin, setNameAdmin] = useState();
+
+        useEffect(() => {
+          if (adminUser && params.row.staff_in_change_id !== null) {
+            adminUser.forEach((item, index) => {
+              if (params.row.staff_in_change_id == item.id) {
+                setNameAdmin(item.name);
+              }
+            });
+          }
+        }, [adminUser, params.row.staff_in_change_id]);
+        return (
+          <p className="bg-blue-gray-500 sr-onlyg">
+            {params.row.staff_in_change_id === null ? (
+              <select
+                className="w-full border border-lg "
+                defaultValue={selectAdmin}
+                onChange={handleChangeSelectAdmin}
+              >
+                <option>Chưa Chọn</option>
+                {adminUser.map((nam, index) => (
+                  <option
+                    key={index}
+                    value={nam.id}
+                    className="w-full"
+                  >
+                    {nam.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p>{nameAdmin}</p>
+            )}
+          </p>
+        );
+      },
+    },
+    {
+      field: "total",
+      headerName: "Tổng báo giá",
+      description: "Tổng báo giá",
+      width: 150,
+      editable: false,
+      renderCell:(params)=>{
+        const formatter = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          
+      });
+      return (
+        <span className="text-center">
+            {formatter.format(params.row.total)}
+        </span>
+    );
+      },
+    },
+    {
+      field: "expense",
+      headerName: "Tổng báo giá",
+      description: "Tổng báo giá",
+      width: 150,
+      editable: false,
+      renderCell:(params)=>{
+        const formatter = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+          
+      });
+      return (
+        <span className="text-center">
+            {formatter.format(params.row.expense)}
+        </span>
+    );
+      },
+    },
+    {
+      field: "pripot_percent",
+      headerName: "% Lợi Nhuận",
+      description: "% Lợi Nhuận",
+      width: 150,
+      editable: false,
+      renderCell:(params)=>{
+      
+      return (
+        <span className="text-center">
+            {params.row.pripot_percent} %
+        </span>
+    );
+      },
+    },
+    {
+      field: "date_do",
+      headerName: "Ngày Làm",
+      description: "Ngày Làm",
+      width: 150,
+      editable: false,
+    },
+   
     {
 
       field: null,
@@ -547,6 +548,49 @@ function QuoteFlow({ auth }) {
                 </Button>
               </DialogFooter>
             </Dialog>
+             {/* thu chi */}
+             <Tooltip className='w-[200px] h-auto' content='Nhập Thông Tin Báo Giá'>
+              <Button onClick={handleOpenSetThuChi} variant="outlined" color="deep-orange" className="p-2 m-1">
+                <CurrencyDollarIcon className="w-5 h-5">
+
+                </CurrencyDollarIcon>
+              </Button>
+            </Tooltip>
+            <Dialog open={openThuChi} handler={handleOpenSetThuChi} size="lg">
+              <DialogHeader className="justify-center">Nhập thông tin báo giá</DialogHeader>
+              <Divider></Divider>
+              <DialogBody className="grid grid-cols-3 gap-2"  >
+                <Input
+                  label="Nhập tổng thu"
+                  value={setTienThu}
+                  onChange={onChangeTienThu}
+                />
+                <Input
+                  label="Nhập số chi dự kiến"
+                  value={setTienChi}
+                  onChange={onChangeTienChi}
+                />
+                <Input
+                  label="% lợi nhuận dự kiến"
+                  value={setLoiNhuan}
+                />
+              </DialogBody>
+              <Divider></Divider>
+              <DialogFooter>
+                <Button variant="gradient" color="green" onClick={onClickHandleThuChi}>
+                  <span>Lưu</span>
+                </Button>
+                <Button
+                  variant="text"
+                  color="red"
+                  onClick={handleOpenSetThuChi}
+                  className="mr-1"
+                >
+                  <span>Hủy</span>
+                </Button>
+
+              </DialogFooter>
+            </Dialog>
             <Tooltip className='w-[200px] h-auto' content='Thay Đổi Nhân Sự Báo Giá'>
               <Button onClick={handleOpenSetAdmin} variant="outlined" color="green" className="p-2 m-1">
                 <UserPlusIcon className="w-5 h-5">
@@ -589,49 +633,7 @@ function QuoteFlow({ auth }) {
 
               </DialogFooter>
             </Dialog>
-            {/* thu chi */}
-            <Tooltip className='w-[200px] h-auto' content='Nhập Thông Tin Báo Giá'>
-              <Button onClick={handleOpenSetThuChi} variant="outlined" color="green" className="p-2 m-1">
-                <UserPlusIcon className="w-5 h-5">
-
-                </UserPlusIcon>
-              </Button>
-            </Tooltip>
-            <Dialog open={openThuChi} handler={handleOpenSetThuChi} size="lg">
-              <DialogHeader className="justify-center">Nhập thông tin báo giá</DialogHeader>
-              <Divider></Divider>
-              <DialogBody className="grid grid-cols-3 gap-2"  >
-                <Input
-                  label="Nhập tổng thu"
-                  value={setTienThu}
-                  onChange={onChangeTienThu}
-                />
-                <Input
-                  label="Nhập số chi dự kiến"
-                  value={setTienChi}
-                  onChange={onChangeTienChi}
-                />
-                <Input
-                  label="% lợi nhuận dự kiến"
-                  value={setLoiNhuan}
-                />
-              </DialogBody>
-              <Divider></Divider>
-              <DialogFooter>
-                <Button variant="gradient" color="green" onClick={onClickHandleThuChi}>
-                  <span>Lưu</span>
-                </Button>
-                <Button
-                  variant="text"
-                  color="red"
-                  onClick={handleOpenSetThuChi}
-                  className="mr-1"
-                >
-                  <span>Hủy</span>
-                </Button>
-
-              </DialogFooter>
-            </Dialog>
+           
           </>
         );
         ;

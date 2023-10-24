@@ -138,13 +138,13 @@ function AdminCheckDialog({
                         <i>
                             <u>Nội Dung Bảo Hành:</u>
                         </i>
+
                         {dataBH?.map((element, index) => (
-                            <Card className="grid grid-cols-2 gap-2" key={index}>
-                                <span>
-                                    {element.warranty_time} {element.unit}
-                                    {element.warranty_info}
-                                </span>
-                            </Card>
+                            <span className="flex p-2 border" key={index}>
+                                {element.warranty_time}
+                                {element.unit}
+                                {element.warranty_info}
+                            </span>
                         ))}
                     </div>
                     <div className="flex-1 p-2 border border-green-500 border-x-0">

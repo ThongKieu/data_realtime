@@ -9,16 +9,14 @@ import {
     Input,
     DialogHeader,
 } from "@material-tailwind/react";
-import {
-    XMarkIcon,
-    XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
 function AdminCheckDialog({
     params,
-    handleFileChangeVt,handleFileChangePt,
+    handleFileChangeVt,
+    handleFileChangePt,
     imageVt1,
     host,
     handleImageVtDelete,
@@ -32,7 +30,8 @@ function AdminCheckDialog({
     handleEdit,
     openAdminCheck,
     handleOpenAdminCheck,
-    previewImagesVT,previewImagesPT
+    previewImagesVT,
+    previewImagesPT,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -65,24 +64,30 @@ function AdminCheckDialog({
             const response = await fetch(
                 `api/web/work-assignment/warranties?id=${params.row.id}`
             );
+
             const jsonData = await response.json();
-            const data = jsonData.data;
-            if (response.ok && data !== "undefined") {
-                const formatJson = data?.map((item) => ({
+
+            console.log(jsonData);
+            if (response.ok && jsonData && jsonData.length > 0) {
+                const formatJson = jsonData.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
                     warranty_time: item.warranty_time,
-                    unit: item.unit
+                    unit: item.unit,
                 }));
                 setDataBH(formatJson);
+            } else {
+                console.error("Data from API is undefined or empty.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+
     useEffect(() => {
         fetchDataBH();
     }, []);
+
     return (
         <Dialog
             open={openAdminCheck}
@@ -114,14 +119,17 @@ function AdminCheckDialog({
                     </div>
                     <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">
                         <EditableInput
+                            id="seri_number"
+                            name="seri_number"
                             type="text"
-                            value={params.row.seri_number}
+                            value={cardExpires.seri_number}
                             label="Số Phiếu Thu"
                             onChange={handleChange}
                             containerProps={containerProps}
                             disabled={!activePt.inputSPT}
                             active={activePt.inputSPT}
                             handleSetActive={() => handleSetActive("inputSPT")}
+                            handleEdit={handleEdit}
                         />
                     </div>
                 </div>
@@ -131,22 +139,12 @@ function AdminCheckDialog({
                             <u>Nội Dung Bảo Hành:</u>
                         </i>
                         {dataBH?.map((element, index) => (
-                            <div className="flex gap-4" key={index}>
-                                <div className="flex p-1">
-                                    <EditableInput
-                                        label="Bảo Hành"
-                                        type="text"
-                                        value={`${element.warranty_time} ${element.unit} ${element.warranty_info}`}
-                                        onChange={handleChange}
-                                        containerProps={containerProps}
-                                        disabled={!activePt.inputBH}
-                                        active={activePt.inputBH}
-                                        handleSetActive={() =>
-                                            handleSetActive("inputBH")
-                                        }
-                                    />
-                                </div>
-                            </div>
+                            <Card className="grid grid-cols-2 gap-2" key={index}>
+                                <span>
+                                    {element.warranty_time} {element.unit}
+                                    {element.warranty_info}
+                                </span>
+                            </Card>
                         ))}
                     </div>
                     <div className="flex-1 p-2 border border-green-500 border-x-0">
@@ -154,7 +152,10 @@ function AdminCheckDialog({
                             <u> Hình Vật Tư:</u>
                         </i>
                         <div className="text-center">
-                            <FileInput handleFileChange={handleFileChangeVt} previewImages={previewImagesVT}/>
+                            <FileInput
+                                handleFileChange={handleFileChangeVt}
+                                previewImages={previewImagesVT}
+                            />
 
                             {imageVt1 == "" || imageVt1 == null ? (
                                 <i>(Không Có Hình)</i>
@@ -166,7 +167,7 @@ function AdminCheckDialog({
                                             className="relative border border-green-500 rounded-none"
                                         >
                                             <XCircleIcon
-                                                className="absolute top-[-10px] right-[-23px] w-5 h-5 mr-3 cursor-pointer font-bold"
+                                                className="absolute top-[-10px] right-[-23px] w-5 h-5 mr-3 cursor-pointer font-bold text-red-500"
                                                 onClick={() =>
                                                     handleImageVtDelete(index)
                                                 }
@@ -187,7 +188,10 @@ function AdminCheckDialog({
                             <u>Hình Phiếu Thu:</u>
                         </i>
                         <div className="text-center">
-                        <FileInput handleFileChange={handleFileChangePt} previewImages={previewImagesPT}/>
+                            <FileInput
+                                handleFileChange={handleFileChangePt}
+                                previewImages={previewImagesPT}
+                            />
                             {imagePt1 == "" || imagePt1 == null ? (
                                 <i>(Không Có Hình)</i>
                             ) : (
@@ -198,7 +202,7 @@ function AdminCheckDialog({
                                             className="relative border border-green-500 rounded-none"
                                         >
                                             <XCircleIcon
-                                                className="absolute top-[-10px] right-[-23px] w-5 h-5 mr-3 cursor-pointer font-bold"
+                                                className="absolute top-[-10px] right-[-23px] w-5 h-5 mr-3 cursor-pointer font-bold text-red-500"
                                                 onClick={() =>
                                                     handleImagePtDelete(index)
                                                 }

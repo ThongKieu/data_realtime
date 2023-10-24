@@ -757,8 +757,9 @@ function Dashboard({ auth }) {
             editable: false,
             type: "text",
             renderCell: (params) => {
-                const [TTBH, setDataBH] = useState({});
-
+                const [TTBH, setDataBH] = useState([]);
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => {getDataBh(),setOpen(!open)};
                 const getDataBh = async () => {
                     try {
                         const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
@@ -775,14 +776,41 @@ function Dashboard({ auth }) {
 
                 return (
                     <>
-                        {TTBH.map((item) => {
-                            console.log(item);
-                            return (
-                                <p>
-                                    {item.warranty_time} {item.warranty_info}
-                                </p>
-                            );
-                        })}
+                        {TTBH.unit !== "" ? (
+                            <IconButton
+                                className="w-8 h-8 p-1"
+                                variant="outlined"
+                                onClick={handleOpen}
+                            >
+                                <ClipboardDocumentListIcon className="w-4 h-4" />
+                            </IconButton>
+                        ) : (
+                            <span>kbh</span>
+                        )}
+
+                        <Dialog open={open} handler={handleOpen}>
+                            <DialogHeader>Ghi Chú</DialogHeader>
+                            <DialogBody divider>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {TTBH.map((item, index) => (
+                                        <Card className="p-2" key={index}>
+                                            <span>Bảo Hành: {item.warranty_time == 0 ? 'kbh': `${item.warranty_time} ${item.unit}` } </span>
+                                            <span>Nội Dung: {item.warranty_info} </span>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpen}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
                     </>
                 );
             },
@@ -1011,7 +1039,10 @@ function Dashboard({ auth }) {
                                 }
                             );
                             if (res.ok) {
-                                console.log("Đã Gửi Thông Tin Bảo Hành");
+                                console.log(
+                                    "Đã Gửi Thông Tin Bảo Hành",
+                                    dataBh
+                                );
                             } else {
                                 console.error(
                                     "Lỗi khi gửi dữ liệu:",
@@ -1047,10 +1078,8 @@ function Dashboard({ auth }) {
                             image_Vt
                         );
                         handleValueBh();
-                        console.log("cardExpires data_0", data_0);
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
-                        console.log("cardExpires data_1", data_1);
                     }
                     handleOpenSpending_total();
                 };
@@ -1095,104 +1124,33 @@ function Dashboard({ auth }) {
                         work_note: params.row.real_note,
                         income_total: params.row.income_total,
                         spending_total: params.row.spending_total,
+                        seri_number: params.row.seri_number
                     };
 
-                    if (prevData.work_content !== cardExpires.work_content) {
-                        fetchUpdateData(
-                            {
-                                ac: 4,
-                                auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                work_content: cardExpires.work_content,
-                            },
-                            UrlApi
-                        );
-                    }
+                    const dataFields = [
+                        { key: "seri_number", ac: 0 },
+                        { key: "work_content", ac: 4, id_cus: params.row.id_cus },
+                        { key: "phone_number", ac: 5, id_cus: params.row.id_cus },
+                        { key: "street", ac: 6, id_cus: params.row.id_cus },
+                        { key: "district", ac: 7, id_cus: params.row.id_cus },
+                        { key: "name_cus", ac: 8, id_cus: params.row.id_cus },
+                        { key: "work_note", ac: 9, id_cus: params.row.id_cus },
+                        { key: "income_total", ac: 10, id: params.row.id },
+                        { key: "spending_total", ac: 11, id: params.row.id }
+                    ];
 
-                    if (prevData.phone_number !== cardExpires.phone_number) {
-                        fetchUpdateData(
-                            {
-                                ac: 5,
+                    dataFields.forEach((field) => {
+                        if (prevData[field.key] !== cardExpires[field.key]) {
+                            const data = {
+                                ...field,
                                 auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                phone_number: cardExpires.phone_number,
-                            },
-                            UrlApi
-                        );
-                    }
-
-                    if (prevData.street !== cardExpires.street) {
-                        fetchUpdateData(
-                            {
-                                ac: 6,
-                                auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                street: cardExpires.street,
-                            },
-                            UrlApi
-                        );
-                    }
-
-                    if (prevData.district !== cardExpires.district) {
-                        fetchUpdateData(
-                            {
-                                ac: 7,
-                                auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                district: cardExpires.district,
-                            },
-                            UrlApi
-                        );
-                    }
-
-                    if (prevData.name_cus !== cardExpires.name_cus) {
-                        fetchUpdateData(
-                            {
-                                ac: 8,
-                                auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                name_cus: cardExpires.name_cus,
-                            },
-                            UrlApi
-                        );
-                    }
-
-                    if (prevData.work_note !== cardExpires.real_note) {
-                        fetchUpdateData(
-                            {
-                                ac: 9,
-                                auth_id: auth.user.id,
-                                id_cus: params.row.id_cus,
-                                work_note: cardExpires.real_note,
-                            },
-                            UrlApi
-                        );
-                    }
-                    if (prevData.income_total !== cardExpires.income_total) {
-                        fetchUpdateData(
-                            {
-                                ac: 10,
-                                auth_id: auth.user.id,
-                                id: params.row.id,
-                                income_total: cardExpires.income_total,
-                            },
-                            UrlApi
-                        );
-                    }
-                    if (
-                        prevData.spending_total !== cardExpires.spending_total
-                    ) {
-                        fetchUpdateData(
-                            {
-                                ac: 11,
-                                auth_id: auth.user.id,
-                                id: params.row.id,
-                                spending_total: cardExpires.spending_total,
-                            },
-                            UrlApi
-                        );
-                    }
+                                [field.key]: cardExpires[field.key]
+                            };
+                            fetchUpdateData(data, UrlApi);
+                        }
+                    });
                 };
+
                 const dataBtnChi = [
                     {
                         id: "BtnTraLich",

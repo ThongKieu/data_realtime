@@ -487,7 +487,9 @@ class WorksAssignmentController extends Controller
 
             if ($per == 1) {
                 switch ($request->ac) {
+
                     case 0:
+                        dd($request->all());
                         // Update seri number
                         WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
                         return 'Update Seri';

@@ -13,23 +13,9 @@ class WarrantiesController extends Controller
 {
     public static function insertWarranties(Request $req)
     {
-        // switch($req->unit)
-        //         {
-        //             case 1:
-        //                 $time_w = 'd';
-        //                 break;
-        //             case 2:
-        //                 $time_w = 'w';
-        //                 break;
-        //             case 3:
-        //                 $time_w = 'm';
-        //                 break;
-        //             case 4:
-        //                 $time_w = 'y';
-        //                 break;
-        //             default :
-        //                 $time_w = 'n';
-        //         }
+
+      if($req->imcome_total > 0 )
+      {
         $i = new Warranties([
             'id_work_has'=>$req->id_work_has,
             'warranty_time'=> $req->warranty_time,
@@ -42,6 +28,9 @@ class WarrantiesController extends Controller
             return 'ok';
         }
         return 'non ok';
+      }
+      else
+        return 'Không có tiền mà đòi bảo hành???????????????';
     }
     public function infoWarranty(Request $req)
     {

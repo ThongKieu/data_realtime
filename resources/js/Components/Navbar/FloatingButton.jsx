@@ -327,7 +327,7 @@ function FloatingButton() {
                                         name="kind_work"
                                         label="Cơ Khí"
                                         value="6"
-                                        checked={formData.kind_work === "6"}
+                                        checked={formData.kind_work === "6" }
                                         onChange={handleChange}
                                     />
                                 </div>

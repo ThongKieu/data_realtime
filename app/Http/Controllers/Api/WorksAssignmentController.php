@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\Web\QuoteFlowController;
 use App\Http\Controllers\Api\CheckWorkByAdminController;
+use App\Models\Warranties;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
@@ -495,8 +496,8 @@ class WorksAssignmentController extends Controller
                         return 'Update Seri';
                     case 1:
                         // thay đổi thông tin bảo hành
-                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
-                        return 'Update Seri';
+                        Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranties_time'=>$request->warranties_time,'warranties_info'=>$request->warranties_info]);
+                        return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                         $path = '';

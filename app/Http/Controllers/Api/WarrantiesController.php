@@ -13,28 +13,28 @@ class WarrantiesController extends Controller
 {
     public static function insertWarranties(Request $req)
     {
-        switch($req->unit)
-                {
-                    case 1:
-                        $time_w = 'd';
-                        break;
-                    case 2:
-                        $time_w = 'w';
-                        break;
-                    case 3:
-                        $time_w = 'm';
-                        break;
-                    case 4:
-                        $time_w = 'y';
-                        break;
-                    default :
-                        $time_w = 'n';
-                }
+        // switch($req->unit)
+        //         {
+        //             case 1:
+        //                 $time_w = 'd';
+        //                 break;
+        //             case 2:
+        //                 $time_w = 'w';
+        //                 break;
+        //             case 3:
+        //                 $time_w = 'm';
+        //                 break;
+        //             case 4:
+        //                 $time_w = 'y';
+        //                 break;
+        //             default :
+        //                 $time_w = 'n';
+        //         }
         $i = new Warranties([
             'id_work_has'=>$req->id_work_has,
             'warranty_time'=> $req->warranty_time,
             'warranty_info' => $req->warranty_info,
-            'unit'=> $time_w,
+            'unit'=> $req->unit,
         ]);
         $i->save();
         if($i)

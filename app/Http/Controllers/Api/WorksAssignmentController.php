@@ -494,7 +494,7 @@ class WorksAssignmentController extends Controller
                         return 'Update Seri';
                     case 1:
                         // thay đổi thông tin bảo hành
-                        Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranties_time'=>$request->warranties_time,'warranties_info'=>$request->warranties_info]);
+                        Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
                         return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');

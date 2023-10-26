@@ -17,6 +17,7 @@ const EditableInput = ({
     active,
     handleSetActive,
     handleEdit,
+    classNameChild
 }) => {
     return (
         <>
@@ -28,7 +29,7 @@ const EditableInput = ({
                 onChange={onChange}
                 containerProps={containerProps}
                 disabled={disabled}
-                className={`shadow-none ${active ? "active" : ""}`}
+                className={`shadow-none ${active ? "active" : ""} ${classNameChild}`}
             />
 
             {active ? (

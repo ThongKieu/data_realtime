@@ -277,7 +277,7 @@ function NavList({ active = false }) {
                                 Thông tin Báo giá
                             </MenuItem>
                         </NavLink>
-                        <NavLink href={route("WorkerMain")} className="font-normal">
+                        <NavLink href={route('products')} className="font-normal">
                             <MenuItem className="gap-2 text-black lg:rounded-full">
                                 Thông Tin Sản Phẩm
                             </MenuItem>

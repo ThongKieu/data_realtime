@@ -63,6 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
+    Route::get('/products', function () {return Inertia::render('Products/Products');})->name('products');
+    Route::get('/product', function () {return Inertia::render('Products/Product');})->name('product');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

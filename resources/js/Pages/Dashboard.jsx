@@ -626,7 +626,7 @@ function Dashboard({ auth }) {
         {
             field: "work_content",
             headerName: "yêu cầu công việc",
-            width: 140,
+            width: 160,
             editable: false,
             renderEditCell: (params) => (
                 <input
@@ -651,6 +651,101 @@ function Dashboard({ auth }) {
                     }}
                 />
             ),
+        },
+        {
+            field: "BH",
+            headerName: "BH",
+            width: 50,
+            editable: false,
+            type: "text",
+            renderCell: (params) => {
+                const [TTBH, setDataBH] = useState([]);
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => {
+                    setOpen(!open);
+                };
+                const getDataBh = async () => {
+                    if (params.row.id != "undefined") {
+                        try {
+                            const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
+                            const response = await fetch(url);
+                            const data = await response.json();
+                            setDataBH(data);
+                        } catch (error) {
+                            console.error("Error fetching data:", error);
+                        }
+                    }
+                };
+                useEffect(() => {
+                    getDataBh();
+                }, []);
+                return (
+                    <>
+                        {TTBH.length > 0 ? (
+                            <IconButton
+                                className="w-8 h-8 p-1"
+                                variant="outlined"
+                                onClick={handleOpen}
+                            >
+                                <ClipboardDocumentListIcon className="w-4 h-4" />
+                            </IconButton>
+                        ) : (
+                            <span>kbh</span>
+                        )}
+                        <Dialog open={open} handler={handleOpen} size="lg">
+                            <DialogHeader>Ghi Chú</DialogHeader>
+                            <DialogBody divider>
+                                <div className="h-[50vh] overflow-y-auto">
+                                    {TTBH.map((item, index) => {
+                                        return (
+                                            <Card
+                                                className="p-2 my-2 border border-green-500"
+                                                key={index}
+                                            >
+                                                <span>
+                                                    Bảo Hành:
+                                                    {item.warranty_time === 0
+                                                        ? "kbh"
+                                                        : `${
+                                                              item.warranty_time
+                                                          } ${
+                                                              item.unit === "d"
+                                                                  ? "ngày"
+                                                                  : item.unit ===
+                                                                    "w"
+                                                                  ? "tuần"
+                                                                  : item.unit ===
+                                                                    "m"
+                                                                  ? "tháng"
+                                                                  : item.unit ===
+                                                                    "y"
+                                                                  ? "năm"
+                                                                  : ""
+                                                          }`}
+                                                </span>
+                                                <span>
+                                                    Nội Dung:
+                                                    {item.warranty_info}
+                                                </span>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpen}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </>
+                );
+            },
         },
         {
             field: "street",
@@ -750,71 +845,7 @@ function Dashboard({ auth }) {
             headerAlign: "left",
             editable: false,
         },
-        {
-            field: "BH",
-            headerName: "BH",
-            width: 30,
-            editable: false,
-            type: "text",
-            renderCell: (params) => {
-                const [TTBH, setDataBH] = useState([]);
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => {getDataBh(),setOpen(!open)};
-                const getDataBh = async () => {
-                    try {
-                        const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        setDataBH(data);
-                    } catch (error) {
-                        console.error("Error fetching data:", error);
-                    }
-                };
-                useEffect(() => {
-                    getDataBh();
-                }, []);
 
-                return (
-                    <>
-                        {TTBH.unit !== "" ? (
-                            <IconButton
-                                className="w-8 h-8 p-1"
-                                variant="outlined"
-                                onClick={handleOpen}
-                            >
-                                <ClipboardDocumentListIcon className="w-4 h-4" />
-                            </IconButton>
-                        ) : (
-                            <span>kbh</span>
-                        )}
-
-                        <Dialog open={open} handler={handleOpen}>
-                            <DialogHeader>Ghi Chú</DialogHeader>
-                            <DialogBody divider>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {TTBH.map((item, index) => (
-                                        <Card className="p-2" key={index}>
-                                            <span>Bảo Hành: {item.warranty_time == 0 ? 'kbh': `${item.warranty_time} ${item.unit}` } </span>
-                                            <span>Nội Dung: {item.warranty_info} </span>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </DialogBody>
-                            <DialogFooter>
-                                <Button
-                                    variant="text"
-                                    color="red"
-                                    onClick={handleOpen}
-                                    className="mr-1"
-                                >
-                                    <span>Thoát</span>
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
-                    </>
-                );
-            },
-        },
         {
             field: "worker_name",
             headerName: "Thợ",
@@ -956,9 +987,8 @@ function Dashboard({ auth }) {
                 const [openKS, handleOpenKS] = useToggle(false);
                 const [openThuHoi, handleOpenThuHoi] = useToggle(false);
                 const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);
+                const [isEdited, setIsEdited] = useState(false);
                 const [openSpending_total, handleOpenSpending_total] =
-                    useToggle(false);
-                const [openUpdateThuChi, handleOpenUpdateThuChi] =
                     useToggle(false);
                 const [work_note, setWorkNote] = useState();
                 const handleChange = (e) => {
@@ -967,6 +997,7 @@ function Dashboard({ auth }) {
                         ...prevData,
                         [name]: value,
                     }));
+                    setIsEdited(true);
                 };
                 const handleSentDeleteDone = async () => {
                     try {
@@ -1027,6 +1058,7 @@ function Dashboard({ auth }) {
                                 warranty_time: data.warranty_time,
                                 warranty_info: data.warranty_info,
                                 unit: data.unit,
+                                income_total: cardExpires.income_total,
                             };
                             const res = await fetch(
                                 "api/web/update/work-assignment-warranties",
@@ -1121,22 +1153,30 @@ function Dashboard({ auth }) {
                         street: params.row.street,
                         district: params.row.district,
                         name_cus: params.row.name_cus,
-                        work_note: params.row.real_note,
+                        real_note: params.row.real_note,
                         income_total: params.row.income_total,
                         spending_total: params.row.spending_total,
-                        seri_number: params.row.seri_number
+                        seri_number: params.row.seri_number,
                     };
 
                     const dataFields = [
-                        { key: "seri_number", ac: 0 },
-                        { key: "work_content", ac: 4, id_cus: params.row.id_cus },
-                        { key: "phone_number", ac: 5, id_cus: params.row.id_cus },
+                        { key: "seri_number", ac: 12, id: params.row.id },
+                        {
+                            key: "work_content",
+                            ac: 4,
+                            id_cus: params.row.id_cus,
+                        },
+                        {
+                            key: "phone_number",
+                            ac: 5,
+                            id_cus: params.row.id_cus,
+                        },
                         { key: "street", ac: 6, id_cus: params.row.id_cus },
                         { key: "district", ac: 7, id_cus: params.row.id_cus },
                         { key: "name_cus", ac: 8, id_cus: params.row.id_cus },
-                        { key: "work_note", ac: 9, id_cus: params.row.id_cus },
+                        { key: "real_note", ac: 9, id: params.row.id },
                         { key: "income_total", ac: 10, id: params.row.id },
-                        { key: "spending_total", ac: 11, id: params.row.id }
+                        { key: "spending_total", ac: 11, id: params.row.id },
                     ];
 
                     dataFields.forEach((field) => {
@@ -1144,7 +1184,7 @@ function Dashboard({ auth }) {
                             const data = {
                                 ...field,
                                 auth_id: auth.user.id,
-                                [field.key]: cardExpires[field.key]
+                                [field.key]: cardExpires[field.key],
                             };
                             fetchUpdateData(data, UrlApi);
                         }
@@ -1170,7 +1210,7 @@ function Dashboard({ auth }) {
                 const spending = params.row.spending_total;
                 const income = params.row.income_total;
                 const DK1 = auth.user.permission != 1 ? "hidden" : "";
-                const DK2 = spending && income ? "hidden" : "";
+                const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
                 const data = hasData.bill_imag;
@@ -1178,6 +1218,7 @@ function Dashboard({ auth }) {
                 const filteredArray = parts?.filter(
                     (item) => item.trim() !== ""
                 );
+
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
@@ -1282,7 +1323,7 @@ function Dashboard({ auth }) {
                                 <>
                                     <Tooltip content="Nhập Thu Chi">
                                         <ArrowUpTrayIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} `}
+                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
                                             onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
@@ -1363,6 +1404,9 @@ function Dashboard({ auth }) {
                             }}
                             previewImagesVT={previewImgVt}
                             previewImagesPT={previewImgPt}
+                            classNameChild={`${
+                                isEdited ? "border-red-500" : "border-gray-300"
+                            }`}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog

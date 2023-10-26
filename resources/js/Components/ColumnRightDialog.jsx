@@ -122,6 +122,38 @@ const ThuHoiDialog = ({
         </Dialog>
     );
 };
+const BHDialog = ({
+    openBH,
+    handleOpenBH,
+    setBH,
+    handleBH,
+}) => {
+    return (
+        <Dialog open={openBH} handler={handleOpenBH}>
+            <div className="flex items-center justify-between">
+                <DialogHeader>Nội Dung Bảo Hành</DialogHeader>
+                <XMarkIcon
+                    className="w-5 h-5 mr-3 cursor-pointer"
+                    onClick={handleOpenBH}
+                />
+            </div>
+            <DialogBody divider>
+                <div className="grid gap-6">
+                    <Textarea
+                        label="Lý do thu hồi"
+                        className="shadow-none"
+                        onChange={(e) => setBH(e.target.value)}
+                    />
+                </div>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+                <Button variant="gradient" color="red" onClick={handleBH}>
+                    Xác nhận
+                </Button>
+            </DialogFooter>
+        </Dialog>
+    );
+};
 const HuyDialog = ({
     openHuy,
     handleOpenHuy,
@@ -278,4 +310,4 @@ const KhaoSatDialog = ({
         </Dialog>
     );
 };
-export { ThoDialog, ReasonDialog, ThuHoiDialog, HuyDialog, KhaoSatDialog };
+export { ThoDialog, ReasonDialog, ThuHoiDialog, HuyDialog, KhaoSatDialog, BHDialog};

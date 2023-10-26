@@ -482,18 +482,11 @@ class WorksAssignmentController extends Controller
     }
     public function checkWorkByAdmin(Request $request)
     {
-        // dd($request);
-        if ($request->ac) {
+        if ($request->ac != null) {
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
-
             if ($per == 1) {
                 switch ($request->ac) {
 
-                    case 0:
-                        dd($request->all());
-                        // Update seri number
-                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
-                        return 'Update Seri';
                     case 1:
                         // thay đổi thông tin bảo hành
                         Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
@@ -580,8 +573,8 @@ class WorksAssignmentController extends Controller
                         Work::where('id', '=', $request->id_cus)->update(['name_cus' => $request->name_cus]);
                         return 'Update name_cus';
                     case 9:
-                        //Work Note
-                        Work::where('id', '=', $request->id_cus)->update(['work_note' => $request->work_note]);
+                        //real_note
+                        WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $request->real_note]);
                         return 'Update Work_note';
                     case 10:
                         // Incoming money
@@ -592,6 +585,10 @@ class WorksAssignmentController extends Controller
                         // Spend money
                         WorksAssignment::where('id', '=', $request->id)->update(['spending_total' => $request->spending_total]);
                         return 'Update spending_total';
+                    case 12:
+                        // Update seri number
+                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
+                        return 'Update Seri';
                     default:
                         return 'Done With None Update !';
                 }

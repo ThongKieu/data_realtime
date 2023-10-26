@@ -22,12 +22,8 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
 
         setData(updatedData);
         setSelectedValue(selectedValue);
-        console.log(selectedValue);
-        console.log(updatedData);
         setIsAllowedBH(selectedValue === "KBH");
     };
-    console.log(selectedValue);
-
     const handleClick = () => {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(...data.map((item) => item.id));

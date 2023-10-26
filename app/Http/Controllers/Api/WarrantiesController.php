@@ -14,7 +14,7 @@ class WarrantiesController extends Controller
     public static function insertWarranties(Request $req)
     {
 
-      if($req->imcome_total > 0 )
+      if($req->income_total > 0 )
       {
         $i = new Warranties([
             'id_work_has'=>$req->id_work_has,

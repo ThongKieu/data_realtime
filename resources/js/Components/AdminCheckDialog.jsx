@@ -5,14 +5,23 @@ import {
     Typography,
     DialogBody,
     Dialog,
-    IconButton,
+    Option,
+    Select,
     Input,
     DialogHeader,
+    DialogFooter,
 } from "@material-tailwind/react";
-import { XMarkIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+    XMarkIcon,
+    XCircleIcon,
+    PencilSquareIcon,
+    PlusCircleIcon,
+    TrashIcon,
+} from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
+import DynamicTwoInput from "./DynamicInput";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -32,6 +41,7 @@ function AdminCheckDialog({
     handleOpenAdminCheck,
     previewImagesVT,
     previewImagesPT,
+    classNameChild,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -55,19 +65,13 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-
-    // const handleSetActive = () => setActivePt(!activePt);
     const [dataBH, setDataBH] = useState([]);
-
-    const fetchDataBH = async () => {
+    const fetchDataBH = async (id) => {
         try {
             const response = await fetch(
-                `api/web/work-assignment/warranties?id=${params.row.id}`
+                `api/web/work-assignment/warranties?id=${id}`
             );
-
             const jsonData = await response.json();
-
-            console.log(jsonData);
             if (response.ok && jsonData && jsonData.length > 0) {
                 const formatJson = jsonData.map((item) => ({
                     id: item.id,
@@ -83,11 +87,115 @@ function AdminCheckDialog({
             console.error("Error fetching data:", error);
         }
     };
-
     useEffect(() => {
-        fetchDataBH();
+        fetchDataBH(params.row.id);
     }, []);
+    const handleDataBh = (id) => {
+        fetchDataBH(id);
+    };
+    const [openBH, setOpenBH] = useState(false);
+    const handleOpenBH = () => setOpenBH(!openBH);
+    const handleUpdateBH = async () => {
+        const UrlApi = "api/web/update/check-admin";
+        const data = {
+            work_content: params.row.work_content,
+            phone_number: params.row.phone_number,
+            street: params.row.street,
+            district: params.row.district,
+            name_cus: params.row.name_cus,
+            real_note: params.row.real_note,
+            income_total: params.row.income_total,
+            spending_total: params.row.spending_total,
+            seri_number: params.row.seri_number,
+        };
+        try {
+            const res = await fetch(UrlApi, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
+            if (res.ok) {
+                socketD?.emit("addWorkTo_Server", data);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+        handleOpenBH();
+    };
+    const [isDataChanged, setIsDataChanged] = useState([]);
+    const handleValueBh = async () => {
+        try {
+            const promises = isDataChanged.map(async (data) => {
+                const dataBh = {
+                    id_work_has: params.id,
+                    warranty_time: data.warranty_time,
+                    warranty_info: data.warranty_info,
+                    unit: data.unit,
+                    income_total: cardExpires.income_total,
+                };
+                const res = await fetch(
+                    "api/web/update/work-assignment-warranties",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(dataBh),
+                    }
+                );
+                if (res.ok) {
+                    console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
+                } else {
+                    console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+                }
+            });
+            await Promise.all(promises);
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
+    const [selectedValue, setSelectedValue] = useState();
+    const handleSelectChange = (selectedValue, id) => {
+        const updatedData = dataBH.map((item) => {
+            if (item.id === id) {
+                return { ...item, unit: selectedValue };
+            }
+            return item;
+        });
+
+        setDataBH(updatedData);
+        setSelectedValue(selectedValue);
+    };
+    const optionBH = [
+        { id: 0, unit: "KBH", label: "KBH" },
+        { id: 1, unit: "d", label: "Ngày" },
+        { id: 2, unit: "w", label: "Tuần" },
+        { id: 3, unit: "m", label: "Tháng" },
+        { id: 4, unit: "y", label: "Năm" },
+    ];
+    const handleClick = () => {
+        // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
+        const maxKey = Math.max(...dataBH.map((item) => item.id));
+        const newId = maxKey + 1;
+        setDataBH((prevData) => [
+            ...prevData,
+            {
+                id: newId,
+                warranty_time: 0,
+                unit: "KBH",
+                warranty_info: "Không Bảo Hành",
+            },
+        ]);
+    };
+    const handleDelete = (id) => {
+        const updatedData = dataBH.filter((item) => item.id !== id);
+        setDataBH(updatedData);
+    };
     return (
         <Dialog
             open={openAdminCheck}
@@ -130,20 +238,141 @@ function AdminCheckDialog({
                             active={activePt.inputSPT}
                             handleSetActive={() => handleSetActive("inputSPT")}
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                     </div>
                 </div>
                 <div className="flex flex-row justify-between w-full mb-5 text-sm">
                     <div className="flex-1 p-2 border border-green-500">
-                        <i>
+                        <i className="flex">
                             <u>Nội Dung Bảo Hành:</u>
-                        </i>
+                            <PencilSquareIcon
+                                className="w-5 h-5 text-blue-500 cursor-pointer"
+                                onClick={
+                                    handleOpenBH
+                                        ? handleOpenBH
+                                        : handleDataBh(params.row.id)
+                                }
+                            />
+                            <Dialog
+                                open={openBH}
+                                handler={handleOpenBH}
+                                animate={{
+                                    mount: { scale: 1, y: 0 },
+                                    unmount: { scale: 0.9, y: -100 },
+                                }}
+                                size="xl"
+                            >
+                                <DialogHeader>
+                                    Chỉnh Sửa Thông Tin Bảo Hành
+                                </DialogHeader>
+                                <Divider />
+                                <DialogBody>
+                                    {dataBH.map((item) => (
+                                        <div className="flex justify-between gap-1 mb-2">
+                                            <div>
+                                                <Select
+                                                    value={item.unit}
+                                                    defaultValue={selectedValue}
+                                                    label="Bảo Hành"
+                                                    onChange={(selectedValue) =>
+                                                        handleSelectChange(
+                                                            selectedValue,
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    {optionBH.map((option) => (
+                                                        <Option
+                                                            key={option.unit}
+                                                            value={option.unit}
+                                                        >
+                                                            {option.label}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </div>
 
+                                            <div className="flex-none">
+                                                <Input
+                                                    label="Thời Gian Bảo Hành"
+                                                    id="warranty_time"
+                                                    name="warranty_time"
+                                                    type="number"
+                                                    min="1"
+                                                    max="30"
+                                                    value={item.warranty_time}
+                                                    onChange={(e) =>
+                                                        handleChange(e, item.id)
+                                                    }
+                                                    className="w-[100%] shadow-none"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <Input
+                                                    label="Nội Dung Bảo Hành"
+                                                    name="warranty_info"
+                                                    value={item.warranty_info}
+                                                    onChange={(e) =>
+                                                        handleChange(e, item.id)
+                                                    }
+                                                    className="mr-1 w-[100%] shadow-none"
+                                                />
+                                            </div>
+                                            <Button
+                                                variant="outlined"
+                                                color="red"
+                                                className="px-2 py-0 mx-1 "
+                                                onClick={(e) =>
+                                                    handleDelete(item.id)
+                                                }
+                                            >
+                                                <TrashIcon className="w-5 h-5" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        onClick={handleClick}
+                                        variant="outlined"
+                                        color="green"
+                                        className="px-1 py-1 mb-1"
+                                    >
+                                        <PlusCircleIcon className="w-5 h-5" />
+                                    </Button>
+                                </DialogBody>
+                                <Divider />
+                                <DialogFooter>
+                                    <Button
+                                        variant="text"
+                                        color="red"
+                                        onClick={handleOpenBH}
+                                        className="mr-1"
+                                    >
+                                        <span>Thoát</span>
+                                    </Button>
+                                    <Button
+                                        variant="gradient"
+                                        color="green"
+                                        onClick={handleUpdateBH}
+                                    >
+                                        <span>Xác Nhận</span>
+                                    </Button>
+                                </DialogFooter>
+                            </Dialog>
+                        </i>
                         {dataBH?.map((element, index) => (
                             <span className="flex p-2 border" key={index}>
-                                {element.warranty_time}
-                                {element.unit}
-                                {element.warranty_info}
+                                {`${element.warranty_time} ${`${
+                                    element.unit === "d"
+                                        ? "ngày"
+                                        : element.unit === "w"
+                                        ? "tuần"
+                                        : element.unit === "m"
+                                        ? "tháng"
+                                        : element.unit === "y"
+                                        ? "năm"
+                                        : ""
+                                }`} ${element.warranty_info}`}
                             </span>
                         ))}
                     </div>
@@ -233,6 +462,7 @@ function AdminCheckDialog({
                             active={activePt.inputYCCV}
                             handleSetActive={() => handleSetActive("inputYCCV")}
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                         <EditableInput
                             label="Số Điện Thoại"
@@ -245,6 +475,7 @@ function AdminCheckDialog({
                             active={activePt.inputSDT}
                             handleSetActive={() => handleSetActive("inputSDT")}
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                     </div>
                     <div className="flex items-center gap-4">
@@ -261,6 +492,7 @@ function AdminCheckDialog({
                                 handleSetActive("inputDiaChi")
                             }
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                         <EditableInput
                             label="Quận"
@@ -273,6 +505,7 @@ function AdminCheckDialog({
                             active={activePt.inputQuan}
                             handleSetActive={() => handleSetActive("inputQuan")}
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                     </div>
                     <div className="flex items-center gap-4">
@@ -289,6 +522,7 @@ function AdminCheckDialog({
                                 handleSetActive("inputTenKH")
                             }
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                         <EditableInput
                             label="Ngày Làm"
@@ -302,6 +536,7 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputNgayLam")
                             }
+                            classNameChild={classNameChild}
                         />
                     </div>
                     <div className="flex items-center gap-4 ">
@@ -319,6 +554,7 @@ function AdminCheckDialog({
                                     handleSetActive("inputGhiChu")
                                 }
                                 handleEdit={handleEdit}
+                                classNameChild={classNameChild}
                             />
                         </div>
                     </div>
@@ -336,6 +572,7 @@ function AdminCheckDialog({
                                 handleSetActive("inputThuChi")
                             }
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
 
                         <EditableInput
@@ -351,6 +588,7 @@ function AdminCheckDialog({
                                 handleSetActive("inputThuChi")
                             }
                             handleEdit={handleEdit}
+                            classNameChild={classNameChild}
                         />
                     </div>
                     <Divider className="pt-2" />

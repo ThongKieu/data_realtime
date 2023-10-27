@@ -31,7 +31,6 @@ function AdminCheckDialog({
     handleImageVtDelete,
     handleImagePtDelete,
     imagePt1,
-    handleChange,
     cardExpires,
     vatCard,
     isAllowed,
@@ -65,14 +64,21 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [dataBH, setDataBH] = useState([]);
+    const [dataBH, setDataBH] = useState([
+        {
+            id: 0,
+            warranty_time: 0,
+            unit: "kbh",
+            warranty_info: "Không Bảo Hành",
+        },
+    ]);
     const fetchDataBH = async (id) => {
         try {
             const response = await fetch(
                 `api/web/work-assignment/warranties?id=${id}`
             );
             const jsonData = await response.json();
-            if (response.ok && jsonData && jsonData.length > 0) {
+            if (response.ok && jsonData.length != 0 ) {
                 const formatJson = jsonData.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
@@ -95,70 +101,7 @@ function AdminCheckDialog({
     };
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
-    const handleUpdateBH = async () => {
-        const UrlApi = "api/web/update/check-admin";
-        const data = {
-            work_content: params.row.work_content,
-            phone_number: params.row.phone_number,
-            street: params.row.street,
-            district: params.row.district,
-            name_cus: params.row.name_cus,
-            real_note: params.row.real_note,
-            income_total: params.row.income_total,
-            spending_total: params.row.spending_total,
-            seri_number: params.row.seri_number,
-        };
-        try {
-            const res = await fetch(UrlApi, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
 
-            if (res.ok) {
-                socketD?.emit("addWorkTo_Server", data);
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data lỗi rồi:", error);
-        }
-        handleOpenBH();
-    };
-    const [isDataChanged, setIsDataChanged] = useState([]);
-    const handleValueBh = async () => {
-        try {
-            const promises = isDataChanged.map(async (data) => {
-                const dataBh = {
-                    id_work_has: params.id,
-                    warranty_time: data.warranty_time,
-                    warranty_info: data.warranty_info,
-                    unit: data.unit,
-                    income_total: cardExpires.income_total,
-                };
-                const res = await fetch(
-                    "api/web/update/work-assignment-warranties",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(dataBh),
-                    }
-                );
-                if (res.ok) {
-                    console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
-                } else {
-                    console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-                }
-            });
-            await Promise.all(promises);
-        } catch (error) {
-            console.error("Error fetching data lỗi rồi:", error);
-        }
-    };
     const [selectedValue, setSelectedValue] = useState();
     const handleSelectChange = (selectedValue, id) => {
         const updatedData = dataBH.map((item) => {
@@ -167,9 +110,18 @@ function AdminCheckDialog({
             }
             return item;
         });
-
         setDataBH(updatedData);
         setSelectedValue(selectedValue);
+    };
+    const handleChange = (e, id) => {
+        const { name, value } = e.target;
+        const updatedData = dataBH.map((item) => {
+            if (item.id === id) {
+                return { ...item, [name]: value };
+            }
+            return item;
+        });
+        setDataBH(updatedData);
     };
     const optionBH = [
         { id: 0, unit: "KBH", label: "KBH" },
@@ -192,6 +144,43 @@ function AdminCheckDialog({
             },
         ]);
     };
+    const handleValueBh = async () => {
+        try {
+            const data_info_warranty = dataBH.map((data) => ({
+                id_work_has: params.id,
+                warranty_time: data.warranty_time,
+                warranty_info: data.warranty_info,
+                unit: data.unit
+            }));
+
+            const dataBh = {
+                ac: 1,
+                id_warranty:data.id,
+                auth_id: auth.user.id,
+                info_warranties: data_info_warranty,
+            };
+
+            console.log(dataBh);
+            const res = await fetch("api/web/update/check-admin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataBh),
+            });
+
+            console.log(res);
+            if (res.ok) {
+                console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
+                handleOpenBH();
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
+
     const handleDelete = (id) => {
         const updatedData = dataBH.filter((item) => item.id !== id);
         setDataBH(updatedData);
@@ -301,7 +290,7 @@ function AdminCheckDialog({
                                                     type="number"
                                                     min="1"
                                                     max="30"
-                                                    value={item.warranty_time}
+                                                    defaultValue={item.warranty_time}
                                                     onChange={(e) =>
                                                         handleChange(e, item.id)
                                                     }
@@ -311,8 +300,9 @@ function AdminCheckDialog({
                                             <div className="flex-1">
                                                 <Input
                                                     label="Nội Dung Bảo Hành"
+                                                    id="warranty_info"
                                                     name="warranty_info"
-                                                    value={item.warranty_info}
+                                                    defaultValue={item.warranty_info}
                                                     onChange={(e) =>
                                                         handleChange(e, item.id)
                                                     }
@@ -353,7 +343,7 @@ function AdminCheckDialog({
                                     <Button
                                         variant="gradient"
                                         color="green"
-                                        onClick={handleUpdateBH}
+                                        onClick={handleValueBh}
                                     >
                                         <span>Xác Nhận</span>
                                     </Button>
@@ -387,9 +377,9 @@ function AdminCheckDialog({
                             />
 
                             {imageVt1 == "" || imageVt1 == null ? (
-                                <i>(Không Có Hình)</i>
+                                <i className="mt-4">(Không Có Hình)</i>
                             ) : (
-                                <div className="grid w-full grid-cols-3 gap-4">
+                                <div className="grid w-full grid-cols-3 gap-4 mt-4">
                                     {imageVt1.map((item, index) => (
                                         <Card
                                             key={index}
@@ -422,9 +412,9 @@ function AdminCheckDialog({
                                 previewImages={previewImagesPT}
                             />
                             {imagePt1 == "" || imagePt1 == null ? (
-                                <i>(Không Có Hình)</i>
+                                <i className="mt-4">(Không Có Hình)</i>
                             ) : (
-                                <div className="grid w-full grid-cols-3 gap-4 mt-1">
+                                <div className="grid w-full grid-cols-3 gap-4 mt-4">
                                     {imagePt1.map((item, index) => (
                                         <Card
                                             key={index}

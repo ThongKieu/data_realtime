@@ -147,15 +147,14 @@ function AdminCheckDialog({
     const handleValueBh = async () => {
         try {
             const data_info_warranty = dataBH.map((data) => ({
+                id:data.id,
                 id_work_has: params.id,
                 warranty_time: data.warranty_time,
                 warranty_info: data.warranty_info,
                 unit: data.unit
             }));
-
             const dataBh = {
                 ac: 1,
-                id_warranty:data.id,
                 auth_id: auth.user.id,
                 info_warranties: data_info_warranty,
             };

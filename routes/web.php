@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
     Route::get('/products', function () {return Inertia::render('Products/Products');})->name('products');
     Route::get('/product', function () {return Inertia::render('Products/Product');})->name('product');
+    Route::get('/product?id={id}', function () {return Inertia::render('Products/Product');})->name('product-view');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

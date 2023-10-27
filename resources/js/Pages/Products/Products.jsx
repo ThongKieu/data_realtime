@@ -10,6 +10,9 @@ import NavLink from '@/Components/NavLink';
 import { useState } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import FileInput from '@/Components/FileInputImage';
+import { split } from 'postcss/lib/list';
+import { host } from '@/utils/UrlApi';
 
 function Products({ auth }) {
   const [products, setProduct] = useState('');
@@ -64,13 +67,32 @@ function Products({ auth }) {
     { field: "provider_product", headerName: "Thông tin NCC", width: 250 },
     { field: "phone_product", headerName: "Số Liên hệ", width: 150 },
     {
-      field: 'image_product', headerName: "Xử Lý", width: 150,
+      field: 'image_product', headerName: "Hình vật tư", width: 350,
       renderCell: (params) => {
-        console.log(params.row.image_product);
+        const [image_product, setImagesProduct] = useState([]);
+        const data = params.row.image_product;
+        const parts = data?.split(",");
+        const filteredArray = parts?.filter(
+          (item) => item.trim() !== ""
+        );
+        // useEffect(() => {
+        //   const images = split(params.row.image_product,',');
+        //   setImagesProduct(images);
+        // }, [params.row.image_product,image_product]);
+        //   console.log(image_product);
         return (
-         
-          <image src={params.row.image_product} className='w-20'/>
-       
+          <>
+            <div className="flex flex-wrap">
+              {filteredArray?.map((item, index) => (
+                <img
+                  key={index}
+                  className="object-cover object-center w-[50px] p-1 rounded-lg shadow-xl"
+                  src={`${host}${item}`}
+                  alt="nature image"
+                />
+              ))}
+            </div>
+          </>
         );
       },
     },
@@ -84,10 +106,13 @@ function Products({ auth }) {
         });
         return (
           <Button variant="outlined" className="p-2 m-1" >
-          <PencilIcon className="w-5 h-5">
-
+            <NavLink
+            href={`product?id=${params.row.id}`}>
+            <PencilIcon className="w-5 h-5">
+          
           </PencilIcon>
-        </Button>
+            </NavLink>
+          </Button>
         );
       },
     },

@@ -29,4 +29,13 @@ class ProductsController extends Controller
         } else
             return response()->json('None OK');
     }
+    public function getOne(Request $request) {
+        $one_pro = Products::where('id','=',$request->id)->get([ "name_product",
+        "code_product" ,
+        "provider_product",
+        "phone_product" ,
+        "price_product" ,
+        "sale_price_product" ,'image_product']);
+        return response()->json($one_pro);
+    }
 }

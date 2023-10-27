@@ -73,6 +73,8 @@ Route::prefix('web')->group(function () {
     Route::prefix('product')->group(function (){
         Route::get('/','App\Http\Controllers\Api\ProductsController@index');
         Route::post('/','App\Http\Controllers\Api\ProductsController@create');
+        Route::get('getone','App\Http\Controllers\Api\ProductsController@getOne');
+
     });
 });
 

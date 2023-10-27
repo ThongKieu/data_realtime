@@ -62,7 +62,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -97,7 +97,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -132,7 +132,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -167,7 +167,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_firstname",
                     "workers.worker_name",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -202,7 +202,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -238,7 +238,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct"
+                    "workers.add_worker", "workers.phone_ct"
                 ]
             );
         $co_khi = DB::table('works_assignments')
@@ -273,7 +273,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_name",
                     "works.name_cus",
                     "workers.sort_name",
-                    "workers.add_worker","workers.phone_ct",
+                    "workers.add_worker", "workers.phone_ct",
                 ]
             );
 
@@ -379,7 +379,7 @@ class WorksAssignmentController extends Controller
     {
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlowController::addAuto($request->id,$request->auth_id);
+        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);
 
         if ($up == 200) {
             return 'Delete work done !';
@@ -422,7 +422,7 @@ class WorksAssignmentController extends Controller
                 // dd($file_na);
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
                 if ($check_ima != null) {
-                    $file_na = $check_ima.$file_na;
+                    $file_na = $check_ima . $file_na;
                     WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
                 } else {
                     WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
@@ -441,7 +441,7 @@ class WorksAssignmentController extends Controller
                 // dd($serializedArr);
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                 if ($check_ima != null) {
-                    $files = $check_ima.$files;
+                    $files = $check_ima . $files;
                     WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
                 } else {
                     WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
@@ -487,28 +487,58 @@ class WorksAssignmentController extends Controller
             if ($per == 1) {
                 switch ($request->ac) {
                     case 1:
-                        // dd($request->all());
+                       
                         // thay đổi thông tin bảo hành
                         // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
-                        $a = json_decode($request->info_warranties);
-                        if(count($a)>1)
-                        {
-                            for($i =0 ;$i< count($a) ; $i++)
+
+                        $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
+                        $a = $request->info_warranties;
+                        // dd( $a);
+
+                        if (count($num) == 0) {
+                            for ($i = 0; $i < count($a); $i++)
                             // them moi
                             {
                                 $new = new Warranties([
-                                    'id_work_has'=>$a[$i]['id_work_has'],
-                                    'warranty_time'=> $a[$i]['warranty_time'],
+                                    'id_work_has' =>  $request->id_work_has,
+                                    'warranty_time' => $a[$i]['warranty_time'],
                                     'warranty_info' => $a[$i]['warranty_info'],
-                                    'unit'=> $a[$i]['unit'],
+                                    'unit' => $a[$i]['unit'],
                                 ]);
                                 $new->save();
                             }
                         }
                         else{
-                            // update
-                            Warranties::where('id', '=', $a[0]->id)->update(['unit' => $a[0]->unit,'warranty_time'=>$a[0]->warranty_time,'warranty_info'=>$a[0]->warranty_info]);
+                            if( count($num) == count($a))
+                            {
+                                for ($i = 0; $i < count($a); $i++)
+                                // them moi
+                                {
+                                    Warranties::where('id', '=',$a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'],'warranty_time'=>$a[$i]['warranty_time'],'warranty_info'=>$a[$i]['warranty_info']]);
+                                    
+                                }
+                            }
+                            if( count($num) < count($a))
+                            {
+                                for ($i = 0; $i < count($a); $i++)
+                                // them moi
+                                {
+                                   $c = Warranties::where('id', '=',$a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'],'warranty_time'=>$a[$i]['warranty_time'],'warranty_info'=>$a[$i]['warranty_info']]);
+                                    if(!$c)
+                                    {
+                                        $new = new Warranties([
+                                            'id_work_has' =>  $request->id_work_has,
+                                            'warranty_time' => $a[$i]['warranty_time'],
+                                            'warranty_info' => $a[$i]['warranty_info'],
+                                            'unit' => $a[$i]['unit'],
+                                        ]);
+                                        $new->save();
+                                    }
+                                }
+                            }
+
                         }
+                       
                         return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
@@ -545,11 +575,9 @@ class WorksAssignmentController extends Controller
                         $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                         $path = '';
 
-                        for($i=0;$i< count($set_update_seri);$i++)
-                        {
-                            if($request->bill_imag_del == $set_update_seri[$i])
-                            {
-                                $set_update_seri[$i] ='';
+                        for ($i = 0; $i < count($set_update_seri); $i++) {
+                            if ($request->bill_imag_del == $set_update_seri[$i]) {
+                                $set_update_seri[$i] = '';
                             }
                             $path = $path . $set_update_seri[$i] . ',';
                         }

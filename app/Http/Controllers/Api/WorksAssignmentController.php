@@ -486,10 +486,29 @@ class WorksAssignmentController extends Controller
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
             if ($per == 1) {
                 switch ($request->ac) {
-
                     case 1:
+                        // dd($request->all());
                         // thay đổi thông tin bảo hành
-                        Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
+                        // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
+                        $a = json_decode($request->info_warranties);
+                        if(count($a)>1)
+                        {
+                            for($i =0 ;$i< count($a) ; $i++)
+                            // them moi
+                            {
+                                $new = new Warranties([
+                                    'id_work_has'=>$a[$i]['id_work_has'],
+                                    'warranty_time'=> $a[$i]['warranty_time'],
+                                    'warranty_info' => $a[$i]['warranty_info'],
+                                    'unit'=> $a[$i]['unit'],
+                                ]);
+                                $new->save();
+                            }
+                        }
+                        else{
+                            // update
+                            Warranties::where('id', '=', $a[0]->id)->update(['unit' => $a[0]->unit,'warranty_time'=>$a[0]->warranty_time,'warranty_info'=>$a[0]->warranty_info]);
+                        }
                         return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
@@ -504,7 +523,6 @@ class WorksAssignmentController extends Controller
                         // $set_update_bill = implode($set_update_bill);
                         // return $path;
                         if ($request->hasFile('bill_imag_new')) {
-
                             foreach ($request->file('bill_imag_new') as $file) {
                                 $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
                                 $file->move('assets/images/work_assignment/' . $request->id, $name);
@@ -536,7 +554,6 @@ class WorksAssignmentController extends Controller
                             $path = $path . $set_update_seri[$i] . ',';
                         }
                         if ($request->hasFile('seri_imag_new')) {
-
                             foreach ($request->file('seri_imag_new') as $files_seri) {
                                 $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
                                 $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);

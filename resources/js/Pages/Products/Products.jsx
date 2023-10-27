@@ -64,19 +64,33 @@ function Products({ auth }) {
     { field: "provider_product", headerName: "Thông tin NCC", width: 250 },
     { field: "phone_product", headerName: "Số Liên hệ", width: 150 },
     {
-      field: null, headerName: "Xử Lý", width: 150,
+      field: 'image_product', headerName: "Xử Lý", width: 150,
       renderCell: (params) => {
-        return
-        <>
-          <Button onClick={handleOpenChangeStatus} variant="outlined" className="p-2 m-1" >
-            <PencilIcon className="w-5 h-5">
-
-            </PencilIcon>
-          </Button>
-        </>;
+        console.log(params.row.image_product);
+        return (
+         
+          <image src={params.row.image_product} className='w-20'/>
+       
+        );
       },
     },
+    {
+      field: '', headerName: "Xử Lý", width: 150,
+      renderCell: (params) => {
+        const formatter = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
 
+        });
+        return (
+          <Button variant="outlined" className="p-2 m-1" >
+          <PencilIcon className="w-5 h-5">
+
+          </PencilIcon>
+        </Button>
+        );
+      },
+    },
   ];
   useEffect(() => {
     fetchInfoQuote();

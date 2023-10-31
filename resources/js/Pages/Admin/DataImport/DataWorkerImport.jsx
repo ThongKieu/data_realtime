@@ -82,7 +82,7 @@ function DataWorkerImport() {
                 : <div className="min-h-screen flex justify-center mt-5">
                     <Card color="transparent" shadow={false}>
                         {showAlertFailed && (
-                            <AlertIcon setShowAlertFailed={setShowAlertFailed} />
+                            <AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Lỗi khi tải file'} />
 
                         )}
                         <Typography variant="h4" color="blue-gray">

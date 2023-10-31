@@ -482,15 +482,20 @@ class WorksAssignmentController extends Controller
     }
     public function checkWorkByAdmin(Request $request)
     {
+        // dd($request->hasFile('seri_imag_new'));
         if ($request->ac != null) {
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
             if ($per == 1) {
                 switch ($request->ac) {
                     case 1:
-                       
                         // thay đổi thông tin bảo hành
                         // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
-
+                        if($request->id_del_warranty)
+                        {
+                            $num = Warranties::where('id', '=', $request->id_del_warranty)->delete();
+                            return 'Del warranties';
+                        }else
+                        {
                         $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
                         $a = $request->info_warranties;
                         // dd( $a);
@@ -515,7 +520,7 @@ class WorksAssignmentController extends Controller
                                 // them moi
                                 {
                                     Warranties::where('id', '=',$a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'],'warranty_time'=>$a[$i]['warranty_time'],'warranty_info'=>$a[$i]['warranty_info']]);
-                                    
+
                                 }
                             }
                             if( count($num) < count($a))
@@ -533,70 +538,103 @@ class WorksAssignmentController extends Controller
                                             'unit' => $a[$i]['unit'],
                                         ]);
                                         $new->save();
+                                        $new->save();
                                     }
                                 }
                             }
 
                         }
-                       
+                        }
                         return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
+                        $set_update_bill ='';
                         $path = '';
-                        $set_update_bill = explode(',', $bill_imag);
-                        for ($i = 0; $i < count($set_update_bill); $i++) {
-                            if ($request->bill_imag_del == $set_update_bill[$i]) {
-                                $set_update_bill[$i] = null;
+                        // Xóa Hình
+                        if($request->bill_imag_del)
+                        {
+                            $set_update_bill = explode($request->bill_imag_del, $bill_imag);
+                            for ($i = 0; $i < count($set_update_bill); $i++) {
+                                if ($request->bill_imag_del == $set_update_bill[$i]) {
+                                    $set_update_bill[$i] = '';
+                                }
+                                $path = $path . $set_update_bill[$i] . ',';
                             }
-                            $path = $path . $set_update_bill[$i] . ',';
-                        }
-                        // $set_update_bill = implode($set_update_bill);
-                        // return $path;
-                        if ($request->hasFile('bill_imag_new')) {
-                            foreach ($request->file('bill_imag_new') as $file) {
-                                $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-                                $file->move('assets/images/work_assignment/' . $request->id, $name);
-                                $path = $path . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
-                            }
-                        }
-                        // return $set_update_bill;
-                        WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $path]);
-                        if (File::exists(public_path($request->bill_imag_del))) {
-                            File::delete(public_path($request->bill_imag_del));
-                            // Thông báo rằng hình đã được xóa
-                            return "Update Bill Image Done!";
-                        } else {
-                            // Thông báo nếu không tìm thấy hình ảnh
-                            return "Không tìm thấy hình ảnh!";
-                        }
+                            WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $path]);
 
+                            if (File::exists(public_path($request->bill_imag_del))) {
+                                File::delete(public_path($request->bill_imag_del));
+                                // Thông báo rằng hình đã được xóa
+                                return "Update bill Image Done!";
+                            } else {
+                                // Thông báo nếu không tìm thấy hình ảnh
+                                return "Không tìm thấy hình ảnh!";
+                            }
+                        }
+                        else
+                        {
+                            //Thêm  mới 1 hoặc nhiều hình
+                            //  dd($request->all());
+                             if ($request->hasFile('bill_imag_new')) {
+                                 $images = $request->file('bill_imag_new');
+                                //  dd($images);
+                                 foreach ($images as $image) {
+                                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                                     $image->move('assets/images/work_assignment/' . $request->id . '/bill_imag', $name);
+                                     $bill_imag .= 'assets/images/work_assignment/' . $request->id . '/bill_imag/' . $name . ',';
+                                     // dd('11111111111111');
+                                 }
+                                 WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $bill_imag]);
+                                 return "Update bill Image Done!";
+                             }
+
+                             return "Update bill Image Fails!";
+                        }
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-                        $set_update_seri = explode($request->seri_imag_del, $seri_imag);
+                        $set_update_seri ='';
                         $path = '';
+                        // Xóa Hình
+                        if($request->seri_imag_del)
+                        {
+                            $set_update_seri = explode($request->seri_imag_del, $seri_imag);
+                            for ($i = 0; $i < count($set_update_seri); $i++) {
+                                if ($request->bill_imag_del == $set_update_seri[$i]) {
+                                    $set_update_seri[$i] = '';
+                                }
+                                $path = $path . $set_update_seri[$i] . ',';
+                            }
+                            WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $path]);
 
-                        for ($i = 0; $i < count($set_update_seri); $i++) {
-                            if ($request->bill_imag_del == $set_update_seri[$i]) {
-                                $set_update_seri[$i] = '';
-                            }
-                            $path = $path . $set_update_seri[$i] . ',';
-                        }
-                        if ($request->hasFile('seri_imag_new')) {
-                            foreach ($request->file('seri_imag_new') as $files_seri) {
-                                $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
-                                $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
-                                $set_update_seri = $set_update_seri . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
+                            if (File::exists(public_path($request->seri_imag_del))) {
+                                File::delete(public_path($request->seri_imag_del));
+                                // Thông báo rằng hình đã được xóa
+                                return "Update Seri Image Done!";
+                            } else {
+                                // Thông báo nếu không tìm thấy hình ảnh
+                                return "Không tìm thấy hình ảnh!";
                             }
                         }
-                        WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $path]);
-                        if (File::exists(public_path($request->seri_imag_del))) {
-                            File::delete(public_path($request->seri_imag_del));
-                            // Thông báo rằng hình đã được xóa
-                            return "Update Seri Image Done!";
-                        } else {
-                            // Thông báo nếu không tìm thấy hình ảnh
-                            return "Không tìm thấy hình ảnh!";
+                        else
+                        {
+                            //Thêm  mới 1 hoặc nhiều hình
+                            //  dd($request->all());
+                             if ($request->hasFile('seri_imag_new')) {
+                                 $images = $request->file('seri_imag_new');
+                                //  dd($images);
+                                 foreach ($images as $image) {
+                                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                                     $image->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name);
+                                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name . ',';
+                                     // dd('11111111111111');
+                                 }
+                                 WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $seri_imag]);
+                                 return "Update Seri Image Done!";
+                             }
+
+                             return "Update Seri Image Fails!";
                         }
+
                     case 4:
                         //Work content
                         Work::where('id', '=', $request->id_cus)->update(['work_content' => $request->work_content]);
@@ -634,6 +672,10 @@ class WorksAssignmentController extends Controller
                         // Update seri number
                         WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
                         return 'Update Seri';
+                    case 13:
+                            // Admin Check
+                            WorksAssignment::where('id', '=', $request->id)->update(['status_admin_check' => 1]);
+                            return 'Admin Check';
                     default:
                         return 'Done With None Update !';
                 }

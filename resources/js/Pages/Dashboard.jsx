@@ -178,7 +178,7 @@ function Dashboard({ auth }) {
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label: item.worker_name,
+                label: item.sort_name + ' ' + item.worker_name ,
             }));
             setInfoWorkerDashboard(formatJson);
         } catch (error) {
@@ -234,7 +234,7 @@ function Dashboard({ auth }) {
                 formData.append(key, data[key]);
             }
             // Thêm danh sách các tệp hình `bill_image` vào FormData
-            for (let i = 0; i < seri_imag.length; i++) {
+            for (let i = 0; i < seri_imag?.length; i++) {
                 formData.append("seri_imag[]", seri_imag[i]);
             }
 
@@ -510,7 +510,6 @@ function Dashboard({ auth }) {
                         id_cus: params.row.id,
                         id_worker: selectPhanTho,
                         work_note: params.row.work_note,
-
                         auth_id: auth.user.id,
                     };
                     try {
@@ -1026,11 +1025,16 @@ function Dashboard({ auth }) {
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
-                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [selectedFilesPT, setSelectedFilesPT] = useState([]);
+                const [selectedFilesVT, setSelectedFilesVT] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
                 const [previewImgKS, setPreviewImgKS] = useState([]);
-                const handleFileChange = (e, setImagePreview) => {
+                const handleFileChange = (
+                    e,
+                    setImagePreview,
+                    setSelectedFiles
+                ) => {
                     const files = Array.from(e.target.files);
                     setSelectedFiles(files);
                     const previews = files.map((file) =>
@@ -1038,6 +1042,42 @@ function Dashboard({ auth }) {
                     );
                     setImagePreview(previews);
                 };
+                const handleImageSubmit = (selectedHinh, type,id_ac) => {
+                    if (selectedHinh) {
+                        const urlAPI = `api/web/update/check-admin`;
+                        const formData = new FormData();
+                        formData.append("ac", id_ac);
+                        formData.append("id", params.row.id);
+                        formData.append("auth_id", auth.user.id);
+                        // formData.append("seri_imag_new[]", selectedHinh);
+                        console.log(`Đã gửi hình ${type}:`, selectedHinh);
+                        // Thêm danh sách các tệp hình `image_vt` vào FormData
+                        for (let i = 0; i < selectedHinh?.length; i++) {
+                            formData.append(`${id_ac ==2 ?'bill_imag_new[]': 'seri_imag_new[]'}`, selectedHinh[i]);
+                        }
+                        const res = fetch(urlAPI, {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                            },
+                            mode: "no-cors",
+                            body: formData,
+                        });
+
+                        if (res.ok) {
+                            console.log(`Cập nhật thông tin ${type}`, formData);
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi dữ liệu:",
+                                res.statusText
+                            );
+                        }
+                    } else {
+                        console.log("Vui lòng chọn hình trước khi gửi.");
+                    }
+                };
+
                 const vatCard = params.row.bill_image === null;
                 const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
                 const [valueRadio, setValueRadio] = useState("0");
@@ -1096,13 +1136,14 @@ function Dashboard({ auth }) {
                         id: params.row.id,
                         member_read: auth.user.id,
                     };
-                    const image_Pt = document.getElementById("image_Pt").files;
-                    const image_Vt = document.getElementById("image_Vt").files;
+
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
                     };
                     if (valueRadio === "0") {
+                        const image_Pt = document.getElementById("image_Pt")?.files;
+                        const image_Vt = document.getElementById("image_Vt")?.files;
                         fetchDataUpdateThuchi(
                             data_0,
                             UrlApi,
@@ -1160,7 +1201,6 @@ function Dashboard({ auth }) {
                     };
 
                     const dataFields = [
-                        { key: "seri_number", ac: 12, id: params.row.id },
                         {
                             key: "work_content",
                             ac: 4,
@@ -1177,6 +1217,7 @@ function Dashboard({ auth }) {
                         { key: "real_note", ac: 9, id: params.row.id },
                         { key: "income_total", ac: 10, id: params.row.id },
                         { key: "spending_total", ac: 11, id: params.row.id },
+                        { key: "seri_number", ac: 12, id: params.row.id },
                     ];
 
                     dataFields.forEach((field) => {
@@ -1277,7 +1318,6 @@ function Dashboard({ auth }) {
                         seri_imag_del: deletedImage,
                     };
                     const jsonData = JSON.stringify(dataBody);
-                    console.log("00000", typeof jsonData);
                     try {
                         const response = await fetch(
                             "api/web/update/check-admin",
@@ -1312,101 +1352,114 @@ function Dashboard({ auth }) {
                         <div className="flex">
                             {check_admin ? (
                                 <>
-                                    <Tooltip content="Nhập Thu Chi">
+                                    <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} `}
-                                            onClick={handleOpenSpending_total}
+                                            className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white`}
                                         />
                                     </Tooltip>
                                 </>
-                            ) : (
-                                <>
-                                    <Tooltip content="Nhập Thu Chi">
-                                        <ArrowUpTrayIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
-                                            onClick={handleOpenSpending_total}
+                            ) : ( params.row.status_work != 1 ? (<>
+                                <Tooltip content="Nhập Thu Chi">
+                                    <ArrowUpTrayIcon
+                                        className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
+                                        onClick={handleOpenSpending_total}
+                                    />
+                                </Tooltip>
+                                <Tooltip content="Admin Check">
+                                    <Button
+                                        className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
+                                        onClick={handleOpenAdminCheck}
+                                        variant="outlined"
+                                    >
+                                        <EyeIcon />
+                                    </Button>
+                                </Tooltip>
+                                <Menu allowHover>
+                                    <MenuHandler>
+                                        <EllipsisVerticalIcon
+                                            className={`w-6 h-6 pt-2 cursor-pointer ${
+                                                DK1 + DK2
+                                            }`}
                                         />
-                                    </Tooltip>
-                                    <Tooltip content="Admin Check">
-                                        <Button
-                                            className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={handleOpenAdminCheck}
-                                            variant="outlined"
-                                        >
-                                            <EyeIcon />
-                                        </Button>
-                                    </Tooltip>
-                                    <Menu allowHover>
-                                        <MenuHandler>
-                                            <EllipsisVerticalIcon
-                                                className={`w-6 h-6 pt-2 cursor-pointer ${
-                                                    DK1 + DK2
-                                                }`}
-                                            />
-                                        </MenuHandler>
-                                        <MenuList className="flex justify-between">
-                                            <MenuItem className="p-0">
-                                                <Tooltip content="Thu Hồi Lịch">
-                                                    <ArrowPathIcon
-                                                        className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                        onClick={
-                                                            handleOpenThuHoi
-                                                        }
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                            <MenuItem className="p-0">
-                                                <Tooltip content="Báo hủy">
-                                                    <TrashIcon
-                                                        className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                        onClick={handleOpenHuy}
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                            <MenuItem className="p-0">
-                                                <Tooltip content="Khảo Sát">
-                                                    <TicketIcon
-                                                        className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                        onClick={handleOpenKS}
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                        </MenuList>
-                                    </Menu>
-                                </>
+                                    </MenuHandler>
+                                    <MenuList className="flex justify-between">
+                                        <MenuItem className="p-0">
+                                            <Tooltip content="Thu Hồi Lịch">
+                                                <ArrowPathIcon
+                                                    className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
+                                                    onClick={
+                                                        handleOpenThuHoi
+                                                    }
+                                                />
+                                            </Tooltip>
+                                        </MenuItem>
+                                        <MenuItem className="p-0">
+                                            <Tooltip content="Báo hủy">
+                                                <TrashIcon
+                                                    className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
+                                                    onClick={handleOpenHuy}
+                                                />
+                                            </Tooltip>
+                                        </MenuItem>
+                                        <MenuItem className="p-0">
+                                            <Tooltip content="Khảo Sát">
+                                                <TicketIcon
+                                                    className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                    onClick={handleOpenKS}
+                                                />
+                                            </Tooltip>
+                                        </MenuItem>
+                                    </MenuList>
+                                </Menu>
+                            </>):(<p className="p-1 text-blue-500 border border-blue-500 rounded-sm">Mai Làm Tiếp</p>)
+
                             )}
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
-                            openAdminCheck={openAdminCheck}
-                            handleOpenAdminCheck={handleOpenAdminCheck}
-                            params={params}
-                            handleFileChangeVt={(e) =>
-                                handleFileChange(e, setPreviewImgVt)
-                            }
-                            handleFileChangePt={(e) =>
-                                handleFileChange(e, setPreviewImgPt)
-                            }
                             imageVt1={imageVt1}
                             host={host}
+                            params={params}
+                            imagePt1={imagePt1}
+                            previewImagesVT={previewImgVt}
+                            previewImagesPT={previewImgPt}
+                            openAdminCheck={openAdminCheck}
+                            handleOpenAdminCheck={handleOpenAdminCheck}
+                            handleFileChangeVt={(e) =>
+                                handleFileChange(
+                                    e,
+                                    setPreviewImgVt,
+                                    setSelectedFilesVT
+                                )
+                            }
+                            handleFileChangePt={(e) =>
+                                handleFileChange(
+                                    e,
+                                    setPreviewImgPt,
+                                    setSelectedFilesPT
+                                )
+                            }
                             handleImageVtDelete={(index) => {
                                 handleImageVtDelete(index);
                             }}
                             handleImagePtDelete={(index) => {
                                 handleImagePtDelete(index);
                             }}
-                            imagePt1={imagePt1}
                             handleChange={handleChange}
                             cardExpires={cardExpires}
                             auth={auth}
                             handleEdit={() => {
                                 handleCheckAdmin();
                             }}
-                            previewImagesVT={previewImgVt}
-                            previewImagesPT={previewImgPt}
                             classNameChild={`${
                                 isEdited ? "border-red-500" : "border-gray-300"
                             }`}
+                            handleSendImagePT={() =>
+                                handleImageSubmit(selectedFilesPT, "PT",3)
+                            }
+                            handleSendImageVT={() =>
+                                handleImageSubmit(selectedFilesVT, "VT",2)
+                            }
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog

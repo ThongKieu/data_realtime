@@ -10,6 +10,7 @@ import {
     Input,
     DialogHeader,
     DialogFooter,
+    IconButton,
 } from "@material-tailwind/react";
 import {
     XMarkIcon,
@@ -17,15 +18,17 @@ import {
     PencilSquareIcon,
     PlusCircleIcon,
     TrashIcon,
+    PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
-import DynamicTwoInput from "./DynamicInput";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
     handleFileChangePt,
+    handleSendImagePT,
+    handleSendImageVT,
     imageVt1,
     host,
     handleImageVtDelete,
@@ -41,6 +44,7 @@ function AdminCheckDialog({
     previewImagesVT,
     previewImagesPT,
     classNameChild,
+    handleChange,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -78,7 +82,7 @@ function AdminCheckDialog({
                 `api/web/work-assignment/warranties?id=${id}`
             );
             const jsonData = await response.json();
-            if (response.ok && jsonData.length != 0 ) {
+            if (response.ok && jsonData.length != 0) {
                 const formatJson = jsonData.map((item) => ({
                     id: item.id,
                     warranty_info: item.warranty_info,
@@ -113,7 +117,7 @@ function AdminCheckDialog({
         setDataBH(updatedData);
         setSelectedValue(selectedValue);
     };
-    const handleChange = (e, id) => {
+    const handleChangeBH = (e, id) => {
         const { name, value } = e.target;
         const updatedData = dataBH.map((item) => {
             if (item.id === id) {
@@ -144,13 +148,39 @@ function AdminCheckDialog({
             },
         ]);
     };
+    const handleDelete = async (id) => {
+        const deleteBH = {
+            ac: 1,
+            auth_id: auth.user.id,
+            id_del_warranty: id,
+        }
+        try {
+            const res = await fetch(`api/web/update/check-admin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body:JSON.stringify(deleteBH)
+            });
+
+            if (res.ok) {
+                const updatedData = dataBH.filter((item) => item.id !== id);
+                setDataBH(updatedData);
+                console.log("Đã xóa thành công", id);
+            } else {
+                console.error("Lỗi khi xóa dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
+    };
     const handleValueBh = async () => {
         try {
             const data_info_warranty = dataBH.map((data) => ({
-                id_warranty:data.id,
+                id_warranty: data.id,
                 warranty_time: data.warranty_time,
                 warranty_info: data.warranty_info,
-                unit: data.unit
+                unit: data.unit,
             }));
             const dataBh = {
                 ac: 1,
@@ -159,7 +189,6 @@ function AdminCheckDialog({
                 info_warranties: data_info_warranty,
             };
 
-            console.log(dataBh);
             const res = await fetch("api/web/update/check-admin", {
                 method: "POST",
                 headers: {
@@ -172,6 +201,7 @@ function AdminCheckDialog({
             if (res.ok) {
                 console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
                 handleOpenBH();
+
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -179,11 +209,32 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    const handleUpdateStatusCheckAdmin = async () => {
+        const check_admin = {
+            ac: 13,
+            auth_id: auth.user.id,
+            id: params.row.id,
+        }
+        try {
+            const res = await fetch(`api/web/update/check-admin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body:JSON.stringify(check_admin)
+            });
 
-    const handleDelete = (id) => {
-        const updatedData = dataBH.filter((item) => item.id !== id);
-        setDataBH(updatedData);
+            if (res.ok) {
+                console.log("Đã xóa thành công", check_admin);
+            } else {
+                console.error("Lỗi khi xóa dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
     };
+
+
     return (
         <Dialog
             open={openAdminCheck}
@@ -232,7 +283,7 @@ function AdminCheckDialog({
                 </div>
                 <div className="flex flex-row justify-between w-full mb-5 text-sm">
                     <div className="flex-1 p-2 border border-green-500">
-                        <i className="flex">
+                        <i className="flex justify-between">
                             <u>Nội Dung Bảo Hành:</u>
                             <PencilSquareIcon
                                 className="w-5 h-5 text-blue-500 cursor-pointer"
@@ -289,9 +340,14 @@ function AdminCheckDialog({
                                                     type="number"
                                                     min="1"
                                                     max="30"
-                                                    defaultValue={item.warranty_time}
+                                                    defaultValue={
+                                                        item.warranty_time
+                                                    }
                                                     onChange={(e) =>
-                                                        handleChange(e, item.id)
+                                                        handleChangeBH(
+                                                            e,
+                                                            item.id
+                                                        )
                                                     }
                                                     className="w-[100%] shadow-none"
                                                 />
@@ -301,9 +357,14 @@ function AdminCheckDialog({
                                                     label="Nội Dung Bảo Hành"
                                                     id="warranty_info"
                                                     name="warranty_info"
-                                                    defaultValue={item.warranty_info}
+                                                    defaultValue={
+                                                        item.warranty_info
+                                                    }
                                                     onChange={(e) =>
-                                                        handleChange(e, item.id)
+                                                        handleChangeBH(
+                                                            e,
+                                                            item.id
+                                                        )
                                                     }
                                                     className="mr-1 w-[100%] shadow-none"
                                                 />
@@ -350,7 +411,7 @@ function AdminCheckDialog({
                             </Dialog>
                         </i>
                         {dataBH?.map((element, index) => (
-                            <span className="flex p-2 border" key={index}>
+                            <span className="flex p-2 mt-1 border" key={index}>
                                 {`${element.warranty_time} ${`${
                                     element.unit === "d"
                                         ? "ngày"
@@ -366,15 +427,25 @@ function AdminCheckDialog({
                         ))}
                     </div>
                     <div className="flex-1 p-2 border border-green-500 border-x-0">
-                        <i>
+                        <i className="flex justify-between">
                             <u> Hình Vật Tư:</u>
+                            <IconButton
+                                variant="outlined"
+                                className="w-3 h-3 px-3 py-2"
+                                onClick={handleSendImageVT}
+                            >
+                                <PaperAirplaneIcon className="w-3 h-3" />
+                            </IconButton>
                         </i>
                         <div className="text-center">
-                            <FileInput
-                                handleFileChange={handleFileChangeVt}
-                                previewImages={previewImagesVT}
-                            />
-
+                            <div>
+                                <div className="flex">
+                                    <FileInput
+                                        handleFileChange={handleFileChangeVt}
+                                        previewImages={previewImagesVT}
+                                    />
+                                </div>
+                            </div>
                             {imageVt1 == "" || imageVt1 == null ? (
                                 <i className="mt-4">(Không Có Hình)</i>
                             ) : (
@@ -402,14 +473,26 @@ function AdminCheckDialog({
                         </div>
                     </div>
                     <div className="flex-1 p-2 border border-green-500">
-                        <i>
+                        <i className="flex justify-between">
                             <u>Hình Phiếu Thu:</u>
+                            <IconButton
+                                variant="outlined"
+                                className="w-3 h-3 px-3 py-2"
+                                onClick={handleSendImagePT}
+                            >
+                                <PaperAirplaneIcon className="w-3 h-3" />
+                            </IconButton>
                         </i>
                         <div className="text-center">
-                            <FileInput
-                                handleFileChange={handleFileChangePt}
-                                previewImages={previewImagesPT}
-                            />
+                            <div>
+                                <div className="flex">
+                                    <FileInput
+                                        handleFileChange={handleFileChangePt}
+                                        previewImages={previewImagesPT}
+                                    />
+                                </div>
+                            </div>
+
                             {imagePt1 == "" || imagePt1 == null ? (
                                 <i className="mt-4">(Không Có Hình)</i>
                             ) : (
@@ -590,6 +673,7 @@ function AdminCheckDialog({
                             size="sm"
                             className="px-3 py-2 mx-4 shadow-none"
                             variant="outlined"
+                            onClick={handleUpdateStatusCheckAdmin}
                         >
                             Xác Nhận Thông Tin
                         </Button>

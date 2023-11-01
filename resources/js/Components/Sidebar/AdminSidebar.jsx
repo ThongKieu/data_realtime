@@ -129,10 +129,12 @@ function AdminSidebar({ children }) {
                 {
                     title: "Chặn Số",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/tools-admin-block"),
                 },
                 {
                     title: "Kiểm Kê",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/worker-check-call"),
                 },
             ],
         },
@@ -226,7 +228,7 @@ function AdminSidebar({ children }) {
                                 >
                                     {Menu.submenuItem.map(
                                         (submenuItem, index) => (
-                                            <Link href={submenuItem.href}>
+                                            <Link key={index} href={submenuItem.href}>
                                                 <li
                                                     key={index}
                                                     className={`flex rounded-md p-1 cursor-pointer hover:bg-gray-500 text-sm items-center gap-x-4 text-black ${

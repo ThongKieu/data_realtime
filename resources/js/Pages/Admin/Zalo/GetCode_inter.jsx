@@ -18,10 +18,9 @@ function GetCode_inter({
             >
                 {labelBtn}
             </Button>
-            <div>
-                {" "}
+            <div className="w-[42rem]">
                 <Input
-                    className={`w-[42rem] ${classNameInput}`}
+                    className={`${classNameInput}`}
                     value={valueInput}
                     disabled
                 />

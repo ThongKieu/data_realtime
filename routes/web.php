@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/test', function () {return Inertia::render('test');})->name('test');
     Route::get('/quoteflow', function () {return Inertia::render('QuoteFlow');})->name('quoteflow');
 
-    
+
 
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
         Route::get('/worker-check-call',function(){return Inertia::render('Admin/Worker/WorkerCheckCall');})->name('admin/worker-check-call');
+        Route::get('/block-number-phone',function(){return Inertia::render('Admin/ToolsAdmin/ToolsAdminBlockSDT');})->name('admin/tools-admin-block');
         Route::get('/test-table',function(){return Inertia::render('Admin/Worker/TestTable');})->name('admin/test-table');
         // Data
         Route::get('/data-import-customer',function(){return Inertia::render('Admin/DataImport/DataCustomerImport');})->name('admin/data-import-customer');

@@ -93,47 +93,55 @@ function Tab1() {
     };
     return (
         <div>
-            <Card color="transparent" shadow={false} className="ml-60">
-                {showAlertFailed && (
-                    <div className="w-1/2">
-                        <AlertIcon
-                            setShowAlertFailed={setShowAlertFailed}
-                            contentAlert={
-                                "Vui lòng chọn file cần thêm dữ liệu !!"
-                            }
+            <Card
+                className={`border  ${
+                    showAlertFailed
+                        ? "border-red-400 shadow-red-400"
+                        : "shadow-blue-400 border-blue-400"
+                }`}
+            >
+                <div className="flex flex-col items-center justify-center p-2">
+                    {showAlertFailed && (
+                        <div className="w-1/2">
+                            <AlertIcon
+                                setShowAlertFailed={setShowAlertFailed}
+                                contentAlert={
+                                    "Vui lòng chọn file cần thêm dữ liệu !!"
+                                }
+                            />
+                        </div>
+                    )}
+                    <Typography variant="h4" color="blue-gray">
+                        Gửi Thông Báo ZNS Báo Giá Theo Danh Sách Khách Hàng
+                    </Typography>
+                    <Typography color="gray" className="mt-1 font-normal">
+                        Vui lòng chọn file danh sách khách hàng
+                    </Typography>
+                    <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
+                        <Input
+                            labelProps={{ className: "hidden" }}
+                            type="file"
+                            accept=".xlsx, .xls"
+                            className="pl-0 border-none"
+                            onChange={handleFileUpload}
                         />
-                    </div>
-                )}
-                <Typography variant="h4" color="blue-gray">
-                    Gửi Thông Báo ZNS Báo Giá Theo Danh Sách Khách Hàng
-                </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
-                    Vui lòng chọn file danh sách khách hàng
-                </Typography>
-                <form className="max-w-screen-lg mt-8 w-80 sm:w-96">
-                    <Input
-                        labelProps={{ className: "hidden" }}
-                        type="file"
-                        accept=".xlsx, .xls"
-                        className="pl-0 border-none"
-                        onChange={handleFileUpload}
-                    />
-                    <Button
-                        className="mt-10"
-                        fullWidth
-                        color="green"
-                        onClick={() => {
-                            if (excelData.length == 0) {
-                                setShowAlertFailed(true);
-                            } else {
-                                // console.log(excelData);
-                                sendZNSQuotesMany();
-                            }
-                        }}
-                    >
-                        Gửi Thông Báo
-                    </Button>
-                </form>
+                        <Button
+                            className="mt-10 hover:bg-blue-500 hover:text-white"
+                            fullWidth
+                            variant="outlined"
+                            onClick={() => {
+                                if (excelData.length == 0) {
+                                    setShowAlertFailed(true);
+                                } else {
+                                    // console.log(excelData);
+                                    sendZNSQuotesMany();
+                                }
+                            }}
+                        >
+                            Gửi Thông Báo
+                        </Button>
+                    </form>
+                </div>
             </Card>
         </div>
     );
@@ -229,117 +237,128 @@ function Tab2() {
     // Xử lý logic cho Tab 2
     return (
         <div>
-            <Card color="transparent" shadow={false} className="ml-60">
-                <Typography variant="h4" color="blue-gray">
-                    Gửi Thông Báo ZNS Báo Giá Từng Khách Hàng
-                </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
-                    Vui lòng nhập thông tin khách hàng
-                </Typography>
-                <div className="flex row">
-                    <form className="max-w-screen-lg mt-8 mb-2 mr-40 w-80 sm:w-96">
-                        {showAlertFailed && (
-                            <AlertIcon
-                                setShowAlertFailed={setShowAlertFailed}
-                                contentAlert={
-                                    "Vui lòng nhập đủ thông tin khách hàng !!"
-                                }
-                            />
-                        )}
-                        <div className="flex flex-col mb-4 ">
-                            <p>Số liên hệ khách hàng: </p>
-                            <Input
-                                value={phoneCustomer}
-                                onChange={handleInputChangePhoneCustomer}
-                                type="number"
-                                size="lg"
-                                className={
-                                    `mb-4` +
-                                    classInput_border +
-                                    `[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`
-                                }
-                                labelProps={{ className: "hidden" }}
-                            />
-                            <p className="mt-3">Tên khách hàng: </p>
-                            <Input
-                                value={nameCustomer}
-                                disabled
-                                size="lg"
-                                className={classInput_border}
-                                labelProps={{ className: "hidden" }}
-                            />
-                            <p className="mt-3">Ngày báo giá: </p>
-                            <Input
-                                size="lg"
-                                className={classInput_border}
-                                labelProps={{ className: "hidden" }}
-                                value={date}
-                                onChange={handleChangeInputDate}
-                            />
-                        </div>
-                        <Button
-                            className="mt-6"
-                            fullWidth
-                            color="green"
-                            onClick={() => {
-                                if (
-                                    phoneCustomer.length == 0 ||
-                                    date.length == 0
-                                ) {
-                                    setShowAlertFailed(true);
-                                } else {
-                                    setShowAlertFailed(false);
-                                    sendZNSQuotesOnly();
-                                }
+            <Card
+                className={`border  ${
+                    showAlertFailed
+                        ? "border-red-400 shadow-red-400"
+                        : "shadow-blue-400 border-blue-400"
+                }`}
+            >
+                <div className="flex flex-col items-center justify-center p-2">
+                    <div className="flex flex-col items-center justify-center">
+                        <Typography variant="h4" color="blue-gray">
+                            Gửi Thông Báo ZNS Báo Giá Từng Khách Hàng
+                        </Typography>
+                        <Typography color="gray" className="mt-1 font-normal">
+                            Vui lòng nhập thông tin khách hàng
+                        </Typography>
+                    </div>
+                    <div className="flex row">
+                        <form className="max-w-screen-lg mt-8 mb-2 mr-40 w-80 sm:w-96">
+                            {showAlertFailed && (
+                                <AlertIcon
+                                    setShowAlertFailed={setShowAlertFailed}
+                                    contentAlert={
+                                        "Vui lòng nhập đủ thông tin khách hàng !!"
+                                    }
+                                />
+                            )}
+                            <div className="flex flex-col mb-4 ">
+                                <p>Số liên hệ khách hàng: </p>
+                                <Input
+                                    value={phoneCustomer}
+                                    onChange={handleInputChangePhoneCustomer}
+                                    type="number"
+                                    size="lg"
+                                    className={
+                                        `mb-4` +
+                                        classInput_border +
+                                        `[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`
+                                    }
+                                    labelProps={{ className: "hidden" }}
+                                />
+                                <p className="mt-3">Tên khách hàng: </p>
+                                <Input
+                                    value={nameCustomer}
+                                    disabled
+                                    size="lg"
+                                    className={classInput_border}
+                                    labelProps={{ className: "hidden" }}
+                                />
+                                <p className="mt-3">Ngày báo giá: </p>
+                                <Input
+                                    size="lg"
+                                    className={classInput_border}
+                                    labelProps={{ className: "hidden" }}
+                                    value={date}
+                                    onChange={handleChangeInputDate}
+                                />
+                            </div>
+                            <Button
+                                className="mt-6 hover:bg-blue-500 hover:text-white"
+                                fullWidth
+                                variant="outlined"
+                                onClick={() => {
+                                    if (
+                                        phoneCustomer.length == 0 ||
+                                        date.length == 0
+                                    ) {
+                                        setShowAlertFailed(true);
+                                    } else {
+                                        setShowAlertFailed(false);
+                                        sendZNSQuotesOnly();
+                                    }
+                                }}
+                            >
+                                Gửi Thông Báo
+                            </Button>
+                        </form>
+                        <form
+                            className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96"
+                            style={{
+                                border: "2px solid #ccc",
+                                padding: "20px",
+                                borderRadius: "5px",
                             }}
                         >
-                            Gửi Thông Báo
-                        </Button>
-                    </form>
-                    <form
-                        className="max-w-screen-lg mt-8 mb-2 w-80 sm:w-96"
-                        style={{
-                            border: "2px solid #ccc",
-                            padding: "20px",
-                            borderRadius: "5px",
-                        }}
-                    >
-                        <Typography color="gray" className="mt-1 font-bold">
-                            Thợ Việt chân thành cảm ơn!
-                        </Typography>
-                        <Typography
-                            color="gray"
-                            className="mt-1 text-sm font-normal"
-                        >
-                            Thợ Việt chân thành cảm ơn Quý Khách đã quan tâm và
-                            sử dụng dịch vụ ! Rất mong nhận được phản hồi của
-                            Anh/Chị về chất lượng phục vụ và báo giá của thợ !
-                        </Typography>
-                        <Typography
-                            color="gray"
-                            className="mt-1 text-sm font-normal"
-                        >
-                            Mã đơn:
-                        </Typography>
-                        <Typography
-                            color="gray"
-                            className="mt-1 text-sm font-normal"
-                        >
-                            Trạng thái: Tư vấn, báo giá dịch vụ
-                        </Typography>
-                        <Typography
-                            color="gray"
-                            className="mt-1 text-sm font-normal"
-                        >
-                            Ngày báo giá: {date}
-                        </Typography>
-                        <Button className="mt-6" fullWidth color="green">
-                            Liên Hệ Bộ Phận CSKH
-                        </Button>
-                        <Button className="mt-2" fullWidth color="gray">
-                            Phản Hồi Dịch Vụ
-                        </Button>
-                    </form>
+                            <Typography color="gray" className="mt-1 font-bold">
+                                Thợ Việt chân thành cảm ơn!
+                            </Typography>
+                            <Typography
+                                color="gray"
+                                className="mt-1 text-sm font-normal"
+                            >
+                                Thợ Việt chân thành cảm ơn Quý Khách đã quan tâm
+                                và sử dụng dịch vụ ! Rất mong nhận được phản hồi
+                                của Anh/Chị về chất lượng phục vụ và báo giá của
+                                thợ !
+                            </Typography>
+                            <Typography
+                                color="gray"
+                                className="mt-1 text-sm font-normal"
+                            >
+                                Mã đơn:
+                            </Typography>
+                            <Typography
+                                color="gray"
+                                className="mt-1 text-sm font-normal"
+                            >
+                                Trạng thái: Tư vấn, báo giá dịch vụ
+                            </Typography>
+                            <Typography
+                                color="gray"
+                                className="mt-1 text-sm font-normal"
+                            >
+                                Ngày báo giá: {date}
+                            </Typography>
+                            <Button className="mt-6" fullWidth color="green">
+                                Liên Hệ Bộ Phận CSKH
+                            </Button>
+                            <Button className="mt-2" fullWidth color="gray">
+                                Phản Hồi Dịch Vụ
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </Card>
         </div>
@@ -356,84 +375,78 @@ function ZaloSendZNSQuotes() {
     const dataBtn = [
         {
             id: 1,
-            handleOnClick: getCode(),
-            labelBtn:"Code",
+            handleOnClick: getCode,
+            labelBtn: "Code",
             valueInput:
                 "9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
         },
         {
             id: 2,
-            handleOnClick: getCode(),
-            colorBtn:"green",
-            labelBtn:"Lấy token mới",
+            handleOnClick: getCode,
+            colorBtn: "green",
+            labelBtn: "Lấy token mới",
             valueInput:
-                "9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
+                "29123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
         },
         {
             id: 3,
-            handleOnClick: getCode(),
-            colorBtn:"orange",
-            labelBtn:"Lấy token refresh",
+            handleOnClick: getCode,
+            colorBtn: "orange",
+            labelBtn: "Lấy token refresh",
             valueInput:
-                "9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
+                "19123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
         },
     ];
 
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Gửi ZNS cảm ơn khách hàng" />
-            <div className=" w-[80%] h-[80%] m-auto mt-10 bg-white ">
-                <div className="p-2">
-                    <GetCode_inter
-                        handleOnclick={()=>{getCode()}}
-                        labelBtn="Code"
-                        valueInput=""
-                    />
-                    <GetCode_inter
-                        handleOnclick={()=>{getCode()}}
-                        colorBtn="green"
-                        labelBtn="Lấy token mới"
-                        valueInput="9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"
-                    />
-                    <GetCode_inter
-                        handleOnclick={()=>{getCode()}}
-                        colorBtn="orange"
-                        labelBtn="Lấy token refresh"
-                        valueInput="9123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j"
-                    />
-                </div>
-
-                <div className="container mx-auto mt-8">
-                    <ul className="flex border-b">
-                        <li className="mr-1 -mb-px">
-                            <button
-                                className={`inline-block py-2 px-4 text-green-600 font-bold ${
-                                    activeTab === 1
-                                        ? "border border-gray bg-white "
-                                        : "border-white"
-                                }`}
-                                onClick={() => setActiveTab(1)}
-                            >
-                                Gửi thông báo ZNS theo danh sách
-                            </button>
-                        </li>
-                        <li className="mr-1">
-                            <button
-                                className={`inline-block py-2 px-4 text-green-600 font-bold ${
-                                    activeTab === 2
-                                        ? "border border-gray bg-white "
-                                        : "border-white"
-                                }`}
-                                onClick={() => setActiveTab(2)}
-                            >
-                                Gửi thông báo ZNS cho từng khách
-                            </button>
-                        </li>
-                    </ul>
-                    <div className="p-4 bg-white border border-t-0 rounded-b">
-                        {activeTab === 1 ? <Tab1 /> : <Tab2 />}
+            <div className="flex justify-center h-full p-2">
+                <Card className=" w-[90%] h-[90%] m-auto  bg-white ">
+                    <div className="p-2">
+                        {dataBtn.map((item) => (
+                            <GetCode_inter
+                                key={item.id}
+                                handleOnclick={item.handleOnClick}
+                                labelBtn={item.labelBtn}
+                                valueInput={item.valueInput}
+                                colorBtn={item.colorBtn}
+                            />
+                        ))}
                     </div>
-                </div>
+
+                    <Card className="container mx-auto mt-8 border border-gray-500 rounded-sm">
+                        <ul className="flex border-b">
+                            <li className="mr-1 -mb-px">
+                                <button
+                                    className={`inline-block py-2 px-4 text-green-600 font-bold ${
+                                        activeTab === 1
+                                            ? "border border-gray bg-white "
+                                            : "border-white"
+                                    }`}
+                                    onClick={() => setActiveTab(1)}
+                                >
+                                    Gửi thông báo ZNS theo danh sách
+                                </button>
+                            </li>
+                            <li className="mr-1">
+                                <button
+                                    className={`inline-block py-2 px-4 text-green-600 font-bold ${
+                                        activeTab === 2
+                                            ? "border border-gray bg-white "
+                                            : "border-white"
+                                    }`}
+                                    onClick={() => setActiveTab(2)}
+                                >
+                                    Gửi thông báo ZNS cho từng khách
+                                </button>
+                            </li>
+                        </ul>
+                        <div className="p-4 bg-white border border-t-0 rounded-b">
+                            {activeTab === 1 ? <Tab1 /> : <Tab2 />}
+                        </div>
+                    </Card>
+                </Card>
             </div>
         </AuthenticatedLayoutAdmin>
     );

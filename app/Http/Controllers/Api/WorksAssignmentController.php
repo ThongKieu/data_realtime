@@ -599,7 +599,7 @@ class WorksAssignmentController extends Controller
                         {
                             $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                             for ($i = 0; $i < count($set_update_seri); $i++) {
-                                if ($request->bill_imag_del == $set_update_seri[$i]) {
+                                if ($request->seri_imag_del == $set_update_seri[$i]) {
                                     $set_update_seri[$i] = '';
                                 }
                                 $path = $path . $set_update_seri[$i] . ',';

@@ -20,37 +20,37 @@ function AdminSidebar({ children }) {
     const Menus = [
         {
             title: "Thợ",
-            icon: <UserGroupIcon className="w-7" />,
+            icon: <UserGroupIcon className="w-6" />,
             href: "admin",
             submenu: true,
             submenuItem: [
                 {
                     title: "Kiểm Tra Liên Hệ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/worker-check-call",
+                    href: route("admin/worker-check-call"),
                 },
                 {
                     title: " Danh Sách Thợ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/worker-list",
+                    href: route("admin/worker-list"),
                 },
                 {
                     title: " Tài Khoản App",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/worker-account",
+                    href: route("admin/worker-account"),
                 },
             ],
         },
         {
             title: "Thêm Dữ Liệu",
-            icon: <CircleStackIcon className="w-7" />,
+            icon: <CircleStackIcon className="w-6" />,
             href: "admin",
             submenu: true,
             submenuItem: [
                 {
                     title: " Thêm Dữ Liệu Khách",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/data-import-customer",
+                    href: route("admin/data-import-customer"),
                 },
                 {
                     title: "Xuất Dữ Liệu Khách",
@@ -59,25 +59,25 @@ function AdminSidebar({ children }) {
                 {
                     title: "Thêm Dữ Liệu Thợ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/data-import-worker",
+                    href: route("admin/data-import-worker"),
                 },
                 {
                     title: "Thêm Bảng Giá",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/data-import-price",
+                    href: route("admin/data-import-price"),
                 },
             ],
         },
         {
             title: "Ứng Dụng ",
-            icon: <DevicePhoneMobileIcon className="w-7" />,
+            icon: <DevicePhoneMobileIcon className="w-6" />,
             href: "admin",
             submenu: true,
             submenuItem: [
                 {
                     title: "Popup Chương Trình Khuyến Mãi",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/application-popup",
+                    href: route("admin/application-popup"),
                 },
                 {
                     title: "QR Code",
@@ -103,19 +103,19 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Zalo",
-            icon: <ChatBubbleLeftRightIcon className="w-7" />,
+            icon: <ChatBubbleLeftRightIcon className="w-6" />,
             href: "admin",
             submenu: true,
             submenuItem: [
                 {
                     title: "Gửi ZNS Cảm Ơn",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/zalo-zns-thanks",
+                    href: route("admin/zalo-zns-thanks"),
                 },
                 {
                     title: "Gửi ZNS Báo Giá",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: "admin/zalo-zns-quotes",
+                    href: route("admin/zalo-zns-quotes"),
                 },
                 {
                     title: "Gửi ZNS Báo Giá Sau 15 Ngày",
@@ -125,7 +125,7 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Công Cụ",
-            icon: <WrenchIcon className="w-7" />,
+            icon: <WrenchIcon className="w-6" />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -140,40 +140,39 @@ function AdminSidebar({ children }) {
             ],
         },
     ];
-    console.log(Menus);
+    const [activeIndex, setActiveIndex] = useState(null);
     return (
-        <div className="flex text-black ">
+        <div className="flex w-full text-black ">
             <div
                 className={`${
-                    open ? "w-72" : "w-20"
-                } bg-white h-screen p-5 pt-1 relative duration-300 rounded-lg`}
+                    open ? "w-72" : "w-16"
+                } bg-gray-200 h-screen p-2 pt-1 relative duration-300 rounded-lg`}
             >
                 <ChevronLeftIcon
-                    className={`absolute cursor-pointer right-7 top-9 w-7 border-black border-2 rounded-full ${
+                    className={`absolute cursor-pointer right-5 top-9 w-7 border-black border-2 rounded-full ${
                         !open && "rotate-180"
                     }`}
                     onClick={() => setOpen(!open)}
                 />
-
                 <ul className="pt-6">
-                    <div className="flex items-center gap-x-4">
-                        <h1
-                            className={`text-black origin-left font-medium text-xl duration-200 ${
-                                !open && "scale-0"
-                            }`}
-                        >
-                            THỢ VIỆT
-                        </h1>
-                    </div>
-                    <Link to={route("admin")}>
+                    <h1
+                        className={`text-black origin-left font-medium text-xl duration-200 ${
+                            !open && "scale-0"
+                        }`}
+                    >
+                        THỢ VIỆT
+                    </h1>
+                    <Link href={route("admin")}>
                         <li
-                            className={`flex rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-4 text-black`}
+                            className={`flex rounded-md p-2 ${
+                                open ? "mt-5" : "mt-0"
+                            } cursor-pointer hover:bg-blue-gray-500 hover:text-white text-sm items-center text-black`}
                         >
-                            <HomeIcon className="w-7" />
+                            <HomeIcon className="w-6" />
                             <span
                                 className={`${
                                     !open && "hidden"
-                                } origin-left duration-200`}
+                                } origin-left duration-200p pl-2`}
                             >
                                 Admin
                             </span>
@@ -182,15 +181,19 @@ function AdminSidebar({ children }) {
                     {Menus.map((Menu, index) => (
                         <div key={index}>
                             <li
-                                className={`flex rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 text-black justify-between ${
-                                    Menu.gap ? "mt-9" : "mt-2"
-                                } ${index === 0 && "bg-light-white"}`}
+                                className={`flex rounded-md p-2 cursor-pointer hover:bg-blue-gray-500 text-sm items-center gap-x-4 hover:text-white text-black justify-between ${
+                                    Menu.gap ? "mt-7" : "mt-2"
+                                }${activeIndex === index ? "bg-red-500" : ""}`}
                                 onClick={() => {
                                     if (openSubmenu === index) {
                                         setOpenSubmenu(false);
-
-                                    } else{
+                                    } else if (!open) {
+                                        setOpenSubmenu(index);
+                                        setOpen(!open);
+                                        setActiveIndex(index);
+                                    } else {
                                         Menu.submenu && setOpenSubmenu(index);
+                                        setActiveIndex(index);
                                     }
                                 }}
                             >
@@ -207,36 +210,45 @@ function AdminSidebar({ children }) {
                                 {Menu.submenu && (
                                     <ChevronDownIcon
                                         className={`w-3 ${
-                                            openSubmenu === index ? "rotate-180" : ""
+                                            openSubmenu === index
+                                                ? "rotate-180"
+                                                : ""
                                         } ${!open && "hidden"}`}
-                                        onClick={() =>{
+                                        onClick={() => {
                                             setOpenSubmenu(!openSubmenu);
-                                        }
-
-                                        }
+                                        }}
                                     />
                                 )}
                             </li>
                             {Menu.submenu && openSubmenu === index && (
-                                <ul className={`bg-gray-500 rounded ${!open ? 'hidden':''}`}>
+                                <ul
+                                    className={`bg-gray-500 rounded mx-2 rounded-tr-none rounded-tl-none ${
+                                        !open ? "hidden" : ""
+                                    }`}
+                                >
                                     {Menu.submenuItem.map(
                                         (submenuItem, index) => (
-                                            <li
-                                                key={index}
-                                                className={`flex rounded-md p-2 cursor-pointer hover:bg-gray-500 text-sm items-center gap-x-4 text-black ${
-                                                    index === 0 &&
-                                                    "bg-light-white"
-                                                }`}
-                                            >
-                                                {submenuItem.icon}
-                                                <span
-                                                    className={`${
-                                                        !open && "hidden"
-                                                    } origin-left duration-200`}
+                                            <Link href={submenuItem.href}>
+                                                <li
+                                                    key={index}
+                                                    className={`flex rounded-md p-1 cursor-pointer hover:bg-gray-500 text-sm items-center gap-x-4 text-black ${
+                                                        index === 0 &&
+                                                        "bg-light-white"
+                                                    }`}
                                                 >
-                                                    {submenuItem.title}
-                                                </span>
-                                            </li>
+                                                    <span className="flex p-[4px] rounded-[4px] w-full item-center hover:bg-blue-gray-50">
+                                                        {submenuItem.icon}
+                                                        <span
+                                                            className={`${
+                                                                !open &&
+                                                                "hidden"
+                                                            } origin-left duration-200 pl-2`}
+                                                        >
+                                                            {submenuItem.title}
+                                                        </span>
+                                                    </span>
+                                                </li>
+                                            </Link>
                                         )
                                     )}
                                 </ul>
@@ -245,6 +257,7 @@ function AdminSidebar({ children }) {
                     ))}
                 </ul>
             </div>
+
             {children}
         </div>
     );

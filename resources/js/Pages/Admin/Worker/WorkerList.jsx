@@ -11,10 +11,7 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import {
-    PlusCircleIcon,
-   MapPinIcon
-} from "@heroicons/react/24/outline";
+import { PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
 
@@ -25,7 +22,6 @@ import {
     GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-
 
 function WorkerList({ auth }) {
     // thêm thợ
@@ -71,7 +67,6 @@ function WorkerList({ auth }) {
         formData.append("phone_cn", info_worker.phone_cn);
         formData.append("kind_worker", info_worker.kind_worker);
 
-
         try {
             const response = await fetch(URL_API, {
                 method: "POST",
@@ -81,7 +76,7 @@ function WorkerList({ auth }) {
                 mode: "no-cors",
                 body: formData,
             });
-            console.log('formData',formData);
+            console.log("formData", formData);
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(
@@ -101,48 +96,6 @@ function WorkerList({ auth }) {
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
 
-    const handleRowEditStop = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
-
-    const handleEditClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.Edit },
-        });
-    };
-
-    const handleSaveClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View },
-        });
-    };
-
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
-    };
-
-    const handleCancelClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: { mode: GridRowModes.View, ignoreModifications: true },
-        });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
-    };
-
-    // const processRowUpdate = (newRow) => {
-    //   const updatedRow = { ...newRow, isNew: false };
-    //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    //   return updatedRow;
-    // };
-
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
@@ -151,7 +104,6 @@ function WorkerList({ auth }) {
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
-        
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
@@ -205,7 +157,7 @@ function WorkerList({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    
+
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
@@ -230,31 +182,23 @@ function WorkerList({ auth }) {
         // Xử lý sự thay đổi của lựa chọn ở đây
         const selectedValue = event.target.value;
         const updatePhoneCTy = {
-          action: "phone_change_worker",
-          id: id,
-          phone_ct: selectedValue,
+            action: "phone_change_worker",
+            id: id,
+            phone_ct: selectedValue,
         };
         fetchDataPhoneCTy(updatePhoneCTy);
-      };
+    };
 
-      const renderPhoneCTField = (params) => {
-     
-        return (
-          <Input
-            type="text"
-            className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none"
-            labelProps={{
-              className: "hidden",
-            }}
-            value={params.value}
-            containerProps={{ className: "h-28" }}
-            onChange={(e) => handleChangeva(e, params.id)}
-          />
-        );
-      };
     // Hiển thị dữ liệu bảng
     const columns = [
-        { field: "id", headerName: "ID", width: 30 },
+        {
+            field: "id",
+            headerName: "ID",
+            width: 70,
+            renderCell: (params) => {
+                return <span className="text-center">{params.id}</span>;
+            },
+        },
         {
             field: "fullName",
             headerName: "Họ Tên",
@@ -270,27 +214,50 @@ function WorkerList({ auth }) {
         {
             field: "sort_name",
             headerName: "Mã",
-            width: 80,
+            width: 70,
             editable: false,
+            renderCell: (params) => {
+                return (
+                    <span className="text-center">{params.row.sort_name}</span>
+                );
+            },
         },
         {
             field: "last_active",
             headerName: "Last Active",
-            width: 180,
+            width: 300,
             editable: false,
+            renderCell: (params) => {
+                const d_active = params.row.last_active.d;
+                const m_active = params.row.last_active.m;
+                const y_active = params.row.last_active.y;
+                const h_active = params.row.last_active.h;
+                const i_active = params.row.last_active.i;
+                return y_active == 0 ? (
+                    <span className="text-center">
+                        {m_active} Tháng {d_active} Ngày{" "}
+                        {h_active} Giờ {i_active} Giây trước{" "}
+                    </span>
+                ) : (
+                    <span className="text-center">
+                        {y_active} Năm {m_active} Tháng {d_active} Ngày{" "}
+                        {h_active} Giờ {i_active} Giây trước{" "}
+                    </span>
+                );
+            },
         },
         {
             field: "null",
-            headerName: "Vị Trí Gần Nhất",
-            width: 180,
+            headerName: "Vị Trí",
+            width: 80,
             editable: false,
-            renderCell:()=>{
-                return(
-                   <NavLink href={route("dashboard")} className="text-center" >
-                     <MapPinIcon className="w-5 h-5 text-red-500"/>
-                   </NavLink>
-                )
-            }
+            renderCell: () => {
+                return (
+                    <NavLink href={route("dashboard")} className="text-center">
+                        <MapPinIcon className="w-5 h-5 text-red-500" />
+                    </NavLink>
+                );
+            },
         },
         {
             field: "add_worker",
@@ -307,7 +274,6 @@ function WorkerList({ auth }) {
             renderCell: (params) => {
                 const inputRef = createRef();
                 const updatePhone = (e) => {
-
                     const set123 = e.target.value;
                     const dataPhone = {
                         action: "phone_change_worker",
@@ -320,7 +286,6 @@ function WorkerList({ auth }) {
                         fetchDataPhone(dataPhone);
                         inputRef.current.blur();
                     }
-  
                 };
                 return (
                     <Input
@@ -328,15 +293,12 @@ function WorkerList({ auth }) {
                         defaultValue={params.value}
                         onKeyDown={updatePhone}
                         className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
-                        labelProps={
-                           {
-                            className:'hidden'
-                           }
-                        }
+                        labelProps={{
+                            className: "hidden",
+                        }}
                     />
                 );
             },
-
         },
         {
             field: "phone_cn",
@@ -419,7 +381,7 @@ function WorkerList({ auth }) {
                         <>
                             <Button onClick={handleOpen} className="bg-white">
                                 <img
-                                    src={host+ params.formattedValue}
+                                    src={host + params.formattedValue}
                                     alt="Avatar"
                                     className="w-10"
                                 />
@@ -502,7 +464,6 @@ function WorkerList({ auth }) {
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
-
             <Card className="mt-2">
                 <div className="grid m-2 justify-items-stretch ">
                     <div className="justify-self-end">

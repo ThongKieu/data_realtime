@@ -1,12 +1,16 @@
 import AdminSidebar from "@/Components/Sidebar/AdminSidebar";
-import SidebarAdmin from "@/Components/Sidebar/SidebarAdmin";
-
+import React,{ useState} from 'react'
 export default function Authenticated({ children }) {
+    const [screenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    const heightScreenTV = screenSize.height;
+    console.log(heightScreenTV);
     return (
         <div className="flex min-h-screen bg-gray-100">
-            {/* <SidebarAdmin/> */}
             <AdminSidebar>
-                <main className="w-full">{children}</main>
+                <main className={`w-full h-[${heightScreenTV}px] bg-blue-gray-300` }>{children}</main>
             </AdminSidebar>
         </div>
     );

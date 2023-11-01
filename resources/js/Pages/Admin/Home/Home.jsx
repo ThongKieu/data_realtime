@@ -44,7 +44,7 @@ const [isLoading, setIsLoading] = useState(true);
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Trang chủ Admin" />
-      <Card> <h1 className="text-center font-medium">Công ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt</h1>
+      <Card className="h-full rounded-none"> <h1 className="font-medium text-center">Công ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt</h1>
       <div class="grid grid-flow-row-dense grid-cols-3 grid-rows-3 ...">
         <div class="col-span-2">01</div>
         <div ><Card className="w-full h-full overflow-scroll">
@@ -54,7 +54,7 @@ const [isLoading, setIsLoading] = useState(true);
               {TABLE_HEAD.map((head) => (
                 <th
                   key={head}
-                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                  className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                 >
                   <Typography
                     variant="small"
@@ -134,10 +134,10 @@ const [isLoading, setIsLoading] = useState(true);
           </tbody>
         </table>
       </Card></div>
-        
+
       </div>
       </Card>
-      
+
     </AuthenticatedLayout>
   );
 }

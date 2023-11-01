@@ -8,12 +8,9 @@ import {
     HomeIcon,
     ChevronDoubleRightIcon,
     ChevronDownIcon,
-    XMarkIcon,
-    Bars3Icon,
     ChevronLeftIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "@inertiajs/react";
-import zIndex from "@mui/material/styles/zIndex";
 function AdminSidebar({ children }) {
     const [open, setOpen] = useState(false);
     const [openSubmenu, setOpenSubmenu] = useState(false);
@@ -141,8 +138,9 @@ function AdminSidebar({ children }) {
         },
     ];
     const [activeIndex, setActiveIndex] = useState(null);
+
     return (
-        <div className="flex w-full text-black ">
+        <div className={`flex w-full text-black `}>
             <div
                 className={`${
                     open ? "w-72" : "w-16"

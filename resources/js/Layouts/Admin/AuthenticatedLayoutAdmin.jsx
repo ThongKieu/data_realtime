@@ -6,7 +6,6 @@ export default function Authenticated({ children }) {
         height: window.innerHeight,
     });
     const heightScreenTV = screenSize.height;
-    console.log(heightScreenTV);
     return (
         <div className="flex min-h-screen bg-gray-100">
             <AdminSidebar>

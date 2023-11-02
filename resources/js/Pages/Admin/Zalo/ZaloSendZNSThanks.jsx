@@ -146,7 +146,6 @@ function Tab1() {
         </div>
     );
 }
-
 function Tab2() {
     const [phoneCustomer, setPhoneCustomer] = useState("");
     const [nameCustomer, setNameCustomer] = useState("Anh/Chị");
@@ -154,7 +153,6 @@ function Tab2() {
     const [typeOfTime, setTypeOfTime] = useState("Ngày");
     const [time, setTime] = useState("");
     const [showAlertFailed, setShowAlertFailed] = useState(false);
-
     const handleInputChangePhoneCustomer = (event) => {
         if (event && event.target && event.target.value) {
             if (event.target.value.length <= 10) {

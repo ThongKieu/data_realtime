@@ -76,6 +76,9 @@ Route::prefix('web')->group(function () {
         Route::get('getone','App\Http\Controllers\Api\ProductsController@getOne');
 
     });
+    
+    Route::get('worker-with-type','App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
+    
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

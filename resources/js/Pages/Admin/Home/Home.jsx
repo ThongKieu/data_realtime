@@ -7,8 +7,6 @@ import {
     UsersIcon,
     BellAlertIcon,
     FolderPlusIcon,
-    ArrowLongUpIcon,
-    ArrowLongDownIcon,
 } from "@heroicons/react/24/outline";
 import CardOrder from "./CardOrder";
 
@@ -20,15 +18,6 @@ const TABLE_HEAD = [
     "Tình trạng",
 ];
 
-const TABLE_ROWS = [
-    {
-        id: "1",
-        name: "Mr Huy Lương",
-        email: "huy@thoviet.com.vn",
-        time: "1 second ago",
-        status: "Online",
-    },
-];
 
 function Home({ auth }) {
     useEffect(() => {

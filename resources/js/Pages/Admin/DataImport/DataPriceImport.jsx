@@ -13,7 +13,7 @@ function DataPriceImport() {
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Thêm dữ liệu bảng giá" />
-            <div className="flex justify-center h-full">
+            <div className="flex justify-center h-screen">
                 <Card
                     className={`w-[50%] h-[50%] m-auto p-2 flex justify-center items-center border border-gray-500 shadow-xl  shadow-green-500`}
                 >

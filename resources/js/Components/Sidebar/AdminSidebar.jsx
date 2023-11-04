@@ -140,13 +140,17 @@ function AdminSidebar({ children }) {
         },
     ];
     const [activeIndex, setActiveIndex] = useState(null);
-
+    const [screenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    const heightScreenTV = screenSize.height;
     return (
-        <div className={`flex w-full text-black `}>
+        <div className={`flex w-full h-${heightScreenTV}  text-black`}>
             <div
                 className={`${
-                    open ? "w-72" : "w-16"
-                } bg-gray-200 h-screen p-2 pt-1 relative duration-300 rounded-lg`}
+                    open ? "w-[15%]" : "w-[4%]"
+                } bg-gray-200 h-screen fixed top-0 left-0 z-10 p-2 pt-1 duration-300 rounded-lg overflow-y-auto`}
             >
                 <ChevronLeftIcon
                     className={`absolute cursor-pointer right-5 top-9 w-7 border-black border-2 rounded-full ${
@@ -154,7 +158,7 @@ function AdminSidebar({ children }) {
                     }`}
                     onClick={() => setOpen(!open)}
                 />
-                <ul className="pt-6">
+                <ul className={`pt-6 h-[${heightScreenTV}px]`}>
                     <h1
                         className={`text-black origin-left font-medium text-xl duration-200 ${
                             !open && "scale-0"
@@ -164,7 +168,7 @@ function AdminSidebar({ children }) {
                     </h1>
                     <Link href={route("admin")}>
                         <li
-                            className={`flex rounded-md p-2 ${
+                            className={`flex  rounded-md p-2 ${
                                 open ? "mt-5" : "mt-0"
                             } cursor-pointer hover:bg-blue-gray-500 hover:text-white text-sm items-center text-black`}
                         >
@@ -228,7 +232,10 @@ function AdminSidebar({ children }) {
                                 >
                                     {Menu.submenuItem.map(
                                         (submenuItem, index) => (
-                                            <Link key={index} href={submenuItem.href}>
+                                            <Link
+                                                key={index}
+                                                href={submenuItem.href}
+                                            >
                                                 <li
                                                     key={index}
                                                     className={`flex rounded-md p-1 cursor-pointer hover:bg-gray-500 text-sm items-center gap-x-4 text-black ${
@@ -257,8 +264,13 @@ function AdminSidebar({ children }) {
                     ))}
                 </ul>
             </div>
-
-            {children}
+            <div
+                className={`${
+                    open ? "pl-[15%]" : "pl-[4%]"
+                } w-full h-screen overflow-scroll-y`}
+            >
+                {children}
+            </div>
         </div>
     );
 }

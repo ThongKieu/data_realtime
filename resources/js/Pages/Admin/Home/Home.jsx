@@ -9,21 +9,135 @@ import {
     FolderPlusIcon,
 } from "@heroicons/react/24/outline";
 import CardOrder from "./CardOrder";
-
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    ArcElement,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+import { Bar, Pie, Line } from "react-chartjs-2";
+import CardOrderSource from "./CardOrderSource";
 const TABLE_HEAD = [
     "ID",
     "Tên nhân viên",
     "Email",
     "Thời gian online",
-    "Tình trạng",
+    "Quyền",
 ];
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    ArcElement,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
+const dataNumber = [11111, 2222, 444, 555];
+// ________Doanh so thu chi_________________
+export const options = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: "top",
+        },
+        title: {
+            display: true,
+            text: "Doanh thu",
+        },
+    },
+};
+const labels = [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7",
+    "T8",
+    "T9",
+    "T10",
+    "T11",
+    "T12",
+];
+export const data = {
+    labels,
+    datasets: [
+        {
+            label: "Tổng Thu",
+            data: labels.map((label, index) => dataNumber[index]),
+            backgroundColor: "#3480b5",
+        },
+        {
+            label: "Tổng Chi",
+            data: labels.map((label, index) => dataNumber[index]),
+            backgroundColor: "#d30303",
+        },
+    ],
+};
+//_______________   end ___________________________
+// ________Doanh Số tho_________________
+export const dataVDS = {
+    labels: ["Vượt Doanh Số", "Đủ Doanh Số", "Chưa Đủ Doanh Số"],
+    datasets: [
+        {
+            label: "Tỷ lệ",
+            data: [60, 25, 15],
+            backgroundColor: ["#0099ff", "#f39e00", "#ff0037"],
+            borderColor: ["#0099ff", "#f39e00", "#ff0037"],
+            borderWidth: 1,
+        },
+    ],
+};
+// ________end Doanh Số tho_________________
+// ________Nguồn nhận lịch_________________
 
+const labelsOrderSource = ["App", "Web", "Tổng Đài", "Thợ Gửi"];
 
+export const dataOrderSource = {
+    labelsOrderSource,
+    datasets: [
+        {
+            label: "App",
+            data: labelsOrderSource.map((label, index) => dataNumber[index]),
+            borderColor: "rgb(114, 247, 96)",
+            backgroundColor: "rgba(114, 247, 96, 0.5)",
+        },
+        {
+            label: "Web",
+            data: labelsOrderSource.map((label, index) => dataNumber[index]),
+            borderColor: "rgb(220, 253, 71)",
+            backgroundColor: "rgba(220, 253, 71, 0.5)",
+        },
+        {
+            label: "Tổng Đài",
+            data: labelsOrderSource.map(() => 10000),
+            borderColor: "rgb(0, 46, 197)",
+            backgroundColor: "rgba(0, 46, 197, 0.5)",
+        },
+        {
+            label: "Thợ Gửi",
+            data: labelsOrderSource.map(() => 100),
+            borderColor: "rgb(235, 150, 53)",
+            backgroundColor: "rgba(235, 150, 53, 0.5)",
+        },
+    ],
+};
+// ________End Nguồn nhận lịch_________________
 function Home({ auth }) {
     useEffect(() => {
         fetchData();
     }, []);
-    const [getData, usersData] = useState("");
+    const [getData, usersData] = useState([]);
     const fetchData = async () => {
         try {
             const response = await fetch(host + "api/web/users");
@@ -31,7 +145,7 @@ function Home({ auth }) {
             if (response.ok) {
                 usersData(jsonData.users);
                 setIsLoading(false);
-                console.log(jsonData);
+                console.log(jsonData.users);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -96,10 +210,17 @@ function Home({ auth }) {
             IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
     ];
+    const [screenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    const heightScreenTV = screenSize.height;
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Trang chủ Admin" />
-            <Card className="h-full rounded-none bg-blue-gray-500">
+            <Card
+                className={`h-[${heightScreenTV}px] rounded-none bg-blue-gray-500`}
+            >
                 <Card className="flex flex-row items-center justify-between h-10 m-2 text-center rounded-xl">
                     {/* <div className="h-8 px-0 py-0 w-72 "> */}
                     <Typography className="p-2 font-bold uppercase">
@@ -118,7 +239,7 @@ function Home({ auth }) {
                     </div>
                 </Card>
                 <div className="flex flex-row justify-between p-1 m-2 text-center">
-                    {dataCardOrder.map((item) => {
+                    {dataCardOrder.map((item, index) => {
                         const classBot = `${
                             item.titleBot >= 15
                                 ? "green"
@@ -133,6 +254,7 @@ function Home({ auth }) {
 
                         return (
                             <CardOrder
+                                key={index}
                                 ClassCard={classBot}
                                 titleTop={item.titleTop}
                                 titleMid={item.titleMid}
@@ -149,201 +271,18 @@ function Home({ auth }) {
                     <Card className="w-[35%] rounded-sm">
                         <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
                             <p className="font-bold ">
-                                {" "}
                                 Doanh Thu Qua Các Tháng
                             </p>
                         </Typography>
-                        <div className="flex flex-col items-center w-full bg-white rounded-lg shadow-xl h-[30vh] p-2">
-                            <div className="flex items-end flex-grow w-full mt-2 space-x-2 sm:space-x-3">
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $37,500
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-6 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-16 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Jan
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $45,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-6 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-20 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Feb
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $47,500
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-20 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Mar
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $50,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-6 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-24 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Apr
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $47,500
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-20 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        May
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $55,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-24 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Jun
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $60,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-16 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-20 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Jul
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $57,500
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-24 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Aug
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $67,500
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-10 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-32 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Sep
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $65,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow bg-indigo-400 h-28" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Oct
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $70,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-40 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Nov
-                                    </span>
-                                </div>
-                                <div className="relative flex flex-col items-center flex-grow pb-5 group">
-                                    <span className="absolute top-0 hidden -mt-6 text-xs font-bold group-hover:block">
-                                        $75,000
-                                    </span>
-                                    <div className="flex items-end w-full">
-                                        <div className="relative flex justify-center flex-grow h-12 bg-indigo-200" />
-                                        <div className="relative flex justify-center flex-grow h-8 bg-indigo-300" />
-                                        <div className="relative flex justify-center flex-grow h-40 bg-indigo-400" />
-                                    </div>
-                                    <span className="absolute bottom-0 text-xs font-bold">
-                                        Dec
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="flex w-full mt-3">
-                                <div className="flex items-center ml-auto">
-                                    <span className="block w-4 h-4 bg-indigo-400" />
-                                    <span className="ml-1 text-xs font-medium">
-                                        Existing
-                                    </span>
-                                </div>
-                                <div className="flex items-center ml-4">
-                                    <span className="block w-4 h-4 bg-indigo-300" />
-                                    <span className="ml-1 text-xs font-medium">
-                                        Upgrades
-                                    </span>
-                                </div>
-                                <div className="flex items-center ml-4">
-                                    <span className="block w-4 h-4 bg-indigo-200" />
-                                    <span className="ml-1 text-xs font-medium">
-                                        New
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <Bar options={options} data={data} />;
                     </Card>
                     <Card className="w-[35%] rounded-sm">
                         <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
                             <p className="font-bold ">Doanh Số Của Thợ</p>
                         </Typography>
-                        <img
-                            src="https://thoviet.vn/wp-content/uploads/2023/11/chartPie.png"
-                            className="w-full h-full"
-                            alt=""
-                            srcset=""
-                        />
+                        <div className="w-[80%] h-[80%] m-auto flex flex-row items-center justify-center">
+                            <Pie data={dataVDS} className="flex flex-row" />
+                        </div>
                     </Card>
                     <Card className="w-[30%] rounded-sm">
                         <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
@@ -352,39 +291,9 @@ function Home({ auth }) {
                                 Tin
                             </p>
                         </Typography>
-                        <div className="grid items-start justify-between grid-cols-2 p-2">
-                            <Card className="flex flex-col m-2 text-center border border-green-500">
-                                <Typography className="p-2 font-bold text-center text-white rounded-lg rounded-bl-none rounded-br-none bg-blue-gray-300">
-                                    <p className="font-bold ">
-                                        Lịch Đến Từ APP
-                                    </p>
-                                </Typography>
-                                <p>150 Lịch</p>
-                            </Card>
-                            <Card className="m-2 text-center border border-green-500">
-                                <Typography className="p-2 font-bold text-center text-white rounded-lg rounded-bl-none rounded-br-none bg-blue-gray-300">
-                                    <p className="font-bold ">
-                                        Lịch Đến Từ WebSite
-                                    </p>
-                                </Typography>
-                                <p>70 Lịch</p>
-                            </Card>
-                            <Card className="m-2 text-center border border-green-500">
-                                <Typography className="p-2 font-bold text-center text-white rounded-lg rounded-bl-none rounded-br-none bg-blue-gray-300">
-                                    <p className="font-bold ">
-                                        Lịch Đến Từ Tổng Đài
-                                    </p>
-                                </Typography>
-                                <p>20 Lịch</p>
-                            </Card>
-                            <Card className="m-2 text-center border border-green-500">
-                                <Typography className="p-2 font-bold text-center text-white rounded-lg rounded-bl-none rounded-br-none bg-blue-gray-300">
-                                    <p className="font-bold ">
-                                        Lịch Đến Thợ Gửi Về
-                                    </p>
-                                </Typography>
-                                <p>10 Lịch</p>
-                            </Card>
+                        <div className="grid items-start justify-between grid-cols-4 p-2">
+                            <CardOrderSource />
+                            <Line data={dataOrderSource} />
                         </div>
                     </Card>
                 </div>
@@ -425,7 +334,13 @@ function Home({ auth }) {
                                 ) : (
                                     getData.map(
                                         (
-                                            { id, name, email, time, status },
+                                            {
+                                                id,
+                                                name,
+                                                email,
+                                                is_online,
+                                                permission,
+                                            },
                                             index
                                         ) => {
                                             const isLast =
@@ -469,18 +384,17 @@ function Home({ auth }) {
                                                             color="blue-gray"
                                                             className="font-normal"
                                                         >
-                                                            {time}
+                                                            {is_online}
                                                         </Typography>
                                                     </td>
                                                     <td className={classes}>
                                                         <Typography
-                                                            as="a"
-                                                            href="#"
+                                                            as="span"
                                                             variant="small"
                                                             color="blue-gray"
                                                             className="font-medium"
                                                         >
-                                                            {status}
+                                                            {permission}
                                                         </Typography>
                                                     </td>
                                                 </tr>

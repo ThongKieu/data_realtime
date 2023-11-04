@@ -76,10 +76,10 @@ function DataWorkerImport() {
         <AuthenticatedLayoutAdmin >
             <Head title="Thêm dữ liệu khách hàng" />
             {isLoading
-                ? <div className='flex items-center justify-center h-full'>
+                ? <div className='flex items-center justify-center h-screen'>
                     <Spinner className="w-12 h-12 " color="green" />
                 </div>
-                : <div className="flex justify-center h-full">
+                : <div className="flex justify-center h-screen">
                     <Card className={`w-[50%] h-[50%] m-auto p-2 flex justify-center items-center border border-gray-500 shadow-xl ${showAlertFailed ? 'shadow-red-500':'shadow-green-500'} `}>
                         {showAlertFailed && (
                             <AlertIcon setShowAlertFailed={setShowAlertFailed} contentAlert={'Lỗi khi tải file'} />

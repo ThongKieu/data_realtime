@@ -123,7 +123,7 @@ function ToolsAdminBlockSDT() {
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Danh Sách Chặn Số Điện Thoại" />
-            <div className="flex justify-center h-full p-2">
+            <div className="flex justify-center h-screen p-2">
                 <Card className="flex flex-row w-full h-full m-auto bg-white">
                     <Card className=" rounded w-[60%]">
                         <Typography className="p-2 font-bold text-center text-white bg-gray-500">

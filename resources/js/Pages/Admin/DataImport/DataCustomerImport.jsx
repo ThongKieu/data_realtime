@@ -84,7 +84,7 @@ function DataCustomerImport() {
                     <Spinner className="w-12 h-12 " color="green" />
                 </div>
             ) : (
-                <div className="flex justify-center h-full p-2">
+                <div className="flex justify-center h-screen p-2">
                     <Card className={`w-[50%] h-[50%] m-auto p-2 flex justify-center items-center border border-gray-500 shadow-xl ${showAlertFailed ? 'shadow-red-500':'shadow-green-500'} `}>
                         {showAlertFailed && (
                             <AlertIcon

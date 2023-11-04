@@ -178,7 +178,7 @@ function Dashboard({ auth }) {
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label: item.sort_name + ' ' + item.worker_name ,
+                label: item.worker_code + " " + item.worker_full_name,
             }));
             setInfoWorkerDashboard(formatJson);
         } catch (error) {
@@ -265,10 +265,7 @@ function Dashboard({ auth }) {
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-    const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
-        useState(false);
-    const handleOpenWorkerNameTableRight = () =>
-        setOpenWorkerNameTableRight(!openWorkerNameTableRight);
+
     // ----- lay thong tin bao hanh --------
 
     // du lieu bang cong viec chua phan ------------------------------------
@@ -512,6 +509,7 @@ function Dashboard({ auth }) {
                         work_note: params.row.work_note,
                         auth_id: auth.user.id,
                     };
+                    console.log("44444", data);
                     try {
                         const response = await fetch(
                             "api/web/work-assignment",
@@ -529,7 +527,7 @@ function Dashboard({ auth }) {
                             handleOpenTho();
                         }
                     } catch (error) {
-                        console.log("lixo", error);
+                        console.log("lỗi", error);
                     }
                 };
                 const handleSentNhanDoi = async (e) => {
@@ -571,12 +569,20 @@ function Dashboard({ auth }) {
                     } ${district ? district + " " : ""} ${
                         work_note ? work_note + " " : ""
                     } `;
+
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
+                    textarea.setAttribute("readonly", "");
+                    textarea.style.position = "absolute";
+                    textarea.style.left = "-9999px";
                     document.body.appendChild(textarea);
                     textarea.select();
+                    document.execCommand("copy");
                     document.body.removeChild(textarea);
+
+                    console.log("Đã sao chép thành công vào clipboard: ", data);
                 };
+
                 return (
                     <div>
                         <div className="flex">
@@ -846,12 +852,16 @@ function Dashboard({ auth }) {
         },
 
         {
-            field: "worker_name",
+            field: "worker_full_name",
             headerName: "Thợ",
             width: 80,
             editable: false,
             type: "singleSelect",
             renderCell: (params) => {
+                const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
+                    useState(false);
+                const handleOpenWorkerNameTableRight = () =>
+                    setOpenWorkerNameTableRight(!openWorkerNameTableRight);
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
@@ -860,10 +870,11 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
+                console.log(cardExpires);
                 return (
                     <div>
                         <p onClick={handleOpenWorkerNameTableRight}>
-                            {params.row.worker_name}
+                            {params.row.worker_full_name}
                         </p>
                         <Dialog
                             open={openWorkerNameTableRight}
@@ -884,7 +895,7 @@ function Dashboard({ auth }) {
                                             label="Thợ Chính"
                                             id="work_content"
                                             name="work_content"
-                                            value={cardExpires.work_content}
+                                            value={cardExpires.worker_full_name}
                                             onChange={handleChange}
                                             containerProps={{
                                                 className: "min-w-[72px]",
@@ -1042,7 +1053,7 @@ function Dashboard({ auth }) {
                     );
                     setImagePreview(previews);
                 };
-                const handleImageSubmit = (selectedHinh, type,id_ac) => {
+                const handleImageSubmit = (selectedHinh, type, id_ac) => {
                     if (selectedHinh) {
                         const urlAPI = `api/web/update/check-admin`;
                         const formData = new FormData();
@@ -1053,7 +1064,14 @@ function Dashboard({ auth }) {
                         console.log(`Đã gửi hình ${type}:`, selectedHinh);
                         // Thêm danh sách các tệp hình `image_vt` vào FormData
                         for (let i = 0; i < selectedHinh?.length; i++) {
-                            formData.append(`${id_ac ==2 ?'bill_imag_new[]': 'seri_imag_new[]'}`, selectedHinh[i]);
+                            formData.append(
+                                `${
+                                    id_ac == 2
+                                        ? "bill_imag_new[]"
+                                        : "seri_imag_new[]"
+                                }`,
+                                selectedHinh[i]
+                            );
                         }
                         const res = fetch(urlAPI, {
                             method: "POST",
@@ -1142,8 +1160,10 @@ function Dashboard({ auth }) {
                         id: params.row.id,
                     };
                     if (valueRadio === "0") {
-                        const image_Pt = document.getElementById("image_Pt")?.files;
-                        const image_Vt = document.getElementById("image_Vt")?.files;
+                        const image_Pt =
+                            document.getElementById("image_Pt")?.files;
+                        const image_Vt =
+                            document.getElementById("image_Vt")?.files;
                         fetchDataUpdateThuchi(
                             data_0,
                             UrlApi,
@@ -1180,7 +1200,7 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Thu hoi lich");
-                            handleThuHoi();
+                            handleOpenThuHoi();
                         }
                     } catch (error) {
                         console.log("Loi", error);
@@ -1358,61 +1378,65 @@ function Dashboard({ auth }) {
                                         />
                                     </Tooltip>
                                 </>
-                            ) : ( params.row.status_work != 1 ? (<>
-                                <Tooltip content="Nhập Thu Chi">
-                                    <ArrowUpTrayIcon
-                                        className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
-                                        onClick={handleOpenSpending_total}
-                                    />
-                                </Tooltip>
-                                <Tooltip content="Admin Check">
-                                    <Button
-                                        className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                        onClick={handleOpenAdminCheck}
-                                        variant="outlined"
-                                    >
-                                        <EyeIcon />
-                                    </Button>
-                                </Tooltip>
-                                <Menu allowHover>
-                                    <MenuHandler>
-                                        <EllipsisVerticalIcon
-                                            className={`w-6 h-6 pt-2 cursor-pointer ${
-                                                DK1 + DK2
-                                            }`}
+                            ) : params.row.status_work != 1 ? (
+                                <>
+                                    <Tooltip content="Nhập Thu Chi">
+                                        <ArrowUpTrayIcon
+                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
+                                            onClick={handleOpenSpending_total}
                                         />
-                                    </MenuHandler>
-                                    <MenuList className="flex justify-between">
-                                        <MenuItem className="p-0">
-                                            <Tooltip content="Thu Hồi Lịch">
-                                                <ArrowPathIcon
-                                                    className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                    onClick={
-                                                        handleOpenThuHoi
-                                                    }
-                                                />
-                                            </Tooltip>
-                                        </MenuItem>
-                                        <MenuItem className="p-0">
-                                            <Tooltip content="Báo hủy">
-                                                <TrashIcon
-                                                    className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                    onClick={handleOpenHuy}
-                                                />
-                                            </Tooltip>
-                                        </MenuItem>
-                                        <MenuItem className="p-0">
-                                            <Tooltip content="Khảo Sát">
-                                                <TicketIcon
-                                                    className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                    onClick={handleOpenKS}
-                                                />
-                                            </Tooltip>
-                                        </MenuItem>
-                                    </MenuList>
-                                </Menu>
-                            </>):(<p className="p-1 text-blue-500 border border-blue-500 rounded-sm">Mai Làm Tiếp</p>)
-
+                                    </Tooltip>
+                                    <Tooltip content="Admin Check">
+                                        <Button
+                                            className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
+                                            onClick={handleOpenAdminCheck}
+                                            variant="outlined"
+                                        >
+                                            <EyeIcon />
+                                        </Button>
+                                    </Tooltip>
+                                    <Menu allowHover>
+                                        <MenuHandler>
+                                            <EllipsisVerticalIcon
+                                                className={`w-6 h-6 pt-2 cursor-pointer ${
+                                                    DK1 + DK2
+                                                }`}
+                                            />
+                                        </MenuHandler>
+                                        <MenuList className="flex justify-between">
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Thu Hồi Lịch">
+                                                    <ArrowPathIcon
+                                                        className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
+                                                        onClick={
+                                                            handleOpenThuHoi
+                                                        }
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Báo hủy">
+                                                    <TrashIcon
+                                                        className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
+                                                        onClick={handleOpenHuy}
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                            <MenuItem className="p-0">
+                                                <Tooltip content="Khảo Sát">
+                                                    <TicketIcon
+                                                        className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                        onClick={handleOpenKS}
+                                                    />
+                                                </Tooltip>
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </>
+                            ) : (
+                                <p className="p-1 text-blue-500 border border-blue-500 rounded-sm">
+                                    Mai Làm Tiếp
+                                </p>
                             )}
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
@@ -1455,10 +1479,10 @@ function Dashboard({ auth }) {
                                 isEdited ? "border-red-500" : "border-gray-300"
                             }`}
                             handleSendImagePT={() =>
-                                handleImageSubmit(selectedFilesPT, "PT",3)
+                                handleImageSubmit(selectedFilesPT, "PT", 3)
                             }
                             handleSendImageVT={() =>
-                                handleImageSubmit(selectedFilesVT, "VT",2)
+                                handleImageSubmit(selectedFilesVT, "VT", 2)
                             }
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}

@@ -7,9 +7,9 @@ export default function Authenticated({ children }) {
     });
     const heightScreenTV = screenSize.height;
     return (
-        <div className="flex min-h-screen bg-gray-100">
+        <div className={`bg-gray-100`}>
             <AdminSidebar>
-                <main className={`w-full h-[${heightScreenTV}px] bg-blue-gray-300` }>{children}</main>
+                <main className={`w-full bg-blue-gray-300` }>{children}</main>
             </AdminSidebar>
         </div>
     );

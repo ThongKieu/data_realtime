@@ -207,9 +207,7 @@ function WorkerList({ auth }) {
             width: 160,
             editable: false,
             valueGetter: (params) =>
-                `${params.row.worker_firstname || ""} ${
-                    params.row.worker_name || ""
-                }`,
+                `${params.row.worker_full_name} `,
         },
         {
             field: "sort_name",
@@ -218,7 +216,7 @@ function WorkerList({ auth }) {
             editable: false,
             renderCell: (params) => {
                 return (
-                    <span className="text-center">{params.row.sort_name}</span>
+                    <span className="text-center">{params.row.worker_code}</span>
                 );
             },
         },
@@ -260,14 +258,14 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "add_worker",
+            field: "worker_address",
             headerName: "Địa Chỉ",
             width: 180,
             editable: false,
         },
 
         {
-            field: "phone_ct",
+            field: "worker_phone_company",
             headerName: "Số Công ty",
             width: 120,
             editable: false,
@@ -292,7 +290,7 @@ function WorkerList({ auth }) {
                         ref={inputRef}
                         defaultValue={params.value}
                         onKeyDown={updatePhone}
-                        className="text-center bg-white border-none rounded-none outline-none focus:w-fit"
+                        className="text-center bg-white border-none rounded-none outline-none "
                         labelProps={{
                             className: "hidden",
                         }}
@@ -301,7 +299,7 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "phone_cn",
+            field: "worker_phone_personal",
             headerName: "Số cá nhân",
             width: 150,
             editable: false,
@@ -442,10 +440,10 @@ function WorkerList({ auth }) {
             // editable: true,
         },
         {
-            field: "check_acc",
+            field: "worker_check_acc",
             headerName: "Tài Khoản",
             renderCell: (params) => {
-                if (params.field === "check_acc") {
+                if (params.field === "worker_check_acc") {
                     switch (params.value) {
                         case 0:
                             return "Chưa có, vui lòng liên hệ Admin.";
@@ -461,6 +459,11 @@ function WorkerList({ auth }) {
             editable: false,
         },
     ];
+    const [screenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    const heightScreenTV = screenSize.height;
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
@@ -575,8 +578,8 @@ function WorkerList({ auth }) {
                 </form>
             </Dialog>
             {/* -Đổ dữ liệu thợ- */}
-            <Card className="w-[98%] m-auto mt-1">
-                <Box sx={{ height: 800, width: 1 }}>
+            <Card className={`w-[98%] h-[${heightScreenTV}px] m-auto mt-1`}>
+                <Box sx={{ height: heightScreenTV-72, width: 1 }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -588,7 +591,7 @@ function WorkerList({ auth }) {
                                 showQuickFilter: true,
                             },
                         }}
-                        className="text-center"
+                        className="text-center "
                     />
                 </Box>
             </Card>

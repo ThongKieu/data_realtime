@@ -441,7 +441,7 @@ function ZaloSendZNSThanks() {
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Gửi ZNS cảm ơn khách hàng" />
-            <div className="flex justify-center h-full p-2">
+            <div className="flex justify-center h-screen p-2">
                 <Card className=" w-[90%] h-[90%] m-auto  bg-white ">
                     <div className="p-2">
                         {dataBtn.map((item) => (

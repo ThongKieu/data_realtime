@@ -171,7 +171,7 @@ function WorkerCheckCall() {
                     <Spinner className="w-12 h-12 " color="green" />
                 </div>
             ) : (
-                <div className={`h-full  gap-2 p-2`}>
+                <div className={`h-screen gap-2 p-2`}>
                     <Card className="flex flex-row items-center justify-center p-2 border border-gray-300">
                         <div className="flex flex-row items-center justify-between gap-4 ">
                             <p>Thêm Dữ Liệu Cuộc Gọi Thợ:</p>

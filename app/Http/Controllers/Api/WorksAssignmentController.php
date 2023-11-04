@@ -59,10 +59,10 @@ class WorksAssignmentController extends Controller
                     "works.image_work_path",
                     "works.kind_work",
                     "works.name_cus",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
+                    "workers.worker_code",
+                    "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -94,10 +94,11 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
+                    "workers.worker_code",
+                    "workers.worker_address",
+                     "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -128,11 +129,11 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
                     "works.name_cus",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_code",
+                    "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -164,10 +165,10 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
+                    "workers.worker_code",
+                    "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -198,11 +199,11 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
                     "works.name_cus",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_code",
+                    "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -234,11 +235,11 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
                     "works.name_cus",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct"
+                    "workers.worker_code",
+                    "workers.worker_address", "workers.worker_phone_company"
                 ]
             );
         $co_khi = DB::table('works_assignments')
@@ -269,11 +270,12 @@ class WorksAssignmentController extends Controller
                     "works.phone_number",
                     "works.image_work_path",
                     "works.kind_work",
-                    "workers.worker_firstname",
-                    "workers.worker_name",
+                    "workers.worker_full_name",
+                    // "workers.worker_name",
                     "works.name_cus",
-                    "workers.sort_name",
-                    "workers.add_worker", "workers.phone_ct",
+                    "workers.worker_code",
+                    "workers.worker_address",
+                    "workers.worker_phone_company",
                 ]
             );
 
@@ -308,7 +310,7 @@ class WorksAssignmentController extends Controller
         $work_note =  Work::where('id', '=', $id_cus)
             ->value('work_note');
         // dd($request);
-        $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('kind_worker');
+        $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('worker_kind');
         // Update kind work by kind worker
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         // dd($id_worker);

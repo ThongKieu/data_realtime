@@ -59,7 +59,7 @@ function WorkerAccount() {
   return (
     <AuthenticatedLayoutAdmin >
       <Head title="Tài khoản thợ" />
-      <Card className="h-full w-full">
+      <Card className="w-full h-screen">
         <CardHeader floated={false} shadow={false} className="rounded-none">
 
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -73,20 +73,20 @@ function WorkerAccount() {
               </TabsHeader>
             </Tabs>
             <div className="w-full md:w-72">
-              <Input label="Search" icon={<MagnifyingGlassIcon className="h-5 w-5" />} />
+              <Input label="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />
             </div>
           </div>
         </CardHeader>
-        <CardBody className="overflow-scroll px-0">
-          <table className=" w-full min-w-max table-auto text-left">
+        <CardBody className="px-0 overflow-scroll">
+          <table className="w-full text-left table-auto min-w-max">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head, index) => (
-                  <th key={head} className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50" >
+                  <th key={head} className="p-4 transition-colors cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50" >
                     <Typography variant="small" color="blue-gray" className="flex items-center justify-between gap-2 font-normal leading-none opacity-70" >
                       {head}{" "}
                       {/* {index !== TABLE_HEAD.length - 1 && (
-                        <ChevronUpDownIcon strokeWidth={2} className="h-4 w-4" />
+                        <ChevronUpDownIcon strokeWidth={2} className="w-4 h-4" />
                       )} */}
                     </Typography>
                   </th>
@@ -154,7 +154,7 @@ function WorkerAccount() {
             </tbody>
           </table>
         </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+        <CardFooter className="flex items-center justify-between p-4 border-t border-blue-gray-50">
           <Typography variant="small" color="blue-gray" className="font-normal">
             Page 1 of 10
           </Typography>

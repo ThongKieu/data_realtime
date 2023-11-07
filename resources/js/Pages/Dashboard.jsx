@@ -55,6 +55,7 @@ import { HuyDialog } from "@/Components/ColumnRightDialog";
 function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
+    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
     const [workDataDN, setWorkDataDN] = useState("");
     const [workDataDNCu, setWorkDataDNCu] = useState("");
@@ -73,6 +74,7 @@ function Dashboard({ auth }) {
     const [workDataVC_done, setWorkDataVC_done] = useState("");
     const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
+
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -171,7 +173,7 @@ function Dashboard({ auth }) {
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
-    const [infoWorkerDashboard, setInfoWorkerDashboard] = useState("");
+
     const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch(host + "api/web/workers");
@@ -267,7 +269,6 @@ function Dashboard({ auth }) {
     const handleOpen = () => setOpen(!open);
 
     // ----- lay thong tin bao hanh --------
-
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
         {
@@ -625,7 +626,6 @@ function Dashboard({ auth }) {
             },
         },
     ];
-
     // du lieu bang cong viec da phan ------------------------------------
     const columnsRight = [
         {
@@ -870,10 +870,29 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
-                console.log(cardExpires);
+                console.log(params);
+                const [nameWorkers, setNameWorkers] = useState([]);
+
+                useEffect(() => {
+                    const workerLabels = [];
+                    for (let i = 0; i < infoWorkerDashboard.length; i++) {
+                        const label = infoWorkerDashboard[i].label;
+                        workerLabels.push(label);
+                    }
+                    setNameWorkers(workerLabels);
+                }, [infoWorkerDashboard]);
+
+                // In ra tất cả các giá trị label trong mảng nameWorkers
+                console.log("Labels of workers: ", nameWorkers);
                 return (
                     <div>
-                        <p onClick={handleOpenWorkerNameTableRight}>
+                        <p>
+                            {params.row.id_worker || params.id || params.row.length > 0
+                                ? params.row.worker_full_name
+                                : nameWorkers.join(", ")}
+                        </p>
+
+                        {/* <p onClick={handleOpenWorkerNameTableRight}>
                             {params.row.worker_full_name}
                         </p>
                         <Dialog
@@ -937,7 +956,7 @@ function Dashboard({ auth }) {
                                     </div>
                                 </form>
                             </DialogBody>
-                        </Dialog>
+                        </Dialog> */}
                     </div>
                 );
             },
@@ -1731,7 +1750,7 @@ function Dashboard({ auth }) {
                                             {result.contentDataGird}
                                         </Typography>
 
-                                        <Box>
+                                        <Box sx={{height: result.rowsDataGrid !=='' ? 'fit-content': 200}}>
                                             <DataGrid
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsRight}

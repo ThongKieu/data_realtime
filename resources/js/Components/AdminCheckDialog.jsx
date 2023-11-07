@@ -77,28 +77,31 @@ function AdminCheckDialog({
         },
     ]);
     const fetchDataBH = async (id) => {
-        try {
-            const response = await fetch(
-                `api/web/work-assignment/warranties?id=${id}`
-            );
-            const jsonData = await response.json();
-            if (response.ok && jsonData.length != 0) {
-                const formatJson = jsonData.map((item) => ({
-                    id: item.id,
-                    warranty_info: item.warranty_info,
-                    warranty_time: item.warranty_time,
-                    unit: item.unit,
-                }));
-                setDataBH(formatJson);
-            } else {
-                console.error("Data from API is undefined or empty.");
+        if(id){
+            try {
+                const response = await fetch(
+                    `api/web/work-assignment/warranties?id=${id}`
+                );
+                const jsonData = await response.json();
+                if (response.ok && jsonData.length != 0) {
+                    const formatJson = jsonData.map((item) => ({
+                        id: item.id,
+                        warranty_info: item.warranty_info,
+                        warranty_time: item.warranty_time,
+                        unit: item.unit,
+                    }));
+                    setDataBH(formatJson);
+                } else {
+                    console.error("Data from API is undefined or empty.");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
-        } catch (error) {
-            console.error("Error fetching data:", error);
         }
     };
     useEffect(() => {
-        fetchDataBH(params.row.id);
+        if(params.row.id){
+        fetchDataBH(params.row.id);}
     }, []);
     const handleDataBh = (id) => {
         fetchDataBH(id);
@@ -153,14 +156,14 @@ function AdminCheckDialog({
             ac: 1,
             auth_id: auth.user.id,
             id_del_warranty: id,
-        }
+        };
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body:JSON.stringify(deleteBH)
+                body: JSON.stringify(deleteBH),
             });
 
             if (res.ok) {
@@ -201,7 +204,6 @@ function AdminCheckDialog({
             if (res.ok) {
                 console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
                 handleOpenBH();
-
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -214,14 +216,14 @@ function AdminCheckDialog({
             ac: 13,
             auth_id: auth.user.id,
             id: params.row.id,
-        }
+        };
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body:JSON.stringify(check_admin)
+                body: JSON.stringify(check_admin),
             });
 
             if (res.ok) {
@@ -233,7 +235,6 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-
 
     return (
         <Dialog

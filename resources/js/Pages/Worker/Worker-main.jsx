@@ -31,19 +31,19 @@ function WorkersMain({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
-        worker_firstname: "",
+        worker_full_name: "",
         worker_name: "",
         add_worker: "",
         phone_cty: "",
         phone_cn: "",
-        kind_worker: "",
+        worker_kind: "",
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     const handleOpen = () => setOpen(!open);
 
     const handleSelectChange = (e) => {
-        setFormDataWorker({ ...info_worker, kind_worker: e.target.value });
+        setFormDataWorker({ ...info_worker, worker_kind: e.target.value });
         // Cập nhật trạng thái khi người dùng chọn tùy chọn
     };
     const handleFileChange = (event) => {
@@ -64,12 +64,12 @@ function WorkersMain({ auth }) {
         // get info to form
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
-        formData.append("worker_firstname", info_worker.worker_firstname);
+        formData.append("worker_full_name", info_worker.worker_full_name);
         formData.append("worker_name", info_worker.worker_name);
         formData.append("add_worker", info_worker.add_worker);
         formData.append("phone_cty", info_worker.phone_cty);
         formData.append("phone_cn", info_worker.phone_cn);
-        formData.append("kind_worker", info_worker.kind_worker);
+        formData.append("worker_kind", info_worker.worker_kind);
 
         try {
             const response = await fetch(URL_API, {
@@ -180,7 +180,7 @@ function WorkersMain({ auth }) {
             width: 160,
             editable: false,
             valueGetter: (params) =>
-                `${params.row.worker_firstname || ""} ${
+                `${params.row.worker_full_name || ""} ${
                     params.row.worker_name || ""
                 }`,
         },
@@ -446,8 +446,8 @@ function WorkersMain({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="worker_firstname"
-                                value={info_worker.worker_firstname}
+                                name="worker_full_name"
+                                value={info_worker.worker_full_name}
                                 onChange={handleChange}
                                 label="Họ"
                             />
@@ -494,9 +494,9 @@ function WorkersMain({ auth }) {
                         <div className="grid grid-cols-2 gap-2 m-1 "></div>
                         <div className="m-1">
                             <select
-                                id="kind_worker"
-                                name="kind_worker"
-                                value={info_worker.kind_worker}
+                                id="worker_kind"
+                                name="worker_kind"
+                                value={info_worker.worker_kind}
                                 onChange={handleSelectChange}
                                 className="w-full border rounded-lg"
                             >

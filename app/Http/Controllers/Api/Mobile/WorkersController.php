@@ -31,7 +31,7 @@ class WorkersController extends Controller
     public function store(Request $request)
     {
 
-        $sort = WorkersController::getSortName($request->kind_worker);
+        $sort = WorkersController::getSortName($request->worker_kind);
 
         if ($request->hasFile('avatar_new')) {
             $file = $request->file('avatar_new');
@@ -44,14 +44,14 @@ class WorkersController extends Controller
             $path = 'assets/avatar/avata1.png';
         }
         $new = new Worker([
-            'worker_firstname' => $request->worker_firstname,
+            'worker_full_name' => $request->worker_full_name,
             'worker_name' => $request->worker_name,
             'sort_name' => $sort,
             'add_worker' => $request->add_worker,
             'phone_ct' => $request->phone_cty,
             'phone_cn' => $request->phone_cn,
             'folder_path' => 'assets/images/work/' . $sort,
-            'kind_worker' => $request->kind_worker,
+            'worker_kind' => $request->worker_kind,
             'avatar' => $path,
         ]);
         $new->save();
@@ -63,13 +63,13 @@ class WorkersController extends Controller
         }
         return response()->json('Worker create');
     }
-    public static function getSortName($kind_worker)
+    public static function getSortName($worker_kind)
     {
-        $num = Worker::where('kind_worker', '=', $kind_worker)->get('id');
+        $num = Worker::where('worker_kind', '=', $worker_kind)->get('id');
         $num_of_kind = count($num);
         $num_of_kind += 1;
         $p = substr(sprintf('%02d',  $num_of_kind), 0, 8);
-        switch ($kind_worker) {
+        switch ($worker_kind) {
             case 0:
                 $sort = 'A' . $p;
                 return  $sort;

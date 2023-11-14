@@ -309,10 +309,11 @@ class WorksAssignmentController extends Controller
 
         $work_note =  Work::where('id', '=', $id_cus)
             ->value('work_note');
+       
         // dd($request);
-        $kind_worker = Worker::where('id', '=', $id_worker[0]['value'])->value('worker_kind');
+        $worker_kind = Worker::where('id', '=', $id_worker[0]['value'])->value('worker_kind');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $kind_worker, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         // dd($id_worker);
         if ($number > 1) {
             $workHas = new WorksAssignment([
@@ -321,6 +322,7 @@ class WorksAssignmentController extends Controller
                 'id_phu' => $id_worker[1]['value'],
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
+                'kind_work_assign'=>$worker_kind
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -328,6 +330,7 @@ class WorksAssignmentController extends Controller
                 'id_worker' => $id_worker[0]['value'],
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
+                'kind_work_assign'=>$worker_kind
             ]);
         }
         $workHas->save();

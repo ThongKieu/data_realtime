@@ -15,25 +15,24 @@ class WorkersSeeder extends Seeder
     {
         //
         Worker::create([
-            'worker_firstname'=> 'Tran',
-            'worker_name'=> 'Manh',
-            'sort_name'=>'A01',
-            'phone_ct'=>'0912847218',
-            'kind_worker'=>0,
+            'worker_full_name' => 'Tran',            // Họ và tên
+            'worker_code' =>'A01', 
+            'worker_phone_company'=>'0912847218',
+            'worker_kind'=>0,
         ]);
         Worker::create([
-            'worker_firstname'=> 'Tran 2',
-            'worker_name'=> 'Manh',
-            'sort_name'=>'B01',
-            'phone_ct'=>'0912847232',
-            'kind_worker'=>1,
+            'worker_full_name' => 'Thong Kieu',            // Họ và tên
+            'worker_code' =>'A02', 
+            'worker_phone_company'=>'09182722232',
+            'worker_kind'=>1,
+
+           
         ]);
         Worker::create([
-            'worker_firstname'=> 'Tran 3',
-            'worker_name'=> 'Manh',
-            'sort_name'=>'C01',
-            'phone_ct'=>'09128472232',
-            'kind_worker'=>2,
+            'worker_full_name'=> 'Tung Phan',
+            'worker_code'=>'C01',
+            'worker_phone_company'=>'0918472232',
+            'worker_kind'=>2,
         ]);
     }
 }

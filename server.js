@@ -9,7 +9,7 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
     console.log("user connected");
-   
+
     socket.on("pushOnline", (message) => {
         console.log('User:',message,' is online');
         io.sockets.emit('sentListOnline_Client',message);
@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
-    
+
     // Xử lý sự kiện khi máy khách ngắt kết nối
     return () => {
         socket.disconnect();

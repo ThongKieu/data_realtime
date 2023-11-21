@@ -77,7 +77,7 @@ function AdminCheckDialog({
         },
     ]);
     const fetchDataBH = async (id) => {
-        if(id){
+        if(id || id !='undefined'){
             try {
                 const response = await fetch(
                     `api/web/work-assignment/warranties?id=${id}`
@@ -228,6 +228,7 @@ function AdminCheckDialog({
 
             if (res.ok) {
                 console.log("Đã xóa thành công", check_admin);
+                handleOpenAdminCheck();
             } else {
                 console.error("Lỗi khi xóa dữ liệu:", res.statusText);
             }
@@ -308,8 +309,8 @@ function AdminCheckDialog({
                                 </DialogHeader>
                                 <Divider />
                                 <DialogBody>
-                                    {dataBH.map((item) => (
-                                        <div className="flex justify-between gap-1 mb-2">
+                                    {dataBH.map((item, index) => (
+                                        <div key={index} className="flex justify-between gap-1 mb-2">
                                             <div>
                                                 <Select
                                                     value={item.unit}

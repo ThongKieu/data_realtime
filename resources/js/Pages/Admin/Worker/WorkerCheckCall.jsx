@@ -55,7 +55,7 @@ function WorkerCheckCall() {
                 return response.json();
             })
             .then((data) => {
-                setListWorkers(data);
+                setListWorkers([data]);
             })
             .catch((error) => {
                 console.error("Error API:", error);
@@ -215,14 +215,12 @@ function WorkerCheckCall() {
                             <p className="mr-2">Chọn Thợ Cần Xem:</p>
                             <div className="w-[70%]">
                                 <Select label="Chọn Thợ"  className="w-full">
-                                    {listWorkers.map((data, index) => (
-                                        <Option
+                                    {listWorkers.map((data, index) => (<Option
                                             key={index}
                                             value={data.worker_name}
                                         >
                                             {data.worker_name}
-                                        </Option>
-                                    ))}
+                                        </Option>))}
                                 </Select>
                             </div>
                         </div>

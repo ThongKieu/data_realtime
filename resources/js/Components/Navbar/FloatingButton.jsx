@@ -113,7 +113,6 @@ function FloatingButton() {
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
         }
-        console.log('464654654654',selectedFiles);
         formData1.append("work_content", formData.work_content);
         formData1.append("date_book", selectedDate);
         formData1.append("district", selectedOption);
@@ -140,7 +139,7 @@ function FloatingButton() {
                 socketFTB.emit("addWorkTo_Server", formData1);
                 console.log("ddddd");
                 handleOpen();
-                setFormData("");
+                // setFormData("");
             }
         } catch (error) {
             console.log(error);

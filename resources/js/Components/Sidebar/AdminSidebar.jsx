@@ -149,7 +149,7 @@ function AdminSidebar({ children }) {
         <div className={`flex w-full h-${heightScreenTV}  text-black`}>
             <div
                 className={`${
-                    open ? "w-[15%]" : "w-[4%]"
+                    open ? "w-[15%]" : "w-[3%]"
                 } bg-gray-200 h-screen fixed top-0 left-0 z-10 p-2 pt-1 duration-300 rounded-lg overflow-y-auto`}
             >
                 <ChevronLeftIcon
@@ -266,7 +266,7 @@ function AdminSidebar({ children }) {
             </div>
             <div
                 className={`${
-                    open ? "pl-[15%]" : "pl-[4%]"
+                    open ? "pl-[15%]" : "pl-[3%]"
                 } w-full h-screen overflow-scroll-y`}
             >
                 {children}

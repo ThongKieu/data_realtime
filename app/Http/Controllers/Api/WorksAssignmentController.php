@@ -309,7 +309,7 @@ class WorksAssignmentController extends Controller
 
         $work_note =  Work::where('id', '=', $id_cus)
             ->value('work_note');
-       
+
         // dd($request);
         $worker_kind = Worker::where('id', '=', $id_worker[0]['value'])->value('worker_kind');
         // Update kind work by kind worker

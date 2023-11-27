@@ -316,10 +316,12 @@ class WorksAssignmentController extends Controller
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         // dd($id_worker);
         $phu ='';
+        $phu2 ='';
         if ($number > 1) {
             for($i=1; $i< $number;$i++)
             {
-                $phu += $id_worker[$i].',';
+                $phu2 = $id_worker[$i]['value'];
+                $phu += $phu2.',';
             }
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,

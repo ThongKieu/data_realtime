@@ -69,6 +69,10 @@ Route::prefix('web')->group(function () {
     // worker
     Route::get('all-workers','App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
     Route::get('all-check-call-workers','App\Http\Controllers\Api\Web\CheckCallWorkerController@getAllCheckCallWorkers');
+    Route::prefix('worker')->group(function (){
+        Route::get('all-workers','App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+        Route::get('all-check-call-workers','App\Http\Controllers\Api\Web\CheckCallWorkerController@getAllCheckCallWorkers');
+    });
     //products
     Route::prefix('product')->group(function (){
         Route::get('/','App\Http\Controllers\Api\ProductsController@index');

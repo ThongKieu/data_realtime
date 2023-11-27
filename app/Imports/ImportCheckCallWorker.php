@@ -14,11 +14,11 @@ class ImportCheckCallWorker implements ToModel
     public function model(array $row)
     {
         return new CheckCallWorker([
-            'worker_phone' => $row[0],
-            'worker_phone_called' => $row[2],
-            'worker_call_date' => $row[1],
-            'worker_call_time' => $row[3],
-            'worker_call_start_time' => $row[4],
+            'worker_phone' => $row[0], //CHUGOI
+            'worker_call_date' => $row[1],//NGAY_BD
+            'worker_call_start_time' => $row[2],//GIO_BD
+            'worker_phone_called' => $row[3],//BIGOI
+            'worker_call_time' => $row[4], //TG_GOI
         ]);
     }
 }

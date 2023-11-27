@@ -564,25 +564,36 @@ function Dashboard({ auth }) {
                 };
 
                 const handleSentPhanTho = async (e) => {
-                    let data = {
+                    // Lấy và loại bỏ phần tử đầu tiên để sử dụng làm id_worker
+                    const id_worker = selectPhanTho.shift();
+
+                    // Sử dụng các phần tử còn lại của mảng làm id_phu
+                    const id_phu = selectPhanTho.map((item) => item.value);
+
+                    // Tạo đối tượng data với id_worker và id_phu
+                    const data = {
                         id_cus: params.row.id,
-                        id_worker: selectPhanTho,
+                        id_worker: id_worker.value,
+                        id_phu: id_phu,
                         work_note: params.row.work_note,
                         auth_id: auth.user.id,
                     };
+
                     console.log("44444", data);
+
                     try {
-                        const response = await fetch(
-                            "api/web/work-assignment",
-                            {
-                                method: "POST",
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
-                        );
+                        // Gửi request đến API
+                        const response = await fetch("api/web/work-assignment", {
+                            method: "POST",
+                            body: JSON.stringify(data),
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+
+                        // Kiểm tra xem request có thành công không
                         if (response.ok) {
+                            // Thực hiện các hành động khác nếu cần
                             socketD.emit("addWorkTo_Server", "Phan Tho");
                             handleCopyToClipboard(params.row);
                             handleOpenTho();
@@ -591,6 +602,8 @@ function Dashboard({ auth }) {
                         console.log("lỗi", error);
                     }
                 };
+
+
                 const handleSentNhanDoi = async (e) => {
                     // Lấy dữ liệu từ params.row
                     const originalData = params.row;

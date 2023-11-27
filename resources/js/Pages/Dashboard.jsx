@@ -49,6 +49,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
+
 // ----
 
 function Dashboard({ auth }) {
@@ -73,6 +74,7 @@ function Dashboard({ auth }) {
 
     const [selectedDate, setSelectedDate] = useState(formattedToday);
     // table right
+    console.log(selectedDate, formattedToday);
     const dataDefault = [
         {
             id: 1,
@@ -102,26 +104,40 @@ function Dashboard({ auth }) {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
+        fetchDateCheck(selectedDate);
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
         }
-
         setSocketD(newSocket, { secure: true });
+        newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
+            fetchDateCheck(selectedDate);
+            fetchDataDashboard(selectedDate, data);
+            fetchDataDaPhan(selectedDate, data);
+        });
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data != "") {
+            if (data !== "") {
+                fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                // fetchDataWorkDone(data);
             }
         });
         return () => {
             newSocket.disconnect();
         };
-    }, []);
-    // --------------------------kiem tra socket io tai khoan online -----------------------------
+    }, [selectedDate]);
 
+    const handleDateChange = async (event) => {
+        setSelectedDate(event.target.value);
+        socketD?.emit("UpdateDateTable_To_Server", event);
+    };
+    const handleSearch = async () => {
+        fetchDateCheck(selectedDate);
+        console.log("xinchaoselecteddate", selectedDate);
+        fetchDateDoneCheck(selectedDate);
+    };
+    // --------------------------kiem tra socket io tai khoan online -----------------------------
     const pushOn = async (data) => {
         try {
             let data = {
@@ -138,9 +154,9 @@ function Dashboard({ auth }) {
             if (response.status == 200) {
                 console.log("push on thanh cong");
             }
-        } catch (error) {}
+        } catch (error) { console.log("push on Loi",error);}
     };
-    // ---------------lay du lieu cong viec chua phan----------------------------------------------
+    // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
         try {
             const response = await fetch(url);
@@ -205,6 +221,10 @@ function Dashboard({ auth }) {
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
             setIsLoading(false);
+            socketD?.emit(
+                "UpdateDateTable_To_Server",
+                "Cập Nhật trạng thái AdminCheck"
+            );
         } else {
             setWorkDataDN_done(dataDefault);
         }
@@ -244,7 +264,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                socketD?.emit("addWorkTo_Server", data);
+                socketD?.emit("UpdateDateTable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -253,7 +273,7 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDataDashboard = async (data) => {
-        const url = "api/web/update/work";
+        const url = `api/web/update/work`;
         fetchUpdateData(data, url);
     };
     const fetchDataWorkDone = async (data) => {
@@ -295,6 +315,7 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
+
                 socketD.emit("addWorkTo_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -596,19 +617,17 @@ function Dashboard({ auth }) {
                 };
 
                 const handleCopyToClipboard = (text) => {
-                    const work_content = text.work_content;
-                    const street = text.street;
-                    const phone_number = text.phone_number;
-                    const name_cus = text.name_cus;
-                    const district = text.district;
-                    const work_note = text.work_note;
-                    const data = `${work_content ? work_content + " " : ""} ${
-                        street ? street + " " : ""
-                    } ${phone_number ? phone_number + " " : ""} ${
-                        name_cus ? name_cus + " " : ""
-                    } ${district ? district + " " : ""} ${
-                        work_note ? work_note + " " : ""
-                    } `;
+                    const {
+                        work_content,
+                        street,
+                        phone_number,
+                        name_cus,
+                        district,
+                        work_note,
+                    } = text;
+                    const data = `${work_content || ""} ${street || ""} ${
+                        phone_number || ""
+                    } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
 
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
@@ -891,7 +910,7 @@ function Dashboard({ auth }) {
                 const check_admin = params.row.status_admin_check == 1;
                 return (
                     <>
-                        {check_admin ||  params.row.status_work === 1  ? (
+                        {check_admin || params.row.status_work === 1 ? (
                             <p>{params.row.worker_full_name}</p>
                         ) : (
                             <>
@@ -1179,7 +1198,8 @@ function Dashboard({ auth }) {
                 };
 
                 const handleUpdateThuChi = async (e) => {
-                    const UrlApi = "api/web/update/work-continue";
+                    e.preventDefault();
+                    const UrlApi = `api/web/update/work-continue`;
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
@@ -1402,7 +1422,8 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-                            {check_admin ? (
+                            {check_admin ||
+                            (check_admin && selectedDate != formattedToday) ? (
                                 <>
                                     <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
@@ -1516,6 +1537,8 @@ function Dashboard({ auth }) {
                             handleSendImageVT={() =>
                                 handleImageSubmit(selectedFilesVT, "VT", 2)
                             }
+                            socketD={socketD}
+                            handleSearch={handleSearch}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
@@ -1573,16 +1596,6 @@ function Dashboard({ auth }) {
         },
     ];
 
-    // -----------------------------Dinh dang lai ngay-----------------------------------------------
-
-    const handleSearch = async () => {
-        fetchDateCheck(selectedDate);
-        fetchDateDoneCheck(selectedDate);
-    };
-    const handleDateChange = async (event) => {
-        setSelectedDate(event.target.value);
-    };
-    // ----------------------------nut scrollView trong bang --------------------------
     const DNCU = useRef(null);
     const DN = useRef(null);
     const DL = useRef(null);
@@ -1591,7 +1604,7 @@ function Dashboard({ auth }) {
     const XD = useRef(null);
     const VC = useRef(null);
     const HX = useRef(null);
-
+    // ----------------------------nut scrollView trong bang --------------------------
     const scrollView = (ref) => {
         if (ref && ref.current) {
             ref.current.scrollIntoView({ behavior: "smooth" });
@@ -1711,7 +1724,7 @@ function Dashboard({ auth }) {
         { id: "chucNangLeft", colWidthLeft: 120, nameHeadLeft: "Chức Năng" },
     ];
 
-    const TABLE_HEAD = [
+    const TABLE_HEAD_RIGHT = [
         { id: "yccvRight", colWidth: 165, nameHead: "Yêu Cầu Công Việc" },
         { id: "ngayLamRight", colWidth: 90, nameHead: "Ngày Làm" },
         { id: "bhRight", colWidth: 40, nameHead: "BH" },
@@ -1728,14 +1741,10 @@ function Dashboard({ auth }) {
             <Head title="Trang Chủ" />
 
             <div
-                className={`flex flex-row w-full overflow-scroll mt-1 pl-3`}
+                className={`flex flex-row w-full overflow-scroll mt-1 pl-3 `}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card
-                    className={
-                        " basis-5/12 w-full mt-1 text-white rounded-none"
-                    }
-                >
+                <Card className="w-full mt-1 text-white rounded-none h-fit basis-5/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1768,10 +1777,7 @@ function Dashboard({ auth }) {
                             </thead>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        id={result.id}
-                                    >
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1806,11 +1812,7 @@ function Dashboard({ auth }) {
                         </div>
                     )}
                 </Card>
-                <Card
-                    className={
-                        "grid w-full basis-7/12 grid-flow-col mt-1 text-white rounded-none "
-                    }
-                >
+                <Card className="grid w-full grid-flow-col mt-1 text-white rounded-none h-fit basis-7/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1822,7 +1824,7 @@ function Dashboard({ auth }) {
                         <div id="tableRight">
                             <thead className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
                                 <tr className="w-full">
-                                    {TABLE_HEAD.map((head) => (
+                                    {TABLE_HEAD_RIGHT.map((head) => (
                                         <th
                                             key={head.id}
                                             className={`p-0 py-1`}
@@ -1843,10 +1845,7 @@ function Dashboard({ auth }) {
                             </thead>
                             {dataGrid.map((result, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        id={result.id}
-                                    >
+                                    <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -1879,7 +1878,7 @@ function Dashboard({ auth }) {
                     )}
                 </Card>
             </div>
-            <div className="fixed flex mt-1">
+            <div className="fixed z-30 flex mt-1">
                 <div key={auth.user.id}>
                     {dataBtnFixed.map((result, index) => {
                         return (

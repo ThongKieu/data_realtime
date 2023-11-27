@@ -1,4 +1,4 @@
-import React, { createElement,useState } from "react";
+import React, { createElement, useState } from "react";
 import {
     Tabs,
     TabsHeader,
@@ -18,40 +18,61 @@ import {
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import TableDataTV from "@/Core/TableDataTV";
-import { TABLE_HEAD_NOTICE_NEW_ORDER } from "@/Data/Table/DesignTable";
-import { TABLE_HEAD_NOTICE_THO_BAO_LICH } from "@/Data/Table/DesignTable";
-import { TABLE_HEAD_NOTICE_FEEDBACK } from "@/Data/Table/DesignTable";
-import { TABLE_HEAD_NOTICE_INFO_WORKER } from "@/Data/Table/DesignTable";
-import { TABLE_ROWS_NOTICE_FEEDBACK } from "@/Data/Table/DesignTable";
-import { TABLE_ROWS_NOTICE_NEW_ORDER } from "@/Data/Table/DesignTable";
+
+import {
+    TABLE_HEAD_NOTICE_NEW_ORDER,
+    TABLE_HEAD_NOTICE_THO_BAO_LICH,
+    TABLE_HEAD_NOTICE_FEEDBACK,
+    TABLE_HEAD_NOTICE_INFO_WORKER,
+} from "@/data/Table/DesignTable";
 const data = [
     {
         label: "Lịch Từ App Khách",
         value: "New_order",
         icon: Square3Stack3DIcon,
-        desc: <TableDataTV tableHead={TABLE_HEAD_NOTICE_NEW_ORDER} tableRows = {TABLE_ROWS_NOTICE_NEW_ORDER} />,
+        desc: (
+            <TableDataTV
+                tableHead={TABLE_HEAD_NOTICE_NEW_ORDER}
+                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+            />
+        ),
     },
     {
         label: "Thông Tin Thợ Báo Lịch",
         value: "profile_worker",
         icon: UserCircleIcon,
-        desc: <TableDataTV tableHead={TABLE_HEAD_NOTICE_THO_BAO_LICH} tableRows = {TABLE_ROWS_NOTICE_NEW_ORDER} />,
+        desc: (
+            <TableDataTV
+                tableHead={TABLE_HEAD_NOTICE_THO_BAO_LICH}
+                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+            />
+        ),
     },
     {
         label: "Thợ Xin Lịch",
         value: "Empty",
         icon: Cog6ToothIcon,
-        desc: <TableDataTV tableHead={ TABLE_HEAD_NOTICE_INFO_WORKER} tableRows = {TABLE_ROWS_NOTICE_NEW_ORDER} />,
+        desc: (
+            <TableDataTV
+                tableHead={TABLE_HEAD_NOTICE_INFO_WORKER}
+                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+            />
+        ),
     },
     {
         label: "Khách Phàn Nàn",
         value: "Feedback",
         icon: FaceFrownIcon,
-        desc: <TableDataTV tableHead={TABLE_HEAD_NOTICE_FEEDBACK} tableRows = {TABLE_ROWS_NOTICE_FEEDBACK} />,
+        desc: (
+            <TableDataTV
+                tableHead={TABLE_HEAD_NOTICE_FEEDBACK}
+                tableRows={TABLE_ROWS_NOTICE_FEEDBACK}
+            />
+        ),
     },
 ];
 
-function Notice({auth}) {
+function Notice({ auth }) {
     const [activeTab, setActiveTab] = useState(data);
 
     const handleTabClick = (tabId) => {
@@ -63,9 +84,16 @@ function Notice({auth}) {
             <Tabs value="dashboard">
                 <TabsHeader>
                     {data.map(({ label, value, icon }) => (
-                        <Tab key={value} value={value} onClick={() => handleTabClick(value)} className={`px-4 py-2 rounded mr-2 ${
-                            activeTab === value ? ' text-blue-500 outline border-1' : 'bg-gray-200 text-gray-800'
-                        }`}>
+                        <Tab
+                            key={value}
+                            value={value}
+                            onClick={() => handleTabClick(value)}
+                            className={`px-4 py-2 rounded mr-2 ${
+                                activeTab === value
+                                    ? " text-blue-500 outline border-1"
+                                    : "bg-gray-200 text-gray-800"
+                            }`}
+                        >
                             <div className="flex items-center gap-2">
                                 {createElement(icon, {
                                     className: "w-5 h-5",
@@ -74,11 +102,10 @@ function Notice({auth}) {
                             </div>
                         </Tab>
                     ))}
-
                 </TabsHeader>
                 <TabsBody>
                     {data.map(({ value, desc }) => (
-                        <TabPanel key={value} value={value} >
+                        <TabPanel key={value} value={value}>
                             {desc}
                         </TabPanel>
                     ))}

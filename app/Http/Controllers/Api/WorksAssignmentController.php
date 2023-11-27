@@ -304,36 +304,24 @@ class WorksAssignmentController extends Controller
 
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
-        $number = count($id_worker);
+        $id_phu = $request->get('id_phu');
         // dd($id_worker[0]);
 
         $work_note =  Work::where('id', '=', $id_cus)
             ->value('work_note');
 
         // dd($request);
-        $worker_kind = Worker::where('id', '=', $id_worker[0]['value'])->value('worker_kind');
+        $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
-        // dd($id_worker);
-        $phu ='';
-        $phu2 ='';
-        if ($number > 1) {
-            $phu = strval($id_worker[1]['value']).',';
-            
-            if($number == 2)
-            {
-                $phu = strval($id_worker[1]['value']).',';
-            }
-            else{
-                for($i=2;$i<$number;$i++)
-                {
-                    $phu += strval($id_worker[$i]['value']).',';
-                }
-            }
+        // dd($id_phu);
+
+        if ($id_phu != null) {
+            //  dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0]['value'],
-                'id_phu' => $phu,
+                'id_worker' => $id_worker,
+                'id_phu' => json_encode($id_phu),
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign'=>$worker_kind
@@ -341,7 +329,7 @@ class WorksAssignmentController extends Controller
         } else {
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
-                'id_worker' => $id_worker[0]['value'],
+                'id_worker' => $id_worker,
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign'=>$worker_kind

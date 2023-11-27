@@ -314,10 +314,7 @@ class WorksAssignmentController extends Controller
         $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
-        // dd($id_phu);
-
         if ($id_phu != null) {
-            //  dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker,
@@ -339,20 +336,6 @@ class WorksAssignmentController extends Controller
 
 
         $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
-
-        // insert to new checkin check out
-        // $newio =  new WorksAssignment();
-        // // $newio -> id_cus = $id_cus;
-        // $newio -> id_work_has = $id_work_has;
-        // $newio -> save();
-
-
-        //  CheckWorkByAdminController::create($id_work_has, $request->auth_id );
-        // $work = Work::where('id', '=', $id_cus)->update(['status_cus' => 1]);
-        // $info_noti_push ='Có Lịch Mới';
-
-        // WorkerController::sentNewWorkToWorker($request->get('id_worker'), $info_noti_push);
-        // return redirect()->action('WorkController@home');
         return 'OK';
     }
     public function returnWorkFromAss(Request $request)
@@ -462,11 +445,6 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                // if($request->datainput != null || $request->datainput != '')
-                // {
-                //     dd($request->datainput);
-
-                // }
                 return response()->json('Update work with image !!!');
             } else {
                 $up_work_ass =  WorksAssignment::where('id', '=', $request->id)

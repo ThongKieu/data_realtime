@@ -566,10 +566,8 @@ function Dashboard({ auth }) {
                 const handleSentPhanTho = async (e) => {
                     // Lấy và loại bỏ phần tử đầu tiên để sử dụng làm id_worker
                     const id_worker = selectPhanTho.shift();
-
                     // Sử dụng các phần tử còn lại của mảng làm id_phu
                     const id_phu = selectPhanTho.map((item) => item.value);
-
                     // Tạo đối tượng data với id_worker và id_phu
                     const data = {
                         id_cus: params.row.id,
@@ -578,8 +576,6 @@ function Dashboard({ auth }) {
                         work_note: params.row.work_note,
                         auth_id: auth.user.id,
                     };
-
-                    console.log("44444", data);
 
                     try {
                         // Gửi request đến API

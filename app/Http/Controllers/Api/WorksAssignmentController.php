@@ -318,10 +318,17 @@ class WorksAssignmentController extends Controller
         $phu ='';
         $phu2 ='';
         if ($number > 1) {
-            for($i=1; $i< $number;$i++)
+            $phu = strval($id_worker[1]['value']).',';
+            
+            if($number == 2)
             {
-                $phu2 = $id_worker[$i]['value'];
-                $phu += $phu2.',';
+                $phu = strval($id_worker[1]['value']).',';
+            }
+            else{
+                for($i=2;$i<$number;$i++)
+                {
+                    $phu += strval($id_worker[$i]['value']).',';
+                }
             }
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,

@@ -23,7 +23,7 @@ class WorkerController extends Controller
     public function getAllWorkers()
     {
         $worker = Worker::all();
-        return response()->json(Worker::where('id','>',0));
+        return response()->json(Worker::where('id','>',0)->where('worker_kind','!=',9) );
     }
     public function getWorkerWithType()
     {
@@ -42,4 +42,8 @@ class WorkerController extends Controller
 
         return response()->json($workers);
     }
+    public function returnName()
+    {
+        
+    }   
 }

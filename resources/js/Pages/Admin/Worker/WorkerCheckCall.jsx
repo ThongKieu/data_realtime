@@ -57,7 +57,7 @@ function WorkerCheckCall() {
                 return response.json();
             })
             .then((data) => {
-                setListWorkers(data);
+                setListWorkers([data]);
             })
             .catch((error) => {
                 console.error("Error API:", error);
@@ -242,19 +242,13 @@ function WorkerCheckCall() {
                         <div className="flex items-center">
                             <p className="mr-2">Chọn Thợ Cần Xem:</p>
                             <div className="w-[70%]">
-                                <Select
-                                    label="Chọn Thợ"
-                                    className="w-full"
-                                    value={selectedWorker}
-                                    onChange={(value) => setSelectedWorker(value)}
-                                >
-                                    {listWorkers.map((data, index) => (
-                                        <Option
+                                <Select label="Chọn Thợ"  className="w-full">
+                                    {listWorkers.map((data, index) => (<Option
                                             key={index}
                                             value={data.worker_phone_company}
                                             className="text-green-500"
                                         >
-                                            {data.worker_code + " - " + data.worker_full_name + " - " + data.worker_phone_company}
+                                            {data.worker_name}
                                         </Option>
                                     ))}
                                 </Select>

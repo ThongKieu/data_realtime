@@ -38,8 +38,8 @@ import {
 } from "@heroicons/react/24/outline";
 import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
+import Divider from "@mui/material/Divider";
 import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
-import { Divider } from "@mui/material";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
     ThoDialog,
@@ -65,7 +65,31 @@ function Dashboard({ auth }) {
     const [workDataXD, setWorkDataXD] = useState("");
     const [workDataVC, setWorkDataVC] = useState("");
     const [workDataHX, setWorkDataHX] = useState("");
+    // format date Định dạng lại ngày
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    const formattedToday = `${year}-${month}-${day}`;
+
+    const [selectedDate, setSelectedDate] = useState(formattedToday);
     // table right
+    console.log(selectedDate, formattedToday);
+    const dataDefault = [
+        {
+            id: 1,
+            work_content: "1",
+            BH: "",
+            street: "",
+            district: "",
+            phone_number: "",
+            date_book: "",
+            worker_full_name: "",
+            spending_total: "",
+            income_total: "",
+        },
+    ];
+
     const [workDataDN_done, setWorkDataDN_done] = useState("");
     const [workDataDL_done, setWorkDataDL_done] = useState("");
     const [workDataDG_done, setWorkDataDG_done] = useState("");
@@ -74,33 +98,46 @@ function Dashboard({ auth }) {
     const [workDataVC_done, setWorkDataVC_done] = useState("");
     const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
-
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
         fetchDataDaPhan();
         fetchInfoWorker();
+        fetchDateCheck(selectedDate);
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
         }
-
         setSocketD(newSocket, { secure: true });
+        newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
+            fetchDateCheck(selectedDate);
+            fetchDataDashboard(selectedDate, data);
+            fetchDataDaPhan(selectedDate, data);
+        });
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data != "") {
+            if (data !== "") {
+                fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
                 fetchData(data);
                 fetchDataDaPhan(data);
-                // fetchDataWorkDone(data);
             }
         });
         return () => {
             newSocket.disconnect();
         };
-    }, []);
-    // --------------------------kiem tra socket io tai khoan online -----------------------------
+    }, [selectedDate]);
 
+    const handleDateChange = async (event) => {
+        setSelectedDate(event.target.value);
+        socketD?.emit("UpdateDateTable_To_Server", event);
+    };
+    const handleSearch = async () => {
+        fetchDateCheck(selectedDate);
+        console.log("xinchaoselecteddate", selectedDate);
+        fetchDateDoneCheck(selectedDate);
+    };
+    // --------------------------kiem tra socket io tai khoan online -----------------------------
     const pushOn = async (data) => {
         try {
             let data = {
@@ -117,9 +154,9 @@ function Dashboard({ auth }) {
             if (response.status == 200) {
                 console.log("push on thanh cong");
             }
-        } catch (error) {}
+        } catch (error) { console.log("push on Loi",error);}
     };
-    // ---------------lay du lieu cong viec chua phan----------------------------------------------
+    // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
         try {
             const response = await fetch(url);
@@ -144,6 +181,7 @@ function Dashboard({ auth }) {
             setWorkDataHX(jsonData.co_khi);
         }
     };
+
     const fetchDateCheck = async (dateCheck) => {
         const url = `api/web/works?dateCheck=${dateCheck}`;
         const jsonData = await fetchDataDemo(url);
@@ -157,9 +195,22 @@ function Dashboard({ auth }) {
             setWorkDataHX(jsonData.co_khi);
         }
     };
+    const fetchDateDoneCheck = async (dateCheck) => {
+        const url = `/api/web/work-assignment?dateCheck=${dateCheck}`;
+        const jsonData = await fetchDataDemo(url);
+        if (jsonData) {
+            setWorkDataDN_done(jsonData.dien_nuoc_done);
+            setWorkDataDL_done(jsonData.dien_lanh_done);
+            setWorkDataDG_done(jsonData.do_go_done);
+            setWorkDataNLMT_done(jsonData.nlmt_done);
+            setWorkDataXD_done(jsonData.xay_dung_done);
+            setWorkDataVC_done(jsonData.tai_xe_done);
+            setWorkDataHX_done(jsonData.co_khi_done);
+        }
+    };
     // --------------------------- lay du lieu lich da phan ----------------------------------
     const fetchDataDaPhan = async () => {
-        const url = `/api/web/work-assignment/all`;
+        const url = `/api/web/work-assignment`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
             setWorkDataDN_done(jsonData.dien_nuoc_done);
@@ -170,6 +221,12 @@ function Dashboard({ auth }) {
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
             setIsLoading(false);
+            socketD?.emit(
+                "UpdateDateTable_To_Server",
+                "Cập Nhật trạng thái AdminCheck"
+            );
+        } else {
+            setWorkDataDN_done(dataDefault);
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -181,12 +238,14 @@ function Dashboard({ auth }) {
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
                 label: item.worker_code + " " + item.worker_full_name,
+                workerCode: item.worker_code,
             }));
             setInfoWorkerDashboard(formatJson);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+
     // -----------------lay kich thuoc man hinh reponsive bang---------------
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
@@ -205,7 +264,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                socketD?.emit("addWorkTo_Server", data);
+                socketD?.emit("UpdateDateTable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -214,7 +273,7 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDataDashboard = async (data) => {
-        const url = "api/web/update/work";
+        const url = `api/web/update/work`;
         fetchUpdateData(data, url);
     };
     const fetchDataWorkDone = async (data) => {
@@ -256,6 +315,7 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
+
                 socketD.emit("addWorkTo_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -274,14 +334,14 @@ function Dashboard({ auth }) {
         {
             field: "work_content",
             headerName: "yêu Cầu Công Việc",
-            width: 140,
+            width: 165,
             editable: true,
             tabindex: 0,
             renderEditCell: (params) => (
                 <input
                     type="text"
                     defaultValue={params.row.work_content}
-                    className=" bg-white border-none rounded-none outline-none w-[137px]"
+                    className=" bg-white border-none rounded-none outline-none w-[165px]"
                     labelProps={{
                         className: "hidden",
                     }}
@@ -557,19 +617,17 @@ function Dashboard({ auth }) {
                 };
 
                 const handleCopyToClipboard = (text) => {
-                    const work_content = text.work_content;
-                    const street = text.street;
-                    const phone_number = text.phone_number;
-                    const name_cus = text.name_cus;
-                    const district = text.district;
-                    const work_note = text.work_note;
-                    const data = `${work_content ? work_content + " " : ""} ${
-                        street ? street + " " : ""
-                    } ${phone_number ? phone_number + " " : ""} ${
-                        name_cus ? name_cus + " " : ""
-                    } ${district ? district + " " : ""} ${
-                        work_note ? work_note + " " : ""
-                    } `;
+                    const {
+                        work_content,
+                        street,
+                        phone_number,
+                        name_cus,
+                        district,
+                        work_note,
+                    } = text;
+                    const data = `${work_content || ""} ${street || ""} ${
+                        phone_number || ""
+                    } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
 
                     const textarea = document.createElement("textarea");
                     textarea.value = data;
@@ -627,35 +685,22 @@ function Dashboard({ auth }) {
         },
     ];
     // du lieu bang cong viec da phan ------------------------------------
+
     const columnsRight = [
         {
             field: "work_content",
             headerName: "yêu cầu công việc",
-            width: 160,
+            width: 170,
             editable: false,
-            renderEditCell: (params) => (
-                <input
-                    type="text"
-                    defaultValue={params.row.work_content}
-                    className=" bg-white border-none rounded-none outline-none w-[137px]"
-                    labelProps={{
-                        className: "hidden",
-                    }}
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === "Tab") {
-                            const newValue = e.target.value;
-                            const data = {
-                                ac: "1",
-                                id: params.id,
-                                work_content: newValue,
-                            };
-                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
-                            fetchDataWorkDone(data);
-                        }
-                    }}
-                />
-            ),
+        },
+        {
+            field: "date_book",
+            headerName: "Ngày Làm",
+            type: "text",
+            width: 90,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
         },
         {
             field: "BH",
@@ -678,6 +723,7 @@ function Dashboard({ auth }) {
                             setDataBH(data);
                         } catch (error) {
                             console.error("Error fetching data:", error);
+                            ssss;
                         }
                     }
                 };
@@ -695,7 +741,7 @@ function Dashboard({ auth }) {
                                 <ClipboardDocumentListIcon className="w-4 h-4" />
                             </IconButton>
                         ) : (
-                            <span>kbh</span>
+                            <span></span>
                         )}
                         <Dialog open={open} handler={handleOpen} size="lg">
                             <DialogHeader>Ghi Chú</DialogHeader>
@@ -841,20 +887,11 @@ function Dashboard({ auth }) {
                 />
             ),
         },
-        {
-            field: "date_book",
-            headerName: "Ngày Làm",
-            type: "text",
-            width: 90,
-            align: "left",
-            headerAlign: "left",
-            editable: false,
-        },
 
         {
             field: "worker_full_name",
             headerName: "Thợ",
-            width: 80,
+            width: 85,
             editable: false,
             type: "singleSelect",
             renderCell: (params) => {
@@ -870,94 +907,89 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
-                console.log(params);
-                const [nameWorkers, setNameWorkers] = useState([]);
-
-                useEffect(() => {
-                    const workerLabels = [];
-                    for (let i = 0; i < infoWorkerDashboard.length; i++) {
-                        const label = infoWorkerDashboard[i].label;
-                        workerLabels.push(label);
-                    }
-                    setNameWorkers(workerLabels);
-                }, [infoWorkerDashboard]);
-
-                // In ra tất cả các giá trị label trong mảng nameWorkers
-                console.log("Labels of workers: ", nameWorkers);
+                const check_admin = params.row.status_admin_check == 1;
                 return (
-                    <div>
-                        <p>
-                            {params.row.id_worker || params.id || params.row.length > 0
-                                ? params.row.worker_full_name
-                                : nameWorkers.join(", ")}
-                        </p>
-
-                        {/* <p onClick={handleOpenWorkerNameTableRight}>
-                            {params.row.worker_full_name}
-                        </p>
-                        <Dialog
-                            open={openWorkerNameTableRight}
-                            handler={handleOpenWorkerNameTableRight}
-                            className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
-                        >
-                            <div className="flex items-center justify-between">
-                                <DialogHeader>CHỌN THỢ CẦN PHÂN</DialogHeader>
-                                <XMarkIcon
-                                    onClick={handleOpenWorkerNameTableRight}
-                                    className="w-5 h-5 mr-3 cursor-pointer"
-                                />
-                            </div>
-                            <DialogBody divider>
-                                <form className="flex flex-col gap-4 mt-2">
-                                    <div className="flex items-center gap-4 ">
-                                        <Input
-                                            label="Thợ Chính"
-                                            id="work_content"
-                                            name="work_content"
-                                            value={cardExpires.worker_full_name}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                        <Input
-                                            label="Thợ Phụ"
-                                            id="phone_number"
-                                            name="phone_number"
-                                            value={cardExpires.phone_number}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-
-                                    <Divider />
-                                    <div className="flex flex-row-reverse">
-                                        <Button
-                                            size="md"
-                                            className="p-3 py-0 mx-4 text-green-500 border-green-500 "
-                                            variant="outlined"
-                                        >
-                                            Xác Nhận
-                                        </Button>
-                                        <Button
-                                            size="md"
-                                            className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
-                                            variant="outlined"
+                    <>
+                        {check_admin || params.row.status_work === 1 ? (
+                            <p>{params.row.worker_full_name}</p>
+                        ) : (
+                            <>
+                                <p onClick={handleOpenWorkerNameTableRight}>
+                                    {params.row.worker_full_name}
+                                </p>
+                                <Dialog
+                                    open={openWorkerNameTableRight}
+                                    handler={handleOpenWorkerNameTableRight}
+                                    className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <DialogHeader>
+                                            CHỌN THỢ CẦN PHÂN
+                                        </DialogHeader>
+                                        <XMarkIcon
                                             onClick={
                                                 handleOpenWorkerNameTableRight
                                             }
-                                        >
-                                            Hủy
-                                        </Button>
+                                            className="w-5 h-5 mr-3 cursor-pointer"
+                                        />
                                     </div>
-                                </form>
-                            </DialogBody>
-                        </Dialog> */}
-                    </div>
+                                    <DialogBody divider>
+                                        <form className="flex flex-col gap-4 mt-2">
+                                            <div className="flex items-center gap-4 ">
+                                                <Input
+                                                    label="Thợ Chính"
+                                                    id="work_content"
+                                                    name="work_content"
+                                                    value={
+                                                        cardExpires.id_worker
+                                                    }
+                                                    onChange={handleChange}
+                                                    containerProps={{
+                                                        className:
+                                                            "min-w-[72px]",
+                                                    }}
+                                                    className="shadow-none"
+                                                />
+                                                <Input
+                                                    label="Thợ Phụ"
+                                                    id="phone_number"
+                                                    name="phone_number"
+                                                    value={cardExpires.id_phu}
+                                                    onChange={handleChange}
+                                                    containerProps={{
+                                                        className:
+                                                            "min-w-[72px]",
+                                                    }}
+                                                    className="shadow-none"
+                                                />
+                                            </div>
+
+                                            <Divider />
+                                            <div className="flex flex-row-reverse">
+                                                <Button
+                                                    size="md"
+                                                    className="p-3 py-0 mx-4 text-green-500 border-green-500 "
+                                                    variant="outlined"
+                                                >
+                                                    Xác Nhận
+                                                </Button>
+                                                <Button
+                                                    size="md"
+                                                    className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
+                                                    variant="outlined"
+                                                    onClick={
+                                                        handleOpenWorkerNameTableRight
+                                                    }
+                                                >
+                                                    Hủy
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    </DialogBody>
+                                </Dialog>
+                            </>
+                        )}
+                    </>
                 );
             },
         },
@@ -1166,7 +1198,8 @@ function Dashboard({ auth }) {
                 };
 
                 const handleUpdateThuChi = async (e) => {
-                    const UrlApi = "api/web/update/work-continue";
+                    e.preventDefault();
+                    const UrlApi = `api/web/update/work-continue`;
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
@@ -1389,7 +1422,8 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-                            {check_admin ? (
+                            {check_admin ||
+                            (check_admin && selectedDate != formattedToday) ? (
                                 <>
                                     <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
@@ -1422,8 +1456,8 @@ function Dashboard({ auth }) {
                                                 }`}
                                             />
                                         </MenuHandler>
-                                        <MenuList className="flex justify-between">
-                                            <MenuItem className="p-0">
+                                        <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
+                                            <MenuItem className="p-0 w-fit">
                                                 <Tooltip content="Thu Hồi Lịch">
                                                     <ArrowPathIcon
                                                         className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
@@ -1433,7 +1467,7 @@ function Dashboard({ auth }) {
                                                     />
                                                 </Tooltip>
                                             </MenuItem>
-                                            <MenuItem className="p-0">
+                                            <MenuItem className="p-0 w-fit">
                                                 <Tooltip content="Báo hủy">
                                                     <TrashIcon
                                                         className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
@@ -1441,7 +1475,7 @@ function Dashboard({ auth }) {
                                                     />
                                                 </Tooltip>
                                             </MenuItem>
-                                            <MenuItem className="p-0">
+                                            <MenuItem className="p-0 w-fit">
                                                 <Tooltip content="Khảo Sát">
                                                     <TicketIcon
                                                         className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
@@ -1503,6 +1537,8 @@ function Dashboard({ auth }) {
                             handleSendImageVT={() =>
                                 handleImageSubmit(selectedFilesVT, "VT", 2)
                             }
+                            socketD={socketD}
+                            handleSearch={handleSearch}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
@@ -1560,21 +1596,6 @@ function Dashboard({ auth }) {
         },
     ];
 
-    // -----------------------------Dinh dang lai ngay-----------------------------------------------
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    const formattedToday = `${year}-${month}-${day}`;
-
-    const [selectedDate, setSelectedDate] = useState(formattedToday);
-    const handleSearch = async () => {
-        fetchDateCheck(selectedDate);
-    };
-    const handleDateChange = async (event) => {
-        setSelectedDate(event.target.value);
-    };
-    // ----------------------------nut scrollView trong bang --------------------------
     const DNCU = useRef(null);
     const DN = useRef(null);
     const DL = useRef(null);
@@ -1583,7 +1604,7 @@ function Dashboard({ auth }) {
     const XD = useRef(null);
     const VC = useRef(null);
     const HX = useRef(null);
-
+    // ----------------------------nut scrollView trong bang --------------------------
     const scrollView = (ref) => {
         if (ref && ref.current) {
             ref.current.scrollIntoView({ behavior: "smooth" });
@@ -1640,7 +1661,6 @@ function Dashboard({ auth }) {
             ref: HX,
         },
     ];
-    //------------------------------------data dataGrid---------------------------------------------
     const dataGrid = [
         {
             id: "workDN",
@@ -1677,7 +1697,9 @@ function Dashboard({ auth }) {
             rowsDataGrid: workDataHX_done,
             contentDataGird: "Cơ Khí",
         },
+        // Thêm các mục khác tương tự ở đây
     ];
+
     const dataBtnFixed = [
         { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
         { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
@@ -1688,14 +1710,41 @@ function Dashboard({ auth }) {
         { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
         { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
+    const TABLE_HEAD_LEFT = [
+        {
+            id: "yccvLeft",
+            colWidthLeft: 165,
+            nameHeadLeft: "Yêu Cầu Công Việc",
+        },
+        { id: "ngayLamLeft", colWidthLeft: 90, nameHeadLeft: "Ngày Làm" },
+        { id: "ghiChuLeft", colWidthLeft: 60, nameHeadLeft: "Ghi Chú" },
+        { id: "dcLeft", colWidthLeft: 150, nameHeadLeft: "Địa Chỉ" },
+        { id: "quanLeft", colWidthLeft: 70, nameHeadLeft: "Quận" },
+        { id: "sdtLeft", colWidthLeft: 105, nameHeadLeft: "Số Điện Thoại" },
+        { id: "chucNangLeft", colWidthLeft: 120, nameHeadLeft: "Chức Năng" },
+    ];
+
+    const TABLE_HEAD_RIGHT = [
+        { id: "yccvRight", colWidth: 165, nameHead: "Yêu Cầu Công Việc" },
+        { id: "ngayLamRight", colWidth: 90, nameHead: "Ngày Làm" },
+        { id: "bhRight", colWidth: 40, nameHead: "BH" },
+        { id: "dcRight", colWidth: 150, nameHead: "Địa Chỉ" },
+        { id: "quanRight", colWidth: 70, nameHead: "Quận" },
+        { id: "sdtRight", colWidth: 105, nameHead: "Số Điện Thoại" },
+        { id: "thoRight", colWidth: 85, nameHead: "Thợ" },
+        { id: "chiRight", colWidth: 120, nameHead: "Chi" },
+        { id: "thuRight", colWidth: 120, nameHead: "Thu" },
+        { id: "chucNangRight", colWidth: 120, nameHead: "Chức Năng" },
+    ];
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
+
             <div
-                className={`grid w-full grid-flow-col overflow-scroll mt-1 pl-3`}
+                className={`flex flex-row w-full overflow-scroll mt-1 pl-3 `}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card className={" w-full  mt-1 text-white rounded-none"}>
+                <Card className="w-full mt-1 text-white rounded-none h-fit basis-5/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1704,14 +1753,43 @@ function Dashboard({ auth }) {
                             </p>
                         </div>
                     ) : (
-                        <div>
+                        <div id="tableLeft">
+                            <thead className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
+                                <tr className="w-full">
+                                    {TABLE_HEAD_LEFT.map((head) => (
+                                        <th
+                                            key={head.id}
+                                            className={`p-0 py-1`}
+                                            style={{
+                                                width: `${head.colWidthLeft}px`,
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="w-full font-bold leading-none text-black uppercase"
+                                            >
+                                                {head.nameHeadLeft}
+                                            </Typography>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
-                                        <Box>
+                                        <Box
+                                            sx={{
+                                                height:
+                                                    result.rowsDataGrid == ""
+                                                        ? 40
+                                                        : "fit-content",
+                                                width: "100%",
+                                            }}
+                                        >
                                             <DataGrid
                                                 ref={result.ref}
                                                 rows={result.rowsDataGrid}
@@ -1720,7 +1798,12 @@ function Dashboard({ auth }) {
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
+                                                rowHeight={40}
                                                 disableRowSelectionOnClick
+                                                slots={{
+                                                    columnHeaders: () => null,
+                                                    pagination: () => null,
+                                                }}
                                             />
                                         </Box>
                                     </div>
@@ -1729,11 +1812,7 @@ function Dashboard({ auth }) {
                         </div>
                     )}
                 </Card>
-                <Card
-                    className={
-                        "grid w-full grid-flow-col mt-1 text-white rounded-none"
-                    }
-                >
+                <Card className="grid w-full grid-flow-col mt-1 text-white rounded-none h-fit basis-7/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1742,23 +1821,54 @@ function Dashboard({ auth }) {
                             </p>
                         </div>
                     ) : (
-                        <div>
+                        <div id="tableRight">
+                            <thead className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
+                                <tr className="w-full">
+                                    {TABLE_HEAD_RIGHT.map((head) => (
+                                        <th
+                                            key={head.id}
+                                            className={`p-0 py-1`}
+                                            style={{
+                                                width: `${head.colWidth}px`,
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="w-full font-bold leading-none text-black uppercase"
+                                            >
+                                                {head.nameHead}
+                                            </Typography>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
                             {dataGrid.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
-
-                                        <Box sx={{height: result.rowsDataGrid !=='' ? 'fit-content': 200}}>
+                                        <Box
+                                            sx={{
+                                                height:
+                                                    result.rowsDataGrid == ""
+                                                        ? 40
+                                                        : "fit-content",
+                                            }}
+                                        >
                                             <DataGrid
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsRight}
-                                                hideFooterPagination={true}
+                                                hideFooterPagination={false}
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
+                                                rowHeight={40}
                                                 disableRowSelectionOnClick
+                                                slots={{
+                                                    columnHeaders: () => null,
+                                                }}
                                             />
                                         </Box>
                                     </div>
@@ -1768,7 +1878,7 @@ function Dashboard({ auth }) {
                     )}
                 </Card>
             </div>
-            <div className="fixed flex mt-1">
+            <div className="fixed z-30 flex mt-1">
                 <div key={auth.user.id}>
                     {dataBtnFixed.map((result, index) => {
                         return (

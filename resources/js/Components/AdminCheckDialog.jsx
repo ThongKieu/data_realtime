@@ -44,7 +44,7 @@ function AdminCheckDialog({
     previewImagesVT,
     previewImagesPT,
     classNameChild,
-    handleChange,
+    handleChange,socketD,handleSearch
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -77,7 +77,7 @@ function AdminCheckDialog({
         },
     ]);
     const fetchDataBH = async (id) => {
-        if(id){
+        if(id || id !='undefined'){
             try {
                 const response = await fetch(
                     `api/web/work-assignment/warranties?id=${id}`
@@ -91,8 +91,6 @@ function AdminCheckDialog({
                         unit: item.unit,
                     }));
                     setDataBH(formatJson);
-                } else {
-                    console.error("Data from API is undefined or empty.");
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -211,7 +209,8 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const handleUpdateStatusCheckAdmin = async () => {
+    const handleUpdateStatusCheckAdmin = async (e) => {
+        e.preventDefault();
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
@@ -227,9 +226,12 @@ function AdminCheckDialog({
             });
 
             if (res.ok) {
-                console.log("Đã xóa thành công", check_admin);
+                console.log("Thay đổi thành công:", check_admin);
+                handleSearch();
+                handleOpenAdminCheck();
+                socketD.emit("UpdateDateTable_To_Server", "Cập Nhật trạng thái AdminCheck");
             } else {
-                console.error("Lỗi khi xóa dữ liệu:", res.statusText);
+                console.error("Lỗi thay đổi trạng thái AdminCheck:", res.statusText);
             }
         } catch (error) {
             console.error("Error fetching data lỗi rồi:", error);
@@ -308,8 +310,8 @@ function AdminCheckDialog({
                                 </DialogHeader>
                                 <Divider />
                                 <DialogBody>
-                                    {dataBH.map((item) => (
-                                        <div className="flex justify-between gap-1 mb-2">
+                                    {dataBH.map((item, index) => (
+                                        <div key={index} className="flex justify-between gap-1 mb-2">
                                             <div>
                                                 <Select
                                                     value={item.unit}

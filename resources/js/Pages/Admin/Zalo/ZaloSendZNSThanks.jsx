@@ -41,7 +41,7 @@ function Tab1() {
                         method: "POST",
                         headers: {
                             access_token:
-                                "-BJuVgccsJ_qilnseg7NElUnyN6YlxD6WStALvwrbbkyvUXKilU16gM3eocDazrfgONtTVJ9e6ZRliTJ-lMLPl66xL6YzvyOZ-_0LAk6kbMCuEvaX_d8NucmhdQUr_H2WR-_TOpwt6_Hk_rVmAwMOUl3iqFMiUvesCkCGCk2gNRB-fTutf7tITRci7_VbSvnwDgOU-oRsb3byR0G-fMN1_hzt2d5cgG8mjtxFik4WGFawjOMvuA2FU7bl6Zff9r9_VRyHj6EmWY5dvSxhe_hTRpLp5USeOrPjF7GHe6hYdo1t_nlhwk78PxFyM_AhPLbmxJrRDxnh7M8v_1cjAEjUPBkyIp3evS6n_JgCDFibYVtc-eyrCd93FU5xnFnoBi3tAdx3k7EdWxJXUGUXCdQAx2Yc0eqT6KW4tYfkja_",
+                                "h5MFQr3hDsoWKujZM-mvQQDGXcHRyaGjemI-FbAzUNFpPOPvJv5_3EL_mr56gN03wKJ8N52bTnNf7vj-5A8b3krTpaCMYoXEccYIEsIzI5hcS9OzQQmjHziOtpXbyHDhzIVrPrN-1Zhp8SPUP9K5DFLSnKS9k7z0g5MQ1pUfMdwp5eSP5z9NRkyodWfonbqPznMT5bBoBtclEym1CDuBKee4yo44nW5hZoR8EWR81r7yBDq2NSKIKAGFxbShqbORgnkaGGZXT1ss5RbJJUznMjSXkLHxzmKDtJN7MIIA7WwaO_TTMDeE0V8Yy5uN-301cHQ831pNCmExCTLQHCGe2ku_v45EsWawnn3LT5lNEWphFT5cS_SIAPPFztnjgmSlq1VFF5tOBMdG1fKLNUycHgSLvY1XPSYCYZvGzpTi",
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
@@ -62,6 +62,8 @@ function Tab1() {
                         }),
                     }
                 );
+                console.log(responseJson);
+
                 if (response.ok) {
                     const responseJson = await response.json();
                     console.log(responseJson);
@@ -70,6 +72,7 @@ function Tab1() {
                             alert("Gửi thành công !!");
                             break;
                         case -108:
+                            console.log('1111111111111111111111111111111111111111111111111111111111');
                             alert("Số liên hệ không hợp lệ !!");
                             break;
                         case -137:
@@ -203,7 +206,7 @@ function Tab2() {
                     method: "POST",
                     headers: {
                         access_token:
-                            "-BJuVgccsJ_qilnseg7NElUnyN6YlxD6WStALvwrbbkyvUXKilU16gM3eocDazrfgONtTVJ9e6ZRliTJ-lMLPl66xL6YzvyOZ-_0LAk6kbMCuEvaX_d8NucmhdQUr_H2WR-_TOpwt6_Hk_rVmAwMOUl3iqFMiUvesCkCGCk2gNRB-fTutf7tITRci7_VbSvnwDgOU-oRsb3byR0G-fMN1_hzt2d5cgG8mjtxFik4WGFawjOMvuA2FU7bl6Zff9r9_VRyHj6EmWY5dvSxhe_hTRpLp5USeOrPjF7GHe6hYdo1t_nlhwk78PxFyM_AhPLbmxJrRDxnh7M8v_1cjAEjUPBkyIp3evS6n_JgCDFibYVtc-eyrCd93FU5xnFnoBi3tAdx3k7EdWxJXUGUXCdQAx2Yc0eqT6KW4tYfkja_",
+                            "h5MFQr3hDsoWKujZM-mvQQDGXcHRyaGjemI-FbAzUNFpPOPvJv5_3EL_mr56gN03wKJ8N52bTnNf7vj-5A8b3krTpaCMYoXEccYIEsIzI5hcS9OzQQmjHziOtpXbyHDhzIVrPrN-1Zhp8SPUP9K5DFLSnKS9k7z0g5MQ1pUfMdwp5eSP5z9NRkyodWfonbqPznMT5bBoBtclEym1CDuBKee4yo44nW5hZoR8EWR81r7yBDq2NSKIKAGFxbShqbORgnkaGGZXT1ss5RbJJUznMjSXkLHxzmKDtJN7MIIA7WwaO_TTMDeE0V8Yy5uN-301cHQ831pNCmExCTLQHCGe2ku_v45EsWawnn3LT5lNEWphFT5cS_SIAPPFztnjgmSlq1VFF5tOBMdG1fKLNUycHgSLvY1XPSYCYZvGzpTi",
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
@@ -232,6 +235,7 @@ function Tab2() {
                         alert("Gửi thành công !!");
                         break;
                     case -108:
+                        
                         alert("Số liên hệ không hợp lệ !!");
                         break;
                     case -137:
@@ -248,7 +252,7 @@ function Tab2() {
             console.error("Lỗi !!", error);
         }
     };
-
+   
     // Xử lý logic cho Tab 2
     return (
         <div>
@@ -420,6 +424,7 @@ function Tab2() {
         </div>
     );
 }
+
 function ZaloSendZNSThanks() {
     const [activeTab, setActiveTab] = useState(1);
     const dataBtn = [
@@ -428,14 +433,14 @@ function ZaloSendZNSThanks() {
             colorBtn: "green",
             labelBtn: "Lấy token mới",
             valueInput:
-                "29123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
+                "h5MFQr3hDsoWKujZM-mvQQDGXcHRyaGjemI-FbAzUNFpPOPvJv5_3EL_mr56gN03wKJ8N52bTnNf7vj-5A8b3krTpaCMYoXEccYIEsIzI5hcS9OzQQmjHziOtpXbyHDhzIVrPrN-1Zhp8SPUP9K5DFLSnKS9k7z0g5MQ1pUfMdwp5eSP5z9NRkyodWfonbqPznMT5bBoBtclEym1CDuBKee4yo44nW5hZoR8EWR81r7yBDq2NSKIKAGFxbShqbORgnkaGGZXT1ss5RbJJUznMjSXkLHxzmKDtJN7MIIA7WwaO_TTMDeE0V8Yy5uN-301cHQ831pNCmExCTLQHCGe2ku_v45EsWawnn3LT5lNEWphFT5cS_SIAPPFztnjgmSlq1VFF5tOBMdG1fKLNUycHgSLvY1XPSYCYZvGzpTi",
         },
         {
             id: 2,
             colorBtn: "orange",
             labelBtn: "Lấy token refresh",
             valueInput:
-                "19123j90354jdfs90234jsfd90238945jgdf9345jdfg9345jg90345jig9346j9456jyrt94jgrt903456jitg90u456j",
+                "h5MFQr3hDsoWKujZM-mvQQDGXcHRyaGjemI-FbAzUNFpPOPvJv5_3EL_mr56gN03wKJ8N52bTnNf7vj-5A8b3krTpaCMYoXEccYIEsIzI5hcS9OzQQmjHziOtpXbyHDhzIVrPrN-1Zhp8SPUP9K5DFLSnKS9k7z0g5MQ1pUfMdwp5eSP5z9NRkyodWfonbqPznMT5bBoBtclEym1CDuBKee4yo44nW5hZoR8EWR81r7yBDq2NSKIKAGFxbShqbORgnkaGGZXT1ss5RbJJUznMjSXkLHxzmKDtJN7MIIA7WwaO_TTMDeE0V8Yy5uN-301cHQ831pNCmExCTLQHCGe2ku_v45EsWawnn3LT5lNEWphFT5cS_SIAPPFztnjgmSlq1VFF5tOBMdG1fKLNUycHgSLvY1XPSYCYZvGzpTi",
         },
     ];
     return (
@@ -487,6 +492,13 @@ function ZaloSendZNSThanks() {
                     </Card>
                 </Card>
             </div>
+            {/* <Card>
+                <Button
+                onClick={()=>fetchSmsBrand()}
+                >
+                    Gửi SMS Khách
+                </Button>
+            </Card> */}
         </AuthenticatedLayoutAdmin>
     );
 }

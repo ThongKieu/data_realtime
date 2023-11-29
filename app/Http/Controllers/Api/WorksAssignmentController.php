@@ -670,11 +670,39 @@ class WorksAssignmentController extends Controller
             return "Can't update!";
         }
     }
+
+    // Return Work is assign
     public function returnWork(Request $request) {
         $id_work_as = $request ->id_work_as;
-        if($request->id_worker)
+        $id_cus = $request ->id_cus;
+        $real_note = $request -> real_note;
+        $id_worker = $request ->id_worker;
+        
+        $up_w_a = WorksAssignment::where('id','=',$id_work_as )->update(['work_kind'=>4]);
+
+        if($request->id_phu)
         {
-            
+            $w_a_n = new WorksAssignment([
+                'id_cus'=>$id_cus,
+                'id_worker'=>$id_worker,
+                'id_phu'=>$request->id_phu,
+                'real_note'=>$real_note
+            ]);
+    
         }
+        else
+        {
+            $w_a_n = new WorksAssignment([
+                'id_cus'=>$id_cus,
+                'id_worker'=>$id_worker,
+                'real_note'=>$real_note
+            ]);
+    
+        }
+
+            $w_a_n ->save();
+
+        return response()->json('Update Done');
+
     }
 }

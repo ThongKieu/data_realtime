@@ -132,12 +132,16 @@ export const dataOrderSource = {
         },
     ],
 };
+//___________SMS Brand Count_____________
 // ________End Nguồn nhận lịch_________________
 function Home({ auth }) {
     useEffect(() => {
         fetchData();
         fetchDataSMSBrand();
     }, []);
+
+    const [returnSmsBrand, getSmsBrand] = useState(0);
+
     const [getData, usersData] = useState([]);
     const [smsBrand, setSmsBrand] = useState(0);
 
@@ -182,6 +186,9 @@ function Home({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
+
+    // Gọi hàm để thực hiện yêu cầu
+
     const [isLoading, setIsLoading] = useState(true);
     const dataCardOrder = [
         {
@@ -279,17 +286,16 @@ function Home({ auth }) {
                 </Card>
                 <div className="flex flex-row justify-between p-1 m-2 text-center">
                     {dataCardOrder.map((item, index) => {
-                        const classBot = `${
-                            item.titleBot >= 15
+                        const classBot = `${item.titleBot >= 15
                                 ? "green"
                                 : item.titleBot <= 14 && item.titleBot >= 6
-                                ? "yellow"
-                                : item.titleBot <= 5 && item.titleBot >= 3
-                                ? "orange"
-                                : item.titleBot < 3
-                                ? "red"
-                                : ""
-                        }`;
+                                    ? "yellow"
+                                    : item.titleBot <= 5 && item.titleBot >= 3
+                                        ? "orange"
+                                        : item.titleBot < 3
+                                            ? "red"
+                                            : ""
+                            }`;
 
                         return (
                             <CardOrder
@@ -446,6 +452,11 @@ function Home({ auth }) {
                     </Card>
                 </div>
 
+            </Card>
+            <Card>
+                <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
+                    Xem khối lượng tin nhắn còn lại: {returnSmsBrand}
+                </Typography>
             </Card>
         </AuthenticatedLayout>
     );

@@ -347,6 +347,7 @@ function NavbarDefault({ propauth }) {
                 workerStatus: item.worker_status,
             }));
             setInfoWorker(formatJson);
+            console.log('sss',jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }

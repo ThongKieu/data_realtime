@@ -3,7 +3,7 @@ import { Card, Typography } from "@material-tailwind/react";
 import {
     ArrowLongUpIcon,ArrowLongDownIcon
 } from "@heroicons/react/24/outline";
-function CardOrder({ClassCard,titleTop,titleMid,titleBot,classSpanIcon,classIconBot,classSpanText,IconChild}) {
+function CardOrder({imgSrc,ClassCard,titleTop,titleMid,titleBot,classSpanIcon,classIconBot,classSpanText,IconChild}) {
     return (
         <Card className={`p-4 py-5 text-black border rounded border-${ClassCard}-500`}>
             <div className="flex flex-row items-center justify-between ">
@@ -12,7 +12,8 @@ function CardOrder({ClassCard,titleTop,titleMid,titleBot,classSpanIcon,classIcon
                     <span>{titleMid} Lịch</span>
                 </div>
                 <span className={`p-2 border border-${classSpanIcon}-500 bg-${classSpanIcon}-500 text-white rounded-[50%]`}>
-                    {IconChild}
+                    <img className="w-7 h-7" src={`${imgSrc}`} alt="" />
+                    {/* {IconChild} */}
                 </span>
             </div>
             <Typography className="flex flex-row items-center pt-2">

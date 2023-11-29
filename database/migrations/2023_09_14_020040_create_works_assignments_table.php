@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_cus');
             $table->bigInteger('id_worker');
-            $table->bigInteger('id_phu')->default(0);
+            $table->string('id_phu',100)->default(0);
             $table->string('real_note', 500)->nullable();
             $table->bigInteger('spending_total')->default(0);
             $table->bigInteger('income_total')->default(0);

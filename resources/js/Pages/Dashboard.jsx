@@ -39,7 +39,11 @@ import {
 import newSocket from "@/utils/socket";
 import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
-import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import {
+    url_API,
+    url_API_District,
+    sendPhanThoRequest,
+} from "@/data/UrlAPI/UrlApi";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
     ThoDialog,
@@ -49,7 +53,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
-
+import Select from "react-select";
 // ----
 
 function Dashboard({ auth }) {
@@ -105,6 +109,7 @@ function Dashboard({ auth }) {
         fetchDataDaPhan();
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
+        fetchDateDoneCheck(selectedDate);
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
@@ -154,7 +159,9 @@ function Dashboard({ auth }) {
             if (response.status == 200) {
                 console.log("push on thanh cong");
             }
-        } catch (error) { console.log("push on Loi",error);}
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
@@ -327,6 +334,31 @@ function Dashboard({ auth }) {
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
+    const handleCopyToClipboard = (text) => {
+        const {
+            work_content,
+            street,
+            phone_number,
+            name_cus,
+            district,
+            work_note,
+        } = text;
+        const data = `${work_content || ""} ${street || ""} ${
+            phone_number || ""
+        } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
+
+        const textarea = document.createElement("textarea");
+        textarea.value = data;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+
+        console.log("Đã sao chép thành công vào clipboard: ", data);
+    };
 
     // ----- lay thong tin bao hanh --------
     // du lieu bang cong viec chua phan ------------------------------------
@@ -564,41 +596,15 @@ function Dashboard({ auth }) {
                 };
 
                 const handleSentPhanTho = async (e) => {
-                    // Lấy và loại bỏ phần tử đầu tiên để sử dụng làm id_worker
-                    const id_worker = selectPhanTho.shift();
-                    // Sử dụng các phần tử còn lại của mảng làm id_phu
-                    const id_phu = selectPhanTho.map((item) => item.value);
-                    // Tạo đối tượng data với id_worker và id_phu
-                    const data = {
-                        id_cus: params.row.id,
-                        id_worker: id_worker.value,
-                        id_phu: id_phu,
-                        work_note: params.row.work_note,
-                        auth_id: auth.user.id,
-                    };
-
-                    try {
-                        // Gửi request đến API
-                        const response = await fetch("api/web/work-assignment", {
-                            method: "POST",
-                            body: JSON.stringify(data),
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        });
-
-                        // Kiểm tra xem request có thành công không
-                        if (response.ok) {
-                            // Thực hiện các hành động khác nếu cần
-                            socketD.emit("addWorkTo_Server", "Phan Tho");
-                            handleCopyToClipboard(params.row);
-                            handleOpenTho();
-                        }
-                    } catch (error) {
-                        console.log("lỗi", error);
-                    }
+                    await sendPhanThoRequest(
+                        params,
+                        selectPhanTho,
+                        auth,
+                        socketD,
+                        handleCopyToClipboard,
+                        handleOpenTho
+                    );
                 };
-
 
                 const handleSentNhanDoi = async (e) => {
                     // Lấy dữ liệu từ params.row
@@ -623,32 +629,6 @@ function Dashboard({ auth }) {
                     } catch (error) {
                         console.log(error);
                     }
-                };
-
-                const handleCopyToClipboard = (text) => {
-                    const {
-                        work_content,
-                        street,
-                        phone_number,
-                        name_cus,
-                        district,
-                        work_note,
-                    } = text;
-                    const data = `${work_content || ""} ${street || ""} ${
-                        phone_number || ""
-                    } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
-
-                    const textarea = document.createElement("textarea");
-                    textarea.value = data;
-                    textarea.setAttribute("readonly", "");
-                    textarea.style.position = "absolute";
-                    textarea.style.left = "-9999px";
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand("copy");
-                    document.body.removeChild(textarea);
-
-                    console.log("Đã sao chép thành công vào clipboard: ", data);
                 };
 
                 return (
@@ -906,29 +886,54 @@ function Dashboard({ auth }) {
             renderCell: (params) => {
                 const [openWorkerNameTableRight, setOpenWorkerNameTableRight] =
                     useState(false);
-                const handleOpenWorkerNameTableRight = () =>
+                const handleOpenTho = () =>
                     setOpenWorkerNameTableRight(!openWorkerNameTableRight);
                 const [cardExpires, setCardExpires] = useState(params.row);
-                const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setCardExpires((prevData) => ({
-                        ...prevData,
-                        [name]: value,
-                    }));
+                const [selectPhanTho, setSelectPhanTho] = useState("");
+                const handleSelectChange = (selectedValue) => {
+                    setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
+                const handleSentPhanTho = async (e) => {
+                    await sendPhanThoRequest(
+                        params,
+                        selectPhanTho,
+                        auth,
+                        socketD,
+                        handleCopyToClipboard,
+                        handleOpenTho
+                    );
+                };
+
                 const check_admin = params.row.status_admin_check == 1;
+                const [idPhuArray, setIdPhuArray] = useState([]);
+                useEffect(() => {
+                    if (cardExpires.id_phu !== 0) {
+                        const newIdPhuArray = cardExpires.id_phu
+                            .split(",")
+                            .map((item) => Number(item.replace(/\[|\]/g, "")));
+                        console.log('sss', newIdPhuArray);
+                        setIdPhuArray(newIdPhuArray);
+                    }
+                }, [cardExpires.id_phu]);
+                const resultArray = idPhuArray.map((value) => {
+                    const foundElement = infoWorkerDashboard.find(
+                        (element) => element.value === value
+                    );
+                    return foundElement ? foundElement.label : "";
+                });
+
                 return (
                     <>
                         {check_admin || params.row.status_work === 1 ? (
                             <p>{params.row.worker_full_name}</p>
                         ) : (
                             <>
-                                <p onClick={handleOpenWorkerNameTableRight}>
+                                <p onClick={handleOpenTho}>
                                     {params.row.worker_full_name}
                                 </p>
                                 <Dialog
                                     open={openWorkerNameTableRight}
-                                    handler={handleOpenWorkerNameTableRight}
+                                    handler={handleOpenTho}
                                     className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
                                 >
                                     <div className="flex items-center justify-between">
@@ -936,49 +941,52 @@ function Dashboard({ auth }) {
                                             CHỌN THỢ CẦN PHÂN
                                         </DialogHeader>
                                         <XMarkIcon
-                                            onClick={
-                                                handleOpenWorkerNameTableRight
-                                            }
+                                            onClick={handleOpenTho}
                                             className="w-5 h-5 mr-3 cursor-pointer"
                                         />
                                     </div>
                                     <DialogBody divider>
+                                        <div className="flex justify-between">
+                                            <p className="w-full p-1 border border-green-500">
+                                                Thợ Chính:{" "}
+                                                {cardExpires.worker_full_name}
+                                            </p>
+
+                                            {idPhuArray != 0 ? (
+                                                <p className="w-full p-1 border border-green-500">
+                                                    Thợ Phụ:{resultArray}
+                                                </p>
+                                            ) : (
+                                                <p className="w-full p-1 border border-green-500">
+                                                    Không có thợ phụ
+                                                </p>
+                                            )}
+                                        </div>
                                         <form className="flex flex-col gap-4 mt-2">
+
                                             <div className="flex items-center gap-4 ">
-                                                <Input
-                                                    label="Thợ Chính"
-                                                    id="work_content"
-                                                    name="work_content"
-                                                    value={
-                                                        cardExpires.id_worker
+                                                <Select
+                                                    value={selectPhanTho}
+                                                    options={
+                                                        infoWorkerDashboard
                                                     }
-                                                    onChange={handleChange}
-                                                    containerProps={{
-                                                        className:
-                                                            "min-w-[72px]",
-                                                    }}
-                                                    className="shadow-none"
-                                                />
-                                                <Input
-                                                    label="Thợ Phụ"
-                                                    id="phone_number"
-                                                    name="phone_number"
-                                                    value={cardExpires.id_phu}
-                                                    onChange={handleChange}
-                                                    containerProps={{
-                                                        className:
-                                                            "min-w-[72px]",
-                                                    }}
-                                                    className="shadow-none"
+                                                    onChange={(selectedValue) =>
+                                                        handleSelectChange(
+                                                            selectedValue
+                                                        )
+                                                    }
+                                                    isMulti
+                                                    className="w-full border-none shadow-none"
                                                 />
                                             </div>
-
+                                            <Input className="shadow-none " label="Lý Do Đổi Thợ" />
                                             <Divider />
                                             <div className="flex flex-row-reverse">
                                                 <Button
                                                     size="md"
                                                     className="p-3 py-0 mx-4 text-green-500 border-green-500 "
                                                     variant="outlined"
+                                                    onClick={handleSentPhanTho}
                                                 >
                                                     Xác Nhận
                                                 </Button>
@@ -986,9 +994,7 @@ function Dashboard({ auth }) {
                                                     size="md"
                                                     className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
                                                     variant="outlined"
-                                                    onClick={
-                                                        handleOpenWorkerNameTableRight
-                                                    }
+                                                    onClick={handleOpenTho}
                                                 >
                                                     Hủy
                                                 </Button>

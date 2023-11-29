@@ -88,3 +88,4 @@ Route::prefix('web')->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('smsBrand','App\Http\Controllers\Api\OTPController@PushOtp');

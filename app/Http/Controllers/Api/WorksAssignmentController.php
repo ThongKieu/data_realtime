@@ -677,8 +677,8 @@ class WorksAssignmentController extends Controller
         $id_cus = $request ->id_cus;
         $real_note = $request -> real_note;
         $id_worker = $request ->id_worker;
-        
-        $up_w_a = WorksAssignment::where('id','=',$id_work_as )->update(['work_kind'=>4]);
+
+        $up_w_a = WorksAssignment::where('id','=',$id_work_as )->update(['status_work'=>4]);
 
         if($request->id_phu)
         {
@@ -688,7 +688,6 @@ class WorksAssignmentController extends Controller
                 'id_phu'=>$request->id_phu,
                 'real_note'=>$real_note
             ]);
-    
         }
         else
         {
@@ -697,7 +696,7 @@ class WorksAssignmentController extends Controller
                 'id_worker'=>$id_worker,
                 'real_note'=>$real_note
             ]);
-    
+
         }
 
             $w_a_n ->save();

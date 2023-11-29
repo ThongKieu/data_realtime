@@ -137,43 +137,8 @@ export const dataOrderSource = {
 function Home({ auth }) {
     useEffect(() => {
         fetchData();
-        fetchDataSMSBrand();
     }, []);
-
-    const [returnSmsBrand, getSmsBrand] = useState(0);
-
     const [getData, usersData] = useState([]);
-    const [smsBrand, setSmsBrand] = useState(0);
-
-    const fetchDataSMSBrand = async () => {
-        try {
-            var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "text/plain");
-            var raw = JSON.stringify({
-                username: "thoviet2023",
-                password: "7f55526a0c7902ffe38af801fd007312a75db850",
-            });
-
-            var requestOptions = {
-                method: "POST",
-                headers: myHeaders,
-                body: raw,
-                redirect: "follow",
-            };
-            const response = await fetch(
-                "http://210.211.109.118/apibrandname/CheckBalance",
-                requestOptions
-            );
-            const result = await response.text();
-            const jsonResult = JSON.parse(result);
-            setSmsBrand(jsonResult);
-            console.log('ssss', typeof result);
-        } catch (error) {
-            console.log('error', error);
-        }
-    };
-
-
     const fetchData = async () => {
         try {
             const response = await fetch(host + "api/web/users");
@@ -266,13 +231,7 @@ function Home({ auth }) {
                         Công ty TNHH Dịch vụ kỹ thuật thợ việt
                     </Typography>
                     {/* </div> */}
-                    <Card
-                    className={`flex flex-col m-2 rounded-none text-center border border-red-500`}
-                >
-                    <Typography className={`p-0 font-bold text-center text-white rounded-none rounded-bl-none rounded-br-none bg-blue-gray-300`}>
-                        <p className="font-bold ">SMS Brand: {smsBrand.balance}</p>
-                    </Typography>
-                </Card>
+
                     <div className="flex flex-row justify-between">
                         <UsersIcon className="w-6 h-6 m-2" color="black" />
                         <BellAlertIcon className="w-6 h-6 m-2" color="black" />
@@ -454,9 +413,6 @@ function Home({ auth }) {
 
             </Card>
             <Card>
-                <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
-                    Xem khối lượng tin nhắn còn lại: {returnSmsBrand}
-                </Typography>
             </Card>
         </AuthenticatedLayout>
     );

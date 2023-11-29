@@ -43,6 +43,7 @@ import {
     url_API,
     url_API_District,
     sendPhanThoRequest,
+    sendDoiThoRequest,
 } from "@/data/UrlAPI/UrlApi";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
@@ -244,7 +245,12 @@ function Dashboard({ auth }) {
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label: item.worker_code + " " + item.worker_full_name,
+                label:
+                    "(" +
+                    item.worker_code +
+                    ")" +
+                    " - " +
+                    item.worker_full_name,
                 workerCode: item.worker_code,
             }));
             setInfoWorkerDashboard(formatJson);
@@ -679,18 +685,18 @@ function Dashboard({ auth }) {
         {
             field: "work_content",
             headerName: "yêu cầu công việc",
-            width: 170,
+            width: 180,
             editable: false,
         },
-        {
-            field: "date_book",
-            headerName: "Ngày Làm",
-            type: "text",
-            width: 90,
-            align: "left",
-            headerAlign: "left",
-            editable: false,
-        },
+        // {
+        //     field: "date_book",
+        //     headerName: "Ngày Làm",
+        //     type: "text",
+        //     width: 90,
+        //     align: "left",
+        //     headerAlign: "left",
+        //     editable: false,
+        // },
         {
             field: "BH",
             headerName: "BH",
@@ -791,7 +797,7 @@ function Dashboard({ auth }) {
             field: "street",
             headerName: "Địa Chỉ",
             type: "text",
-            width: 150,
+            width: 170,
             align: "left",
             headerAlign: "left",
             editable: false,
@@ -880,7 +886,7 @@ function Dashboard({ auth }) {
         {
             field: "worker_full_name",
             headerName: "Thợ",
-            width: 85,
+            width: 115,
             editable: false,
             type: "singleSelect",
             renderCell: (params) => {
@@ -893,14 +899,16 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
-                const handleSentPhanTho = async (e) => {
-                    await sendPhanThoRequest(
+                const [reasonMessage, setReasonMessage] = useState();
+                const handleDoiTho = async (e) => {
+                    await sendDoiThoRequest(
                         params,
                         selectPhanTho,
                         auth,
                         socketD,
                         handleCopyToClipboard,
-                        handleOpenTho
+                        handleOpenTho,
+                        reasonMessage
                     );
                 };
 
@@ -911,7 +919,7 @@ function Dashboard({ auth }) {
                         const newIdPhuArray = cardExpires.id_phu
                             .split(",")
                             .map((item) => Number(item.replace(/\[|\]/g, "")));
-                        console.log('sss', newIdPhuArray);
+                        console.log("sss", newIdPhuArray);
                         setIdPhuArray(newIdPhuArray);
                     }
                 }, [cardExpires.id_phu]);
@@ -921,7 +929,7 @@ function Dashboard({ auth }) {
                     );
                     return foundElement ? foundElement.label : "";
                 });
-
+                console.log(resultArray);
                 return (
                     <>
                         {check_admin || params.row.status_work === 1 ? (
@@ -937,9 +945,7 @@ function Dashboard({ auth }) {
                                     className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <DialogHeader>
-                                            CHỌN THỢ CẦN PHÂN
-                                        </DialogHeader>
+                                        <DialogHeader>Thợ Đã Phân</DialogHeader>
                                         <XMarkIcon
                                             onClick={handleOpenTho}
                                             className="w-5 h-5 mr-3 cursor-pointer"
@@ -954,52 +960,77 @@ function Dashboard({ auth }) {
 
                                             {idPhuArray != 0 ? (
                                                 <p className="w-full p-1 border border-green-500">
-                                                    Thợ Phụ:{resultArray}
+                                                    Thợ Phụ:
+                                                    <p className="pl-4">
+                                                        {resultArray.map(
+                                                            (item, index) => (
+                                                                <p className="block">
+                                                                    {index + 1}:{" "}
+                                                                    {item}
+                                                                </p>
+                                                            )
+                                                        )}
+                                                    </p>
                                                 </p>
                                             ) : (
-                                                <p className="w-full p-1 border border-green-500">
-                                                    Không có thợ phụ
-                                                </p>
+                                                ""
                                             )}
                                         </div>
-                                        <form className="flex flex-col gap-4 mt-2">
-
-                                            <div className="flex items-center gap-4 ">
-                                                <Select
-                                                    value={selectPhanTho}
-                                                    options={
-                                                        infoWorkerDashboard
-                                                    }
-                                                    onChange={(selectedValue) =>
-                                                        handleSelectChange(
+                                        <Card className="p-2 mt-2 border border-green-500">
+                                            <Typography className="p-2 font-bold text-center text-white uppercase rounded-sm bg-blue-gray-500">
+                                                Chọn Thợ Cần Đổi
+                                            </Typography>
+                                            <form className="flex flex-col gap-4 mt-2">
+                                                <div className="flex items-center gap-4 ">
+                                                    <Select
+                                                        value={selectPhanTho}
+                                                        options={
+                                                            infoWorkerDashboard
+                                                        }
+                                                        onChange={(
                                                             selectedValue
+                                                        ) =>
+                                                            handleSelectChange(
+                                                                selectedValue
+                                                            )
+                                                        }
+                                                        isMulti
+                                                        className="w-full border-none shadow-none"
+                                                    />
+                                                </div>
+                                                <Input
+                                                    label="Lý Do Đổi Thợ"
+                                                    className="shadow-none"
+                                                    id="returnWorker"
+                                                    name="returnWorker"
+                                                    value={reasonMessage}
+                                                    onChange={(e) =>
+                                                        setReasonMessage(
+                                                            e.target.value
                                                         )
                                                     }
-                                                    isMulti
-                                                    className="w-full border-none shadow-none"
                                                 />
-                                            </div>
-                                            <Input className="shadow-none " label="Lý Do Đổi Thợ" />
-                                            <Divider />
-                                            <div className="flex flex-row-reverse">
-                                                <Button
-                                                    size="md"
-                                                    className="p-3 py-0 mx-4 text-green-500 border-green-500 "
-                                                    variant="outlined"
-                                                    onClick={handleSentPhanTho}
-                                                >
-                                                    Xác Nhận
-                                                </Button>
-                                                <Button
-                                                    size="md"
-                                                    className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
-                                                    variant="outlined"
-                                                    onClick={handleOpenTho}
-                                                >
-                                                    Hủy
-                                                </Button>
-                                            </div>
-                                        </form>
+                                                <Divider />
+                                                <div className="flex flex-row-reverse">
+                                                    <Button
+                                                        size="md"
+                                                        className="p-4 py-2 mx-4 text-green-500 border-green-500 "
+                                                        variant="outlined"
+                                                        onClick={handleDoiTho}
+                                                    >
+                                                        Xác Nhận
+                                                    </Button>
+                                                    <Button
+                                                        size="md"
+                                                        className="p-3 py-0 mx-4 text-gray-500 border-gray-500 "
+                                                        variant="outlined"
+                                                        onClick={handleOpenTho}
+                                                    >
+                                                        Hủy
+                                                    </Button>
+                                                </div>
+                                            </form>
+                                        </Card>
                                     </DialogBody>
                                 </Dialog>
                             </>
@@ -1740,13 +1771,13 @@ function Dashboard({ auth }) {
     ];
 
     const TABLE_HEAD_RIGHT = [
-        { id: "yccvRight", colWidth: 165, nameHead: "Yêu Cầu Công Việc" },
-        { id: "ngayLamRight", colWidth: 90, nameHead: "Ngày Làm" },
-        { id: "bhRight", colWidth: 40, nameHead: "BH" },
+        { id: "yccvRight", colWidth: 155, nameHead: "Yêu Cầu Công Việc" },
+        // { id: "ngayLamRight", colWidth: 90, nameHead: "Ngày Làm" },
+        { id: "bhRight", colWidth: 45, nameHead: "BH" },
         { id: "dcRight", colWidth: 150, nameHead: "Địa Chỉ" },
         { id: "quanRight", colWidth: 70, nameHead: "Quận" },
         { id: "sdtRight", colWidth: 105, nameHead: "Số Điện Thoại" },
-        { id: "thoRight", colWidth: 85, nameHead: "Thợ" },
+        { id: "thoRight", colWidth: 105, nameHead: "Thợ" },
         { id: "chiRight", colWidth: 120, nameHead: "Chi" },
         { id: "thuRight", colWidth: 120, nameHead: "Thu" },
         { id: "chucNangRight", colWidth: 120, nameHead: "Chức Năng" },

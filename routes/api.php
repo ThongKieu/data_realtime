@@ -89,3 +89,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('smsBrand','App\Http\Controllers\Api\OTPController@PushOtp');
+Route::get('getSmsBrand','App\Http\Controllers\Api\OTPController@GetSms');

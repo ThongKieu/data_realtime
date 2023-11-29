@@ -47,7 +47,7 @@ Route::prefix('web')->group(function () {
         Route::get('','App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties','App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
         Route::post('/quote','App\Http\Controllers\Api\WorksAssignmentController@insertQuoteFlow');
-
+        Route::post('/returnWork','App\Http\Controllers\Api\WorksAssignmentController@returnWork');
     });
     Route::prefix('quote')->group(function(){
         Route::get('','App\Http\Controllers\Api\Web\QuoteFlowController@index');

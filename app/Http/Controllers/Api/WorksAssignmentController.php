@@ -692,6 +692,8 @@ class WorksAssignmentController extends Controller
             return "Can't update!";
         }
     }
+
+    // Return Work is assign
     public function returnWork(Request $request) {
         $id_work_as = $request ->id_work_as;
         $id_cus = $request ->id_cus;

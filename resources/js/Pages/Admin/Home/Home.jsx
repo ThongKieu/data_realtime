@@ -137,11 +137,7 @@ export const dataOrderSource = {
 function Home({ auth }) {
     useEffect(() => {
         fetchData();
-        // fetchSmsBrand();
     }, []);
-
-    const [returnSmsBrand, getSmsBrand] = useState(0);
-
     const [getData, usersData] = useState([]);
     const fetchData = async () => {
         try {
@@ -150,7 +146,6 @@ function Home({ auth }) {
             if (response.ok) {
                 usersData(jsonData.users);
                 setIsLoading(false);
-                console.log(jsonData.users);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -166,56 +161,57 @@ function Home({ auth }) {
             titleTop: "Tổng Lịch",
             titleMid: 158,
             titleBot: 16,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            imgSrc: 'assets/all.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 1,
             titleTop: "Điện Nước",
             titleMid: 130,
-            titleBot: 14,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 14,imgSrc: 'assets/dn.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 2,
             titleTop: "Điện Lạnh",
             titleMid: 158,
-            titleBot: 5,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 5,imgSrc: 'assets/dl.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 3,
             titleTop: "Đồ Gỗ",
             titleMid: 130,
-            titleBot: 3,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 3,imgSrc: 'assets/dg.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 4,
             titleTop: "NLMT",
             titleMid: 130,
-            titleBot: 2,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 2,imgSrc: 'assets/nlmt.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 5,
             titleTop: "Cơ Khí",
             titleMid: 158,
-            titleBot: 1,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 1,imgSrc: 'assets/hx.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 6,
             titleTop: "Vận Chuyển",
             titleMid: 130,
-            titleBot: 7,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 7,imgSrc: 'assets/vc.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 7,
             titleTop: "Vệ Sinh Bể Nước",
             titleMid: 130,
-            titleBot: 4,
-            IconChild: <FolderPlusIcon className="w-6 h-6" />,
+            titleBot: 4,imgSrc: 'assets/vsbn.png'
+            // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
     ];
     const [screenSize] = useState({
@@ -235,6 +231,7 @@ function Home({ auth }) {
                         Công ty TNHH Dịch vụ kỹ thuật thợ việt
                     </Typography>
                     {/* </div> */}
+
                     <div className="flex flex-row justify-between">
                         <UsersIcon className="w-6 h-6 m-2" color="black" />
                         <BellAlertIcon className="w-6 h-6 m-2" color="black" />
@@ -269,7 +266,7 @@ function Home({ auth }) {
                                 classSpanIcon={classBot}
                                 classIconBot={classBot}
                                 classSpanText={classBot}
-                                IconChild={item.IconChild}
+                                imgSrc={item.imgSrc}
                             />
                         );
                     })}
@@ -413,11 +410,9 @@ function Home({ auth }) {
                         </table>
                     </Card>
                 </div>
+
             </Card>
             <Card>
-                <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
-                    Xem khối lượng tin nhắn còn lại: {returnSmsBrand}
-                </Typography>
             </Card>
         </AuthenticatedLayout>
     );

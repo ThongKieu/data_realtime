@@ -256,15 +256,13 @@ function AdminCheckDialog({
                     <div className="w-full p-2 text-sm border border-green-500 ">
                         <div>
                             <span>Nhân Viên:</span>
-                            <i className="pl-1">{params.row.sort_name}</i>
+                            <i className="pl-1">{params.row.worker_code}</i>
                             <i>_</i>
-                            <i className="pl-1">{params.row.worker_name}</i>
-                            <i>_</i>
-                            <i className="pl-1">{params.row.add_worker}</i>
+                            <i className="pl-1">{params.row.worker_full_name}</i>
                         </div>
                         <div>
                             <span>Số Điện Thoại:</span>
-                            <i className="pl-1">{params.row.phone_ct}</i>
+                            <i className="pl-1">{params.row.worker_phone_company}</i>
                         </div>
                     </div>
                     <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">

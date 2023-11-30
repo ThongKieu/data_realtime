@@ -13,6 +13,7 @@ import * as XLSX from "xlsx";
 import { formattedDate } from "@/Utils/DateTime";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import GetCode_inter from "./GetCode_inter";
+import SmsBrandZalo from "./SmsBrandZalo";
 function Tab1() {
     const [showAlertFailed, setShowAlertFailed] = useState(false);
     const [excelData, setExcelData] = useState([]);
@@ -72,7 +73,9 @@ function Tab1() {
                             alert("Gửi thành công !!");
                             break;
                         case -108:
-                            console.log('1111111111111111111111111111111111111111111111111111111111');
+                            console.log(
+                                "1111111111111111111111111111111111111111111111111111111111"
+                            );
                             alert("Số liên hệ không hợp lệ !!");
                             break;
                         case -137:
@@ -235,7 +238,6 @@ function Tab2() {
                         alert("Gửi thành công !!");
                         break;
                     case -108:
-                        
                         alert("Số liên hệ không hợp lệ !!");
                         break;
                     case -137:
@@ -252,10 +254,10 @@ function Tab2() {
             console.error("Lỗi !!", error);
         }
     };
-   
+
     // Xử lý logic cho Tab 2
     return (
-        <div>
+        <>
             <Card
                 className={`border  ${
                     showAlertFailed
@@ -421,7 +423,7 @@ function Tab2() {
                     </div>
                 </div>
             </Card>
-        </div>
+        </>
     );
 }
 
@@ -448,6 +450,7 @@ function ZaloSendZNSThanks() {
             <Head title="Gửi ZNS cảm ơn khách hàng" />
             <div className="flex justify-center h-screen p-2">
                 <Card className=" w-[90%] h-[90%] m-auto  bg-white ">
+                    <SmsBrandZalo />
                     <div className="p-2">
                         {dataBtn.map((item) => (
                             <GetCode_inter

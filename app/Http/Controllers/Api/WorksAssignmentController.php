@@ -315,6 +315,7 @@ class WorksAssignmentController extends Controller
         // Update kind work by kind worker
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
+            // dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker,
@@ -679,13 +680,15 @@ class WorksAssignmentController extends Controller
         $id_worker = $request ->id_worker;
 
         $up_w_a = WorksAssignment::where('id','=',$id_work_as )->update(['status_work'=>4]);
+        $w_e = Worker::where('id','=',$id_worker)->value('worker_kind');
+        $up_w_k = Work::where('id','=',$id_cus)->update(['kind_work'=>$w_e,'member_read'=>$request->auth_id]);
 
         if($request->id_phu)
         {
             $w_a_n = new WorksAssignment([
                 'id_cus'=>$id_cus,
                 'id_worker'=>$id_worker,
-                'id_phu'=>$request->id_phu,
+                'id_phu' => json_encode($request->id_phu),
                 'real_note'=>$real_note
             ]);
         }

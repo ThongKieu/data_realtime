@@ -17,7 +17,7 @@ class WorkersController extends Controller
     }
     public function index()
     {
-        $workers = Worker::where('worker_kind','!=',9)->get(['id','worker_phone_company','worker_code','worker_full_name','worker_status']);
+        $workers = Worker::where('worker_kind','!=',9)->get(['id','worker_phone_company','worker_code','worker_full_name','worker_status','worker_address','worker_avatar','worker_phone_family']);
         foreach($workers as $worker)
         {
             $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');

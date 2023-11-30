@@ -682,10 +682,11 @@ class WorksAssignmentController extends Controller
 
         if($request->id_phu)
         {
+
             $w_a_n = new WorksAssignment([
                 'id_cus'=>$id_cus,
                 'id_worker'=>$id_worker,
-                'id_phu'=>$request->id_phu,
+                'id_phu'=>json_encode($request->id_phu),
                 'real_note'=>$real_note
             ]);
         }

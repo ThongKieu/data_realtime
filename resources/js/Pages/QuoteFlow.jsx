@@ -55,7 +55,6 @@ function QuoteFlow({ auth }) {
       const jsonData = await response.json();
 
       setInfoBook(jsonData);
-
       if (jsonData.length > 0) {
         setIsLoading(false);
       }
@@ -316,7 +315,7 @@ function QuoteFlow({ auth }) {
         const formatter = new Intl.NumberFormat("vi-VN", {
           style: "currency",
           currency: "VND",
-          
+
       });
       return (
         <span className="text-center">
@@ -335,7 +334,7 @@ function QuoteFlow({ auth }) {
         const formatter = new Intl.NumberFormat("vi-VN", {
           style: "currency",
           currency: "VND",
-          
+
       });
       return (
         <span className="text-center">
@@ -351,7 +350,7 @@ function QuoteFlow({ auth }) {
       width: 150,
       editable: false,
       renderCell:(params)=>{
-      
+
       return (
         <span className="text-center">
             {params.row.pripot_percent} %
@@ -366,7 +365,7 @@ function QuoteFlow({ auth }) {
       width: 150,
       editable: false,
     },
-   
+
     {
 
       field: null,
@@ -633,7 +632,7 @@ function QuoteFlow({ auth }) {
 
               </DialogFooter>
             </Dialog>
-           
+
           </>
         );
         ;

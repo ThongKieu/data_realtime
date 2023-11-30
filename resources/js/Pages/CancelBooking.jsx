@@ -199,6 +199,7 @@ function CancelBooking({ auth }) {
                     {/* bang ben trai  */}
                     <Box sx={{ width: 1, height: heightScreenTV }}>
                         <DataGrid
+                         autoHeight {...heightScreenTV}
                             rows={deleteBooking}
                             columns={columns}
                             disableColumnFilter

@@ -44,7 +44,10 @@ import {
     url_API_District,
     sendPhanThoRequest,
     sendDoiThoRequest,
+    getFirstName,
+    getFormattedToday,
 } from "@/data/UrlAPI/UrlApi";
+import { copyTextToClipboard } from "@/Components/HandleEvent/handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
     ThoDialog,
@@ -54,6 +57,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
+import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/data/table/data";
 import Select from "react-select";
 // ----
 
@@ -71,15 +75,8 @@ function Dashboard({ auth }) {
     const [workDataVC, setWorkDataVC] = useState("");
     const [workDataHX, setWorkDataHX] = useState("");
     // format date Định dạng lại ngày
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    const formattedToday = `${year}-${month}-${day}`;
-
+    const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
-    // table right
-    console.log(selectedDate, formattedToday);
     const dataDefault = [
         {
             id: 1,
@@ -104,6 +101,10 @@ function Dashboard({ auth }) {
     const [workDataHX_done, setWorkDataHX_done] = useState("");
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight - 100,
+    });
 
     useEffect(() => {
         fetchData();
@@ -129,22 +130,32 @@ function Dashboard({ auth }) {
                 fetchDataDaPhan(data);
             }
         });
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        // Đăng ký sự kiện khi component được mount
+        window.addEventListener("resize", handleResize);
+        // Hủy đăng ký sự kiện khi component bị unmount
         return () => {
             newSocket.disconnect();
+            window.removeEventListener("resize", handleResize);
         };
     }, [selectedDate]);
 
+    var heightScreenTV = screenSize.height;
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
         socketD?.emit("UpdateDateTable_To_Server", event);
     };
     const handleSearch = async () => {
         fetchDateCheck(selectedDate);
-        console.log("xinchaoselecteddate", selectedDate);
         fetchDateDoneCheck(selectedDate);
     };
     // --------------------------kiem tra socket io tai khoan online -----------------------------
-    const pushOn = async (data) => {
+    const pushOn = async () => {
         try {
             let data = {
                 ac: 1,
@@ -260,11 +271,7 @@ function Dashboard({ auth }) {
     };
 
     // -----------------lay kich thuoc man hinh reponsive bang---------------
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 100,
-    });
-    var heightScreenTV = screenSize.height;
+
     // -----------------------------fetch api update du lieu trong bang---------------------------
     const fetchUpdateData = async (data, url) => {
         try {
@@ -340,32 +347,6 @@ function Dashboard({ auth }) {
     // ---------- Dialog ------------------------
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-    const handleCopyToClipboard = (text) => {
-        const {
-            work_content,
-            street,
-            phone_number,
-            name_cus,
-            district,
-            work_note,
-        } = text;
-        const data = `${work_content || ""} ${street || ""} ${
-            phone_number || ""
-        } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
-
-        const textarea = document.createElement("textarea");
-        textarea.value = data;
-        textarea.setAttribute("readonly", "");
-        textarea.style.position = "absolute";
-        textarea.style.left = "-9999px";
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-
-        console.log("Đã sao chép thành công vào clipboard: ", data);
-    };
-
     // ----- lay thong tin bao hanh --------
     // du lieu bang cong viec chua phan ------------------------------------
     const columns = [
@@ -607,7 +588,7 @@ function Dashboard({ auth }) {
                         selectPhanTho,
                         auth,
                         socketD,
-                        handleCopyToClipboard,
+                        copyTextToClipboard,
                         handleOpenTho
                     );
                 };
@@ -688,15 +669,6 @@ function Dashboard({ auth }) {
             width: 180,
             editable: false,
         },
-        // {
-        //     field: "date_book",
-        //     headerName: "Ngày Làm",
-        //     type: "text",
-        //     width: 90,
-        //     align: "left",
-        //     headerAlign: "left",
-        //     editable: false,
-        // },
         {
             field: "BH",
             headerName: "BH",
@@ -718,7 +690,6 @@ function Dashboard({ auth }) {
                             setDataBH(data);
                         } catch (error) {
                             console.error("Error fetching data:", error);
-                            ssss;
                         }
                     }
                 };
@@ -792,6 +763,15 @@ function Dashboard({ auth }) {
                     </>
                 );
             },
+        },
+        {
+            field: "real_note",
+            headerName: "Ghi Chú",
+            type: "text",
+            width: 90,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
         },
         {
             field: "street",
@@ -882,7 +862,6 @@ function Dashboard({ auth }) {
                 />
             ),
         },
-
         {
             field: "worker_full_name",
             headerName: "Thợ",
@@ -906,7 +885,7 @@ function Dashboard({ auth }) {
                         selectPhanTho,
                         auth,
                         socketD,
-                        handleCopyToClipboard,
+                        copyTextToClipboard,
                         handleOpenTho,
                         reasonMessage
                     );
@@ -919,7 +898,6 @@ function Dashboard({ auth }) {
                         const newIdPhuArray = cardExpires.id_phu
                             .split(",")
                             .map((item) => Number(item.replace(/\[|\]/g, "")));
-                        console.log("sss", newIdPhuArray);
                         setIdPhuArray(newIdPhuArray);
                     }
                 }, [cardExpires.id_phu]);
@@ -929,20 +907,18 @@ function Dashboard({ auth }) {
                     );
                     return foundElement ? foundElement.label : "";
                 });
-                console.log(resultArray);
+                const firstName = getFirstName(params.row.worker_full_name);
                 return (
                     <>
                         {check_admin || params.row.status_work === 1 ? (
-                            <p>{params.row.worker_full_name}</p>
+                            <p>{firstName}</p>
                         ) : (
                             <>
-                                <p onClick={handleOpenTho}>
-                                    {params.row.worker_full_name}
-                                </p>
+                                <p onClick={handleOpenTho}>{firstName}</p>
                                 <Dialog
                                     open={openWorkerNameTableRight}
                                     handler={handleOpenTho}
-                                    className="w-full max-w-full min-w-full 2xl:min-w-[70%]"
+                                    className=" max-w-full min-w-full p-2 2xl:min-w-[40%]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <DialogHeader>Thợ Đã Phân</DialogHeader>
@@ -976,13 +952,16 @@ function Dashboard({ auth }) {
                                                 ""
                                             )}
                                         </div>
-                                        <Card className="p-2 mt-2 border border-green-500">
+                                        <Card className="p-2 mt-2 border border-green-500 ">
                                             <Typography className="p-2 font-bold text-center text-white uppercase rounded-sm bg-blue-gray-500">
                                                 Chọn Thợ Cần Đổi
                                             </Typography>
                                             <form className="flex flex-col gap-4 mt-2">
                                                 <div className="flex items-center gap-4 ">
                                                     <Select
+                                                        closeMenuOnSelect={
+                                                            false
+                                                        }
                                                         value={selectPhanTho}
                                                         options={
                                                             infoWorkerDashboard
@@ -1426,6 +1405,7 @@ function Dashboard({ auth }) {
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
 
                 const handleImagePtDelete = async (index) => {
+                    const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
                     const newImages = imagePt1.filter((_, i) => i !== index);
                     setImagePt1(newImages);
@@ -1437,16 +1417,13 @@ function Dashboard({ auth }) {
                     };
                     const jsonData = JSON.stringify(dataBody);
                     try {
-                        const response = await fetch(
-                            "api/web/update/check-admin",
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: jsonData,
-                            }
-                        );
+                        const response = await fetch(urlApi, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: jsonData,
+                        });
 
                         if (response.ok) {
                             console.log(
@@ -1657,6 +1634,16 @@ function Dashboard({ auth }) {
         }
     };
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
+    const dataBtnFixed = [
+        { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
+        { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
+        { id: 2, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
+        { id: 3, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
+        { id: 4, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
+        { id: 5, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
+        { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
+        { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
+    ];
     const dataGridLichChuaPhan = [
         {
             id: "workDNCu",
@@ -1745,49 +1732,12 @@ function Dashboard({ auth }) {
         },
         // Thêm các mục khác tương tự ở đây
     ];
-
-    const dataBtnFixed = [
-        { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
-        { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
-        { id: 2, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
-        { id: 3, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
-        { id: 4, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
-        { id: 5, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
-        { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
-        { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
-    ];
-    const TABLE_HEAD_LEFT = [
-        {
-            id: "yccvLeft",
-            colWidthLeft: 165,
-            nameHeadLeft: "Yêu Cầu Công Việc",
-        },
-        { id: "ngayLamLeft", colWidthLeft: 90, nameHeadLeft: "Ngày Làm" },
-        { id: "ghiChuLeft", colWidthLeft: 60, nameHeadLeft: "Ghi Chú" },
-        { id: "dcLeft", colWidthLeft: 150, nameHeadLeft: "Địa Chỉ" },
-        { id: "quanLeft", colWidthLeft: 70, nameHeadLeft: "Quận" },
-        { id: "sdtLeft", colWidthLeft: 105, nameHeadLeft: "Số Điện Thoại" },
-        { id: "chucNangLeft", colWidthLeft: 120, nameHeadLeft: "Chức Năng" },
-    ];
-
-    const TABLE_HEAD_RIGHT = [
-        { id: "yccvRight", colWidth: 155, nameHead: "Yêu Cầu Công Việc" },
-        // { id: "ngayLamRight", colWidth: 90, nameHead: "Ngày Làm" },
-        { id: "bhRight", colWidth: 45, nameHead: "BH" },
-        { id: "dcRight", colWidth: 150, nameHead: "Địa Chỉ" },
-        { id: "quanRight", colWidth: 70, nameHead: "Quận" },
-        { id: "sdtRight", colWidth: 105, nameHead: "Số Điện Thoại" },
-        { id: "thoRight", colWidth: 105, nameHead: "Thợ" },
-        { id: "chiRight", colWidth: 120, nameHead: "Chi" },
-        { id: "thuRight", colWidth: 120, nameHead: "Thu" },
-        { id: "chucNangRight", colWidth: 120, nameHead: "Chức Năng" },
-    ];
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
 
             <div
-                className={`flex flex-row w-full overflow-scroll mt-1 pl-3 `}
+                className={`flex flex-row w-full overflow-scroll mt-1`}
                 style={{ height: `${heightScreenTV}px` }}
             >
                 <Card className="w-full mt-1 text-white rounded-none h-fit basis-5/12">
@@ -1837,10 +1787,12 @@ function Dashboard({ auth }) {
                                             }}
                                         >
                                             <DataGrid
-                                                ref={result.ref}
                                                 rows={result.rowsDataGrid}
                                                 columns={columns}
                                                 hideFooterPagination={true}
+                                                autoHeight
+                                                {...heightScreenTV}
+                                                ref={result.ref}
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
@@ -1904,12 +1856,11 @@ function Dashboard({ auth }) {
                                             }}
                                         >
                                             <DataGrid
+                                                autoHeight
+                                                {...heightScreenTV}
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsRight}
                                                 hideFooterPagination={false}
-                                                containerProps={{
-                                                    className: "hidden",
-                                                }}
                                                 rowHeight={40}
                                                 disableRowSelectionOnClick
                                                 slots={{
@@ -1925,7 +1876,7 @@ function Dashboard({ auth }) {
                 </Card>
             </div>
             <div className="fixed z-30 flex mt-1">
-                <div key={auth.user.id}>
+                <>
                     {dataBtnFixed.map((result, index) => {
                         return (
                             <Button
@@ -1941,7 +1892,7 @@ function Dashboard({ auth }) {
                             </Button>
                         );
                     })}
-                </div>
+                </>
                 <div className="flex items-center dateBooking">
                     <Input
                         id="date_check"
@@ -1970,5 +1921,4 @@ function Dashboard({ auth }) {
         </AuthenticatedLayout>
     );
 }
-
 export default Dashboard;

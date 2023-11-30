@@ -347,7 +347,6 @@ function NavbarDefault({ propauth }) {
                 workerStatus: item.worker_status,
             }));
             setInfoWorker(formatJson);
-            console.log('sss',jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -377,11 +376,8 @@ function NavbarDefault({ propauth }) {
                 (item, index) =>
                     item.workerCode.startsWith(prefix) &&
                     item.workerStatus === status && (
-                        <div className="w-full pb-1">
-                            <p
-                                key={index}
-                                className="p-1 text-sm border border-green-500"
-                            >
+                        <div className="w-full pb-1" key={index}>
+                            <p className="p-1 text-sm border border-green-500">
                                 {item.label}
                             </p>
                         </div>

@@ -30,6 +30,7 @@ const ThoDialog = ({
             </div>
             <DialogBody divider>
                 <Select
+                    closeMenuOnSelect={false}
                     value={selectPhanTho}
                     options={infoWorkerDashboard}
                     onChange={(selectedValue) =>
@@ -122,12 +123,7 @@ const ThuHoiDialog = ({
         </Dialog>
     );
 };
-const BHDialog = ({
-    openBH,
-    handleOpenBH,
-    setBH,
-    handleBH,
-}) => {
+const BHDialog = ({ openBH, handleOpenBH, setBH, handleBH }) => {
     return (
         <Dialog open={openBH} handler={handleOpenBH}>
             <div className="flex items-center justify-between">
@@ -310,4 +306,11 @@ const KhaoSatDialog = ({
         </Dialog>
     );
 };
-export { ThoDialog, ReasonDialog, ThuHoiDialog, HuyDialog, KhaoSatDialog, BHDialog};
+export {
+    ThoDialog,
+    ReasonDialog,
+    ThuHoiDialog,
+    HuyDialog,
+    KhaoSatDialog,
+    BHDialog,
+};

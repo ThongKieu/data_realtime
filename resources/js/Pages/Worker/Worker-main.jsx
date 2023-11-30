@@ -125,6 +125,7 @@ function WorkersMain({ auth }) {
             .then((data) => {
                 setData(data); // Lưu dữ liệu vào trạng thái React
                 setLoading(true); // Đã lấy xong dữ liệu
+                console.log('dddd',data);
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
@@ -185,13 +186,13 @@ function WorkersMain({ auth }) {
                 }`,
         },
         {
-            field: "sort_name",
+            field: "worker_code",
             headerName: "Mã",
             width: 80,
             editable: false,
         },
         {
-            field: "add_worker",
+            field: "worker_address",
             headerName: "Địa Chỉ",
             width: 180,
             editable: false,
@@ -218,7 +219,7 @@ function WorkersMain({ auth }) {
         },
 
         {
-            field: "phone_ct",
+            field: "worker_phone_company",
             headerName: "Số Công ty",
             width: 120,
             editable: false,
@@ -252,7 +253,7 @@ function WorkersMain({ auth }) {
             },
         },
         {
-            field: "phone_cn",
+            field: "worker_phone_family",
             headerName: "Số cá nhân",
             width: 120,
             editable: false,
@@ -288,7 +289,7 @@ function WorkersMain({ auth }) {
             },
         },
         {
-            field: "avatar",
+            field: "worker_avatar",
             headerName: "Ảnh",
             width: 100,
             renderCell: (params) => {

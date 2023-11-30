@@ -4,8 +4,8 @@ import { useState,useEffect } from "react";
 
 import newSocket from "@/utils/socket";
 function CardMain() {
-    const [WorkDataCountOrder, setWorkDataCountOrder] = useState(0);
-    const [WorkDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
+    const [workDataCountOrder, setWorkDataCountOrder] = useState(0);
+    const [workDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
     const [socketDelete, setSocketDelete] = useState();
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
@@ -61,7 +61,7 @@ function CardMain() {
         {
             id: 1,
             title: "Tổng Lịch",
-            count: WorkDataCountOrder + WorkDataCountOrderDaPhan +workDataCountDelete,
+            count: workDataCountOrder + workDataCountOrderDaPhan +workDataCountDelete,
             typographyColor: "text-center  text-blue-600 text-sm",
             cardBorderColor:
                 "m-1  border border-solid shadow-blue-400  border-blue-600 justify-center  w-24 rounded",
@@ -69,7 +69,7 @@ function CardMain() {
         {
             id: 2,
             title: "Chưa Phân",
-            count: WorkDataCountOrder,
+            count: workDataCountOrder,
             typographyColor: "text-center  text-yellow-600 text-sm",
             cardBorderColor:
                 "m-1  border border-solid shadow-yellow-400  w-96 border-yellow-600 justify-center  w-24 rounded",
@@ -77,7 +77,7 @@ function CardMain() {
         {
             id: 3,
             title: "Đã Phân",
-            count: WorkDataCountOrderDaPhan,
+            count: workDataCountOrderDaPhan,
             typographyColor: "text-center  text-green-600 text-sm",
             cardBorderColor:
                 "m-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-24 rounded",

@@ -10,8 +10,6 @@ import NavLink from '@/Components/NavLink';
 import { useState } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import FileInput from '@/Components/FileInputImage';
-import { split } from 'postcss/lib/list';
 import { host } from '@/utils/UrlApi';
 
 function Products({ auth }) {
@@ -109,7 +107,7 @@ function Products({ auth }) {
             <NavLink
             href={`product?id=${params.row.id}`}>
             <PencilIcon className="w-5 h-5">
-          
+
           </PencilIcon>
             </NavLink>
           </Button>

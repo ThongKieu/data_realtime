@@ -15,7 +15,7 @@ import {
 import { UserPlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/Utils/Socket";
 const columns = [
     {
         field: "work_content",

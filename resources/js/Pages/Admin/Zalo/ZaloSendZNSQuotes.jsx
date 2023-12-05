@@ -13,10 +13,11 @@ import * as XLSX from "xlsx";
 import { formattedDate } from "@/Utils/DateTime";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import GetCode_inter from "./GetCode_inter";
-import { FetchSmsBrandNoneZalo } from "./fetchSmsBrand";
+import FetchSmsBrandNoneZalo from "./FetchSmsBrand";
 function Tab1() {
     const [showAlertFailed, setShowAlertFailed] = useState(false);
     const [excelData, setExcelData] = useState([]);
+
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -65,14 +66,13 @@ function Tab1() {
                 if (response.ok) {
                     const responseJson = await response.json();
                     console.log(responseJson);
-                    let phone = 'ssss';
+                    let phone = "ssss";
                     switch (responseJson.error) {
                         case 0:
                             alert("Gửi thành công !!");
                             break;
                         case -108:
                             alert("Số liên hệ không hợp lệ !!");
-
                             break;
                         case -137:
                             alert(
@@ -214,7 +214,7 @@ function Tab2() {
             if (response.ok) {
                 const responseJson = await response.json();
                 console.log(responseJson);
-                let phone = 'Thong';
+                let phone = "Thong";
                 switch (responseJson.error) {
                     case 0:
                         alert("Gửi thành công !!");
@@ -224,11 +224,11 @@ function Tab2() {
                         FetchSmsBrandNoneZalo(phone);
                         alert("Số liên hệ không hợp lệ2 !!");
                         break;
-                        case -118:
-                            console.log(phone);
-                            FetchSmsBrandNoneZalo(phone);
-                            alert("Số liên hệ không hợp lệ2 !!");
-                            break;
+                    case -118:
+                        console.log(phone);
+                        FetchSmsBrandNoneZalo(phone);
+                        alert("Số liên hệ không hợp lệ2 !!");
+                        break;
                     case -137:
                         alert("Thanh toán ZCA thất bại (Ví không đủ số dư !!)");
                         break;
@@ -457,13 +457,13 @@ function ZaloSendZNSQuotes() {
                         </div>
                     </Card>
                     <Card>
-                    <Button
-                    onClick={()=>FetchSmsBrandNoneZalo('0912847218')}>
-                        Click here
-                    </Button>
+                        <Button
+                            onClick={() => FetchSmsBrandNoneZalo("0912847218")}
+                        >
+                            Click here
+                        </Button>
+                    </Card>
                 </Card>
-                </Card>
-
             </div>
         </AuthenticatedLayoutAdmin>
     );

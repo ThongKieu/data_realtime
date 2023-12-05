@@ -5,7 +5,7 @@ function generateRandomNumber() {
 
 // Example usage
 const randomSixDigitNumber = generateRandomNumber();
-export const FetchSmsBrandNoneZalo = (phone) => {
+ const FetchSmsBrandNoneZalo = (phone) => {
     console.log("111112222222222222222222", phone);
     const settings = {
         url: "http://210.211.109.118/cskhunicodeapi/send?wsdl",
@@ -21,7 +21,7 @@ export const FetchSmsBrandNoneZalo = (phone) => {
     };
     console.log(settings);
 };
-
+export default FetchSmsBrandNoneZalo;
 //   fetch(settings.url, {
 //     method: settings.method,
 //     headers: settings.headers,

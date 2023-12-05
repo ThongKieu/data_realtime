@@ -15,7 +15,7 @@ import {
     PlusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Box } from "@mui/material";
-import useWindowSize from "@/core/resize";
+import useWindowSize from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
 const rows = [
     {

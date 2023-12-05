@@ -14,7 +14,7 @@ import {
     BellAlertIcon,
     PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import useWindowSize from "@/core/resize";
+import useWindowSize from "@/Core/Resize";
 import { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 function CreatePost(auth) {

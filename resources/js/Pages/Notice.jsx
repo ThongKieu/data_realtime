@@ -24,7 +24,7 @@ import {
     TABLE_HEAD_NOTICE_THO_BAO_LICH,
     TABLE_HEAD_NOTICE_FEEDBACK,
     TABLE_HEAD_NOTICE_INFO_WORKER,
-} from "@/data/Table/DesignTable";
+} from "@/Data/Table/DesignTable";
 const data = [
     {
         label: "Lịch Từ App Khách",

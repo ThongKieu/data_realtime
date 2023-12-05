@@ -36,7 +36,7 @@ import {
     TicketIcon,
     CheckCircleIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/Utils/Socket";
 import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
@@ -47,7 +47,7 @@ import {
     getFirstName,
     getFormattedToday,
 } from "@/data/UrlAPI/UrlApi";
-import { copyTextToClipboard } from "@/Components/HandleEvent/handles";
+import { copyTextToClipboard } from "@/Components/HandleEvent/Handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
     ThoDialog,
@@ -57,7 +57,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
-import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/data/table/data";
+import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
 import Select from "react-select";
 // ----
 

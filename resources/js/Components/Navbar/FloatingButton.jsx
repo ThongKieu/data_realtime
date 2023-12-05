@@ -27,9 +27,9 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import { getFormattedToday, url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import { getFormattedToday, url_API, url_API_District } from "@/Data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/Utils/Socket";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")

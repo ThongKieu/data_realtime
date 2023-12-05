@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import newSocket from "@/Utils/socket";
+import newSocket from "@/Utils/Socket";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
@@ -12,7 +12,7 @@ function Chat({ auth }) {
         return () => {
             newSocket.disconnect();
         };
-    }, []);
+    }, []);sss
     // Trả giá trị về từ server
     useEffect(() => {
         if (socket) {

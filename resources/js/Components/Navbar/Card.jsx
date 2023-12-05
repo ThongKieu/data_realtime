@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState,useEffect } from "react";
-import {newSocket} from "@/Utils/socket";
+import newSocket from "@/Utils/Socket";
 function CardMain() {
     const [workDataCountOrder, setWorkDataCountOrder] = useState(0);
     const [workDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);

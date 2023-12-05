@@ -11,7 +11,6 @@ import {
 import { XMarkIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 import FileInput from "../FileInputImage";
-import io from "socket.io-client";
 function formatCardNumber(value) {
     const val = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = val.match(/\d{4,16}/g);
@@ -28,9 +27,9 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import { url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
+import { getFormattedToday, url_API, url_API_District } from "@/data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -95,7 +94,6 @@ function FloatingButton() {
         setSelectedFiles(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
-        // setPreviewImages([]);
     };
 
     //-------------------- add new order ----------------------------
@@ -108,10 +106,10 @@ function FloatingButton() {
     }, []);
     const handleAddWork = async (e) => {
         e.preventDefault();
-
         const formData1 = new FormData();
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
+            console.log("ddddd",selectedFiles[i] );
         }
         formData1.append("work_content", formData.work_content);
         formData1.append("date_book", selectedDate);
@@ -125,6 +123,7 @@ function FloatingButton() {
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
+        console.log("ddddd",formData1, formData,selectedDate,selectedOption );
         try {
             const response = await fetch(host + url_API, {
                 method: "POST",
@@ -137,7 +136,7 @@ function FloatingButton() {
             });
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
-                console.log("ddddd");
+                console.log("ddddd",formData1 );
                 handleOpen();
                 // setFormData("");
             }
@@ -147,11 +146,8 @@ function FloatingButton() {
     };
 
     // ------------------------ format date -----------------
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    const formattedToday = `${year}-${month}-${day}`;
+
+    const formattedToday = getFormattedToday();
 
     const [selectedDate, setSelectedDate] = useState(formattedToday);
     // console.log("selectedDate", selectedDate);

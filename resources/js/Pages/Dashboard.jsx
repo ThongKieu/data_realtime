@@ -36,7 +36,7 @@ import {
     TicketIcon,
     CheckCircleIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
@@ -119,14 +119,14 @@ function Dashboard({ auth }) {
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
             fetchDateCheck(selectedDate);
-            fetchDataDashboard(selectedDate, data);
+            fetchDataDashboard(selectedDate);
+            fetchData(data, selectedDate);
             fetchDataDaPhan(selectedDate, data);
         });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data !== "") {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
-                fetchData(data);
                 fetchDataDaPhan(data);
             }
         });
@@ -273,7 +273,7 @@ function Dashboard({ auth }) {
     // -----------------lay kich thuoc man hinh reponsive bang---------------
 
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchUpdateData = async (data, url) => {
+    const fetchUpdateData = async (data, url, socketUpdate) => {
         try {
             const res = await fetch(url, {
                 method: "POST",
@@ -284,7 +284,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                socketD?.emit("UpdateDateTable_To_Server", data);
+                socketD?.emit(socketUpdate, data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -294,11 +294,13 @@ function Dashboard({ auth }) {
     };
     const fetchDataDashboard = async (data) => {
         const url = `api/web/update/work`;
-        fetchUpdateData(data, url);
+        const socketUpdate = "addWorkTo_Server";
+        fetchUpdateData(data, url, socketUpdate);
     };
     const fetchDataWorkDone = async (data) => {
         const url = "api/web/update/work-continue";
-        fetchUpdateData(data, url);
+        const socketUpdate = `UpdateDateTable_To_Server`;
+        fetchUpdateData(data, url, socketUpdate);
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
     const fetchDataUpdateThuchi = async (
@@ -528,13 +530,18 @@ function Dashboard({ auth }) {
                     onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
-                            const data = {
-                                ac: "5",
-                                id: params.id,
-                                phone_number: newValue,
-                            };
-                            // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
-                            fetchDataDashboard(data);
+                            console.log(newValue);
+                            if (newValue.length > 10) {
+                                alert("Số điện thoại không được quá 10 ký tự.");
+                            } else {
+                                const data = {
+                                    ac: "5",
+                                    id: params.id,
+                                    phone_number: newValue,
+                                };
+                                // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                                fetchDataDashboard(data);
+                            }
                         }
                     }}
                 />
@@ -921,7 +928,9 @@ function Dashboard({ auth }) {
                                     className=" max-w-full min-w-full p-2 2xl:min-w-[40%]"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <DialogHeader>Thợ Đã Phân</DialogHeader>
+                                        <DialogHeader>
+                                            Thông Tin Phân Công Thợ
+                                        </DialogHeader>
                                         <XMarkIcon
                                             onClick={handleOpenTho}
                                             className="w-5 h-5 mr-3 cursor-pointer"
@@ -1285,6 +1294,7 @@ function Dashboard({ auth }) {
                 };
                 const handleCheckAdmin = async (e) => {
                     const UrlApi = "api/web/update/check-admin";
+                    const socketUpdate = `UpdateDateTable_To_Server`;
                     const prevData = {
                         work_content: params.row.work_content,
                         phone_number: params.row.phone_number,
@@ -1324,7 +1334,7 @@ function Dashboard({ auth }) {
                                 auth_id: auth.user.id,
                                 [field.key]: cardExpires[field.key],
                             };
-                            fetchUpdateData(data, UrlApi);
+                            fetchUpdateData(data, UrlApi, socketUpdate);
                         }
                     });
                 };
@@ -1787,6 +1797,13 @@ function Dashboard({ auth }) {
                                             }}
                                         >
                                             <DataGrid
+                                                sx={{
+                                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
+                                                        {
+                                                            outline:
+                                                                "none !important",
+                                                        },
+                                                }}
                                                 rows={result.rowsDataGrid}
                                                 columns={columns}
                                                 hideFooterPagination={true}
@@ -1856,6 +1873,13 @@ function Dashboard({ auth }) {
                                             }}
                                         >
                                             <DataGrid
+                                                sx={{
+                                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
+                                                        {
+                                                            outline:
+                                                                "none !important",
+                                                        },
+                                                }}
                                                 autoHeight
                                                 {...heightScreenTV}
                                                 rows={result.rowsDataGrid}

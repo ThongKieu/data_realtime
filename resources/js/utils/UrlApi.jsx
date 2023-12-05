@@ -1,2 +1,2 @@
-export const host ='http://'+window.location.hostname+"/";
+export const host =`http://${window.location.hostname}/`;
 

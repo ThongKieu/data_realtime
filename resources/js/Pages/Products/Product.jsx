@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import NavLink from '@/Components/NavLink';
 import { split } from 'postcss/lib/list';
-import { host } from '@/utils/UrlApi';
+import { host } from '@/Utils/UrlApi';
 
 function Products({ auth }) {
 
@@ -29,7 +29,7 @@ function Products({ auth }) {
     // get info if had id_products
     const url = new URL(window.location.href);
     const id = url.searchParams.get('id');
-  
+
     const getID = async () => {
         try {
             const response = await fetch(host + 'api/web/product/getone?id=' + id);
@@ -221,7 +221,7 @@ function Products({ auth }) {
 
                                     />
                                 ))) : ''}
-                                
+
                             </div>
                         </div>
 

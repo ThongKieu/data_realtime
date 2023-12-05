@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card } from "@material-tailwind/react";
-import { host } from "@/utils/UrlApi";
+import { host } from "@/Utils/UrlApi";
 function SmsBrandZalo() {
     useEffect(() => {
         fetchDataSMSBrand();

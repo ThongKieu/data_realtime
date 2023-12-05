@@ -9,7 +9,14 @@ export const copyTextToClipboard = (text) => {
     } = text;
 
     // Kiểm tra nếu tất cả các trường đều không rỗng hoặc undefined
-    if (work_content || street || phone_number || name_cus || district || work_note) {
+    if (
+        work_content ||
+        street ||
+        phone_number ||
+        name_cus ||
+        district ||
+        work_note
+    ) {
         const data = `${work_content || ""} ${street || ""} ${
             phone_number || ""
         } ${name_cus || ""} ${district || ""} ${work_note || ""}`;
@@ -24,7 +31,7 @@ export const copyTextToClipboard = (text) => {
         document.execCommand("copy");
         document.body.removeChild(textarea);
 
-        console.log("Đã sao chép thành công vào clipboard đã fix: ", data);
+        console.log("Sao Chép:", data);
     } else {
         console.log("Không có dữ liệu để sao chép.");
     }

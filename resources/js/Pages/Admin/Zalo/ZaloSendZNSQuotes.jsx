@@ -14,7 +14,6 @@ import { formattedDate } from "@/Utils/DateTime";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import GetCode_inter from "./GetCode_inter";
 import { FetchSmsBrandNoneZalo } from "./fetchSmsBrand";
-
 function Tab1() {
     const [showAlertFailed, setShowAlertFailed] = useState(false);
     const [excelData, setExcelData] = useState([]);
@@ -73,7 +72,7 @@ function Tab1() {
                             break;
                         case -108:
                             alert("Số liên hệ không hợp lệ !!");
-                          
+
                             break;
                         case -137:
                             alert(
@@ -458,13 +457,13 @@ function ZaloSendZNSQuotes() {
                         </div>
                     </Card>
                     <Card>
-                    <Button 
+                    <Button
                     onClick={()=>FetchSmsBrandNoneZalo('0912847218')}>
                         Click here
                     </Button>
                 </Card>
                 </Card>
-               
+
             </div>
         </AuthenticatedLayoutAdmin>
     );

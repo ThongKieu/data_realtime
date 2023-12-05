@@ -1,8 +1,9 @@
 import { Card, Typography, Avatar } from "@material-tailwind/react";
 import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
-import { host } from "@/utils/UrlApi";
+import { host } from "@/Utils/UrlApi";
 import {
     UsersIcon,
     BellAlertIcon,

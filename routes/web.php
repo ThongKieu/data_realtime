@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');
         Route::get('/zalo-zns-quotes',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSQuotes');})->name('admin/zalo-zns-quotes');
+        // posts list
+        Route::get('/post-list ',function(){return Inertia::render('Admin/Posts/PostList');})->name('admin/post-list');
+        Route::get('/create-post ',function(){return Inertia::render('Admin/Posts/CreatePost');})->name('admin/create-post');
     });
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');

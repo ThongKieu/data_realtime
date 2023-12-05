@@ -10,7 +10,7 @@ import NavLink from '@/Components/NavLink';
 import { useState } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { host } from '@/utils/UrlApi';
+import { host } from '@/Utils/UrlApi';
 
 function Products({ auth }) {
   const [products, setProduct] = useState('');

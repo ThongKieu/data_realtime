@@ -32,7 +32,7 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/utils/socket";
+import newSocket from "@/Utils/socket";
 // import NavGuest from "./navGuest";
 
 // profile menu component

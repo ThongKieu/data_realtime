@@ -91,6 +91,7 @@ function AdminSidebar({ children }) {
                 {
                     title: "Bài Viết",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/post-list"),
                 },
                 {
                     title: "Danh Sách Công Việc",

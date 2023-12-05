@@ -1,7 +1,7 @@
-export const url_API = "api/web/works";
-export const url_API_District = "api/web/district";
+const url_API = "api/web/works";
+const url_API_District = "api/web/district";
 
-export const sendPhanThoRequest = async (
+const sendPhanThoRequest = async (
     params,
     selectPhanTho,
     auth,
@@ -31,14 +31,14 @@ export const sendPhanThoRequest = async (
 
         if (response.ok) {
             socketD.emit("addWorkTo_Server", "Phan Tho");
-            copyTextToClipboard(params.row)
+            copyTextToClipboard(params.row);
             handleOpenTho();
         }
     } catch (error) {
         console.log("lỗi", error);
     }
 };
-export const sendDoiThoRequest = async (
+const sendDoiThoRequest = async (
     params,
     selectPhanTho,
     auth,
@@ -74,21 +74,30 @@ export const sendDoiThoRequest = async (
 
         if (response.ok) {
             socketD.emit("addWorkTo_Server", "Đổi Thợ");
-            copyTextToClipboard(params.row)
+            copyTextToClipboard(params.row);
             handleOpenTho();
         }
     } catch (error) {
         console.log("lỗi", error);
     }
 };
-export const getFirstName = (fullName) => {
+const getFirstName = (fullName) => {
     const parts = fullName.split(" ");
     return parts.length >= 2 ? parts.slice(1).join(" ") : "";
 };
-export const getFormattedToday = () => {
+const getFormattedToday = () => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
+};
+
+export {
+    getFormattedToday,
+    getFirstName,
+    sendPhanThoRequest,
+    sendDoiThoRequest,
+    url_API,
+    url_API_District,
 };

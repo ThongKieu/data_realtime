@@ -46,7 +46,7 @@ import {
     sendDoiThoRequest,
     getFirstName,
     getFormattedToday,
-} from "@/data/UrlAPI/UrlApi";
+} from "@/Data/UrlAPI/UrlApi";
 import { copyTextToClipboard } from "@/Components/HandleEvent/Handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
@@ -66,14 +66,14 @@ function Dashboard({ auth }) {
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
-    const [workDataDN, setWorkDataDN] = useState("");
-    const [workDataDNCu, setWorkDataDNCu] = useState("");
-    const [workDataDL, setWorkDataDL] = useState("");
-    const [workDataDG, setWorkDataDG] = useState("");
-    const [workDataNLMT, setWorkDataNLMT] = useState("");
-    const [workDataXD, setWorkDataXD] = useState("");
-    const [workDataVC, setWorkDataVC] = useState("");
-    const [workDataHX, setWorkDataHX] = useState("");
+    const [workDataDN, setWorkDataDN] = useState([]);
+    const [workDataDNCu, setWorkDataDNCu] = useState([]);
+    const [workDataDL, setWorkDataDL] = useState([]);
+    const [workDataDG, setWorkDataDG] = useState([]);
+    const [workDataNLMT, setWorkDataNLMT] = useState([]);
+    const [workDataXD, setWorkDataXD] = useState([]);
+    const [workDataVC, setWorkDataVC] = useState([]);
+    const [workDataHX, setWorkDataHX] = useState([]);
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
@@ -128,6 +128,7 @@ function Dashboard({ auth }) {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
                 fetchDataDaPhan(data);
+
             }
         });
         const handleResize = () => {
@@ -337,7 +338,6 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-
                 socketD.emit("addWorkTo_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -615,10 +615,8 @@ function Dashboard({ auth }) {
                                 "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                             },
                         });
-
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", duplicatedData);
-                            console.log("Đã nhân đôi dữ liệu:", duplicatedData);
                         }
                     } catch (error) {
                         console.log(error);
@@ -669,7 +667,7 @@ function Dashboard({ auth }) {
     ];
     // du lieu bang cong viec da phan ------------------------------------
 
-    const columnsRight = [
+    const columnsright = [
         {
             field: "work_content",
             headerName: "yêu cầu công việc",
@@ -1071,6 +1069,7 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
+                console.log(params);
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
@@ -1145,9 +1144,7 @@ function Dashboard({ auth }) {
                         formData.append("ac", id_ac);
                         formData.append("id", params.row.id);
                         formData.append("auth_id", auth.user.id);
-                        // formData.append("seri_imag_new[]", selectedHinh);
                         console.log(`Đã gửi hình ${type}:`, selectedHinh);
-                        // Thêm danh sách các tệp hình `image_vt` vào FormData
                         for (let i = 0; i < selectedHinh?.length; i++) {
                             formData.append(
                                 `${
@@ -1170,6 +1167,7 @@ function Dashboard({ auth }) {
 
                         if (res.ok) {
                             console.log(`Cập nhật thông tin ${type}`, formData);
+                            socketD.emit ('UpdateDateTable_To_Server',formData)
                         } else {
                             console.error(
                                 "Lỗi khi gửi dữ liệu:",
@@ -1440,6 +1438,7 @@ function Dashboard({ auth }) {
                                 "Hình đã được xóa thành công từ máy chủ",
                                 dataBody
                             );
+                            socketD.emit('addWorkTo_Server');
                         } else {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
@@ -1883,7 +1882,7 @@ function Dashboard({ auth }) {
                                                 autoHeight
                                                 {...heightScreenTV}
                                                 rows={result.rowsDataGrid}
-                                                columns={columnsRight}
+                                                columns={columnsright}
                                                 hideFooterPagination={false}
                                                 rowHeight={40}
                                                 disableRowSelectionOnClick

@@ -13,7 +13,6 @@ class WarrantiesController extends Controller
 {
     public static function insertWarranties(Request $req)
     {
-
       if($req->income_total > 0 )
       {
         $i = new Warranties([
@@ -36,7 +35,6 @@ class WarrantiesController extends Controller
     {
         if($req->id_cus)
         {
-
             $old_cus = OldCustomer::where('id','=',$req->id_cus)->get();
             if($old_cus->count()>0)
             {
@@ -68,7 +66,6 @@ class WarrantiesController extends Controller
 
                }
             }
-
             $i++;
            }
         }
@@ -89,14 +86,12 @@ class WarrantiesController extends Controller
         // dd($newWork);
         $newWork->save();
         return '1';
-
     }
     public function checkTimeWarranties($id, $date_book)
     {
         // $id = $req->id;
         // $date_book = $req ->date_book;
         $date_now = date('d-m-Y');
-
         // $a
         $time_warranties = Warranties::where('id_work_has','=',$id)->get();
         if($time_warranties->count()>0)

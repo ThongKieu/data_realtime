@@ -109,7 +109,6 @@ function FloatingButton() {
         const formData1 = new FormData();
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
-            console.log("ddddd",selectedFiles[i] );
         }
         formData1.append("work_content", formData.work_content);
         formData1.append("date_book", selectedDate);
@@ -123,7 +122,6 @@ function FloatingButton() {
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
-        console.log("ddddd",formData1, formData,selectedDate,selectedOption );
         try {
             const response = await fetch(host + url_API, {
                 method: "POST",
@@ -136,9 +134,7 @@ function FloatingButton() {
             });
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
-                console.log("ddddd",formData1 );
                 handleOpen();
-                // setFormData("");
             }
         } catch (error) {
             console.log(error);

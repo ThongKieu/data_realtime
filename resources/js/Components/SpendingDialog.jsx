@@ -70,93 +70,45 @@ const SpendingDialog = ({
                     vatCard={vatCard}
                     disabledAllowed={isAllowed}
                 >
-
-                        {cardExpires.income_total != 0 ||
-                        cardExpires.spending_total != 0 ? (
-                            <><div className="flex justify-between w-full my-2 text-sm">
+                    {cardExpires.income_total != 0 ||
+                    cardExpires.spending_total != 0 ? (
+                        <>
+                            <div className="flex justify-between w-full my-2 text-sm">
                                 <DynamicTwoInput
                                     disabledAllowed={isAllowed}
                                     sendDataToParent={handleDataFromChild}
-                                /> </div>
-                                <div className="flex justify-center gap-4 align-middle ">
-                                    <div className="w-full ">
-                                        <div className="flex justify-center w-full">
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Button
-                                                    className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                />
+                            </div>
+                            <div className="flex justify-center gap-4 align-middle ">
+                                <div className="w-full ">
+                                    <div className="flex justify-center w-full">
+                                        {vatCard ? (
+                                            <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                {params.row.bill_image}
+                                            </Card>
+                                        ) : (
+                                            <Button
+                                                className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                disabled={isAllowed}
+                                            >
+                                                <input
+                                                    id="image_Vt"
+                                                    type="file"
+                                                    accept=".jpg, .jpeg, .png"
+                                                    onChange={
+                                                        handleFileChangeVt
+                                                    }
+                                                    multiple
+                                                    className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
                                                     disabled={isAllowed}
-                                                >
-                                                    <input
-                                                        id="image_Vt"
-                                                        type="file"
-                                                        accept=".jpg, .jpeg, .png"
-                                                        onChange={
-                                                            handleFileChangeVt
-                                                        }
-                                                        multiple
-                                                        className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                        disabled={isAllowed}
-                                                    />
-                                                    {previewImgVt ? (
-                                                        <i className="text-[10px]">
-                                                            (Hình Vật Tư)
-                                                        </i>
-                                                    ) : (
-                                                        <div className="flex flex-row">
-                                                            {previewImgVt.map(
-                                                                (
-                                                                    preview,
-                                                                    index
-                                                                ) => (
-                                                                    <img
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        src={
-                                                                            preview
-                                                                        }
-                                                                        alt={`Preview ${index}`}
-                                                                        style={{
-                                                                            width: "100px",
-                                                                            height: "auto",
-                                                                            margin: "5px",
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </Button>
-                                            )}
-                                            {vatCard ? (
-                                                <Card className="justify-center px-2 border border-green-500 rounded-none">
-                                                    {params.row.bill_image}
-                                                </Card>
-                                            ) : (
-                                                <Button
-                                                    className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
-                                                    disabled={isAllowed}
-                                                >
-                                                    <input
-                                                        id="image_Pt"
-                                                        type="file"
-                                                        accept=".jpg, .jpeg, .png"
-                                                        onChange={
-                                                            handleFileChangePt
-                                                        }
-                                                        multiple
-                                                        className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
-                                                        disabled={isAllowed}
-                                                    />
+                                                />
+                                                {previewImgVt ? (
                                                     <i className="text-[10px]">
-                                                        (Hình Phiếu Thu)
+                                                        (Hình Vật Tư)
                                                     </i>
-                                                    <div className="flex flex-row flex-wrap justify-center">
-                                                        {previewImgPt.map(
+                                                ) : (
+                                                    <div className="flex flex-row">
+                                                        {previewImgVt.map(
                                                             (
                                                                 preview,
                                                                 index
@@ -176,33 +128,72 @@ const SpendingDialog = ({
                                                             )
                                                         )}
                                                     </div>
-                                                </Button>
-                                            )}
-                                            <div className="p-1 ">
-                                                <Input
-                                                    label="Số Phiếu Thu"
-                                                    id="seri_number"
-                                                    name="seri_number"
-                                                    value={
-                                                        cardExpires.seri_number
+                                                )}
+                                            </Button>
+                                        )}
+                                        {vatCard ? (
+                                            <Card className="justify-center px-2 border border-green-500 rounded-none">
+                                                {params.row.bill_image}
+                                            </Card>
+                                        ) : (
+                                            <Button
+                                                className="justify-center px-2 pt-1 text-center text-black bg-white border border-green-500 rounded-none"
+                                                disabled={isAllowed}
+                                            >
+                                                <input
+                                                    id="image_Pt"
+                                                    type="file"
+                                                    accept=".jpg, .jpeg, .png"
+                                                    onChange={
+                                                        handleFileChangePt
                                                     }
-                                                    defaultValue="k pt"
-                                                    onChange={handleChange}
-                                                    // disabled="{disabledAllowed || isAllowedBH}"
-                                                    className="mr-1 w-[100%] shadow-none"
+                                                    multiple
+                                                    className="w-full text-[10px] file:cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
                                                     disabled={isAllowed}
                                                 />
-                                            </div>
+                                                <i className="text-[10px]">
+                                                    (Hình Phiếu Thu)
+                                                </i>
+                                                <div className="flex flex-row flex-wrap justify-center">
+                                                    {previewImgPt.map(
+                                                        (preview, index) => (
+                                                            <img
+                                                                key={index}
+                                                                src={preview}
+                                                                alt={`Preview ${index}`}
+                                                                style={{
+                                                                    width: "100px",
+                                                                    height: "auto",
+                                                                    margin: "5px",
+                                                                }}
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            </Button>
+                                        )}
+                                        <div className="p-1 ">
+                                            <Input
+                                                label="Số Phiếu Thu"
+                                                id="seri_number"
+                                                name="seri_number"
+                                                value={cardExpires.seri_number}
+                                                defaultValue="k pt"
+                                                onChange={handleChange}
+                                                // disabled="{disabledAllowed || isAllowedBH}"
+                                                className="mr-1 w-[100%] shadow-none"
+                                                disabled={isAllowed}
+                                            />
                                         </div>
                                     </div>
                                 </div>
-                            </>
-                        ) : (
-                            <Card className="w-full p-2 text-center text-red-500 border border-red-500 rounded-sm">
-                                ***Vui Lòng Kiểm Tra Và Nhập Lại Thu Chi!!
-                            </Card>
-                        )}
-
+                            </div>
+                        </>
+                    ) : (
+                        <Card className="w-full p-2 text-center text-red-500 border border-red-500 rounded-sm">
+                            ***Vui Lòng Kiểm Tra Và Nhập Lại Thu Chi!!
+                        </Card>
+                    )}
 
                     <Divider className="pt-2" />
                     <div className="flex flex-row-reverse pt-2">

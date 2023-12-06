@@ -48,7 +48,6 @@ const profileMenuItems = [
         href: "login",
     },
 ];
-
 function ProfileMenu({ propauthprofile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
@@ -310,9 +309,7 @@ function NavbarDefault({ propauth }) {
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
         fetchDelete();
-
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            console.log("hell", data);
             if (data != "") {
                 fetchDelete(data);
             }

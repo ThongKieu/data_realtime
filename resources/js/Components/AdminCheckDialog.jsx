@@ -44,7 +44,9 @@ function AdminCheckDialog({
     previewImagesVT,
     previewImagesPT,
     classNameChild,
-    handleChange,socketD,handleSearch
+    handleChange,
+    socketD,
+    handleSearch,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -77,7 +79,7 @@ function AdminCheckDialog({
         },
     ]);
     const fetchDataBH = async (id) => {
-        if(id || id !='undefined'){
+        if (id || id != "undefined") {
             try {
                 const response = await fetch(
                     `api/web/work-assignment/warranties?id=${id}`
@@ -98,8 +100,9 @@ function AdminCheckDialog({
         }
     };
     useEffect(() => {
-        if(params.row.id){
-        fetchDataBH(params.row.id);}
+        if (params.row.id) {
+            fetchDataBH(params.row.id);
+        }
     }, []);
     const handleDataBh = (id) => {
         fetchDataBH(id);
@@ -149,30 +152,44 @@ function AdminCheckDialog({
             },
         ]);
     };
+    const [disabledButtons, setDisabledButtons] = useState([]);
+    const [idToDelete, setIdToDelete] = useState(null);
     const handleDelete = async (id) => {
-        const deleteBH = {
-            ac: 1,
-            auth_id: auth.user.id,
-            id_del_warranty: id,
-        };
         try {
-            const res = await fetch(`api/web/update/check-admin`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(deleteBH),
-            });
-
-            if (res.ok) {
-                const updatedData = dataBH.filter((item) => item.id !== id);
-                setDataBH(updatedData);
-                console.log("Đã xóa thành công", id);
-            } else {
-                console.error("Lỗi khi xóa dữ liệu:", res.statusText);
-            }
+            setDisabledButtons((prev) => [...prev, id]);
+            setIdToDelete(id);// Disable the delete button for the specific item
+            // Perform other actions if needed
         } catch (error) {
-            console.error("Error fetching data lỗi rồi:", error);
+            console.error("Error during delete setup:", error);
+        }
+    };
+    const handleConfirmDelete = async () => {
+        if (idToDelete !== null) {
+            try {
+                const deleteBH = {
+                    ac: 1,
+                    auth_id: auth.user.id,
+                    id_del_warranty: idToDelete,
+                };
+                const res = await fetch(`api/web/update/check-admin`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(deleteBH),
+                });
+
+                if (res.ok) {
+                    const updatedData = dataBH.filter((item) => item.id !== idToDelete);
+                    setDataBH(updatedData);
+                    console.log("Đã xóa thành công", idToDelete);
+
+                } else {
+                    console.error("Lỗi khi xóa dữ liệu:", res.statusText);
+                }
+            } catch (error) {
+                console.error("Error during delete:", error);
+            }
         }
     };
     const handleValueBh = async () => {
@@ -189,7 +206,6 @@ function AdminCheckDialog({
                 id_work_has: params.row.id,
                 info_warranties: data_info_warranty,
             };
-
             const res = await fetch("api/web/update/check-admin", {
                 method: "POST",
                 headers: {
@@ -197,8 +213,6 @@ function AdminCheckDialog({
                 },
                 body: JSON.stringify(dataBh),
             });
-
-            console.log(res);
             if (res.ok) {
                 console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
                 handleOpenBH();
@@ -209,6 +223,7 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
         const check_admin = {
@@ -229,9 +244,15 @@ function AdminCheckDialog({
                 console.log("Thay đổi thành công:", check_admin);
                 handleSearch();
                 handleOpenAdminCheck();
-                socketD.emit("UpdateDateTable_To_Server", "Cập Nhật trạng thái AdminCheck");
+                socketD.emit(
+                    "UpdateDateTable_To_Server",
+                    "Cập Nhật trạng thái AdminCheck"
+                );
             } else {
-                console.error("Lỗi thay đổi trạng thái AdminCheck:", res.statusText);
+                console.error(
+                    "Lỗi thay đổi trạng thái AdminCheck:",
+                    res.statusText
+                );
             }
         } catch (error) {
             console.error("Error fetching data lỗi rồi:", error);
@@ -258,11 +279,15 @@ function AdminCheckDialog({
                             <span>Nhân Viên:</span>
                             <i className="pl-1">{params.row.worker_code}</i>
                             <i>_</i>
-                            <i className="pl-1">{params.row.worker_full_name}</i>
+                            <i className="pl-1">
+                                {params.row.worker_full_name}
+                            </i>
                         </div>
                         <div>
                             <span>Số Điện Thoại:</span>
-                            <i className="pl-1">{params.row.worker_phone_company}</i>
+                            <i className="pl-1">
+                                {params.row.worker_phone_company}
+                            </i>
                         </div>
                     </div>
                     <div className="flex items-center justify-between w-full p-2 text-sm border border-green-500 ">
@@ -309,7 +334,10 @@ function AdminCheckDialog({
                                 <Divider />
                                 <DialogBody>
                                     {dataBH.map((item, index) => (
-                                        <div key={index} className="flex justify-between gap-1 mb-2">
+                                        <div
+                                            key={index}
+                                            className="flex justify-between gap-1 mb-2"
+                                        >
                                             <div>
                                                 <Select
                                                     value={item.unit}
@@ -374,9 +402,8 @@ function AdminCheckDialog({
                                                 variant="outlined"
                                                 color="red"
                                                 className="px-2 py-0 mx-1 "
-                                                onClick={(e) =>
-                                                    handleDelete(item.id)
-                                                }
+                                                onClick={() => handleDelete(item.id)}
+                                                disabled={disabledButtons.includes(item.id)}
                                             >
                                                 <TrashIcon className="w-5 h-5" />
                                             </Button>
@@ -404,7 +431,7 @@ function AdminCheckDialog({
                                     <Button
                                         variant="gradient"
                                         color="green"
-                                        onClick={handleValueBh}
+                                        onClick={() =>handleValueBh() && handleConfirmDelete()}
                                     >
                                         <span>Xác Nhận</span>
                                     </Button>

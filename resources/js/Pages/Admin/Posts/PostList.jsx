@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Head } from "@inertiajs/react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -17,16 +17,36 @@ import {
 import { Box } from "@mui/material";
 import useWindowSize from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
-const rows = [
-    {
-        id: 1,
-        STT: 1,
-        PostName: 25,
-        Description: 1,
-        Picture: 25,
-        Author: 25,
-    },
-];
+import { host } from "@/Utils/UrlApi";
+const [rows,getData] = useState(['']);
+
+const fetchDataDemo = async () => {
+    try {
+        
+        const response = await fetch(host + 'api/posts');
+        const jsonData = await response.json();
+        console.log('111111111111111', jsonData);
+        getData(jsonData);
+        return jsonData;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return null;
+    }
+};
+// useEffect (()=>{
+    fetchDataDemo();
+// },[]);
+// const rows = [
+//     {
+//         id: 1,
+//         STT: 1,
+//         PostName: 25,
+//         Description: 1,
+//         Picture: 25,
+//         Author: 25,
+//     },
+// ];
+
 const columns = [
     { field: "STT", headerName: "STT", width: 80, editable: false },
     {

@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\DistrictController;
 
 use App\Http\Controllers\Api\Web\WorksController;
 use App\Http\Controllers\Api\Mobile\WorkersController;
+use App\Http\Controllers\Api\PostsController;
+use App\Models\Posts;
 // use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -84,7 +86,7 @@ Route::prefix('web')->group(function () {
     Route::get('worker-with-type','App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
 
 });
-
+Route::apiResource('posts',PostsController::class);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

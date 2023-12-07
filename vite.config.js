@@ -18,7 +18,12 @@ export default defineConfig({
         }),
       ],
       server:{
-        hmr:'localhost'
+        // hmr:'localhost'
+        host: ["127.0.0.1"],
+        port: 5173,
+        hmr: {
+            host: ["127.0.0.1"],
+        },
     },
     build:{
         chunkSizeWarningLimit: 1600,

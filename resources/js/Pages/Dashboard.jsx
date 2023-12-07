@@ -118,10 +118,10 @@ function Dashboard({ auth }) {
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
-            fetchDateCheck(selectedDate);
-            fetchDataDashboard(selectedDate);
+            fetchDateCheck(data,selectedDate);
+            fetchDataDashboard(data,selectedDate);
             fetchData(data, selectedDate);
-            fetchDataDaPhan(selectedDate, data);
+            fetchDataDaPhan(data);
         });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data !== "") {

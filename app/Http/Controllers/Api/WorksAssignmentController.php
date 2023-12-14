@@ -621,45 +621,47 @@ class WorksAssignmentController extends Controller
                              return "Update Seri Image Fails!";
                         }
 
-                    case 4:
-                        //Work content
-                        Work::where('id', '=', $request->id_cus)->update(['work_content' => $request->work_content]);
-                        return 'Update Work_content';
-                    case 5:
-                        //Phone number
-                        Work::where('id', '=', $request->id_cus)->update(['phone_number' => $request->phone_number]);
-                        return 'Update phone_number';
-                    case 6:
-                        //Address
-                        Work::where('id', '=', $request->id_cus)->update(['street' => $request->street]);
-                        return 'Update street';
-                    case 7:
-                        //District
-                        Work::where('id', '=', $request->id_cus)->update(['district' => $request->district]);
-                        return 'Update district';
-                    case 8:
-                        //Name Cus
-                        Work::where('id', '=', $request->id_cus)->update(['name_cus' => $request->name_cus]);
-                        return 'Update name_cus';
-                    case 9:
-                        //real_note
-                        WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $request->real_note]);
-                        return 'Update Work_note';
-                    case 10:
-                        // Incoming money
-                        // dd($request->all());
-                        WorksAssignment::where('id', '=', $request->id)->update(['income_total' => $request->income_total]);
-                        return 'Update income_total';
-                    case 11:
-                        // Spend money
-                        WorksAssignment::where('id', '=', $request->id)->update(['spending_total' => $request->spending_total]);
-                        return 'Update spending_total';
-                    case 12:
-                        // Update seri number
-                        WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
-                        return 'Update Seri';
+                    // case 4:
+                    //     //Work content
+                    //     Work::where('id', '=', $request->id_cus)->update(['work_content' => $request->work_content]);
+                    //     return 'Update Work_content';
+                    // case 5:
+                    //     //Phone number
+                    //     Work::where('id', '=', $request->id_cus)->update(['phone_number' => $request->phone_number]);
+                    //     return 'Update phone_number';
+                    // case 6:
+                    //     //Address
+                    //     Work::where('id', '=', $request->id_cus)->update(['street' => $request->street]);
+                    //     return 'Update street';
+                    // case 7:
+                    //     //District
+                    //     Work::where('id', '=', $request->id_cus)->update(['district' => $request->district]);
+                    //     return 'Update district';
+                    // case 8:
+                    //     //Name Cus
+                    //     Work::where('id', '=', $request->id_cus)->update(['name_cus' => $request->name_cus]);
+                    //     return 'Update name_cus';
+                    // case 9:
+                    //     //real_note
+                    //     WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $request->real_note]);
+                    //     return 'Update Work_note';
+                    // case 10:
+                    //     // Incoming money
+                    //     // dd($request->all());
+                    //     WorksAssignment::where('id', '=', $request->id)->update(['income_total' => $request->income_total]);
+                    //     return 'Update income_total';
+                    // case 11:
+                    //     // Spend money
+                    //     WorksAssignment::where('id', '=', $request->id)->update(['spending_total' => $request->spending_total]);
+                    //     return 'Update spending_total';
+                    // case 12:
+                    //     // Update seri number
+                    //     WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
+                    //     return 'Update Seri';
                     case 13:
                             // Admin Check
+
+                            dd($request->data);
                             WorksAssignment::where('id', '=', $request->id)->update(['status_admin_check' => 1]);
                             return 'Admin Check';
                     default:

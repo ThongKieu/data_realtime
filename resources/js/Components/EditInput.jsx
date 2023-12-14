@@ -1,10 +1,6 @@
-import React from "react";
-import { Input, IconButton } from "@material-tailwind/react"; // Thay thế 'your-ui-library' bằng thư viện UI của bạn
-import {
-    XMarkIcon,
-    PencilSquareIcon,
-    DocumentPlusIcon,
-} from "@heroicons/react/24/outline";
+import React, { useState } from "react";
+import { Input, IconButton, Tooltip } from "@material-tailwind/react";
+import { CogIcon } from "@heroicons/react/24/outline";
 
 const EditableInput = ({
     label,
@@ -17,8 +13,13 @@ const EditableInput = ({
     active,
     handleSetActive,
     // handleEdit,
-    classNameChild
+    classNameChild,
 }) => {
+    const [editableInput, setEditableInput] = useState(null);
+
+    const handleEditStart = (id) => {
+        setEditableInput(id);
+    };
     return (
         <>
             <Input
@@ -26,27 +27,19 @@ const EditableInput = ({
                 id={id}
                 name={name}
                 value={value}
+                color="green"
+                onFocus={() => handleEditStart(id)}
                 onChange={onChange}
                 containerProps={containerProps}
-                disabled={disabled}
-                className={`shadow-none ${active ? "active" : ""} ${classNameChild}`}
+                disabled={id == "date_book" ? disabled : ""}
+                // onBlur={handleEditEnd}
+                className={`shadow-none ${
+                    editableInput === id ? "editing" : ""
+                } ${classNameChild}`}
             />
-
-            {active ? (
-                <IconButton
-                    variant="text"
-                    onClick={() => {
-                        handleSetActive();
-                        // handleEdit();
-                    }}
-                    disabled={id == 'date_book' ? disabled : ""}
-                    className={`shadow-none `}
-                >
-                    <DocumentPlusIcon className="w-5 h-5" />
-                </IconButton>
-            ) : (
-                <IconButton variant="text" onClick={() => handleSetActive()}  className={`shadow-none `} disabled={id == 'date_book' ? disabled : ""}>
-                    <PencilSquareIcon className="w-5 h-5" />
+            {editableInput === id && (
+                <IconButton variant="text" className="edit-icon">
+                    <CogIcon className="w-5 h-5 text-green-500" />
                 </IconButton>
             )}
         </>

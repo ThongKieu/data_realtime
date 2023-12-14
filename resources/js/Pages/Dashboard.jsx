@@ -1160,7 +1160,6 @@ function Dashboard({ auth }) {
                         formData.append("ac", id_ac);
                         formData.append("id", params.row.id);
                         formData.append("auth_id", auth.user.id);
-                        console.log(`Đã gửi hình ${type}:`, selectedHinh);
                         for (let i = 0; i < selectedHinh?.length; i++) {
                             formData.append(
                                 `${
@@ -1583,9 +1582,9 @@ function Dashboard({ auth }) {
                             // handleEdit={() => {
                             //     handleCheckAdmin();
                             // }}
-                            classNameChild={`${
-                                isEdited ? "border-red-500" : "border-gray-300"
-                            }`}
+                            // classNameChild={`${
+                            //     isEdited ? "border-red-500" : "border-gray-300"
+                            // }`}
                             handleSendImagePT={() =>
                                 handleImageSubmit(selectedFilesPT, "PT", 3)
                             }

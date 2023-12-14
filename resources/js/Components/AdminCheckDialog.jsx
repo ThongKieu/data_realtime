@@ -224,44 +224,52 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const [dataCheckAdmin, setDataCheckAdmin] = useState([]);
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
-        const prevData = {
-            work_content: params.row.work_content,
-            phone_number: params.row.phone_number,
-            street: params.row.street,
-            district: params.row.district,
-            name_cus: params.row.name_cus,
-            real_note: params.row.real_note,
-            income_total: params.row.income_total,
-            spending_total: params.row.spending_total,
-            seri_number: params.row.seri_number,
-        };
-        const modifiedData = {};
-        const dataFields = [
-            { key: "work_content", id_cus: params.row.id_cus },
-            { key: "phone_number", id_cus: params.row.id_cus },
-            { key: "street", id_cus: params.row.id_cus },
-            { key: "district", id_cus: params.row.id_cus },
-            { key: "name_cus", id_cus: params.row.id_cus },
-            { key: "real_note", id: params.row.id },
-            { key: "income_total", id: params.row.id },
-            { key: "spending_total", id: params.row.id },
-            { key: "seri_number", id: params.row.id },
-        ];
-
-        dataFields.forEach((field) => {
-            if (prevData[field.key] !== cardExpires[field.key]) {
-                modifiedData[field.key] = cardExpires[field.key];
-            }
-        });
-
+        // const prevData = {
+        //     work_content: params.row.work_content,
+        //     phone_number: params.row.phone_number,
+        //     street: params.row.street,
+        //     district: params.row.district,
+        //     name_cus: params.row.name_cus,
+        //     real_note: params.row.real_note,
+        //     income_total: params.row.income_total,
+        //     spending_total: params.row.spending_total,
+        //     seri_number: params.row.seri_number,
+        // };
+        // const modifiedData = {};
+        // const dataFields = [
+        //     { key: "work_content", id_cus: params.row.id_cus },
+        //     { key: "phone_number", id_cus: params.row.id_cus },
+        //     { key: "street", id_cus: params.row.id_cus },
+        //     { key: "district", id_cus: params.row.id_cus },
+        //     { key: "name_cus", id_cus: params.row.id_cus },
+        //     { key: "real_note", id: params.row.id },
+        //     { key: "income_total", id: params.row.id },
+        //     { key: "spending_total", id: params.row.id },
+        //     { key: "seri_number", id: params.row.id },
+        // ];
+        // dataFields.forEach((field) => {
+        //     if (prevData[field.key] !== cardExpires[field.key]) {
+        //         modifiedData[field.key] = cardExpires[field.key];
+        //     }
+        // });
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
             id: params.row.id,
-            data: { ...modifiedData },
+            id_cus: params.row.id_cus,
+            data: {
+                work_content: cardExpires.work_content,
+                phone_number: cardExpires.phone_number,
+                street: cardExpires.street,
+                district: cardExpires.district,
+                name_cus: cardExpires.name_cus,
+                real_note: cardExpires.real_note,
+                income_total: cardExpires.income_total,
+                spending_total: cardExpires.spending_total,
+                seri_number: cardExpires.seri_number,
+            },
         };
         console.log(check_admin);
         // try {
@@ -274,16 +282,14 @@ function AdminCheckDialog({
         //     });
 
         //     if (res.ok) {
-        //         console.log("Thay đổi thành công:", check_admin);
         //         handleSearch();
         //         handleOpenAdminCheck();
         //         // handleEdit();
-        //         handleCheckAdmin();
+        //         // handleCheckAdmin();
         //         socketD.emit(
         //             "UpdateDateTable_To_Server",
         //             "Cập Nhật trạng thái AdminCheck"
         //         );
-        //         console.log('xin chao',handleEdit);
         //     } else {
         //         console.error(
         //             "Lỗi thay đổi trạng thái AdminCheck:",
@@ -294,47 +300,6 @@ function AdminCheckDialog({
         //     console.error("Error fetching data lỗi rồi:", error);
         // }
     };
-
-    // const handleUpdateStatusCheckAdmin = async (e) => {
-    //     e.preventDefault();
-    //     const check_admin = {
-    //         ac: 13,
-    //         auth_id: auth.user.id,
-    //         id: params.row.id,
-    //         data: dataCheckAdmin
-    //     };
-    //     console.log(check_admin);
-    // try {
-    //     const res = await fetch(`api/web/update/check-admin`, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify(check_admin),
-    //     });
-
-    //     if (res.ok) {
-    //         console.log("Thay đổi thành công:", check_admin);
-    //         handleSearch();
-    //         handleOpenAdminCheck();
-    //         // handleEdit();
-    //         handleCheckAdmin();
-    //         socketD.emit(
-    //             "UpdateDateTable_To_Server",
-    //             "Cập Nhật trạng thái AdminCheck"
-    //         );
-    //         console.log('xin chao',handleEdit);
-    //     } else {
-    //         console.error(
-    //             "Lỗi thay đổi trạng thái AdminCheck:",
-    //             res.statusText
-    //         );
-    //     }
-    // } catch (error) {
-    //     console.error("Error fetching data lỗi rồi:", error);
-    // }
-    // };
-
     return (
         <Dialog
             open={openAdminCheck}

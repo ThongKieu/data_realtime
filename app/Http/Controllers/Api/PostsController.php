@@ -18,7 +18,7 @@ class PostsController extends Controller
     }
     public function store(Request $request)
     {
-        
+
         //
         $title = $request->title;
         $slug= Str::slug($request->title);
@@ -35,13 +35,13 @@ class PostsController extends Controller
         $post ->image_post = $imge_post;
         $post->name_author = $author;
         $post-> save();
-        
+
         if($post)
         {
             return response()->json(['status'=>'Thêm Thành Công']);
         }
         else
         return response()->json(['status'=>'Thêm thất bại']);
-            
+
     }
 }

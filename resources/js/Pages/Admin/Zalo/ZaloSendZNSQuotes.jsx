@@ -66,7 +66,6 @@ function Tab1() {
                 if (response.ok) {
                     const responseJson = await response.json();
                     console.log(responseJson);
-                    let phone = "ssss";
                     switch (responseJson.error) {
                         case 0:
                             alert("Gửi thành công !!");

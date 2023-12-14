@@ -16,7 +16,7 @@ const EditableInput = ({
     disabled,
     active,
     handleSetActive,
-    handleEdit,
+    // handleEdit,
     classNameChild
 }) => {
     return (
@@ -37,7 +37,7 @@ const EditableInput = ({
                     variant="text"
                     onClick={() => {
                         handleSetActive();
-                        handleEdit();
+                        // handleEdit();
                     }}
                     disabled={id == 'date_book' ? disabled : ""}
                     className={`shadow-none `}

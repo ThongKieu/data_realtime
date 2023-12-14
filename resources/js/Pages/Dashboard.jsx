@@ -91,14 +91,13 @@ function Dashboard({ auth }) {
             income_total: "",
         },
     ];
-
-    const [workDataDN_done, setWorkDataDN_done] = useState("");
-    const [workDataDL_done, setWorkDataDL_done] = useState("");
-    const [workDataDG_done, setWorkDataDG_done] = useState("");
-    const [workDataNLMT_done, setWorkDataNLMT_done] = useState("");
-    const [workDataXD_done, setWorkDataXD_done] = useState("");
-    const [workDataVC_done, setWorkDataVC_done] = useState("");
-    const [workDataHX_done, setWorkDataHX_done] = useState("");
+    const [workDataDN_done, setWorkDataDN_done] = useState([]);
+    const [workDataDL_done, setWorkDataDL_done] = useState([]);
+    const [workDataDG_done, setWorkDataDG_done] = useState([]);
+    const [workDataNLMT_done, setWorkDataNLMT_done] = useState([]);
+    const [workDataXD_done, setWorkDataXD_done] = useState([]);
+    const [workDataVC_done, setWorkDataVC_done] = useState([]);
+    const [workDataHX_done, setWorkDataHX_done] = useState([]);
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const [screenSize, setScreenSize] = useState({
@@ -118,8 +117,8 @@ function Dashboard({ auth }) {
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
-            fetchDateCheck(data,selectedDate);
-            fetchDataDashboard(data,selectedDate);
+            fetchDateCheck(data, selectedDate);
+            fetchDataDashboard(data, selectedDate);
             fetchData(data, selectedDate);
             fetchDataDaPhan(data);
         });
@@ -128,7 +127,6 @@ function Dashboard({ auth }) {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
                 fetchDataDaPhan(data);
-
             }
         });
         const handleResize = () => {
@@ -145,7 +143,6 @@ function Dashboard({ auth }) {
             window.removeEventListener("resize", handleResize);
         };
     }, [selectedDate]);
-
     var heightScreenTV = screenSize.height;
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
@@ -423,19 +420,30 @@ function Dashboard({ auth }) {
                         <Dialog open={open} handler={handleOpen}>
                             <DialogHeader>Ghi Chú</DialogHeader>
                             <DialogBody divider>
-                                <p className="object-cover object-center w-full p-2 mb-5 rounded-lg shadow-xl">
-                                    {params.row.work_note}
-                                </p>
-
-                                <div className="flex flex-wrap">
-                                    {filteredArray?.map((item, index) => (
-                                        <img
-                                            key={index}
-                                            className="object-cover object-center w-1/2 p-1 rounded-lg shadow-xl"
-                                            src={`${host}${item}`}
-                                            alt="nature image"
-                                        />
-                                    ))}
+                                <div className="object-cover object-center w-full p-2 mb-2 border border-green-500 rounded-lg shadow-xl">
+                                    <p className="italic font-bold underline">
+                                        Nội dung ghi chú:
+                                    </p>
+                                    <p>{params.row.work_note}</p>
+                                </div>
+                                <div className="object-cover object-center w-full p-2 mb-5 border border-green-500 rounded-lg shadow-xl">
+                                    <p className="italic font-bold underline">
+                                        Hình ảnh khách gửi:
+                                    </p>
+                                    <div className="flex flex-wrap">
+                                        {data || data !== '' || data !== null || data !== 'undefine'
+                                            ? filteredArray?.map(
+                                                  (item, index) => (
+                                                      <img
+                                                          key={index}
+                                                          className="object-cover object-center w-32 p-1 m-1 border border-green-500 rounded-sm shadow-xl"
+                                                          src={`${host}${item}`}
+                                                          alt="nature image"
+                                                      />
+                                                  )
+                                              )
+                                            : " Khách không gửi hình nha!"}
+                                    </div>
                                 </div>
                             </DialogBody>
                             <DialogFooter>
@@ -665,8 +673,7 @@ function Dashboard({ auth }) {
             },
         },
     ];
-    // du lieu bang cong viec da phan ------------------------------------
-
+    // du lieu bang cong viec da phan -----------------------------------
     const columnsright = [
         {
             field: "work_content",
@@ -919,7 +926,12 @@ function Dashboard({ auth }) {
                             <p>{firstName}</p>
                         ) : (
                             <>
-                                <p onClick={handleOpenTho}>{firstName}</p>
+                                <p
+                                    onClick={handleOpenTho}
+                                    className="cursor-pointer "
+                                >
+                                    {firstName}
+                                </p>
                                 <Dialog
                                     open={openWorkerNameTableRight}
                                     handler={handleOpenTho}
@@ -1069,7 +1081,6 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                console.log(params);
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
@@ -1120,6 +1131,7 @@ function Dashboard({ auth }) {
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
+                // const [selectedFiles, setSelectedFiles] = useState([]);
                 const [selectedFilesPT, setSelectedFilesPT] = useState([]);
                 const [selectedFilesVT, setSelectedFilesVT] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
@@ -1131,7 +1143,11 @@ function Dashboard({ auth }) {
                     setSelectedFiles
                 ) => {
                     const files = Array.from(e.target.files);
-                    setSelectedFiles(files);
+                    if (typeof setSelectedFiles === "function") {
+                        setSelectedFiles(files);
+                    } else {
+                        console.error("setSelectedFiles is not a function");
+                    }
                     const previews = files.map((file) =>
                         URL.createObjectURL(file)
                     );
@@ -1167,7 +1183,7 @@ function Dashboard({ auth }) {
 
                         if (res.ok) {
                             console.log(`Cập nhật thông tin ${type}`, formData);
-                            socketD.emit ('UpdateDateTable_To_Server',formData)
+                            socketD.emit("UpdateDateTable_To_Server", formData);
                         } else {
                             console.error(
                                 "Lỗi khi gửi dữ liệu:",
@@ -1324,7 +1340,6 @@ function Dashboard({ auth }) {
                         { key: "spending_total", ac: 11, id: params.row.id },
                         { key: "seri_number", ac: 12, id: params.row.id },
                     ];
-
                     dataFields.forEach((field) => {
                         if (prevData[field.key] !== cardExpires[field.key]) {
                             const data = {
@@ -1369,39 +1384,47 @@ function Dashboard({ auth }) {
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
-                    setImageVt1(newImages);
-                    const dataBody = {
-                        auth_id: auth.user.id,
-                        ac: 2,
-                        id: params.row.id,
-                        bill_imag_del: deletedImage,
-                    };
-                    const jsonData = JSON.stringify(dataBody);
-                    try {
-                        const response = await fetch(
-                            "api/web/update/check-admin",
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: jsonData,
-                            }
-                        );
 
-                        if (response.ok) {
-                            console.log(
-                                "Hình đã được xóa thành công từ máy chủ",
-                                dataBody
+                    // Sử dụng window.confirm thay vì alert
+                    const userConfirmed = window.confirm(
+                        "Có thật muốn xóa hình"
+                    );
+
+                    if (userConfirmed) {
+                        setImageVt1(newImages);
+                        const dataBody = {
+                            auth_id: auth.user.id,
+                            ac: 2,
+                            id: params.row.id,
+                            bill_imag_del: deletedImage,
+                        };
+                        const jsonData = JSON.stringify(dataBody);
+                        try {
+                            const response = await fetch(
+                                "api/web/update/check-admin",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: jsonData,
+                                }
                             );
-                        } else {
+
+                            if (response.ok) {
+                                console.log("Hình đã được xóa thành công");
+                            } else {
+                                console.error(
+                                    "Lỗi khi gửi yêu cầu xóa hình:",
+                                    response.statusText
+                                );
+                            }
+                        } catch (error) {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
-                                response.statusText
+                                error
                             );
                         }
-                    } catch (error) {
-                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
@@ -1438,7 +1461,7 @@ function Dashboard({ auth }) {
                                 "Hình đã được xóa thành công từ máy chủ",
                                 dataBody
                             );
-                            socketD.emit('addWorkTo_Server');
+                            socketD.emit("addWorkTo_Server");
                         } else {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
@@ -1557,9 +1580,9 @@ function Dashboard({ auth }) {
                             handleChange={handleChange}
                             cardExpires={cardExpires}
                             auth={auth}
-                            handleEdit={() => {
-                                handleCheckAdmin();
-                            }}
+                            // handleEdit={() => {
+                            //     handleCheckAdmin();
+                            // }}
                             classNameChild={`${
                                 isEdited ? "border-red-500" : "border-gray-300"
                             }`}
@@ -1610,12 +1633,12 @@ function Dashboard({ auth }) {
                             cardExpires={cardExpires}
                             handleChange={handleChange}
                             vatCard={vatCard}
-                            handleFileChangeVt={(e) =>
-                                handleFileChange(e, setPreviewImgVt)
-                            }
                             previewImgVt={previewImgVt}
+                            handleFileChangeVt={(e) =>
+                                handleFileChange(e, setPreviewImgVt, null)
+                            }
                             handleFileChangePt={(e) =>
-                                handleFileChange(e, setPreviewImgPt)
+                                handleFileChange(e, setPreviewImgPt, null)
                             }
                             previewImgPt={previewImgPt}
                             dataBtnChi={dataBtnChi}
@@ -1744,12 +1767,11 @@ function Dashboard({ auth }) {
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
-
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1`}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card className="w-full mt-1 text-white rounded-none h-fit basis-5/12">
+                <Card className="w-full mt-1 text-white rounded-none basis-5/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1826,7 +1848,7 @@ function Dashboard({ auth }) {
                         </div>
                     )}
                 </Card>
-                <Card className="grid w-full grid-flow-col mt-1 text-white rounded-none h-fit basis-7/12">
+                <Card className="grid w-full grid-flow-col mt-1 text-white rounded-none basis-7/12">
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -1879,6 +1901,7 @@ function Dashboard({ auth }) {
                                                                 "none !important",
                                                         },
                                                 }}
+                                                width={100}
                                                 autoHeight
                                                 {...heightScreenTV}
                                                 rows={result.rowsDataGrid}

@@ -157,7 +157,7 @@ function AdminCheckDialog({
     const handleDelete = async (id) => {
         try {
             setDisabledButtons((prev) => [...prev, id]);
-            setIdToDelete(id);// Disable the delete button for the specific item
+            setIdToDelete(id); // Disable the delete button for the specific item
             // Perform other actions if needed
         } catch (error) {
             console.error("Error during delete setup:", error);
@@ -180,10 +180,11 @@ function AdminCheckDialog({
                 });
 
                 if (res.ok) {
-                    const updatedData = dataBH.filter((item) => item.id !== idToDelete);
+                    const updatedData = dataBH.filter(
+                        (item) => item.id !== idToDelete
+                    );
                     setDataBH(updatedData);
                     console.log("Đã xóa thành công", idToDelete);
-
                 } else {
                     console.error("Lỗi khi xóa dữ liệu:", res.statusText);
                 }
@@ -223,41 +224,116 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-
+    const [dataCheckAdmin, setDataCheckAdmin] = useState([]);
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
+        const prevData = {
+            work_content: params.row.work_content,
+            phone_number: params.row.phone_number,
+            street: params.row.street,
+            district: params.row.district,
+            name_cus: params.row.name_cus,
+            real_note: params.row.real_note,
+            income_total: params.row.income_total,
+            spending_total: params.row.spending_total,
+            seri_number: params.row.seri_number,
+        };
+        const modifiedData = {};
+        const dataFields = [
+            { key: "work_content", id_cus: params.row.id_cus },
+            { key: "phone_number", id_cus: params.row.id_cus },
+            { key: "street", id_cus: params.row.id_cus },
+            { key: "district", id_cus: params.row.id_cus },
+            { key: "name_cus", id_cus: params.row.id_cus },
+            { key: "real_note", id: params.row.id },
+            { key: "income_total", id: params.row.id },
+            { key: "spending_total", id: params.row.id },
+            { key: "seri_number", id: params.row.id },
+        ];
+
+        dataFields.forEach((field) => {
+            if (prevData[field.key] !== cardExpires[field.key]) {
+                modifiedData[field.key] = cardExpires[field.key];
+            }
+        });
+
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
             id: params.row.id,
+            data: { ...modifiedData },
         };
-        try {
-            const res = await fetch(`api/web/update/check-admin`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(check_admin),
-            });
+        console.log(check_admin);
+        // try {
+        //     const res = await fetch(`api/web/update/check-admin`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify(check_admin),
+        //     });
 
-            if (res.ok) {
-                console.log("Thay đổi thành công:", check_admin);
-                handleSearch();
-                handleOpenAdminCheck();
-                socketD.emit(
-                    "UpdateDateTable_To_Server",
-                    "Cập Nhật trạng thái AdminCheck"
-                );
-            } else {
-                console.error(
-                    "Lỗi thay đổi trạng thái AdminCheck:",
-                    res.statusText
-                );
-            }
-        } catch (error) {
-            console.error("Error fetching data lỗi rồi:", error);
-        }
+        //     if (res.ok) {
+        //         console.log("Thay đổi thành công:", check_admin);
+        //         handleSearch();
+        //         handleOpenAdminCheck();
+        //         // handleEdit();
+        //         handleCheckAdmin();
+        //         socketD.emit(
+        //             "UpdateDateTable_To_Server",
+        //             "Cập Nhật trạng thái AdminCheck"
+        //         );
+        //         console.log('xin chao',handleEdit);
+        //     } else {
+        //         console.error(
+        //             "Lỗi thay đổi trạng thái AdminCheck:",
+        //             res.statusText
+        //         );
+        //     }
+        // } catch (error) {
+        //     console.error("Error fetching data lỗi rồi:", error);
+        // }
     };
+
+    // const handleUpdateStatusCheckAdmin = async (e) => {
+    //     e.preventDefault();
+    //     const check_admin = {
+    //         ac: 13,
+    //         auth_id: auth.user.id,
+    //         id: params.row.id,
+    //         data: dataCheckAdmin
+    //     };
+    //     console.log(check_admin);
+    // try {
+    //     const res = await fetch(`api/web/update/check-admin`, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(check_admin),
+    //     });
+
+    //     if (res.ok) {
+    //         console.log("Thay đổi thành công:", check_admin);
+    //         handleSearch();
+    //         handleOpenAdminCheck();
+    //         // handleEdit();
+    //         handleCheckAdmin();
+    //         socketD.emit(
+    //             "UpdateDateTable_To_Server",
+    //             "Cập Nhật trạng thái AdminCheck"
+    //         );
+    //         console.log('xin chao',handleEdit);
+    //     } else {
+    //         console.error(
+    //             "Lỗi thay đổi trạng thái AdminCheck:",
+    //             res.statusText
+    //         );
+    //     }
+    // } catch (error) {
+    //     console.error("Error fetching data lỗi rồi:", error);
+    // }
+    // };
 
     return (
         <Dialog
@@ -302,7 +378,7 @@ function AdminCheckDialog({
                             disabled={!activePt.inputSPT}
                             active={activePt.inputSPT}
                             handleSetActive={() => handleSetActive("inputSPT")}
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -402,8 +478,12 @@ function AdminCheckDialog({
                                                 variant="outlined"
                                                 color="red"
                                                 className="px-2 py-0 mx-1 "
-                                                onClick={() => handleDelete(item.id)}
-                                                disabled={disabledButtons.includes(item.id)}
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }
+                                                disabled={disabledButtons.includes(
+                                                    item.id
+                                                )}
                                             >
                                                 <TrashIcon className="w-5 h-5" />
                                             </Button>
@@ -431,7 +511,10 @@ function AdminCheckDialog({
                                     <Button
                                         variant="gradient"
                                         color="green"
-                                        onClick={() =>handleValueBh() && handleConfirmDelete()}
+                                        onClick={() =>
+                                            handleValueBh() &&
+                                            handleConfirmDelete()
+                                        }
                                     >
                                         <span>Xác Nhận</span>
                                     </Button>
@@ -561,7 +644,7 @@ function AdminCheckDialog({
                             disabled={!activePt.inputYCCV}
                             active={activePt.inputYCCV}
                             handleSetActive={() => handleSetActive("inputYCCV")}
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -574,7 +657,7 @@ function AdminCheckDialog({
                             disabled={!activePt.inputSDT}
                             active={activePt.inputSDT}
                             handleSetActive={() => handleSetActive("inputSDT")}
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -591,7 +674,7 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputDiaChi")
                             }
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -604,7 +687,7 @@ function AdminCheckDialog({
                             disabled={!activePt.inputQuan}
                             active={activePt.inputQuan}
                             handleSetActive={() => handleSetActive("inputQuan")}
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -621,7 +704,7 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputTenKH")
                             }
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -653,7 +736,7 @@ function AdminCheckDialog({
                                 handleSetActive={() =>
                                     handleSetActive("inputGhiChu")
                                 }
-                                handleEdit={handleEdit}
+                                // handleEdit={handleEdit}
                                 classNameChild={classNameChild}
                             />
                         </div>
@@ -671,7 +754,7 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
 
@@ -687,7 +770,7 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            handleEdit={handleEdit}
+                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>

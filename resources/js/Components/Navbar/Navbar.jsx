@@ -298,6 +298,7 @@ function NavList({ active = false }) {
 function NavbarDefault({ propauth }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+
     useEffect(() => {
         window.addEventListener(
             "resize",
@@ -314,7 +315,7 @@ function NavbarDefault({ propauth }) {
                 fetchDelete(data);
             }
         });
-        // lắng nghe server
+
         return () => {
             newSocket.disconnect();
         };
@@ -442,7 +443,7 @@ function NavbarDefault({ propauth }) {
                         </Tooltip>
                     </NavLink>
                     <Card
-                        className="flex flex-row items-center justify-between w-24 p-1 m-1 border border-green-600 border-solid rounded justify-left shadow-green-400"
+                        className="flex flex-row items-center justify-between w-24 p-1 border border-green-600 border-solid rounded justify-left shadow-green-400"
                         onClick={handleOpenWorker}
                     >
                         <Typography
@@ -450,10 +451,10 @@ function NavbarDefault({ propauth }) {
                             variant="paragraph"
                             color="blue-gray"
                         >
-                            Thợ Đi Làm
+                            Thợ
                         </Typography>
                         <Typography
-                            className="text-sm text-center text-green-600"
+                            className="text-sm text-center text-green-600 "
                             variant="paragraph"
                             color="blue-gray"
                         >

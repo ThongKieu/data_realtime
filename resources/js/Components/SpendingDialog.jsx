@@ -102,33 +102,25 @@ const SpendingDialog = ({
                                                     className="w-full text-[10px] cursor-pointer text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 focus:outline-none focus:shadow-none"
                                                     disabled={isAllowed}
                                                 />
-                                                {previewImgVt ? (
-                                                    <i className="text-[10px]">
-                                                        (Hình Vật Tư)
-                                                    </i>
-                                                ) : (
-                                                    <div className="flex flex-row">
-                                                        {previewImgVt.map(
-                                                            (
-                                                                preview,
-                                                                index
-                                                            ) => (
-                                                                <img
-                                                                    key={index}
-                                                                    src={
-                                                                        preview
-                                                                    }
-                                                                    alt={`Preview ${index}`}
-                                                                    style={{
-                                                                        width: "100px",
-                                                                        height: "auto",
-                                                                        margin: "5px",
-                                                                    }}
-                                                                />
-                                                            )
-                                                        )}
-                                                    </div>
-                                                )}
+                                                <i className="text-[10px]">
+                                                    (Hình Vật Tư)
+                                                </i>
+                                                <div className="flex flex-row">
+                                                    {previewImgVt.map(
+                                                        (preview, index) => (
+                                                            <img
+                                                                key={index}
+                                                                src={preview}
+                                                                alt={`Preview ${index}`}
+                                                                style={{
+                                                                    width: "100px",
+                                                                    height: "auto",
+                                                                    margin: "5px",
+                                                                }}
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
                                             </Button>
                                         )}
                                         {vatCard ? (

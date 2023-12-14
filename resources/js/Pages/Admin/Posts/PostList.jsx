@@ -18,39 +18,11 @@ import { Box } from "@mui/material";
 import useWindowSize from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-const [rows,getData] = useState(['']);
-
-const fetchDataDemo = async () => {
-    try {
-        
-        const response = await fetch(host + 'api/posts');
-        const jsonData = await response.json();
-        console.log('111111111111111', jsonData);
-        getData(jsonData);
-        return jsonData;
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
-    }
-};
-// useEffect (()=>{
-    fetchDataDemo();
-// },[]);
-// const rows = [
-//     {
-//         id: 1,
-//         STT: 1,
-//         PostName: 25,
-//         Description: 1,
-//         Picture: 25,
-//         Author: 25,
-//     },
-// ];
 
 const columns = [
-    { field: "STT", headerName: "STT", width: 80, editable: false },
+    { field: "id", headerName: "STT", width: 80, editable: false },
     {
-        field: "PostName",
+        field: "title",
         headerName: "Tên Bài Viết",
         width: 450,
         align: "left",
@@ -58,23 +30,45 @@ const columns = [
         editable: false,
     },
     {
-        field: "Description",
+        field: "description",
         headerName: "Mô Tả",
-        width: 700,
+        width: 300,
         align: "left",
         headerAlign: "left",
         editable: false,
     },
     {
-        field: "Picture",
+        field: "content",
+        headerName: "Nội Dung",
+        width: 400,
+        align: "left",
+        headerAlign: "left",
+        editable: false,
+    },
+    {
+        field: "image_post",
         headerName: "Hình Ảnh",
         width: 200,
         align: "left",
-        headerAlign: "left",
+        headerAlign: "center",
         editable: false,
+        renderCell: (params) => {
+            return (
+                <>
+                    {params.row.image_post == "" ||
+                    params.row.image_post == null ? (
+                        <p className="italic text-red-500 ">
+                            Vui lòng thêm hình bài viết
+                        </p>
+                    ) : (
+                        <p>{params.row.image_post}</p>
+                    )}
+                </>
+            );
+        },
     },
     {
-        field: "Author",
+        field: "name_author",
         headerName: "Tác Giả",
         width: 200,
         align: "left",
@@ -87,7 +81,6 @@ const columns = [
         width: 180,
         editable: false,
         renderCell: (params) => {
-            console.log(params);
             return (
                 <div className="gap-1 p-2">
                     <Button
@@ -107,10 +100,25 @@ const columns = [
 ];
 
 function PostList(auth) {
+    const [rows, rowsData] = useState([]);
+    const fetchDataDemo = async () => {
+        try {
+            const response = await fetch(host + "api/posts");
+            const jsonData = await response.json();
+            if (jsonData) {
+                rowsData(jsonData);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    useEffect(() => {
+        fetchDataDemo();
 
-const hResize = useWindowSize();
-const heightBoxPost = hResize.height - 30;
-const widthBoxPost = hResize.width - 30;
+    }, []);
+    const hResize = useWindowSize();
+    const heightBoxPost = hResize.height - 30;
+    const widthBoxPost = hResize.width - 30;
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Post App - Công ty Thợ Việt" />

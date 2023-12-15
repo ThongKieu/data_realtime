@@ -162,56 +162,63 @@ function Home({ auth }) {
             titleTop: "Tổng Lịch",
             titleMid: 158,
             titleBot: 16,
-            imgSrc: 'assets/all.png'
+            imgSrc: "assets/all.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 1,
             titleTop: "Điện Nước",
             titleMid: 130,
-            titleBot: 14,imgSrc: 'assets/dn.png'
+            titleBot: 14,
+            imgSrc: "assets/dn.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 2,
             titleTop: "Điện Lạnh",
             titleMid: 158,
-            titleBot: 5,imgSrc: 'assets/dl.png'
+            titleBot: 5,
+            imgSrc: "assets/dl.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 3,
             titleTop: "Đồ Gỗ",
             titleMid: 130,
-            titleBot: 3,imgSrc: 'assets/dg.png'
+            titleBot: 3,
+            imgSrc: "assets/dg.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 4,
             titleTop: "NLMT",
             titleMid: 130,
-            titleBot: 2,imgSrc: 'assets/nlmt.png'
+            titleBot: 2,
+            imgSrc: "assets/nlmt.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 5,
             titleTop: "Cơ Khí",
             titleMid: 158,
-            titleBot: 1,imgSrc: 'assets/hx.png'
+            titleBot: 1,
+            imgSrc: "assets/hx.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 6,
             titleTop: "Vận Chuyển",
             titleMid: 130,
-            titleBot: 7,imgSrc: 'assets/vc.png'
+            titleBot: 7,
+            imgSrc: "assets/vc.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
             id: 7,
             titleTop: "Vệ Sinh Bể Nước",
             titleMid: 130,
-            titleBot: 4,imgSrc: 'assets/vsbn.png'
+            titleBot: 4,
+            imgSrc: "assets/vsbn.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
     ];
@@ -246,16 +253,17 @@ function Home({ auth }) {
                 </Card>
                 <div className="flex flex-row justify-between p-1 m-2 text-center">
                     {dataCardOrder.map((item, index) => {
-                        const classBot = `${item.titleBot >= 15
+                        const classBot = `${
+                            item.titleBot >= 15
                                 ? "green"
                                 : item.titleBot <= 14 && item.titleBot >= 6
-                                    ? "yellow"
-                                    : item.titleBot <= 5 && item.titleBot >= 3
-                                        ? "orange"
-                                        : item.titleBot < 3
-                                            ? "red"
-                                            : ""
-                            }`;
+                                ? "yellow"
+                                : item.titleBot <= 5 && item.titleBot >= 3
+                                ? "orange"
+                                : item.titleBot < 3
+                                ? "red"
+                                : ""
+                        }`;
 
                         return (
                             <CardOrder
@@ -292,7 +300,7 @@ function Home({ auth }) {
                     <Card className="w-[30%] rounded-sm">
                         <Typography className="p-2 font-bold text-center text-white bg-blue-gray-300">
                             <p className="font-bold ">
-                                Số Lượng Lịch Nhận Từ Các Nguồn Tiếp Nhận Thông
+                                Các Nguồn Tiếp Nhận Thông
                                 Tin
                             </p>
                         </Typography>
@@ -411,9 +419,6 @@ function Home({ auth }) {
                         </table>
                     </Card>
                 </div>
-
-            </Card>
-            <Card>
             </Card>
         </AuthenticatedLayout>
     );

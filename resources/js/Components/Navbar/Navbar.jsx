@@ -422,7 +422,7 @@ function NavbarDefault({ propauth }) {
                             content={countDelete}
                             className="text-black bg-white w-fit"
                         >
-                            <Card className="w-24 m-1 border border-red-600 border-solid rounded justify-left shadow-red-400">
+                            <Card className="m-1 border border-red-600 border-solid rounded w-28 justify-left shadow-red-400">
                                 <CardBody className="flex items-center justify-between p-1 ">
                                     <Typography
                                         className="text-sm text-center text-red-600"
@@ -443,7 +443,7 @@ function NavbarDefault({ propauth }) {
                         </Tooltip>
                     </NavLink>
                     <Card
-                        className="flex flex-row items-center justify-between w-24 p-1 border border-green-600 border-solid rounded justify-left shadow-green-400"
+                        className="flex flex-row items-center justify-between p-1 border border-green-600 border-solid rounded w-28 justify-left shadow-green-400"
                         onClick={handleOpenWorker}
                     >
                         <Typography
@@ -505,7 +505,6 @@ function NavbarDefault({ propauth }) {
                         </DialogFooter>
                     </Dialog>
                 </div>
-
                 <div>
                     <ProfileMenu propauthprofile={propauth} />
                 </div>

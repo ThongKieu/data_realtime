@@ -33,7 +33,7 @@ const data = [
         desc: (
             <TableDataTV
                 tableHead={TABLE_HEAD_NOTICE_NEW_ORDER}
-                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+                tableRows={TABLE_HEAD_NOTICE_NEW_ORDER}
             />
         ),
     },
@@ -44,7 +44,7 @@ const data = [
         desc: (
             <TableDataTV
                 tableHead={TABLE_HEAD_NOTICE_THO_BAO_LICH}
-                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+                tableRows={TABLE_HEAD_NOTICE_THO_BAO_LICH}
             />
         ),
     },
@@ -55,7 +55,7 @@ const data = [
         desc: (
             <TableDataTV
                 tableHead={TABLE_HEAD_NOTICE_INFO_WORKER}
-                tableRows={TABLE_ROWS_NOTICE_NEW_ORDER}
+                tableRows={TABLE_HEAD_NOTICE_INFO_WORKER}
             />
         ),
     },
@@ -66,7 +66,7 @@ const data = [
         desc: (
             <TableDataTV
                 tableHead={TABLE_HEAD_NOTICE_FEEDBACK}
-                tableRows={TABLE_ROWS_NOTICE_FEEDBACK}
+                tableRows={TABLE_HEAD_NOTICE_FEEDBACK}
             />
         ),
     },

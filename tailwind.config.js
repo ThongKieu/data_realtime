@@ -17,6 +17,12 @@ export default withMT( {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
+        screens: {
+            sm: '480px',
+            md: '768px',
+            lg: '976px',
+            xl: '1441px',
+          },
     },
 
     plugins: [forms],

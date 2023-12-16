@@ -12,7 +12,7 @@ function Chat({ auth }) {
         return () => {
             newSocket.disconnect();
         };
-    }, []);sss
+    }, []);
     // Trả giá trị về từ server
     useEffect(() => {
         if (socket) {
@@ -34,7 +34,7 @@ function Chat({ auth }) {
     };
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="chat" />
+            <Head title="Chat" />
             <div className="container mx-auto rounded-lg shadow-lg">
                 {/* Chatting */}
                 <div className="flex flex-row justify-between bg-white">

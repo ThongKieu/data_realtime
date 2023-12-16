@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import newSocket from "@/Utils/Socket";
 function CardMain() {
     const [workDataCountOrder, setWorkDataCountOrder] = useState(0);
@@ -29,7 +29,8 @@ function CardMain() {
             const jsonData = await response.json();
             setWorkDataCountOrder(jsonData.dem_lich);
             if (socketDelete) {
-                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+                socketDelete.emit("addWorkTo_Server", jsonData.num_can);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -40,18 +41,21 @@ function CardMain() {
             const jsonData = await response.json();
             setWorkDataCountOrderDaPhan(jsonData.dem_lich_done);
             if (socketDelete) {
-                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+                socketDelete.emit("addWorkTo_Server", jsonData.num_can);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
+    };
+    const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
     const fetchDelete = async () => {
         try {
             const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setWorkDataCountDelete(jsonData.num_can);
             if (socketDelete) {
-                socketDelete.emit("addWorkTo_Server",jsonData.num_can)}
+                socketDelete.emit("addWorkTo_Server", jsonData.num_can);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -60,10 +64,13 @@ function CardMain() {
         {
             id: 1,
             title: "Tổng Lịch",
-            count: workDataCountOrder + workDataCountOrderDaPhan +workDataCountDelete,
+            count:
+                workDataCountOrder +
+                workDataCountOrderDaPhan +
+                workDataCountDelete,
             typographyColor: "text-center  text-blue-600 text-sm",
             cardBorderColor:
-                "m-1  border border-solid shadow-blue-400  border-blue-600 justify-center  w-24 rounded",
+                "m-1  border border-solid shadow-blue-400  border-blue-600 justify-center w-28 rounded",
         },
         {
             id: 2,
@@ -71,7 +78,7 @@ function CardMain() {
             count: workDataCountOrder,
             typographyColor: "text-center  text-yellow-600 text-sm",
             cardBorderColor:
-                "m-1  border border-solid shadow-yellow-400  w-96 border-yellow-600 justify-center  w-24 rounded",
+                "m-1  border border-solid shadow-yellow-400  w-96 border-yellow-600 justify-center  w-28 rounded",
         },
         {
             id: 3,
@@ -79,9 +86,8 @@ function CardMain() {
             count: workDataCountOrderDaPhan,
             typographyColor: "text-center  text-green-600 text-sm",
             cardBorderColor:
-                "m-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-24 rounded",
+                "m-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-28 rounded",
         },
-
     ];
 
     return (

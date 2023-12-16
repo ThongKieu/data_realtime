@@ -32,7 +32,7 @@ use Inertia\Inertia;
 Route::middleware('auth')->group(function () {
     // Route::get('/welcome', function () {return Inertia::render('Welcome');})->name('welcome');
     Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
-    Route::get('/chat', function () {return Inertia::render('chat/Chat');})->name('chat');
+    Route::get('/chat', function () {return Inertia::render('Chat/Chat');})->name('chat');
     Route::get('/tim-kiem', function () {return Inertia::render('Search');})->name('search');
     Route::get('/thong-bao-lich-moi', function () {return Inertia::render('Notice');})->name('notice');
     Route::get('/lich-huy', function () {return Inertia::render('CancelBooking');})->name('CancelBooking');

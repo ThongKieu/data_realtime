@@ -17,7 +17,7 @@ function AdminSidebar({ children }) {
     const Menus = [
         {
             title: "Thợ",
-            icon: <UserGroupIcon className="w-6" />,
+            icon: <UserGroupIcon className={`w-6 md:w-5 xl:w-6`}  />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -40,7 +40,7 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Thêm Dữ Liệu",
-            icon: <CircleStackIcon className="w-6" />,
+            icon: <CircleStackIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -67,7 +67,7 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Ứng Dụng ",
-            icon: <DevicePhoneMobileIcon className="w-6" />,
+            icon: <DevicePhoneMobileIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -101,7 +101,7 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Zalo",
-            icon: <ChatBubbleLeftRightIcon className="w-6" />,
+            icon: <ChatBubbleLeftRightIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -123,7 +123,7 @@ function AdminSidebar({ children }) {
         },
         {
             title: "Công Cụ",
-            icon: <WrenchIcon className="w-6" />,
+            icon: <WrenchIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
             submenuItem: [
@@ -154,9 +154,9 @@ function AdminSidebar({ children }) {
                 } bg-gray-200 h-screen fixed top-0 left-0 z-10 p-2 pt-1 duration-300 rounded-lg overflow-y-auto`}
             >
                 <ChevronLeftIcon
-                    className={`absolute cursor-pointer right-5 top-9 w-7 border-black border-2 rounded-full ${
+                    className={`absolute cursor-pointer  right-5 md:right-[8px] xl:right-4 top-9 w-7 border-black border-2 rounded-full ${
                         !open && "rotate-180"
-                    }`}
+                    } hover:border-red-500`}
                     onClick={() => setOpen(!open)}
                 />
                 <ul className={`pt-6 h-[${heightScreenTV}px]`}>
@@ -170,7 +170,7 @@ function AdminSidebar({ children }) {
                     <Link href={route("admin")}>
                         <li
                             className={`flex  rounded-md p-2 ${
-                                open ? "mt-5" : "mt-0"
+                                open ? " mt-5" : "md:p-1 xl:p-2 mt-0"
                             } cursor-pointer hover:bg-blue-gray-500 hover:text-white text-sm items-center text-black`}
                         >
                             <HomeIcon className="w-6" />
@@ -184,11 +184,13 @@ function AdminSidebar({ children }) {
                         </li>
                     </Link>
                     {Menus.map((Menu, index) => (
-                        <div key={index}>
+                        <div key={index} className="text-red-500">
                             <li
                                 className={`flex rounded-md p-2 cursor-pointer hover:bg-blue-gray-500 text-sm items-center gap-x-4 hover:text-white text-black justify-between ${
                                     Menu.gap ? "mt-7" : "mt-2"
-                                }${activeIndex === index ? "bg-red-500" : ""}`}
+                                }${activeIndex === index ? "bg-red-500" : ""} ${
+                                    open ? " mt-2" : "md:p-1 xl:p-2 mt-0"
+                                }` }
                                 onClick={() => {
                                     if (openSubmenu === index) {
                                         setOpenSubmenu(false);

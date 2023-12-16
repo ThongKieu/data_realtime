@@ -226,34 +226,6 @@ function AdminCheckDialog({
     };
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
-        // const prevData = {
-        //     work_content: params.row.work_content,
-        //     phone_number: params.row.phone_number,
-        //     street: params.row.street,
-        //     district: params.row.district,
-        //     name_cus: params.row.name_cus,
-        //     real_note: params.row.real_note,
-        //     income_total: params.row.income_total,
-        //     spending_total: params.row.spending_total,
-        //     seri_number: params.row.seri_number,
-        // };
-        // const modifiedData = {};
-        // const dataFields = [
-        //     { key: "work_content", id_cus: params.row.id_cus },
-        //     { key: "phone_number", id_cus: params.row.id_cus },
-        //     { key: "street", id_cus: params.row.id_cus },
-        //     { key: "district", id_cus: params.row.id_cus },
-        //     { key: "name_cus", id_cus: params.row.id_cus },
-        //     { key: "real_note", id: params.row.id },
-        //     { key: "income_total", id: params.row.id },
-        //     { key: "spending_total", id: params.row.id },
-        //     { key: "seri_number", id: params.row.id },
-        // ];
-        // dataFields.forEach((field) => {
-        //     if (prevData[field.key] !== cardExpires[field.key]) {
-        //         modifiedData[field.key] = cardExpires[field.key];
-        //     }
-        // });
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
@@ -284,8 +256,6 @@ function AdminCheckDialog({
         //     if (res.ok) {
         //         handleSearch();
         //         handleOpenAdminCheck();
-        //         // handleEdit();
-        //         // handleCheckAdmin();
         //         socketD.emit(
         //             "UpdateDateTable_To_Server",
         //             "Cập Nhật trạng thái AdminCheck"
@@ -300,20 +270,22 @@ function AdminCheckDialog({
         //     console.error("Error fetching data lỗi rồi:", error);
         // }
     };
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight - 300,
+    });
+    var heightScreenTV = screenSize.height;
     return (
         <Dialog
             open={openAdminCheck}
             handler={handleOpenAdminCheck}
             className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
         >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center italic font-thin">
                 <DialogHeader>XÁC NHẬN THÔNG TIN THỢ BÁO</DialogHeader>
-                <XMarkIcon
-                    className="w-5 h-5 mr-3 cursor-pointer"
-                    onClick={handleOpenAdminCheck}
-                />
             </div>
-            <DialogBody divider>
+
+            <DialogBody className={` overflow-y-auto`} style={{height:`${heightScreenTV}px`}} divider>
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                     <div className="w-full p-2 text-sm border border-green-500 ">
                         <div>
@@ -739,23 +711,22 @@ function AdminCheckDialog({
                             classNameChild={classNameChild}
                         />
                     </div>
-                    <Divider className="pt-2" />
-                    <div className="flex flex-row justify-center pt-2">
-                        <Typography className="font-medium text-red-700">
-                            (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác
-                            Nhận!!
-                        </Typography>
-                        <Button
-                            size="sm"
-                            className="px-3 py-2 mx-4 shadow-none"
-                            variant="outlined"
-                            onClick={handleUpdateStatusCheckAdmin}
-                        >
-                            Xác Nhận Thông Tin
-                        </Button>
-                    </div>
                 </form>
             </DialogBody>
+            <Divider className="pt-2" />
+            <div className="flex flex-row justify-center py-2">
+                <Typography className="font-medium text-red-700">
+                    (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác Nhận!!
+                </Typography>
+                <Button
+                    size="sm"
+                    className="px-3 py-2 mx-4 shadow-none"
+                    variant="outlined"
+                    onClick={handleUpdateStatusCheckAdmin}
+                >
+                    Xác Nhận Thông Tin
+                </Button>
+            </div>
         </Dialog>
     );
 }

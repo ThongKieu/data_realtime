@@ -35,6 +35,7 @@ import {
     EllipsisVerticalIcon,
     TicketIcon,
     CheckCircleIcon,
+    BookmarkSquareIcon,
 } from "@heroicons/react/24/outline";
 import newSocket from "@/Utils/Socket";
 import { host } from "@/Utils/UrlApi";
@@ -267,9 +268,6 @@ function Dashboard({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-
-    // -----------------lay kich thuoc man hinh reponsive bang---------------
-
     // -----------------------------fetch api update du lieu trong bang---------------------------
     const fetchUpdateData = async (data, url, socketUpdate) => {
         try {
@@ -318,7 +316,6 @@ function Dashboard({ auth }) {
             for (let i = 0; i < seri_imag?.length; i++) {
                 formData.append("seri_imag[]", seri_imag[i]);
             }
-
             // Thêm danh sách các tệp hình `image_vt` vào FormData
             for (let i = 0; i < bill_imag?.length; i++) {
                 formData.append("bill_imag[]", bill_imag[i]);
@@ -431,7 +428,10 @@ function Dashboard({ auth }) {
                                         Hình ảnh khách gửi:
                                     </p>
                                     <div className="flex flex-wrap">
-                                        {data || data !== '' || data !== null || data !== 'undefine'
+                                        {data ||
+                                        data !== "" ||
+                                        data !== null ||
+                                        data !== "undefine"
                                             ? filteredArray?.map(
                                                   (item, index) => (
                                                       <img
@@ -922,7 +922,10 @@ function Dashboard({ auth }) {
                 const firstName = getFirstName(params.row.worker_full_name);
                 return (
                     <>
-                        {check_admin || params.row.status_work === 1 ? (
+                        {check_admin ||
+                        params.row.status_work === 1 ||
+                        params.row.income_total !== 0 ||
+                        params.row.spending_total !== 0 ? (
                             <p>{firstName}</p>
                         ) : (
                             <>
@@ -1009,12 +1012,22 @@ function Dashboard({ auth }) {
                                                     }
                                                 />
                                                 <Divider />
-                                                <div className="flex flex-row-reverse">
+                                                <div
+                                                    className="flex flex-row-reverse"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") {
+                                                            handleDoiTho();
+                                                        }
+                                                    }}
+                                                    tabIndex={0}
+                                                >
                                                     <Button
                                                         size="md"
                                                         className="p-4 py-2 mx-4 text-green-500 border-green-500 "
                                                         variant="outlined"
-                                                        onClick={handleDoiTho}
+                                                        onClick={() =>
+                                                            handleDoiTho()
+                                                        }
                                                     >
                                                         Xác Nhận
                                                     </Button>
@@ -1305,52 +1318,6 @@ function Dashboard({ auth }) {
                         console.log("Loi", error);
                     }
                 };
-                const handleCheckAdmin = async (e) => {
-                    const UrlApi = "api/web/update/check-admin";
-                    const socketUpdate = `UpdateDateTable_To_Server`;
-                    const prevData = {
-                        work_content: params.row.work_content,
-                        phone_number: params.row.phone_number,
-                        street: params.row.street,
-                        district: params.row.district,
-                        name_cus: params.row.name_cus,
-                        real_note: params.row.real_note,
-                        income_total: params.row.income_total,
-                        spending_total: params.row.spending_total,
-                        seri_number: params.row.seri_number,
-                    };
-
-                    const dataFields = [
-                        {
-                            key: "work_content",
-                            ac: 4,
-                            id_cus: params.row.id_cus,
-                        },
-                        {
-                            key: "phone_number",
-                            ac: 5,
-                            id_cus: params.row.id_cus,
-                        },
-                        { key: "street", ac: 6, id_cus: params.row.id_cus },
-                        { key: "district", ac: 7, id_cus: params.row.id_cus },
-                        { key: "name_cus", ac: 8, id_cus: params.row.id_cus },
-                        { key: "real_note", ac: 9, id: params.row.id },
-                        { key: "income_total", ac: 10, id: params.row.id },
-                        { key: "spending_total", ac: 11, id: params.row.id },
-                        { key: "seri_number", ac: 12, id: params.row.id },
-                    ];
-                    dataFields.forEach((field) => {
-                        if (prevData[field.key] !== cardExpires[field.key]) {
-                            const data = {
-                                ...field,
-                                auth_id: auth.user.id,
-                                [field.key]: cardExpires[field.key],
-                            };
-                            fetchUpdateData(data, UrlApi, socketUpdate);
-                        }
-                    });
-                };
-
                 const dataBtnChi = [
                     {
                         id: "BtnTraLich",
@@ -1371,6 +1338,7 @@ function Dashboard({ auth }) {
                 const income = params.row.income_total;
                 const DK1 = auth.user.permission != 1 ? "hidden" : "";
                 const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
+                const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
                 const data = hasData.bill_imag;
@@ -1433,7 +1401,6 @@ function Dashboard({ auth }) {
                     (item) => item.trim() !== ""
                 );
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
-
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
@@ -1493,6 +1460,13 @@ function Dashboard({ auth }) {
                                             onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
+
+                                    <Tooltip content="Sửa liên hệ admin">
+                                        <BookmarkSquareIcon
+                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK3}`}
+                                        />
+                                    </Tooltip>
+
                                     <Tooltip content="Admin Check">
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
@@ -1505,9 +1479,7 @@ function Dashboard({ auth }) {
                                     <Menu allowHover>
                                         <MenuHandler>
                                             <EllipsisVerticalIcon
-                                                className={`w-6 h-6 pt-2 cursor-pointer ${
-                                                    DK1 + DK2
-                                                }`}
+                                                className={`w-6 h-6 pt-2 cursor-pointer ${DK1}`}
                                             />
                                         </MenuHandler>
                                         <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
@@ -1767,7 +1739,7 @@ function Dashboard({ auth }) {
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Trang Chủ" />
             <div
-                className={`flex flex-row w-full overflow-scroll mt-1`}
+                className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}
                 style={{ height: `${heightScreenTV}px` }}
             >
                 <Card className="w-full mt-1 text-white rounded-none basis-5/12">
@@ -1779,7 +1751,10 @@ function Dashboard({ auth }) {
                             </p>
                         </div>
                     ) : (
-                        <div id="tableLeft">
+                        <div
+                            id="tableLeft"
+                            className="bg-white border-blue-700"
+                        >
                             <thead className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
                                 <tr className="w-full">
                                     {TABLE_HEAD_LEFT.map((head) => (
@@ -1804,7 +1779,7 @@ function Dashboard({ auth }) {
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
-                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
                                         <Box
@@ -1856,7 +1831,7 @@ function Dashboard({ auth }) {
                             </p>
                         </div>
                     ) : (
-                        <div id="tableRight">
+                        <div id="tableRight" className="bg-white">
                             <thead className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
                                 <tr className="w-full">
                                     {TABLE_HEAD_RIGHT.map((head) => (
@@ -1881,7 +1856,7 @@ function Dashboard({ auth }) {
                             {dataGrid.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
-                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-sm shadow-lg text-medium">
+                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
                                         <Box
@@ -1890,6 +1865,7 @@ function Dashboard({ auth }) {
                                                     result.rowsDataGrid == ""
                                                         ? 40
                                                         : "fit-content",
+                                                width: "100%",
                                             }}
                                         >
                                             <DataGrid

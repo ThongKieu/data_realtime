@@ -15,6 +15,9 @@
 #tableRight>div>div>div>.css-wop1k0-MuiDataGrid-footerContainer {
     display: none !important;
 }
+#tableRight>div>div>div> {
+    display: none !important;
+}
 #tableLeft>div>div>div>.css-wop1k0-MuiDataGrid-footerContainer {
     display: none !important;
 }

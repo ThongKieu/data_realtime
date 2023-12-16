@@ -623,7 +623,7 @@ class WorksAssignmentController extends Controller
 
                     // case 4:
                     //     //Work content
-                    //     Work::where('id', '=', $request->id_cus)->update(['work_content' => $request->work_content]);
+                    //     
                     //     return 'Update Work_content';
                     // case 5:
                     //     //Phone number
@@ -661,8 +661,13 @@ class WorksAssignmentController extends Controller
                     case 13:
                             // Admin Check
 
-                            dd($request->data);
-                            WorksAssignment::where('id', '=', $request->id)->update(['status_admin_check' => 1]);
+
+                            $data = $request->data;
+
+                           
+                            Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'],'phone_number' => $data['phone_number'],'street' => $data['street'],'district' => $data['district'],'name_cus' => $data['name_cus']]);
+                            WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'],'income_total' => $data['income_total'],'spending_total' => $data['spending_total'],'seri_number' =>$data['seri_number'],'check_admin' => 1 ]);
+                         
                             return 'Admin Check';
                     default:
                         return 'Done With None Update !';

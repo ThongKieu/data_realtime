@@ -634,19 +634,55 @@ function Dashboard({ auth }) {
                 return (
                     <div>
                         <div className="flex">
-                            <Tooltip content="Phân Thợ">
+                            <Tooltip
+                                content="Phân Thợ"
+                                animate={{
+                                    mount: {
+                                        scale: 1,
+                                        y: 0,
+                                    },
+                                    unmount: {
+                                        scale: 0,
+                                        y: 25,
+                                    },
+                                }}
+                            >
                                 <UserPlusIcon
                                     className="w-8 h-8 p-1 mr-1 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
                                     onClick={handleOpenTho}
                                 />
                             </Tooltip>
-                            <Tooltip content="Hủy Lịch">
+                            <Tooltip
+                                content="Hủy Lịch"
+                                animate={{
+                                    mount: {
+                                        scale: 1,
+                                        y: 0,
+                                    },
+                                    unmount: {
+                                        scale: 0,
+                                        y: 25,
+                                    },
+                                }}
+                            >
                                 <TrashIcon
                                     className="w-8 h-8 p-1 mr-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
                                     onClick={handleOpen}
                                 />
                             </Tooltip>
-                            <Tooltip content="Nhân Đôi">
+                            <Tooltip
+                                content="Nhân Đôi"
+                                animate={{
+                                    mount: {
+                                        scale: 1,
+                                        y: 0,
+                                    },
+                                    unmount: {
+                                        scale: 0,
+                                        y: 25,
+                                    },
+                                }}
+                            >
                                 <DocumentDuplicateIcon
                                     className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
                                     onClick={handleSentNhanDoi}
@@ -1454,20 +1490,38 @@ function Dashboard({ auth }) {
                                 </>
                             ) : params.row.status_work != 1 ? (
                                 <>
-                                    <Tooltip content="Nhập Thu Chi">
+                                    <Tooltip
+                                        content="Nhập Thu Chi"
+                                        animate={{
+                                            mount: { scale: 1, y: 0 },
+                                            unmount: { scale: 0, y: 25 },
+                                        }}
+                                    >
                                         <ArrowUpTrayIcon
                                             className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
                                             onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
 
-                                    <Tooltip content="Sửa liên hệ admin">
+                                    <Tooltip
+                                        content="Sửa liên hệ admin"
+                                        animate={{
+                                            mount: { scale: 1, y: 0 },
+                                            unmount: { scale: 0, y: 25 },
+                                        }}
+                                    >
                                         <BookmarkSquareIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK3}`}
+                                            className={`text-green-500 border border-green-500 hover:bg-white hover:text-green-500 ${classButtonDaPhan} ${DK3}`}
                                         />
                                     </Tooltip>
 
-                                    <Tooltip content="Admin Check">
+                                    <Tooltip
+                                        content="Admin Check"
+                                        animate={{
+                                            mount: { scale: 1, y: 0 },
+                                            unmount: { scale: 0, y: 25 },
+                                        }}
+                                    >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
                                             onClick={handleOpenAdminCheck}
@@ -1484,7 +1538,19 @@ function Dashboard({ auth }) {
                                         </MenuHandler>
                                         <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
                                             <MenuItem className="p-0 w-fit">
-                                                <Tooltip content="Thu Hồi Lịch">
+                                                <Tooltip
+                                                    content="Thu Hồi Lịch"
+                                                    animate={{
+                                                        mount: {
+                                                            scale: 1,
+                                                            y: 0,
+                                                        },
+                                                        unmount: {
+                                                            scale: 0,
+                                                            y: 25,
+                                                        },
+                                                    }}
+                                                >
                                                     <ArrowPathIcon
                                                         className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
                                                         onClick={
@@ -1494,7 +1560,19 @@ function Dashboard({ auth }) {
                                                 </Tooltip>
                                             </MenuItem>
                                             <MenuItem className="p-0 w-fit">
-                                                <Tooltip content="Báo hủy">
+                                                <Tooltip
+                                                    content="Báo hủy"
+                                                    animate={{
+                                                        mount: {
+                                                            scale: 1,
+                                                            y: 0,
+                                                        },
+                                                        unmount: {
+                                                            scale: 0,
+                                                            y: 25,
+                                                        },
+                                                    }}
+                                                >
                                                     <TrashIcon
                                                         className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
                                                         onClick={handleOpenHuy}
@@ -1502,7 +1580,19 @@ function Dashboard({ auth }) {
                                                 </Tooltip>
                                             </MenuItem>
                                             <MenuItem className="p-0 w-fit">
-                                                <Tooltip content="Khảo Sát">
+                                                <Tooltip
+                                                    content="Khảo Sát"
+                                                    animate={{
+                                                        mount: {
+                                                            scale: 1,
+                                                            y: 0,
+                                                        },
+                                                        unmount: {
+                                                            scale: 0,
+                                                            y: 25,
+                                                        },
+                                                    }}
+                                                >
                                                     <TicketIcon
                                                         className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
                                                         onClick={handleOpenKS}

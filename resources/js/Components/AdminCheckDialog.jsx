@@ -244,31 +244,31 @@ function AdminCheckDialog({
             },
         };
         console.log(check_admin);
-        // try {
-        //     const res = await fetch(`api/web/update/check-admin`, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify(check_admin),
-        //     });
+        try {
+            const res = await fetch(`api/web/update/check-admin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(check_admin),
+            });
 
-        //     if (res.ok) {
-        //         handleSearch();
-        //         handleOpenAdminCheck();
-        //         socketD.emit(
-        //             "UpdateDateTable_To_Server",
-        //             "Cập Nhật trạng thái AdminCheck"
-        //         );
-        //     } else {
-        //         console.error(
-        //             "Lỗi thay đổi trạng thái AdminCheck:",
-        //             res.statusText
-        //         );
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching data lỗi rồi:", error);
-        // }
+            if (res.ok) {
+                handleSearch();
+                handleOpenAdminCheck();
+                socketD.emit(
+                    "UpdateDateTable_To_Server",
+                    "Cập Nhật trạng thái AdminCheck", check_admin
+                );
+            } else {
+                console.error(
+                    "Lỗi thay đổi trạng thái AdminCheck:",
+                    res.statusText
+                );
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
     };
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
@@ -282,9 +282,8 @@ function AdminCheckDialog({
             className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
         >
             <div className="flex items-center justify-center italic font-thin">
-                <DialogHeader>XÁC NHẬN THÔNG TIN THỢ BÁO</DialogHeader>
+                <DialogHeader className="font-sans underline ">ADMIN KIỂM TRA</DialogHeader>
             </div>
-
             <DialogBody className={` overflow-y-auto`} style={{height:`${heightScreenTV}px`}} divider>
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                     <div className="w-full p-2 text-sm border border-green-500 ">
@@ -713,7 +712,7 @@ function AdminCheckDialog({
                     </div>
                 </form>
             </DialogBody>
-            <Divider className="pt-2" />
+            {/* <Divider className="pt-2" /> */}
             <div className="flex flex-row justify-center py-2">
                 <Typography className="font-medium text-red-700">
                     (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác Nhận!!

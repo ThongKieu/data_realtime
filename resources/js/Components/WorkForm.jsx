@@ -4,7 +4,13 @@ import {
 } from "@material-tailwind/react";
 
 function WorkForm({ cardExpires, handleChange,children,disabledAllowed }) {
-
+    const handlFocus = (value, id) => {
+        let newValue = value;
+        if (value === 0 ) {
+            newValue = '';
+        }
+        return newValue;
+    };
     return (
         <form className="flex flex-col gap-4 mt-2">
             {/* Các trường input */}
@@ -103,7 +109,7 @@ function WorkForm({ cardExpires, handleChange,children,disabledAllowed }) {
                         label="Tiền Chi"
                         id="spending_total"
                         name="spending_total"
-                        value={cardExpires.spending_total}
+                        value={handlFocus(cardExpires.spending_total)}
                         onChange={handleChange}
                         containerProps={{
                             className: "min-w-[72px]",
@@ -115,7 +121,8 @@ function WorkForm({ cardExpires, handleChange,children,disabledAllowed }) {
                         label="Tiền Thu"
                         id="income_total"
                         name="income_total"
-                        value={cardExpires.income_total}
+                       value={handlFocus(cardExpires.income_total)}
+
                         onChange={handleChange}
                         containerProps={{
                             className: "min-w-[72px]",

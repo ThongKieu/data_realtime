@@ -35,10 +35,7 @@ function AdminCheckDialog({
     handleImagePtDelete,
     imagePt1,
     cardExpires,
-    vatCard,
-    isAllowed,
     auth,
-    handleEdit,
     openAdminCheck,
     handleOpenAdminCheck,
     previewImagesVT,
@@ -157,8 +154,7 @@ function AdminCheckDialog({
     const handleDelete = async (id) => {
         try {
             setDisabledButtons((prev) => [...prev, id]);
-            setIdToDelete(id); // Disable the delete button for the specific item
-            // Perform other actions if needed
+            setIdToDelete(id);
         } catch (error) {
             console.error("Error during delete setup:", error);
         }
@@ -252,7 +248,6 @@ function AdminCheckDialog({
                 },
                 body: JSON.stringify(check_admin),
             });
-
             if (res.ok) {
                 handleSearch();
                 handleOpenAdminCheck();

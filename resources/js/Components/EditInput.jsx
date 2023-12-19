@@ -24,6 +24,7 @@ const EditableInput = ({
             // autoFocus chỉ được sử dụng khi nó là true
             inputRef.current.focus();
         }
+
     }, []);
     return (
         <>

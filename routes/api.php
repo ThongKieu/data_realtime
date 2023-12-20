@@ -85,7 +85,13 @@ Route::prefix('web')->group(function () {
 
     Route::get('worker-with-type','App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
 
-});
+}) ->withoutMiddleware("throttle:api")
+->middleware(
+    \Illuminate\Routing\Middleware\ThrottleRequests::with(
+        maxAttempts: 300,
+        decayMinutes: 1
+    )
+);
 Route::apiResource('posts',PostsController::class);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

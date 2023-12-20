@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
     });
     socket.on("TungTest", async (message) => {
         console.log('Test: ', message);
-        io.sockets.emit('TungTestClient','Server gửi Tùng nè !!');
+        io.sockets.emit('TungTestClient:',message);
     });
     socket.on("deleteWorkTo_Server", async (data) => {
         console.log("Receiva:", data);

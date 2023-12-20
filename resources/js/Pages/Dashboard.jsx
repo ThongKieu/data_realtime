@@ -998,8 +998,11 @@ function Dashboard({ auth }) {
                                                     <p className="pl-4">
                                                         {resultArray.map(
                                                             (item, index) => (
-                                                                <p className="block">
-                                                                    {index + 1}:{" "}
+                                                                <p
+                                                                    className="block"
+                                                                    key={index}
+                                                                >
+                                                                    {index + 1}:
                                                                     {item}
                                                                 </p>
                                                             )
@@ -1141,7 +1144,6 @@ function Dashboard({ auth }) {
                 const [openKS, handleOpenKS] = useToggle(false);
                 const [openThuHoi, handleOpenThuHoi] = useToggle(false);
                 const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);
-                const [isEdited, setIsEdited] = useState(false);
                 const [openSpending_total, handleOpenSpending_total] =
                     useToggle(false);
                 const [work_note, setWorkNote] = useState();
@@ -1151,7 +1153,6 @@ function Dashboard({ auth }) {
                         ...prevData,
                         [name]: value,
                     }));
-                    setIsEdited(true);
                 };
                 const handleSentDeleteDone = async () => {
                     try {
@@ -1280,6 +1281,7 @@ function Dashboard({ auth }) {
                                     "Đã Gửi Thông Tin Bảo Hành",
                                     dataBh
                                 );
+                                socketD?.emit('UpdateDateTable_To_Server','TTBH');
                             } else {
                                 console.error(
                                     "Lỗi khi gửi dữ liệu:",
@@ -1498,7 +1500,7 @@ function Dashboard({ auth }) {
                                         }}
                                     >
                                         <ArrowUpTrayIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500  ${classButtonDaPhan} ${DK2}`}
+                                            className={`text-green-500 border-green-500 hover:bg-green-500   ${classButtonDaPhan} ${DK2}`}
                                             onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
@@ -1511,7 +1513,7 @@ function Dashboard({ auth }) {
                                         }}
                                     >
                                         <BookmarkSquareIcon
-                                            className={`text-green-500 border border-green-500 hover:bg-white hover:text-green-500 ${classButtonDaPhan} ${DK3}`}
+                                            className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
                                         />
                                     </Tooltip>
 
@@ -1641,12 +1643,6 @@ function Dashboard({ auth }) {
                             handleChange={handleChange}
                             cardExpires={cardExpires}
                             auth={auth}
-                            // handleEdit={() => {
-                            //     handleCheckAdmin();
-                            // }}
-                            // classNameChild={`${
-                            //     isEdited ? "border-red-500" : "border-gray-300"
-                            // }`}
                             handleSendImagePT={() =>
                                 handleImageSubmit(selectedFilesPT, "PT", 3)
                             }

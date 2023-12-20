@@ -666,8 +666,8 @@ class WorksAssignmentController extends Controller
 
 
                             Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'],'phone_number' => $data['phone_number'],'street' => $data['street'],'district' => $data['district'],'name_cus' => $data['name_cus']]);
-                            WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'],'income_total' => $data['income_total'],'spending_total' => $data['spending_total'],'seri_number' =>$data['seri_number'],'admin_check' => $request->auth_id,'status_admin_check'=>1 ]);
-                            
+                            WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'],'income_total' => $data['income_total'],'spending_total' => $data['spending_total'],'seri_number' =>$data['seri_number'],'status_admin_check' => 1 ]);
+
                             return 'Admin Check';
                     default:
                         return 'Done With None Update !';

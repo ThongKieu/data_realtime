@@ -309,13 +309,11 @@ function NavbarDefault({ propauth }) {
     const [socketDelete, setSocketDelete] = useState();
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
-        fetchDelete();
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data);
             }
         });
-
         return () => {
             newSocket.disconnect();
         };

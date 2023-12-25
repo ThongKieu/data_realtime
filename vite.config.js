@@ -3,13 +3,6 @@ import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-    // plugins: [
-    //     laravel({
-    //         input: 'resources/js/app.jsx',
-    //         refresh: true,
-    //     }),
-    //     react(),
-    // ],
     plugins: [
         react(),
         laravel({
@@ -18,15 +11,14 @@ export default defineConfig({
         }),
       ],
       server:{
-        // hmr:'localhost'
-        host: ["192.168.1.22"],
+        host: ["192.168.1.26"],
         port: 5173,
         hmr: {
-            host: ["192.168.1.22"],
+            host: ["192.168.1.26"],
         },
     },
     build:{
-        chunkSizeWarningLimit: 1600,
+        chunkSizeWarningLimit: 32000,
     }
 
 });

@@ -335,7 +335,7 @@ function FloatingButton() {
                         <Button
                             size="lg"
                             className="w-11/12"
-                            onClick={handleAddWork}
+                            onClick={(e)=>{handleAddWork(e)}}
                         >
                             Thêm
                         </Button>

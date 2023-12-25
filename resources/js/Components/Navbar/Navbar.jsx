@@ -471,21 +471,21 @@ function NavbarDefault({ propauth }) {
                             <div className={`overflow-y-scroll w-full h-full`}>
                                 <div className="w-full">
                                     <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
-                                        Thợ nghỉ phép
-                                    </Typography>
-                                    <div className="grid grid-cols-7">
-                                        {jobCategories.map(({ code }) =>
-                                            renderWorkerGroup(code, 1)
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="w-full">
-                                    <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
                                         Thợ đi làm
                                     </Typography>
                                     <div className="grid grid-cols-7">
                                         {jobCategories.map(({ code }) =>
                                             renderWorkerGroup(code, 0)
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="w-full">
+                                    <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
+                                        Thợ nghỉ phép
+                                    </Typography>
+                                    <div className="grid grid-cols-7">
+                                        {jobCategories.map(({ code }) =>
+                                            renderWorkerGroup(code, 1)
                                         )}
                                     </div>
                                 </div>

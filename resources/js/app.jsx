@@ -21,7 +21,7 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient} >
                 <App {...props} key={index} />
                 <ToastContainer />
             </QueryClientProvider>

@@ -295,35 +295,36 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propauth }) {
+function NavbarDefault({ propauth, check }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
-
+    console.log(check, "xin chao");
+    const [socketDelete, setSocketDelete] = useState();
     useEffect(() => {
+        setSocketDelete(newSocket, { secure: true });
         window.addEventListener(
             "resize",
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
         fetchInfoWorker();
-    }, []);
-    const [socketDelete, setSocketDelete] = useState();
-    useEffect(() => {
-        setSocketDelete(newSocket, { secure: true });
         fetchDelete();
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
-                fetchDelete(data);
+                fetchDelete(data, check);
             }
         });
 
         return () => {
             newSocket.disconnect();
         };
-    }, []);
+    }, [check]);
     const [countDelete, setCountDelete] = useState(0);
+
     const fetchDelete = async () => {
         try {
-            const response = await fetch("api/web/cancle/works");
+            const response = await fetch(
+                `api/web/cancle/works?dateCheck=${check}`
+            );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
             if (socketDelete) {
@@ -360,7 +361,7 @@ function NavbarDefault({ propauth }) {
         { code: "H", name: "Cơ Khí" },
         { code: "F", name: "Xây Dựng" },
     ];
-
+console.log(infoWorker);
     const renderWorkerGroup = (prefix, status) => (
         <div className="w-full p-1" key={`${prefix}-${status}`}>
             <p className="border-b-[3px] border-b-blue-500 text-center w-full">
@@ -384,7 +385,6 @@ function NavbarDefault({ propauth }) {
         </div>
     );
     const [openWorker, setOpenWorker] = React.useState(false);
-
     const handleOpenWorker = () => setOpenWorker(!openWorker);
     const [screenSize] = useState({
         width: window.innerWidth,
@@ -473,21 +473,21 @@ function NavbarDefault({ propauth }) {
                             <div className={`overflow-y-scroll w-full h-full`}>
                                 <div className="w-full">
                                     <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
-                                        Thợ nghỉ phép
-                                    </Typography>
-                                    <div className="grid grid-cols-7">
-                                        {jobCategories.map(({ code }) =>
-                                            renderWorkerGroup(code, 1)
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="w-full">
-                                    <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
                                         Thợ đi làm
                                     </Typography>
                                     <div className="grid grid-cols-7">
                                         {jobCategories.map(({ code }) =>
                                             renderWorkerGroup(code, 0)
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="w-full">
+                                    <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
+                                        Thợ nghỉ phép
+                                    </Typography>
+                                    <div className="grid grid-cols-7">
+                                        {jobCategories.map(({ code }) =>
+                                            renderWorkerGroup(code, 1)
                                         )}
                                     </div>
                                 </div>

@@ -29,5 +29,6 @@ class PushOnlineController extends Controller
     public function listOnline()  {
         $is_online = User::where('is_online','=',1)->get('id');
         return response()->json(count($is_online));
+        // return response()->json($is_online);
     }
 }

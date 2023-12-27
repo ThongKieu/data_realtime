@@ -128,6 +128,7 @@ function Dashboard({ auth }) {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
                 fetchDataDaPhan(data);
+                fetchData(data, selectedDate);
             }
         });
         const handleResize = () => {
@@ -591,6 +592,7 @@ function Dashboard({ auth }) {
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
+                            console.log('Xóa thành Công');
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
@@ -1281,7 +1283,10 @@ function Dashboard({ auth }) {
                                     "Đã Gửi Thông Tin Bảo Hành",
                                     dataBh
                                 );
-                                socketD?.emit('UpdateDateTable_To_Server','TTBH');
+                                socketD?.emit(
+                                    "UpdateDateTable_To_Server",
+                                    "TTBH"
+                                );
                             } else {
                                 console.error(
                                     "Lỗi khi gửi dữ liệu:",
@@ -1822,7 +1827,7 @@ function Dashboard({ auth }) {
         // Thêm các mục khác tương tự ở đây
     ];
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user}>
+        <AuthenticatedLayout children={auth.user} user={auth.user} checkDate={selectedDate}>
             <Head title="Trang Chủ" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}
@@ -1841,27 +1846,29 @@ function Dashboard({ auth }) {
                             id="tableLeft"
                             className="bg-white border-blue-700"
                         >
-                            <thead className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
-                                <tr className="w-full">
-                                    {TABLE_HEAD_LEFT.map((head) => (
-                                        <th
-                                            key={head.id}
-                                            className={`p-0 py-1`}
-                                            style={{
-                                                width: `${head.colWidthLeft}px`,
-                                            }}
-                                        >
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="w-full font-bold leading-none text-black uppercase"
+                            <table className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
+                                <thead>
+                                    <tr className="w-full">
+                                        {TABLE_HEAD_LEFT.map((head) => (
+                                            <th
+                                                key={head.id}
+                                                className={`p-0 py-1`}
+                                                style={{
+                                                    width: `${head.colWidthLeft}px`,
+                                                }}
                                             >
-                                                {head.nameHeadLeft}
-                                            </Typography>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="w-full font-bold leading-none text-black uppercase"
+                                                >
+                                                    {head.nameHeadLeft}
+                                                </Typography>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                            </table>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
@@ -1918,27 +1925,29 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div id="tableRight" className="bg-white">
-                            <thead className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
-                                <tr className="w-full">
-                                    {TABLE_HEAD_RIGHT.map((head) => (
-                                        <th
-                                            key={head.id}
-                                            className={`p-0 py-1`}
-                                            style={{
-                                                width: `${head.colWidth}px`,
-                                            }}
-                                        >
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="w-full font-bold leading-none text-black uppercase"
+                            <table className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
+                                <thead>
+                                    <tr className="w-full">
+                                        {TABLE_HEAD_RIGHT.map((head) => (
+                                            <th
+                                                key={head.id}
+                                                className={`p-0 py-1`}
+                                                style={{
+                                                    width: `${head.colWidth}px`,
+                                                }}
                                             >
-                                                {head.nameHead}
-                                            </Typography>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="w-full font-bold leading-none text-black uppercase"
+                                                >
+                                                    {head.nameHead}
+                                                </Typography>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                            </table>
                             {dataGrid.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>

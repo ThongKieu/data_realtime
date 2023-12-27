@@ -12,13 +12,13 @@
     height: 52px !important;
 }
 
-#tableRight>div>div>div>.css-wop1k0-MuiDataGrid-footerContainer {
+#tableRight>div>div>div>div.css-wop1k0-MuiDataGrid-footerContainer {
     display: none !important;
 }
 #tableRight>div>div>div> {
     display: none !important;
 }
-#tableLeft>div>div>div>.css-wop1k0-MuiDataGrid-footerContainer {
+#tableLeft>div>div>div>div.css-wop1k0-MuiDataGrid-footerContainer {
     display: none !important;
 }
 .css-1w53k9d-MuiDataGrid-overlay{

@@ -112,24 +112,25 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
-        setSocketD(newSocket, { secure: true });
-        if (newSocket) {
-            newSocket.emit("pushOnline", message);
+        if (socketD) {
+            socketD.emit("pushOnline", message);
             pushOn();
-            newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
-                fetchDateCheck(data, selectedDate);
-                fetchDataDashboard(data, selectedDate);
-                fetchData(data, selectedDate);
-                fetchDataDaPhan(data);
-            });
-            newSocket.on("sendAddWorkTo_Client", (data) => {
-                if (data !== "") {
-                    fetchDateCheck(selectedDate);
-                    fetchDataDashboard(data);
-                    fetchDataDaPhan(data);
-                }
-            });
         }
+        setSocketD(newSocket, { secure: true });
+        newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
+            fetchDateCheck(data, selectedDate);
+            fetchDataDashboard(data, selectedDate);
+            fetchData(data, selectedDate);
+            fetchDataDaPhan(data);
+        });
+        newSocket.on("sendAddWorkTo_Client", (data) => {
+            if (data !== "") {
+                fetchDateCheck(selectedDate);
+                fetchDataDashboard(data);
+                fetchDataDaPhan(data);
+                fetchData(data, selectedDate);
+            }
+        });
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
@@ -591,6 +592,7 @@ function Dashboard({ auth }) {
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
+                            console.log('Xóa thành Công');
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
@@ -1133,10 +1135,7 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                const [cardExpires, setCardExpires] = useState({
-                    ...params.row,
-                    seri_number: "k pt",
-                });
+                const [cardExpires, setCardExpires] = useState(params.row);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => setOpen(!open);
@@ -1363,11 +1362,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const dataBtnChi = [
-                    // {
-                    //     id: "BtnTraLich",
-                    //     content: "Trả Lịch",
-                    //     className: "text-blue-500 rounded-none border-blue-500",
-                    // },
+                    {
+                        id: "BtnTraLich",
+                        content: "Trả Lịch",
+                        className: "text-blue-500 rounded-none border-blue-500",
+                    },
                     {
                         id: "BtnCapNhat",
                         content: "Cập Nhật",
@@ -1390,6 +1389,7 @@ function Dashboard({ auth }) {
                 const filteredArray = parts?.filter(
                     (item) => item.trim() !== ""
                 );
+
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
@@ -1827,7 +1827,7 @@ function Dashboard({ auth }) {
         // Thêm các mục khác tương tự ở đây
     ];
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user}>
+        <AuthenticatedLayout children={auth.user} user={auth.user} checkDate={selectedDate}>
             <Head title="Trang Chủ" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}
@@ -1846,27 +1846,29 @@ function Dashboard({ auth }) {
                             id="tableLeft"
                             className="bg-white border-blue-700"
                         >
-                            <thead className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
-                                <tr className="w-full">
-                                    {TABLE_HEAD_LEFT.map((head) => (
-                                        <th
-                                            key={head.id}
-                                            className={`p-0 py-1`}
-                                            style={{
-                                                width: `${head.colWidthLeft}px`,
-                                            }}
-                                        >
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="w-full font-bold leading-none text-black uppercase"
+                            <table className=" sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white  w-[100%]">
+                                <thead>
+                                    <tr className="w-full">
+                                        {TABLE_HEAD_LEFT.map((head) => (
+                                            <th
+                                                key={head.id}
+                                                className={`p-0 py-1`}
+                                                style={{
+                                                    width: `${head.colWidthLeft}px`,
+                                                }}
                                             >
-                                                {head.nameHeadLeft}
-                                            </Typography>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="w-full font-bold leading-none text-black uppercase"
+                                                >
+                                                    {head.nameHeadLeft}
+                                                </Typography>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                            </table>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
@@ -1923,27 +1925,29 @@ function Dashboard({ auth }) {
                         </div>
                     ) : (
                         <div id="tableRight" className="bg-white">
-                            <thead className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
-                                <tr className="w-full">
-                                    {TABLE_HEAD_RIGHT.map((head) => (
-                                        <th
-                                            key={head.id}
-                                            className={`p-0 py-1`}
-                                            style={{
-                                                width: `${head.colWidth}px`,
-                                            }}
-                                        >
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="w-full font-bold leading-none text-black uppercase"
+                            <table className="sticky top-0 z-50 -mt-[10px] py-[10px] pr-12 bg-white w-[100%] ">
+                                <thead>
+                                    <tr className="w-full">
+                                        {TABLE_HEAD_RIGHT.map((head) => (
+                                            <th
+                                                key={head.id}
+                                                className={`p-0 py-1`}
+                                                style={{
+                                                    width: `${head.colWidth}px`,
+                                                }}
                                             >
-                                                {head.nameHead}
-                                            </Typography>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="w-full font-bold leading-none text-black uppercase"
+                                                >
+                                                    {head.nameHead}
+                                                </Typography>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                            </table>
                             {dataGrid.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>

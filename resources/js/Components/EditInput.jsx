@@ -21,10 +21,8 @@ const EditableInput = ({
     // Sử dụng useEffect để kiểm soát autoFocus
     useEffect(() => {
         if (inputRef.current) {
-            // autoFocus chỉ được sử dụng khi nó là true
             inputRef.current.focus();
         }
-
     }, []);
     return (
         <>
@@ -35,11 +33,11 @@ const EditableInput = ({
                 value={value}
                 color="green"
                 ref={inputRef}
-                autoFocus={false}
+                autoFocus={editableInput === id} // Đặt autoFocus dựa trên điều kiện
                 onFocus={() => handleEditStart(id)}
                 onChange={onChange}
                 containerProps={containerProps}
-                disabled={id == "date_book" ? disabled : ""}
+                disabled={id === "date_book" ? disabled : ""}
                 className={`shadow-none ${
                     editableInput === id ? "editing" : ""
                 } ${classNameChild}`}

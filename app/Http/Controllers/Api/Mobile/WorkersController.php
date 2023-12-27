@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Mobile;
 use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
+use App\Models\User;
 use App\Models\Worker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,6 +16,13 @@ class WorkersController extends Controller
     public function __invoke()
     {
     }
+
+    public function test()
+    {
+        $test = User::all();
+        return $test;
+    }
+
     public function index()
     {
         $workers = Worker::where('worker_kind', '!=', 9)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_family']);
@@ -142,9 +150,11 @@ class WorkersController extends Controller
         return $token_fcm;
     }
     // sen to app noti push
-    public static function sentNewWorkToWorker($id_worker, $info_noti)
+    public static function sentNewWorkToWorker()
     {
-        $token_fcm = WorkerController::getTokenFCM($id_worker);
+        $info_noti = 'Có Lịch Mới';
+        // $token_fcm = WorkerController::getTokenFCM($id_worker);
+        $token_fcm = 'fQ2iDcPATViekk78eM5VXG:APA91bH7AKykxHmoEMc9KCBvNHyy_RQISCPwUzZ0vv7H9baf2257iAxFaSS0GXQmy-Ir99X99zPcx-NFLMvZnOgEh0XBSIDQlz5WRLFods9xhvwN3p5Xm5E3xIsOEi6HyOq_a_l4HbrH';
 
         $server_key = 'AAAAzktash8:APA91bH2SrLRRWV9l7sstzc5hHgepzLUX7iDtl4gqAx-jEYb8mYb7Gz7e-XsxVpTL6dVj4-3-BemdR-JE56fo1XDcwY-f5zjaA2JtH-5E-7YlKfpzNVpAl9ngpnw8VPCUOSXxu1v8V13';
         $h = array(

@@ -118,11 +118,12 @@ function WorkForm({ cardExpires, handleChange,children,disabledAllowed }) {
                         disabled={disabledAllowed}
                     />
                     <Input
+
                         label="Tiền Thu"
                         id="income_total"
                         name="income_total"
-                       value={handlFocus(cardExpires.income_total)}
-
+                        value={handlFocus(cardExpires.income_total)}
+                        defaultValue={cardExpires.income_total}
                         onChange={handleChange}
                         containerProps={{
                             className: "min-w-[72px]",

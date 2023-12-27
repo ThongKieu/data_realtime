@@ -6,23 +6,29 @@ function CardMain() {
     const [workDataCountOrder, setWorkDataCountOrder] = useState(0);
     const [workDataCountOrderDaPhan, setWorkDataCountOrderDaPhan] = useState(0);
     const [socketDelete, setSocketDelete] = useState();
+    const [hasLoaded, setHasLoaded] = useState(false);
     useEffect(() => {
-        setSocketDelete(newSocket, { secure: true });
-        fetchDelete();
-        fetchData();
-        fetchDataOrderDone();
-        newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data != "") {
-                fetchDelete(data);
-                fetchData(data);
-                fetchDataOrderDone(data);
-            }
-        });
+        if (!hasLoaded) {
+            setSocketDelete(newSocket, { secure: true });
+            fetchDelete();
+            fetchData();
+            fetchDataOrderDone();
+            newSocket.on("sendAddWorkTo_Client", (data) => {
+                if (data != "") {
+                    fetchDelete(data);
+                    fetchData(data);
+                    fetchDataOrderDone(data);
+                }
+            });
+            setHasLoaded(true);
+        }
         // lắng nghe server
         return () => {
-            newSocket.disconnect();
+            if (socketDelete) {
+                socketDelete.disconnect();
+            }
         };
-    }, []);
+    }, [hasLoaded, socketDelete]);
     const fetchData = async () => {
         try {
             const response = await fetch("api/web/works");

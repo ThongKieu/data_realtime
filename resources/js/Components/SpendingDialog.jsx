@@ -41,7 +41,8 @@ const SpendingDialog = ({
                     onClick={handleOpenSpending_total}
                 />
             </div>
-            <DialogBody divider>
+            <Divider />
+            <DialogBody className="w-full overflow-scroll md:h-96 xl:h-auto">
                 <div className="flex justify-center w-full mb-4">
                     <Card className="flex flex-row w-[50%] border justify-between px-10">
                         <Radio
@@ -186,24 +187,23 @@ const SpendingDialog = ({
                             ***Vui Lòng Kiểm Tra Và Nhập Lại Thu Chi!!
                         </Card>
                     )}
-
-                    <Divider className="pt-2" />
-                    <div className="flex flex-row-reverse pt-2">
-                        {dataBtnChi.map((result) => (
-                            <Button
-                                key={result.id}
-                                id={result.id}
-                                size="sm"
-                                className={`p-3 py-2 mx-4 ` + result.className}
-                                variant="outlined"
-                                onClick={result.handleSubmit}
-                            >
-                                {result.content}
-                            </Button>
-                        ))}
-                    </div>
                 </WorkForm>
             </DialogBody>
+            <Divider />
+            <div className="flex flex-row-reverse py-2">
+                {dataBtnChi.map((result) => (
+                    <Button
+                        key={result.id}
+                        id={result.id}
+                        size="sm"
+                        className={`p-3 py-2 mx-4 ` + result.className}
+                        variant="outlined"
+                        onClick={result.handleSubmit}
+                    >
+                        {result.content}
+                    </Button>
+                ))}
+            </div>
         </Dialog>
     );
 };

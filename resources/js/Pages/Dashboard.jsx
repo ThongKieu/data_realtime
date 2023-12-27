@@ -112,24 +112,24 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
-        if (socketD) {
-            socketD.emit("pushOnline", message);
-            pushOn();
-        }
         setSocketD(newSocket, { secure: true });
-        newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
-            fetchDateCheck(data, selectedDate);
-            fetchDataDashboard(data, selectedDate);
-            fetchData(data, selectedDate);
-            fetchDataDaPhan(data);
-        });
-        newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data !== "") {
-                fetchDateCheck(selectedDate);
-                fetchDataDashboard(data);
+        if (newSocket) {
+            newSocket.emit("pushOnline", message);
+            pushOn();
+            newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
+                fetchDateCheck(data, selectedDate);
+                fetchDataDashboard(data, selectedDate);
+                fetchData(data, selectedDate);
                 fetchDataDaPhan(data);
-            }
-        });
+            });
+            newSocket.on("sendAddWorkTo_Client", (data) => {
+                if (data !== "") {
+                    fetchDateCheck(selectedDate);
+                    fetchDataDashboard(data);
+                    fetchDataDaPhan(data);
+                }
+            });
+        }
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
@@ -1133,7 +1133,10 @@ function Dashboard({ auth }) {
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
-                const [cardExpires, setCardExpires] = useState(params.row);
+                const [cardExpires, setCardExpires] = useState({
+                    ...params.row,
+                    seri_number: "k pt",
+                });
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => setOpen(!open);
@@ -1281,7 +1284,10 @@ function Dashboard({ auth }) {
                                     "Đã Gửi Thông Tin Bảo Hành",
                                     dataBh
                                 );
-                                socketD?.emit('UpdateDateTable_To_Server','TTBH');
+                                socketD?.emit(
+                                    "UpdateDateTable_To_Server",
+                                    "TTBH"
+                                );
                             } else {
                                 console.error(
                                     "Lỗi khi gửi dữ liệu:",
@@ -1357,11 +1363,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const dataBtnChi = [
-                    {
-                        id: "BtnTraLich",
-                        content: "Trả Lịch",
-                        className: "text-blue-500 rounded-none border-blue-500",
-                    },
+                    // {
+                    //     id: "BtnTraLich",
+                    //     content: "Trả Lịch",
+                    //     className: "text-blue-500 rounded-none border-blue-500",
+                    // },
                     {
                         id: "BtnCapNhat",
                         content: "Cập Nhật",
@@ -1384,7 +1390,6 @@ function Dashboard({ auth }) {
                 const filteredArray = parts?.filter(
                     (item) => item.trim() !== ""
                 );
-
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];

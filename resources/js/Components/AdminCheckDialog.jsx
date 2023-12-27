@@ -279,7 +279,7 @@ function AdminCheckDialog({
             <div className="flex items-center justify-center italic font-thin">
                 <DialogHeader className="font-sans underline ">ADMIN KIỂM TRA</DialogHeader>
             </div>
-            <DialogBody className={` overflow-y-auto`} style={{height:`${heightScreenTV}px`}} divider>
+            <DialogBody className={`overflow-y-auto`} style={{height:`${heightScreenTV}px`}} divider>
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                     <div className="w-full p-2 text-sm border border-green-500 ">
                         <div>
@@ -717,6 +717,7 @@ function AdminCheckDialog({
                     className="px-3 py-2 mx-4 shadow-none"
                     variant="outlined"
                     onClick={handleUpdateStatusCheckAdmin}
+                    disabled = {params.row.income_total === 0 ? 'disabled' : ''}
                 >
                     Xác Nhận Thông Tin
                 </Button>

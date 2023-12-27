@@ -88,7 +88,7 @@ Route::prefix('web')->group(function () {
 }) ->withoutMiddleware("throttle:api")
 ->middleware(
     \Illuminate\Routing\Middleware\ThrottleRequests::with(
-        maxAttempts: 300,
+        maxAttempts: 30000,
         decayMinutes: 1
     )
 );

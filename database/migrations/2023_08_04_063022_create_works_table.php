@@ -19,8 +19,8 @@ return new class extends Migration
             $table->String('work_note', 1000)->nullable();
             $table->String('street', 500)->nullable();
             $table->String('district');
-            $table->integer('phone_number');
-            $table->String('image_work_path',1000)->nullable();
+            $table->String('phone_number');
+            $table->String('image_work_path', 1000)->nullable();
             $table->tinyInteger('member_read')->default(0);
             $table->tinyInteger('kind_work')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: Đồ gỗ ; 3: NLMT; 4: Xây dựng; 5: Tài Xế; 6: Cơ Khí');
             $table->tinyInteger('status_cus')->default(0)->comment('0: Chưa Phân; 1: Đã Phân; 2: Khách Hủy ');

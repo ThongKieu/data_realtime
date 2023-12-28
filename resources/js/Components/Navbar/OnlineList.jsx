@@ -13,7 +13,7 @@ import {
 function OnlineList( {numberonline,avatarimage}) {
   return (
     <List className="p-0 my-2">
-      <ListItem className="cursor-pointer py-1.5 font-medium ">
+      <ListItem className="cursor-auto py-1.5 font-medium " role='h3'>
         <AvatarImage children={avatarimage}></AvatarImage>
         <ListItemSuffix>
           <Chip

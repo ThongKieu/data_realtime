@@ -237,4 +237,22 @@ class WorkersController extends Controller
 
     }
 
+    public function getAllWorks(Request $request)
+    {
+        $id = $request->id_worker;
+        $date = $request->date;
+        // $date =date('Y-m-d');
+        $date = $date . "%";
+        $findWork = DB::table('works_assignments')
+            ->leftJoin('works', 'works.id', '=', 'works_assignments.id_cus')
+            ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
+            ->where('works_assignments.updated_at', 'like', $date)
+            ->where('works_assignments.id_worker', '=', $id)
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.real_note', 'works_assignments.status_work', 'works_assignments.check_in']);
+        return $findWork;
+        // return $date;
+    }
+
 }

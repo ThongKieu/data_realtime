@@ -207,15 +207,22 @@ class WorkersController extends Controller
         {
             if($request->id)
             {   
+                $work_assigment = WorksAssignment::where('created_at','like',$request->date_work.'%') ->where('id_worker','=',$request->id) ->whereBetween('status_work',[0,3])->get(['id','id_cus','id_phu']);
                 $data = [];
-                $work_assigment = WorksAssignment::where('created_at','like',$request->date_work.'%') ->where('id_worker','=',$request->id)->get(['id','id_cus','id_phu']);
-
                 foreach($work_assigment as $item)
-                {
-                    $data['id']= $item->id;
+                {   
+                    
                    
-                    $cus = Work::where('id','=',$item->id_cus)->get();
-                    $data['id_cus']= $cus;
+                    $cus = Work::where('id','=',$item->id_cus)->get( ["work_content","name_cus",
+                    "date_book",
+                    "work_note",
+                    "street",
+                    "district",
+                    "phone_number",
+                    "image_work_path"]);
+                    $json_data = [
+                        'id'=>$item->id,
+                    ];
                     if($item->phu != 0)
                     {
                         $phu = Worker::where('id','=',$item->id_phu)->get(['worker_full_name','worker_phone_company']);

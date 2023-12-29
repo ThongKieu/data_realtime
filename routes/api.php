@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\Mobile\WorkersController;
 use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\Web\WorksController;
-// use App\Http\Controllers\Api\WorksAssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -103,9 +102,14 @@ Route::prefix('app')->group(function () {
     // Worker
     Route::prefix('worker')->group(function () {
         Route::get('test', 'App\Http\Controllers\Api\Mobile\WorkersController@test');
+        // fcm
         Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
+        // login
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
+        //work
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
+        Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
+        Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
 
     });
     // Customer

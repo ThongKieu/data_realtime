@@ -92,6 +92,7 @@ function Dashboard({ auth }) {
             income_total: "",
         },
     ];
+    console.log(auth);
     const [workDataDN_done, setWorkDataDN_done] = useState([]);
     const [workDataDL_done, setWorkDataDL_done] = useState([]);
     const [workDataDG_done, setWorkDataDG_done] = useState([]);
@@ -112,6 +113,7 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
+        pushOn();
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
@@ -592,7 +594,7 @@ function Dashboard({ auth }) {
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
-                            console.log('Xóa thành Công');
+                            console.log("Xóa thành Công");
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
@@ -1254,10 +1256,7 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
-                // ---------- ------- - cần tối ưu code ----------------------------------
-
                 // Các phần khác của component
-
                 const handleValueBh = async () => {
                     try {
                         const promises = isDataChanged.map(async (data) => {
@@ -1505,7 +1504,11 @@ function Dashboard({ auth }) {
                                         }}
                                     >
                                         <ArrowUpTrayIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500   ${classButtonDaPhan} ${DK2}`}
+                                            className={`text-green-500 border-green-500 hover:bg-green-500   ${classButtonDaPhan} ${DK2} ${
+                                                openSpending_total
+                                                    ? "hidden"
+                                                    : "" // Khi dialog mở, ngăn chặn nút sử dụng
+                                            }`}
                                             onClick={handleOpenSpending_total}
                                         />
                                     </Tooltip>
@@ -1826,8 +1829,13 @@ function Dashboard({ auth }) {
         },
         // Thêm các mục khác tương tự ở đây
     ];
+
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user} checkDate={selectedDate}>
+        <AuthenticatedLayout
+            children={auth.user}
+            user={auth.user}
+            checkDate={selectedDate}
+        >
             <Head title="Trang Chủ" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}

@@ -30,7 +30,7 @@ const ThoDialog = ({
             </div>
             <DialogBody divider>
                 <Select
-                    closeMenuOnSelect={false}
+                    closeMenuOnSelect={true}
                     value={selectPhanTho}
                     options={infoWorkerDashboard}
                     onChange={(selectedValue) =>

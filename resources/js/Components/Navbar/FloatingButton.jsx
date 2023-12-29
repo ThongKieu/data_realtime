@@ -27,7 +27,11 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import { getFormattedToday, url_API, url_API_District } from "@/Data/UrlAPI/UrlApi";
+import {
+    getFormattedToday,
+    url_API,
+    url_API_District,
+} from "@/Data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
 import newSocket from "@/Utils/Socket";
 function formatExpires(value) {
@@ -135,6 +139,13 @@ function FloatingButton() {
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData1);
                 handleOpen();
+                setFormData({
+                    member_read: 1,
+                    kind_work: 0,
+                    status_cus: 0,
+                    from_cus: 0,
+                    flag_status: 1,
+                });
             }
         } catch (error) {
             console.log(error);
@@ -318,7 +329,7 @@ function FloatingButton() {
                                         name="kind_work"
                                         label="Cơ Khí"
                                         value="6"
-                                        checked={formData.kind_work === "6" }
+                                        checked={formData.kind_work === "6"}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -335,7 +346,9 @@ function FloatingButton() {
                         <Button
                             size="lg"
                             className="w-11/12"
-                            onClick={(e)=>{handleAddWork(e)}}
+                            onClick={(e) => {
+                                handleAddWork(e);
+                            }}
                         >
                             Thêm
                         </Button>

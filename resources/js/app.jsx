@@ -8,10 +8,10 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient();
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+const appName = import.meta.env.VITE_APP_NAME || "Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt";
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title} - Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

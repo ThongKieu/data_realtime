@@ -10,11 +10,12 @@ import {
 } from "@material-tailwind/react";
 
 
-function OnlineList( {numberonline,avatarimage}) {
+function OnlineList( {numberonline,avatarimage,name}) {
   return (
     <List className="p-0 my-2">
       <ListItem className="cursor-auto py-1.5 font-medium " role='h3'>
         <AvatarImage children={avatarimage}></AvatarImage>
+        <p className='pl-3'>{name}</p>
         <ListItemSuffix>
           <Chip
             value={numberonline}

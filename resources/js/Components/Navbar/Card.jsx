@@ -74,9 +74,9 @@ function CardMain() {
                 workDataCountOrder +
                 workDataCountOrderDaPhan +
                 workDataCountDelete,
-            typographyColor: "text-center  text-blue-600 text-sm",
+            typographyColor: "text-center text-blue-600 text-sm",
             cardBorderColor:
-                "m-1  border border-solid shadow-blue-400  border-blue-600 justify-center w-28 rounded",
+                "m-1  border border-solid cursor-auto shadow-blue-400  border-blue-600 justify-center w-28 rounded",
         },
         {
             id: 2,
@@ -84,7 +84,7 @@ function CardMain() {
             count: workDataCountOrder,
             typographyColor: "text-center  text-yellow-600 text-sm",
             cardBorderColor:
-                "m-1  border border-solid shadow-yellow-400  w-96 border-yellow-600 justify-center  w-28 rounded",
+                "m-1  border border-solid cursor-auto shadow-yellow-400  w-96 border-yellow-600 justify-center  w-28 rounded",
         },
         {
             id: 3,
@@ -92,7 +92,7 @@ function CardMain() {
             count: workDataCountOrderDaPhan,
             typographyColor: "text-center  text-green-600 text-sm",
             cardBorderColor:
-                "m-1 border border-solid shadow-green-400  w-96 border-green-600 justify-center  w-28 rounded",
+                "m-1 border border-solid cursor-auto shadow-green-400  w-96 border-green-600 justify-center  w-28 rounded",
         },
     ];
 

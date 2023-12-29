@@ -6,7 +6,9 @@ use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
 use App\Models\User;
+use App\Models\Work;
 use App\Models\Worker;
+use App\Models\WorksAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -196,6 +198,42 @@ class WorkersController extends Controller
         // Close connection
         curl_close($ch);
         // FCM response
+
+    }
+    // Công việc trả xuống app
+    public function getWork(Request $request) {
+        // dd($request->all());
+        if($request->date_work)
+        {
+            if($request->id)
+            {   
+                $work_assigment = WorksAssignment::where('created_at','like',$request->date_work.'%') ->where('id_worker','=',$request->id) ->whereBetween('status_work',[0,3])->get(['id','id_cus','id_phu']);
+                $data = [];
+                foreach($work_assigment as $item)
+                {   
+                    
+                   
+                    $cus = Work::where('id','=',$item->id_cus)->get( ["work_content","name_cus",
+                    "date_book",
+                    "work_note",
+                    "street",
+                    "district",
+                    "phone_number",
+                    "image_work_path"]);
+                    $json_data = [
+                        'id'=>$item->id,
+                    ];
+                    if($item->phu != 0)
+                    {
+                        $phu = Worker::where('id','=',$item->id_phu)->get(['worker_full_name','worker_phone_company']);
+                        $data['id_phu']= $phu;
+                    }
+                }
+                return response()->json($data);
+            }
+            return response()->json('Request Fail, No ID!');
+        }
+        return response()->json('Request Fail, No date!');
 
     }
 

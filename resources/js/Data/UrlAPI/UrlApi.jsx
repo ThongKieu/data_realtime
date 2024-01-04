@@ -31,6 +31,7 @@ const sendPhanThoRequest = async (
 
         if (response.ok) {
             socketD.emit("addWorkTo_Server", "Phan Tho");
+            socketD.emit("TungTestWeb", "Tùng gửi message từ server !!");
             copyTextToClipboard(params.row);
             handleOpenTho();
         }

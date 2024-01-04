@@ -1,24 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, Typography, Tooltip } from "@material-tailwind/react";
 import {
-    TrashIcon,
-    EyeIcon,
-    ArrowPathIcon,
     UserPlusIcon,
-    DocumentDuplicateIcon,
-    MagnifyingGlassIcon,
-    ClipboardDocumentListIcon,
-    ArrowUpTrayIcon,
-    XMarkIcon,
-    EllipsisVerticalIcon,
-    TicketIcon,
-    CheckCircleIcon,
+
 } from "@heroicons/react/24/outline";
 import {
     ThoDialog,
-    KhaoSatDialog,
-    ReasonDialog,
-    ThuHoiDialog,
+   
 } from "@/Components/ColumnRightDialog";
 
 import { host } from "@/Utils/UrlApi";

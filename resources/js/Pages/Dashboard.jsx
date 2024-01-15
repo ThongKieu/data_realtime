@@ -1407,6 +1407,7 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Thu hoi lich");
+                            socketD.emit("returnWorkWebToServer", params.row.id_worker);
                             handleOpenThuHoi();
                         }
                     } catch (error) {

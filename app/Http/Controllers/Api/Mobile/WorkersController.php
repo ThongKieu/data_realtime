@@ -147,86 +147,87 @@ class WorkersController extends Controller
         }
     }
 
-    public function getTokenFCM($id)
+    public static function getTokenFCM($id)
     {
-        $token_fcm = DB::table('account_workers')->where('id_worker', '=', $id)->value('FCM_token');
+        $token_fcm = DB::table('accountion_workers')->where('id_worker', '=', $id)->value('FCM_token');
         return $token_fcm;
     }
     // sen to app noti push
-    public static function sentNewWorkToWorker()
+    public function sentNewWorkToWorker(Request $request)
     {
         $info_noti = 'Có Lịch Mới';
-        // $token_fcm = WorkerController::getTokenFCM($id_worker);
-        $token_fcm = 'fQ2iDcPATViekk78eM5VXG:APA91bH7AKykxHmoEMc9KCBvNHyy_RQISCPwUzZ0vv7H9baf2257iAxFaSS0GXQmy-Ir99X99zPcx-NFLMvZnOgEh0XBSIDQlz5WRLFods9xhvwN3p5Xm5E3xIsOEi6HyOq_a_l4HbrH';
+        // $token_fcm = $request->fcmCode;
+        $token_fcm = WorkersController::getTokenFCM($request->idWorker);
+        // $token_fcm = 'fQ2iDcPATViekk78eM5VXG:APA91bH7AKykxHmoEMc9KCBvNHyy_RQISCPwUzZ0vv7H9baf2257iAxFaSS0GXQmy-Ir99X99zPcx-NFLMvZnOgEh0XBSIDQlz5WRLFods9xhvwN3p5Xm5E3xIsOEi6HyOq_a_l4HbrH';
 
-        $server_key = 'AAAAzktash8:APA91bH2SrLRRWV9l7sstzc5hHgepzLUX7iDtl4gqAx-jEYb8mYb7Gz7e-XsxVpTL6dVj4-3-BemdR-JE56fo1XDcwY-f5zjaA2JtH-5E-7YlKfpzNVpAl9ngpnw8VPCUOSXxu1v8V13';
-        $h = array(
-            "title" => "Công ty Thợ Việt",
-            "body" => $info_noti,
-            "sound" => "default",
-            "android_channel_id" => "thovietworker",
+        if ($token_fcm != null) {
+            $server_key = 'AAAAzktash8:APA91bH2SrLRRWV9l7sstzc5hHgepzLUX7iDtl4gqAx-jEYb8mYb7Gz7e-XsxVpTL6dVj4-3-BemdR-JE56fo1XDcwY-f5zjaA2JtH-5E-7YlKfpzNVpAl9ngpnw8VPCUOSXxu1v8V13';
+            $h = array(
+                "title" => "Công ty Thợ Việt",
+                "body" => $info_noti,
+                "sound" => "default",
+                "android_channel_id" => "thovietworker",
 
-        );
-        $data = array(
-            "to" => $token_fcm,
-            "notification" => $h,
-            "priority" => "high",
-        );
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $encodeData = json_encode($data);
-        $headers = [
-            'Authorization:key=' . $server_key,
-            'Content-Type: application/json',
-        ];
-        // dd($encodeData);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        // Disabling SSL Certificate support temporarly
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodeData);
-        // Execute post
-        $result = curl_exec($ch);
-        // dd($result);
-        if ($result === false) {
-            die('Curl failed: ' . curl_error($ch));
+            );
+            $data = array(
+                "to" => $token_fcm,
+                "notification" => $h,
+                "priority" => "high",
+            );
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            $encodeData = json_encode($data);
+            $headers = [
+                'Authorization:key=' . $server_key,
+                'Content-Type: application/json',
+            ];
+            // dd($encodeData);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            // Disabling SSL Certificate support temporarly
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $encodeData);
+            // Execute post
+            $result = curl_exec($ch);
+            // dd($result);
+            if ($result === false) {
+                die('Curl failed: ' . curl_error($ch));
+            }
+            // Close connection
+            curl_close($ch);
+            // FCM response
+        } else {
+            return 'FCM Token Null';
         }
-        // Close connection
-        curl_close($ch);
-        // FCM response
 
     }
     // Công việc trả xuống app
-    public function getWork(Request $request) {
+    public function getWork(Request $request)
+    {
         // dd($request->all());
-        if($request->date_work)
-        {
-            if($request->id)
-            {   
-                $work_assigment = WorksAssignment::where('created_at','like',$request->date_work.'%') ->where('id_worker','=',$request->id) ->whereBetween('status_work',[0,3])->get(['id','id_cus','id_phu']);
+        if ($request->date_work) {
+            if ($request->id) {
+                $work_assigment = WorksAssignment::where('created_at', 'like', $request->date_work . '%')->where('id_worker', '=', $request->id)->whereBetween('status_work', [0, 3])->get(['id', 'id_cus', 'id_phu']);
                 $data = [];
-                foreach($work_assigment as $item)
-                {   
-                    
-                   
-                    $cus = Work::where('id','=',$item->id_cus)->get( ["work_content","name_cus",
-                    "date_book",
-                    "work_note",
-                    "street",
-                    "district",
-                    "phone_number",
-                    "image_work_path"]);
+                foreach ($work_assigment as $item) {
+
+                    $cus = Work::where('id', '=', $item->id_cus)->get(["work_content", "name_cus",
+                        "date_book",
+                        "work_note",
+                        "street",
+                        "district",
+                        "phone_number",
+                        "image_work_path"]);
                     $json_data = [
-                        'id'=>$item->id,
+                        'id' => $item->id,
                     ];
-                    if($item->phu != 0)
-                    {
-                        $phu = Worker::where('id','=',$item->id_phu)->get(['worker_full_name','worker_phone_company']);
-                        $data['id_phu']= $phu;
+                    if ($item->phu != 0) {
+                        $phu = Worker::where('id', '=', $item->id_phu)->get(['worker_full_name', 'worker_phone_company']);
+                        $data['id_phu'] = $phu;
                     }
                 }
                 return response()->json($data);
@@ -248,6 +249,7 @@ class WorkersController extends Controller
             ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
             ->where('works_assignments.updated_at', 'like', $date)
             ->where('works_assignments.id_worker', '=', $id)
+            ->where('works_assignments.status_work', '=', 0)
             ->orderByDesc('id')
             ->limit(100)
             ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.real_note', 'works_assignments.status_work', 'works_assignments.check_in']);

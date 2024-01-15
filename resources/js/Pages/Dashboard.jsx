@@ -105,6 +105,7 @@ function Dashboard({ auth }) {
         width: window.innerWidth,
         height: window.innerHeight - 100,
     });
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -112,6 +113,7 @@ function Dashboard({ auth }) {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
+        pushOn();
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
@@ -131,16 +133,21 @@ function Dashboard({ auth }) {
                 fetchData(data, selectedDate);
             }
         });
+        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
+            console.log(id);
+            if (id === id) {
+                setIsButtonDisabled(isDisabled);
+            }
+        });
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
                 height: window.innerHeight - 100,
             });
         };
-        // Đăng ký sự kiện khi component được mount
         window.addEventListener("resize", handleResize);
-        // Hủy đăng ký sự kiện khi component bị unmount
         return () => {
+            newSocket.off("ButtonDisable_From_Server");
             newSocket.disconnect();
             window.removeEventListener("resize", handleResize);
         };
@@ -244,8 +251,6 @@ function Dashboard({ auth }) {
                 "UpdateDateTable_To_Server",
                 "Cập Nhật trạng thái AdminCheck"
             );
-        } else {
-            setWorkDataDN_done(dataDefault);
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -432,18 +437,20 @@ function Dashboard({ auth }) {
                                         {data ||
                                         data !== "" ||
                                         data !== null ||
-                                        data !== "undefine"
-                                            ? filteredArray?.map(
-                                                  (item, index) => (
-                                                      <img
-                                                          key={index}
-                                                          className="object-cover object-center w-32 p-1 m-1 border border-green-500 rounded-sm shadow-xl"
-                                                          src={`${host}${item}`}
-                                                          alt="nature image"
-                                                      />
-                                                  )
-                                              )
-                                            : " Khách không gửi hình nha!"}
+                                        data !== "undefine" ? (
+                                            filteredArray?.map(
+                                                (item, index) => (
+                                                    <img
+                                                        key={index}
+                                                        className="object-cover object-center w-32 p-1 m-1 border border-green-500 rounded-sm shadow-xl"
+                                                        src={`${host}${item}`}
+                                                        alt="nature image"
+                                                    />
+                                                )
+                                            )
+                                        ) : (
+                                            <p>Khách không gửi hình nha!</p>
+                                        )}
                                     </div>
                                 </div>
                             </DialogBody>
@@ -497,7 +504,7 @@ function Dashboard({ auth }) {
             field: "district",
             headerName: "Quận",
             type: "text",
-            width: 50,
+            width: 30,
             editable: true,
             renderEditCell: (params) => (
                 <Input
@@ -581,7 +588,6 @@ function Dashboard({ auth }) {
                             auth_id: auth.user.id,
                             work_note: work_note,
                         };
-
                         const response = await fetch("api/web/cancle/works", {
                             method: "POST",
                             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
@@ -592,7 +598,7 @@ function Dashboard({ auth }) {
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
-                            console.log('Xóa thành Công');
+                            console.log("Xóa thành Công");
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
@@ -609,7 +615,6 @@ function Dashboard({ auth }) {
                         handleOpenTho
                     );
                 };
-
                 const handleSentNhanDoi = async (e) => {
                     // Lấy dữ liệu từ params.row
                     const originalData = params.row;
@@ -632,9 +637,8 @@ function Dashboard({ auth }) {
                         console.log(error);
                     }
                 };
-
                 return (
-                    <div>
+                    <>
                         <div className="flex">
                             <Tooltip
                                 content="Phân Thợ"
@@ -706,7 +710,7 @@ function Dashboard({ auth }) {
                             setWorkNote={setWorkNote}
                             handleSentDelete={handleSentDelete}
                         />
-                    </div>
+                    </>
                 );
             },
         },
@@ -915,7 +919,7 @@ function Dashboard({ auth }) {
         {
             field: "worker_full_name",
             headerName: "Thợ",
-            width: 115,
+            width: 140,
             editable: false,
             type: "singleSelect",
             renderCell: (params) => {
@@ -940,7 +944,6 @@ function Dashboard({ auth }) {
                         reasonMessage
                     );
                 };
-
                 const check_admin = params.row.status_admin_check == 1;
                 const [idPhuArray, setIdPhuArray] = useState([]);
                 useEffect(() => {
@@ -958,20 +961,21 @@ function Dashboard({ auth }) {
                     return foundElement ? foundElement.label : "";
                 });
                 const firstName = getFirstName(params.row.worker_full_name);
+
                 return (
                     <>
                         {check_admin ||
                         params.row.status_work === 1 ||
                         params.row.income_total !== 0 ||
                         params.row.spending_total !== 0 ? (
-                            <p>{firstName}</p>
+                            <p>{`(${params.row.worker_code}) ${firstName} `}</p>
                         ) : (
                             <>
                                 <p
                                     onClick={handleOpenTho}
                                     className="cursor-pointer "
                                 >
-                                    {firstName}
+                                    {`(${params.row.worker_code}) ${firstName} `}
                                 </p>
                                 <Dialog
                                     open={openWorkerNameTableRight}
@@ -1131,14 +1135,20 @@ function Dashboard({ auth }) {
             field: "actions",
             type: "actions",
             headerName: "Chức Năng",
-            width: 150,
+            width: 130,
             editable: false,
             cellClassName: "actions",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
-                    const handleOpen = () => setOpen(!open);
+                    const handleOpen = () => {
+                        setOpen(!open);
+                        socketD.emit("ButtonDisable_To_Server", {
+                            id: params.row.id,
+                            isDisabled: !open,
+                        });
+                    };
                     return [open, handleOpen];
                 };
                 // Sử dụng hàm useToggle
@@ -1156,6 +1166,28 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
+                const handleOpenSpendingTotalWithDisable = (row_id) => {
+                    // Gửi thông điệp đến server để thông báo về việc disable button
+                    const isDisabled = openSpending_total
+                    if (openSpending_total === true && row_id === params.row.id) {
+                        setIsButtonDisabled(true);
+                        console.log("xin chao true", isDisabled);
+                        socketD.emit("ButtonDisable_To_Server", {
+                            id: row_id,
+                             isDisabled,
+                        });
+                    } else {
+                        // setIsButtonDisabled(false);
+                        // console.log("xin chao false", isButtonDisabled);
+                        // socketD.emit("ButtonDisable_To_Server", {
+                        //     id: row_id,
+                        //     isDisabled: false,
+                        // });
+                    }
+                    // Thực hiện các thay đổi local
+                    handleOpenSpending_total();
+                };
+
                 const handleSentDeleteDone = async () => {
                     try {
                         let data = {
@@ -1254,10 +1286,7 @@ function Dashboard({ auth }) {
                     setIsAllowed(value === "1");
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
-                // ---------- ------- - cần tối ưu code ----------------------------------
-
                 // Các phần khác của component
-
                 const handleValueBh = async () => {
                     try {
                         const promises = isDataChanged.map(async (data) => {
@@ -1505,12 +1534,29 @@ function Dashboard({ auth }) {
                                             unmount: { scale: 0, y: 25 },
                                         }}
                                     >
-                                        <ArrowUpTrayIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500   ${classButtonDaPhan} ${DK2}`}
-                                            onClick={handleOpenSpending_total}
-                                        />
+                                        <Button
+                                            color="white"
+                                            className={`text-green-500 bg-none hover:bg-green-500 ${
+                                                openSpending_total === true ||
+                                                isButtonDisabled === true
+                                                    ? auth.user.id == 3
+                                                        ? "border-red-500 "
+                                                        : "border-orange-500 "
+                                                    : "border-green-500 "
+                                            }   ${classButtonDaPhan} ${DK2} `}
+                                            onClick={
+                                                isButtonDisabled
+                                                    ? null
+                                                    : () =>
+                                                          handleOpenSpendingTotalWithDisable(
+                                                              params.row.id
+                                                          )
+                                            }
+                                            disabled={isButtonDisabled}
+                                        >
+                                            <ArrowUpTrayIcon />
+                                        </Button>
                                     </Tooltip>
-
                                     <Tooltip
                                         content="Sửa liên hệ admin"
                                         animate={{
@@ -1827,8 +1873,13 @@ function Dashboard({ auth }) {
         },
         // Thêm các mục khác tương tự ở đây
     ];
+
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user} checkDate={selectedDate}>
+        <AuthenticatedLayout
+            children={auth.user}
+            user={auth.user}
+            checkDate={selectedDate}
+        >
             <Head title="Trang Chủ" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}

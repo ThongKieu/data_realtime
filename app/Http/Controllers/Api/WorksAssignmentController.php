@@ -34,6 +34,7 @@ class WorksAssignmentController extends Controller
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
             ->whereBetween('works_assignments.status_work', [0, 3])
+            ->orderBy('workers.worker_code','asc')
             ->get(
                 [
                     "works_assignments.id",

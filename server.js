@@ -38,21 +38,18 @@ io.on("connection", (socket) => {
         console.log("Received form data UpdateDateTable:", Data);
         io.sockets.emit("UpdateDateTable_To_Client", Data);
     });
-    
+    socket.on("TungTest", async (message) => {
+        console.log("Test: ", message);
+        io.sockets.emit("TungTestClient:", message);
+    });
     socket.on("deleteWorkTo_Server", async (data) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
-
-    ///////////////////////////////////
-    
-
     // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', () => {
         console.log('User disconnected');
       });
-
-    
 });
 
 httpServer.listen(3000, function () {

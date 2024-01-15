@@ -165,6 +165,7 @@ function ProfileMenu({ propauthprofile }) {
                     <OnlineList
                         avatarimage={host + propauthprofile.avatar}
                         numberonline={number}
+                        name={propauthprofile.name}
                     />
                     <NavLink
                         href={route("profile.edit")}
@@ -443,7 +444,7 @@ console.log(infoWorker);
                         </Tooltip>
                     </NavLink>
                     <Card
-                        className="flex flex-row items-center justify-between p-1 border border-green-600 border-solid rounded w-28 justify-left shadow-green-400"
+                        className="flex flex-row items-center justify-between p-1 border border-green-600 border-solid rounded cursor-pointer w-28 justify-left shadow-green-400"
                         onClick={handleOpenWorker}
                     >
                         <Typography

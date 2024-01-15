@@ -23,9 +23,11 @@ io.on("connection", (socket) => {
         io.sockets.emit("sentListOnline_Client", message);
     });
 
-    socket.on("TungTestWeb", async (data) => {
-        console.log("Test:", data);
-        io.sockets.emit("TungTestMobile", data);
+    socket.on("sendWorkWebToServer", async (data) => {
+        io.sockets.emit("sendWorkServerToMobile", data);
+    });
+    socket.on("returnWorkWebToServer", async (data) => {
+        io.sockets.emit("returnWorkServerToMobile", data);
     });
 
     socket.on("addWorkTo_Server", async (formData1) => {

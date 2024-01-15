@@ -34,11 +34,26 @@ const sendPhanThoRequest = async (
             socketD.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();
+
+            try {
+                const response = await fetch("api/app/worker/send-fcm", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        idWorker: id_worker.value,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+            } catch (error) {
+                console.log("lỗi", error);
+            }
         }
     } catch (error) {
         console.log("lỗi", error);
     }
 };
+
 const sendDoiThoRequest = async (
     params,
     selectPhanTho,

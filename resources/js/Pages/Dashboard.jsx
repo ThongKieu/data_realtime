@@ -42,7 +42,6 @@ import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
     url_API,
-    url_API_District,
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
@@ -66,6 +65,7 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
+
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
     const [workDataDNCu, setWorkDataDNCu] = useState([]);
@@ -134,13 +134,11 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            if (isDisabled === true) {
-                fetchActive(id, 2);
-            } else {
-                fetchActive(id, 1);
+            fetchActive(id);
+            if (data.id === id) {
+                console.log(`id= ${id} - data.id ${data.id}`);
+                setIsButtonDisabled(isDisabled);
             }
-            setIsButtonDisabled(isDisabled);
-            fetchDataDaPhan();
         });
         const handleResize = () => {
             setScreenSize({

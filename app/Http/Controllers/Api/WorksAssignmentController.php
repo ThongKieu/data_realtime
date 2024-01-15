@@ -34,7 +34,7 @@ class WorksAssignmentController extends Controller
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
             ->whereBetween('works_assignments.status_work', [0, 3])
-            ->orderBy('workers.worker_code','asc')
+            ->orderBy('workers.worker_code', 'asc')
             ->get(
                 [
                     "works_assignments.id",
@@ -338,10 +338,15 @@ class WorksAssignmentController extends Controller
     }
     public function returnWorkFromAss(Request $request)
     {
-        $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
-        Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
-        WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
-        return response()->json('Trả Lịch Thành Công!');
+        if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->worker_name == null) {
+            return -1;
+        } else {
+            $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
+            Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
+            WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+            return 1;
+        }
+
     }
     public function cancleWorkFromAss(Request $request)
     {
@@ -697,15 +702,12 @@ class WorksAssignmentController extends Controller
     }
     public function setActive(Request $request)
     {
-        if($request->id_work_ass && $request->ac == 2)
-        {
-            WorksAssignment::where('id','=',$request->id_work_ass)->update(['status_admin_check'=>2,'admin_check'=>$request->auth_id]);
+        if ($request->id_work_ass && $request->ac == 2) {
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 2, 'admin_check' => $request->auth_id]);
 
             return 'Mark Disable !';
-        }
-        else
-        {
-            WorksAssignment::where('id','=',$request->id_work_ass)->update(['status_admin_check'=>0,'admin_check'=>$request->auth_id]);
+        } else {
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 0, 'admin_check' => $request->auth_id]);
 
             return 'Mark Non disable !';
         }

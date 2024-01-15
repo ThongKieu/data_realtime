@@ -42,6 +42,7 @@ import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
     url_API,
+    url_API_District,
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
@@ -65,7 +66,6 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
-
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
     const [workDataDNCu, setWorkDataDNCu] = useState([]);
@@ -134,11 +134,13 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            fetchActive(id);
-            if (data.id === id) {
-                console.log(`id= ${id} - data.id ${data.id}`);
-                setIsButtonDisabled(isDisabled);
+            if (isDisabled === true) {
+                fetchActive(id, 2);
+            } else {
+                fetchActive(id, 1);
             }
+            setIsButtonDisabled(isDisabled);
+            fetchDataDaPhan();
         });
         const handleResize = () => {
             setScreenSize({
@@ -1566,7 +1568,14 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             color="white"
-                                            className={`text-green-500 bg-none hover:bg-green-500 border-green-500  ${classButtonDaPhan} ${DK2} `}
+                                            className={`text-green-500 bg-none hover:bg-green-500 ${
+                                                openSpending_total === true ||
+                                                isButtonDisabled === true
+                                                    ? auth.user.id == 3
+                                                        ? "border-red-500 "
+                                                        : "border-orange-500 "
+                                                    : "border-green-500 "
+                                            }   ${classButtonDaPhan} ${DK2} `}
                                             onClick={() =>
                                                 handleOpenSpendingTotalWithDisable(
                                                     params.row.id

@@ -42,7 +42,6 @@ import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
     url_API,
-    url_API_District,
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
@@ -1168,13 +1167,16 @@ function Dashboard({ auth }) {
                 };
                 const handleOpenSpendingTotalWithDisable = (row_id) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-                    const isDisabled = openSpending_total
-                    if (openSpending_total === true && row_id === params.row.id) {
+                    const isDisabled = openSpending_total;
+                    if (
+                        openSpending_total === true &&
+                        row_id === params.row.id
+                    ) {
                         setIsButtonDisabled(true);
                         console.log("xin chao true", isDisabled);
                         socketD.emit("ButtonDisable_To_Server", {
                             id: row_id,
-                             isDisabled,
+                            isDisabled,
                         });
                     } else {
                         // setIsButtonDisabled(false);
@@ -1384,7 +1386,10 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Thu hoi lich");
-                            socketD.emit("returnWorkWebToServer", params.row.id_worker);
+                            socketD.emit(
+                                "returnWorkWebToServer",
+                                params.row.id_worker
+                            );
                             handleOpenThuHoi();
                         }
                     } catch (error) {

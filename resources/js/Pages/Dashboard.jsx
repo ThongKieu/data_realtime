@@ -66,6 +66,7 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
+    const [data, setData] = useState([]);
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
     const [workDataDNCu, setWorkDataDNCu] = useState([]);
@@ -134,8 +135,9 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            console.log(id);
-            if (id === id) {
+            fetchActive(id);
+            if (data.id === id) {
+                console.log(`id= ${id} - data.id ${data.id}`);
                 setIsButtonDisabled(isDisabled);
             }
         });
@@ -147,11 +149,35 @@ function Dashboard({ auth }) {
         };
         window.addEventListener("resize", handleResize);
         return () => {
-            newSocket.off("ButtonDisable_From_Server");
-            newSocket.disconnect();
             window.removeEventListener("resize", handleResize);
+            // newSocket.off("ButtonDisable_From_Server");
+            newSocket.disconnect();
         };
-    }, [selectedDate]);
+    }, [selectedDate, data]);
+    // ---------- Day disable button---------------------------
+    const fetchActive = (id) => {
+        try {
+            let data = {
+                ac: 2,
+                auth_id: auth.user.id,
+                id: id,
+            };
+
+            console.log("--------------------", data);
+            const response = fetch("api/web/work-assignment/setActive", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            if (response.status == 200) {
+                console.log(response);
+            }
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
+    };
     var heightScreenTV = screenSize.height;
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
@@ -1143,6 +1169,7 @@ function Dashboard({ auth }) {
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
+                        setData(params);
                         setOpen(!open);
                         socketD.emit("ButtonDisable_To_Server", {
                             id: params.row.id,
@@ -1168,21 +1195,17 @@ function Dashboard({ auth }) {
                 };
                 const handleOpenSpendingTotalWithDisable = (row_id) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-                    const isDisabled = openSpending_total
-                    if (openSpending_total === true && row_id === params.row.id) {
-                        setIsButtonDisabled(true);
+                    const isDisabled = !openSpending_total;
+                    if (
+                        openSpending_total == true &&
+                        row_id === params.row.id
+                    ) {
+                        setIsButtonDisabled(!isDisabled);
                         console.log("xin chao true", isDisabled);
                         socketD.emit("ButtonDisable_To_Server", {
                             id: row_id,
-                             isDisabled,
+                            isDisabled,
                         });
-                    } else {
-                        // setIsButtonDisabled(false);
-                        // console.log("xin chao false", isButtonDisabled);
-                        // socketD.emit("ButtonDisable_To_Server", {
-                        //     id: row_id,
-                        //     isDisabled: false,
-                        // });
                     }
                     // Thực hiện các thay đổi local
                     handleOpenSpending_total();
@@ -1735,7 +1758,9 @@ function Dashboard({ auth }) {
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <SpendingDialog
                             openSpending_total={openSpending_total}
-                            handleOpenSpending_total={handleOpenSpending_total}
+                            handleOpenSpending_total={
+                                handleOpenSpendingTotalWithDisable
+                            }
                             isAllowed={isAllowed}
                             handleRadioChangeAllow={handleRadioChangeAllow}
                             cardExpires={cardExpires}

@@ -201,7 +201,6 @@ class AccountionWorkerController extends Controller
                             $a[4] = $i->worker_code;
                             $a[5] = $i->worker_phone_personal;
                             $a[6] = $i->worker_phone_company;
-
                         }
                         $a[7] = $device_key;
                         AccountionWorker::where('acc_worker', '=', $acc_worker)->update(['time_log' => '0', 'device_key' => $device_key, 'FCM_token' => $request->fcm_token, 'last_active' => date('y-m-d H:i:s')]);

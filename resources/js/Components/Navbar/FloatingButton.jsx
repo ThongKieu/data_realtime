@@ -66,15 +66,18 @@ function FloatingButton() {
     // ---------------------- select quan --------------------------------
     // const [selectedOptionDistrict, setSelectedOptionDistrict] = useState('');
     const [optionsDistrict, setOptionsDistrict] = useState([]);
-    const [selectedOption, setSelectedOption] = useState("q1");
-
+    const [selectedOption, setSelectedOption] = useState("khác");
+    const [socketFTB, setSocketFTB] = useState(null);
     const handleOptionChangeDistrict = (event) => {
         setSelectedOption(event.target.value);
     };
     useEffect(() => {
         fetchData();
+        setSocketFTB(newSocket, { secure: true });
+        return () => {
+            newSocket.disconnect();
+        };
     }, []);
-
     const fetchData = async () => {
         try {
             const response = await fetch(host + url_API_District);
@@ -96,18 +99,12 @@ function FloatingButton() {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedFiles(files);
+        console.log(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
     };
 
     //-------------------- add new order ----------------------------
-    const [socketFTB, setSocketFTB] = useState(null);
-    useEffect(() => {
-        setSocketFTB(newSocket, { secure: true });
-        return () => {
-            newSocket.disconnect();
-        };
-    }, []);
     const handleAddWork = async (e) => {
         e.preventDefault();
         const formData1 = new FormData();
@@ -146,6 +143,9 @@ function FloatingButton() {
                     from_cus: 0,
                     flag_status: 1,
                 });
+                console.log(formData1);
+            } else if (response.status === 422 ){
+                alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`)
             }
         } catch (error) {
             console.log(error);
@@ -153,11 +153,8 @@ function FloatingButton() {
     };
 
     // ------------------------ format date -----------------
-
     const formattedToday = getFormattedToday();
-
     const [selectedDate, setSelectedDate] = useState(formattedToday);
-    // console.log("selectedDate", selectedDate);
     const handleDateChange = (event) => {
         setSelectedDate(event.target.value);
     };
@@ -188,8 +185,9 @@ function FloatingButton() {
                                     value={formData.phone_number}
                                     id="phone_number"
                                     name="phone_number"
-                                    className="shadow-none"
+                                    className="shadow-none required"
                                     onChange={handleChange}
+
                                 />
                             </div>
                             <div className="my-2">

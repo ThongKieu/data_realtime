@@ -6,9 +6,12 @@ use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
 use App\Models\User;
+use App\Models\Work;
 use App\Models\Worker;
+use App\Models\WorksAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WorkersController extends Controller
 {
@@ -196,6 +199,60 @@ class WorkersController extends Controller
         curl_close($ch);
         // FCM response
 
+    }
+    // Công việc trả xuống app
+    public function getWork(Request $request) {
+        // dd($request->all());
+        if($request->date_work)
+        {
+            if($request->id)
+            {   
+                $work_assigment = WorksAssignment::where('created_at','like',$request->date_work.'%') ->where('id_worker','=',$request->id) ->whereBetween('status_work',[0,3])->get(['id','id_cus','id_phu']);
+                $data = [];
+                foreach($work_assigment as $item)
+                {   
+                    
+                   
+                    $cus = Work::where('id','=',$item->id_cus)->get( ["work_content","name_cus",
+                    "date_book",
+                    "work_note",
+                    "street",
+                    "district",
+                    "phone_number",
+                    "image_work_path"]);
+                    $json_data = [
+                        'id'=>$item->id,
+                    ];
+                    if($item->phu != 0)
+                    {
+                        $phu = Worker::where('id','=',$item->id_phu)->get(['worker_full_name','worker_phone_company']);
+                        $data['id_phu']= $phu;
+                    }
+                }
+                return response()->json($data);
+            }
+            return response()->json('Request Fail, No ID!');
+        }
+        return response()->json('Request Fail, No date!');
+
+    }
+
+    public function getAllWorks(Request $request)
+    {
+        $id = $request->id_worker;
+        $date = $request->date;
+        // $date =date('Y-m-d');
+        $date = $date . "%";
+        $findWork = DB::table('works_assignments')
+            ->leftJoin('works', 'works.id', '=', 'works_assignments.id_cus')
+            ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
+            ->where('works_assignments.updated_at', 'like', $date)
+            ->where('works_assignments.id_worker', '=', $id)
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.real_note', 'works_assignments.status_work', 'works_assignments.check_in']);
+        return $findWork;
+        // return $date;
     }
 
 }

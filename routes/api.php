@@ -103,8 +103,13 @@ Route::prefix('app')->group(function () {
     // Worker
     Route::prefix('worker')->group(function () {
         Route::get('test', 'App\Http\Controllers\Api\Mobile\WorkersController@test');
+        // Công việc
+        Route::post('get_work', 'App\Http\Controllers\Api\Mobile\WorkersController@getWork')->name('getWork');
+
         Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
+
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
+        Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
 
     });
     // Customer

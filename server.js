@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
         io.sockets.emit("UpdateDateTable_To_Client", Data);
     });
     socket.on("ButtonDisable_To_Server", async (Data) => {
-        console.log("Received form data ButtonDisable:", Data);
+        console.log("Received form data ButtonDisable 1:", Data);
         io.sockets.emit("ButtonDisable_To_Client", Data);
     });
     socket.on("SetupButtonDisable_To_Server", async (Data) => {
@@ -47,7 +47,6 @@ io.on("connection", (socket) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
-    // Xử lý sự kiện khi máy khách ngắt kết nối
 });
 
 httpServer.listen(3000, function () {

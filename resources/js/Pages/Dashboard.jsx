@@ -65,7 +65,7 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
-    const [data, setData] = useState([]);
+
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
     const [workDataDNCu, setWorkDataDNCu] = useState([]);
@@ -135,10 +135,7 @@ function Dashboard({ auth }) {
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
             fetchActive(id);
-            if (data.id === id) {
-                console.log(`id= ${id} - data.id ${data.id}`);
-                setIsButtonDisabled(isDisabled);
-            }
+            setIsButtonDisabled(isDisabled);
         });
         const handleResize = () => {
             setScreenSize({
@@ -152,7 +149,7 @@ function Dashboard({ auth }) {
             // newSocket.off("ButtonDisable_From_Server");
             newSocket.disconnect();
         };
-    }, [selectedDate, data]);
+    }, [selectedDate]);
     // ---------- Day disable button---------------------------
     const fetchActive = (id) => {
         try {
@@ -1168,7 +1165,6 @@ function Dashboard({ auth }) {
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
-                        setData(params);
                         setOpen(!open);
                         socketD.emit("ButtonDisable_To_Server", {
                             id: params.row.id,

@@ -256,5 +256,24 @@ class WorkersController extends Controller
         return $findWork;
         // return $date;
     }
+    public function cancelWork(Request $request)
+    {
+        $id_work_assignments = $request->id_work_assignments;
+        $id_worker = $request->id_worker;
+        $id_cus = $request->id_cus;
+        if ($id_work_has && $id_worker) {
+            $f = DB::table('works_assignments')->where('id', '=', $id_work_assignments)->where('id_worker', '=', $id_worker)->get('id_cus');
+            if ($f != null) {
+                $update_assignments = DB::table('works_assignments')->where('id', '=', $id_work_assignments)->update(['status_work' => 5, 'real_note' => $request->get('real_note')]);
+                $update_cus = DB::table('works')->where('id', '=', $id_cus)->update(['status_cus' => 0, 'work_note' => $request->get('real_note')]);
+                return 1;
+            } else {
+                return 2;
+            }
+        } else {
+            return 3;
+        }
+
+    }
 
 }

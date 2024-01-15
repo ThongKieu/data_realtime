@@ -32,9 +32,9 @@ io.on("connection", (socket) => {
         io.sockets.emit("sendAddWorkTo_Client", formData1);
     });
 
-    socket.on("ButtonDisable_To_Server", async (formData1) => {
-        console.log("Button Disable:", formData1);
-        io.sockets.emit("ButtonDisable_To_Client", formData1);
+    socket.on("ButtonDisable_To_Server", async (isDisabled) => {
+        console.log("Button Disable:", isDisabled);
+        io.sockets.emit("ButtonDisable_To_Client", isDisabled);
     });
     socket.on("UpdateDateTable_To_Server", async (Data) => {
         console.log("Received form data UpdateDateTable:", Data);
@@ -49,13 +49,13 @@ io.on("connection", (socket) => {
         io.sockets.emit("deleteWorkTo_Client", data);
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
-    // socket.on('disconnect', () => {
-    //     console.log('User disconnected');
-    //   });
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-        io.sockets.emit("userOffline", socket.id);
-    });
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+      });
+    // socket.on("disconnect", () => {
+    //     console.log("User disconnected");
+    //     io.sockets.emit("userOffline", socket.id);
+    // });
 });
 
 httpServer.listen(3000, function () {

@@ -66,7 +66,6 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
-    const [data, setData] = useState([]);
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
     const [workDataDNCu, setWorkDataDNCu] = useState([]);
@@ -135,11 +134,13 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            fetchActive(id);
-            if (data.id === id) {
-                console.log(`id= ${id} - data.id ${data.id}`);
-                setIsButtonDisabled(isDisabled);
+            if (isDisabled === true) {
+                fetchActive(id, 2);
+            } else {
+                fetchActive(id, 1);
             }
+            setIsButtonDisabled(isDisabled);
+            fetchDataDaPhan();
         });
         const handleResize = () => {
             setScreenSize({
@@ -150,17 +151,17 @@ function Dashboard({ auth }) {
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
-            // newSocket.off("ButtonDisable_From_Server");
+            newSocket.off("ButtonDisable_From_Server");
             newSocket.disconnect();
         };
-    }, [selectedDate, data]);
+    }, [selectedDate]);
     // ---------- Day disable button---------------------------
-    const fetchActive = (id) => {
+    const fetchActive = (id, ac_at) => {
         try {
             let data = {
-                ac: 2,
+                ac: ac_at,
                 auth_id: auth.user.id,
-                id: id,
+                id_work_ass: id,
             };
 
             console.log("--------------------", data);
@@ -172,6 +173,7 @@ function Dashboard({ auth }) {
                 },
             });
             if (response.status == 200) {
+                socketD.emit("ButtonDisable_To_Server", data);
                 console.log(response);
             }
         } catch (error) {
@@ -1169,7 +1171,6 @@ function Dashboard({ auth }) {
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
-                        setData(params);
                         setOpen(!open);
                         socketD.emit("ButtonDisable_To_Server", {
                             id: params.row.id,
@@ -1407,7 +1408,10 @@ function Dashboard({ auth }) {
                         );
                         if (response.ok) {
                             socketD.emit("addWorkTo_Server", "Thu hoi lich");
-                            socketD.emit("returnWorkWebToServer", params.row.id_worker);
+                            socketD.emit(
+                                "returnWorkWebToServer",
+                                params.row.id_worker
+                            );
                             handleOpenThuHoi();
                         }
                     } catch (error) {
@@ -1534,10 +1538,12 @@ function Dashboard({ auth }) {
                         console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
-                const classButtonDaPhan =
-                    "w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white";
+                const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
+                    params.row.status_admin_check === 2 ? "hidden" : ""
+                }`;
                 return (
                     <div>
+                        {params.row.status_admin_check ===2 ? <p>Đang Chỉnh Sửa</p>: ''}
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
@@ -1554,28 +1560,20 @@ function Dashboard({ auth }) {
                                         content="Nhập Thu Chi"
                                         animate={{
                                             mount: { scale: 1, y: 0 },
-                                            unmount: { scale: 0, y: 25 },
+                                            unmount: {
+                                                scale: 0,
+                                                y: 25,
+                                            },
                                         }}
                                     >
                                         <Button
                                             color="white"
-                                            className={`text-green-500 bg-none hover:bg-green-500 ${
-                                                openSpending_total === true ||
-                                                isButtonDisabled === true
-                                                    ? auth.user.id == 3
-                                                        ? "border-red-500 "
-                                                        : "border-orange-500 "
-                                                    : "border-green-500 "
-                                            }   ${classButtonDaPhan} ${DK2} `}
-                                            onClick={
-                                                isButtonDisabled
-                                                    ? null
-                                                    : () =>
-                                                          handleOpenSpendingTotalWithDisable(
-                                                              params.row.id
-                                                          )
+                                            className={`text-green-500 bg-none hover:bg-green-500 border-green-500  ${classButtonDaPhan} ${DK2} `}
+                                            onClick={() =>
+                                                handleOpenSpendingTotalWithDisable(
+                                                    params.row.id
+                                                )
                                             }
-                                            disabled={isButtonDisabled}
                                         >
                                             <ArrowUpTrayIcon />
                                         </Button>
@@ -1584,7 +1582,10 @@ function Dashboard({ auth }) {
                                         content="Sửa liên hệ admin"
                                         animate={{
                                             mount: { scale: 1, y: 0 },
-                                            unmount: { scale: 0, y: 25 },
+                                            unmount: {
+                                                scale: 0,
+                                                y: 25,
+                                            },
                                         }}
                                     >
                                         <BookmarkSquareIcon
@@ -1596,7 +1597,10 @@ function Dashboard({ auth }) {
                                         content="Admin Check"
                                         animate={{
                                             mount: { scale: 1, y: 0 },
-                                            unmount: { scale: 0, y: 25 },
+                                            unmount: {
+                                                scale: 0,
+                                                y: 25,
+                                            },
                                         }}
                                     >
                                         <Button
@@ -1610,7 +1614,7 @@ function Dashboard({ auth }) {
                                     <Menu allowHover>
                                         <MenuHandler>
                                             <EllipsisVerticalIcon
-                                                className={`w-6 h-6 pt-2 cursor-pointer ${DK1}`}
+                                                className={`w-6 h-6 pt-2 cursor-pointer ${classButtonDaPhan} ${DK1}`}
                                             />
                                         </MenuHandler>
                                         <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">

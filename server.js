@@ -23,6 +23,11 @@ io.on("connection", (socket) => {
         io.sockets.emit("sentListOnline_Client", message);
     });
 
+    socket.on("TungTestWeb", async (data) => {
+        console.log("Test:", data);
+        io.sockets.emit("TungTestMobile", data);
+    });
+
     socket.on("addWorkTo_Server", async (formData1) => {
         console.log("Received form data addWork:", formData1);
         io.sockets.emit("sendAddWorkTo_Client", formData1);
@@ -30,14 +35,6 @@ io.on("connection", (socket) => {
     socket.on("UpdateDateTable_To_Server", async (Data) => {
         console.log("Received form data UpdateDateTable:", Data);
         io.sockets.emit("UpdateDateTable_To_Client", Data);
-    });
-    socket.on("ButtonDisable_To_Server", async (Data) => {
-        console.log("Received form data ButtonDisable 1:", Data);
-        io.sockets.emit("ButtonDisable_To_Client", Data);
-    });
-    socket.on("SetupButtonDisable_To_Server", async (Data) => {
-        console.log("Received form data ButtonDisable:", Data);
-        io.sockets.emit("SetupButtonDisable_To_Client", Data);
     });
     socket.on("TungTest", async (message) => {
         console.log("Test: ", message);
@@ -47,6 +44,10 @@ io.on("connection", (socket) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
+    // Xử lý sự kiện khi máy khách ngắt kết nối
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+      });
 });
 
 httpServer.listen(3000, function () {

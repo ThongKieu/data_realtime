@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\Web\QuoteFlowController;
-use App\Http\Controllers\Api\CheckWorkByAdminController;
+use App\Http\Controllers\Controller;
 use App\Models\Warranties;
 use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
@@ -99,7 +96,7 @@ class WorksAssignmentController extends Controller
                     // "workers.worker_name",
                     "workers.worker_code",
                     "workers.worker_address",
-                     "workers.worker_phone_company",
+                    "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                 ]
             );
@@ -240,7 +237,7 @@ class WorksAssignmentController extends Controller
                     // "workers.worker_name",
                     "works.name_cus",
                     "workers.worker_code",
-                    "workers.worker_address", "workers.worker_phone_company"
+                    "workers.worker_address", "workers.worker_phone_company",
                 ]
             );
         $co_khi = DB::table('works_assignments')
@@ -308,7 +305,7 @@ class WorksAssignmentController extends Controller
         $id_phu = $request->get('id_phu');
         // dd($id_worker[0]);
 
-        $work_note =  Work::where('id', '=', $id_cus)
+        $work_note = Work::where('id', '=', $id_cus)
             ->value('work_note');
 
         // dd($request);
@@ -323,7 +320,7 @@ class WorksAssignmentController extends Controller
                 'id_phu' => json_encode($id_phu),
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
-                'kind_work_assign'=>$worker_kind
+                'kind_work_assign' => $worker_kind,
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -331,11 +328,10 @@ class WorksAssignmentController extends Controller
                 'id_worker' => $id_worker,
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
-                'kind_work_assign'=>$worker_kind
+                'kind_work_assign' => $worker_kind,
             ]);
         }
         $workHas->save();
-
 
         $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
         return 'OK';
@@ -352,7 +348,6 @@ class WorksAssignmentController extends Controller
         $note = $request->real_note;
         Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
         WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
-
         return response()->json('Hủy Thành Công!');
     }
 
@@ -365,18 +360,18 @@ class WorksAssignmentController extends Controller
         if ($up) {
             return 'Delete work done !';
         }
-        return  'Delete Failse !';
+        return 'Delete Failse !';
     }
     public function insertQuoteFlow(Request $request)
     {
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up   = QuoteFlowController::addAuto($request->id, $request->auth_id);
+        $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
 
         if ($up == 200) {
             return 'Delete work done !';
         }
-        return  'Delete Failse !';
+        return 'Delete Failse !';
     }
     public function continueWorkAss(Request $request)
     {
@@ -390,7 +385,7 @@ class WorksAssignmentController extends Controller
                 $sub = Carbon::now()->subDay(1)->format('d/m');
                 $note = 'Đã làm ngày : ' . $sub;
             }
-            $up =  WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+            $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
         } else {
             $id_cus = $request->id_cus;
@@ -415,9 +410,9 @@ class WorksAssignmentController extends Controller
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
                 if ($check_ima != null) {
                     $file_na = $check_ima . $file_na;
-                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $file_na]);
                 } else {
-                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' =>  $file_na]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $file_na]);
                 }
             }
 
@@ -434,11 +429,11 @@ class WorksAssignmentController extends Controller
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
                 if ($check_ima != null) {
                     $files = $check_ima . $files;
-                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $files]);
                 } else {
-                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' =>  $files]);
+                    WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $files]);
                 }
-                $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
+                $up_work_ass = WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,
                         'real_note' => $request->real_note,
@@ -449,7 +444,7 @@ class WorksAssignmentController extends Controller
                     ]);
                 return response()->json('Update work with image !!!');
             } else {
-                $up_work_ass =  WorksAssignment::where('id', '=', $request->id)
+                $up_work_ass = WorksAssignment::where('id', '=', $request->id)
                     ->update([
                         'status_work' => 2,
                         'real_note' => $request->real_note,
@@ -477,69 +472,62 @@ class WorksAssignmentController extends Controller
                     case 1:
                         // thay đổi thông tin bảo hành
                         // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
-                        if($request->id_del_warranty)
-                        {
+                        if ($request->id_del_warranty) {
                             $num = Warranties::where('id', '=', $request->id_del_warranty)->delete();
                             return 'Del warranties';
-                        }else
-                        {
-                        $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
-                        $a = $request->info_warranties;
-                        // dd( $a);
+                        } else {
+                            $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
+                            $a = $request->info_warranties;
+                            // dd( $a);
 
-                        if (count($num) == 0) {
-                            for ($i = 0; $i < count($a); $i++)
-                            // them moi
-                            {
-                                $new = new Warranties([
-                                    'id_work_has' =>  $request->id_work_has,
-                                    'warranty_time' => $a[$i]['warranty_time'],
-                                    'warranty_info' => $a[$i]['warranty_info'],
-                                    'unit' => $a[$i]['unit'],
-                                ]);
-                                $new->save();
-                            }
-                        }
-                        else{
-                            if( count($num) == count($a))
-                            {
+                            if (count($num) == 0) {
                                 for ($i = 0; $i < count($a); $i++)
                                 // them moi
                                 {
-                                    Warranties::where('id', '=',$a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'],'warranty_time'=>$a[$i]['warranty_time'],'warranty_info'=>$a[$i]['warranty_info']]);
-
+                                    $new = new Warranties([
+                                        'id_work_has' => $request->id_work_has,
+                                        'warranty_time' => $a[$i]['warranty_time'],
+                                        'warranty_info' => $a[$i]['warranty_info'],
+                                        'unit' => $a[$i]['unit'],
+                                    ]);
+                                    $new->save();
                                 }
-                            }
-                            if( count($num) < count($a))
-                            {
-                                for ($i = 0; $i < count($a); $i++)
-                                // them moi
-                                {
-                                   $c = Warranties::where('id', '=',$a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'],'warranty_time'=>$a[$i]['warranty_time'],'warranty_info'=>$a[$i]['warranty_info']]);
-                                    if(!$c)
+                            } else {
+                                if (count($num) == count($a)) {
+                                    for ($i = 0; $i < count($a); $i++)
+                                    // them moi
                                     {
-                                        $new = new Warranties([
-                                            'id_work_has' =>  $request->id_work_has,
-                                            'warranty_time' => $a[$i]['warranty_time'],
-                                            'warranty_info' => $a[$i]['warranty_info'],
-                                            'unit' => $a[$i]['unit'],
-                                        ]);
-                                        $new->save();
-                                        $new->save();
+                                        Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+
                                     }
                                 }
-                            }
+                                if (count($num) < count($a)) {
+                                    for ($i = 0; $i < count($a); $i++)
+                                    // them moi
+                                    {
+                                        $c = Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                        if (!$c) {
+                                            $new = new Warranties([
+                                                'id_work_has' => $request->id_work_has,
+                                                'warranty_time' => $a[$i]['warranty_time'],
+                                                'warranty_info' => $a[$i]['warranty_info'],
+                                                'unit' => $a[$i]['unit'],
+                                            ]);
+                                            $new->save();
+                                            $new->save();
+                                        }
+                                    }
+                                }
 
-                        }
+                            }
                         }
                         return 'Update warranties';
                     case 2:
                         $bill_imag = WorksAssignment::where('id', '=', $request->id)->value('bill_imag');
-                        $set_update_bill ='';
+                        $set_update_bill = '';
                         $path = '';
                         // Xóa Hình
-                        if($request->bill_imag_del)
-                        {
+                        if ($request->bill_imag_del) {
                             $set_update_bill = explode($request->bill_imag_del, $bill_imag);
                             for ($i = 0; $i < count($set_update_bill); $i++) {
                                 if ($request->bill_imag_del == $set_update_bill[$i]) {
@@ -557,33 +545,30 @@ class WorksAssignmentController extends Controller
                                 // Thông báo nếu không tìm thấy hình ảnh
                                 return "Không tìm thấy hình ảnh!";
                             }
-                        }
-                        else
-                        {
+                        } else {
                             //Thêm  mới 1 hoặc nhiều hình
                             //  dd($request->all());
-                             if ($request->hasFile('bill_imag_new')) {
-                                 $images = $request->file('bill_imag_new');
+                            if ($request->hasFile('bill_imag_new')) {
+                                $images = $request->file('bill_imag_new');
                                 //  dd($images);
-                                 foreach ($images as $image) {
-                                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                                     $image->move('assets/images/work_assignment/' . $request->id . '/bill_imag', $name);
-                                     $bill_imag .= 'assets/images/work_assignment/' . $request->id . '/bill_imag/' . $name . ',';
-                                     // dd('11111111111111');
-                                 }
-                                 WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $bill_imag]);
-                                 return "Update bill Image Done!";
-                             }
+                                foreach ($images as $image) {
+                                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                                    $image->move('assets/images/work_assignment/' . $request->id . '/bill_imag', $name);
+                                    $bill_imag .= 'assets/images/work_assignment/' . $request->id . '/bill_imag/' . $name . ',';
+                                    // dd('11111111111111');
+                                }
+                                WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $bill_imag]);
+                                return "Update bill Image Done!";
+                            }
 
-                             return "Update bill Image Fails!";
+                            return "Update bill Image Fails!";
                         }
                     case 3:
                         $seri_imag = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
-                        $set_update_seri ='';
+                        $set_update_seri = '';
                         $path = '';
                         // Xóa Hình
-                        if($request->seri_imag_del)
-                        {
+                        if ($request->seri_imag_del) {
                             $set_update_seri = explode($request->seri_imag_del, $seri_imag);
                             for ($i = 0; $i < count($set_update_seri); $i++) {
                                 if ($request->seri_imag_del == $set_update_seri[$i]) {
@@ -601,25 +586,23 @@ class WorksAssignmentController extends Controller
                                 // Thông báo nếu không tìm thấy hình ảnh
                                 return "Không tìm thấy hình ảnh!";
                             }
-                        }
-                        else
-                        {
+                        } else {
                             //Thêm  mới 1 hoặc nhiều hình
                             //  dd($request->all());
-                             if ($request->hasFile('seri_imag_new')) {
-                                 $images = $request->file('seri_imag_new');
+                            if ($request->hasFile('seri_imag_new')) {
+                                $images = $request->file('seri_imag_new');
                                 //  dd($images);
-                                 foreach ($images as $image) {
-                                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                                     $image->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name);
-                                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name . ',';
-                                     // dd('11111111111111');
-                                 }
-                                 WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $seri_imag]);
-                                 return "Update Seri Image Done!";
-                             }
+                                foreach ($images as $image) {
+                                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                                    $image->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name);
+                                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name . ',';
+                                    // dd('11111111111111');
+                                }
+                                WorksAssignment::where('id', '=', $request->id)->update(['seri_imag' => $seri_imag]);
+                                return "Update Seri Image Done!";
+                            }
 
-                             return "Update Seri Image Fails!";
+                            return "Update Seri Image Fails!";
                         }
 
                     // case 4:
@@ -660,16 +643,14 @@ class WorksAssignmentController extends Controller
                     //     WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
                     //     return 'Update Seri';
                     case 13:
-                            // Admin Check
+                        // Admin Check
 
+                        $data = $request->data;
 
-                            $data = $request->data;
+                        Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'], 'phone_number' => $data['phone_number'], 'street' => $data['street'], 'district' => $data['district'], 'name_cus' => $data['name_cus']]);
+                        WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
-
-                            Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'],'phone_number' => $data['phone_number'],'street' => $data['street'],'district' => $data['district'],'name_cus' => $data['name_cus']]);
-                            WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'],'income_total' => $data['income_total'],'spending_total' => $data['spending_total'],'seri_number' =>$data['seri_number'],'status_admin_check' => 1 ]);
-
-                            return 'Admin Check';
+                        return 'Admin Check';
                     default:
                         return 'Done With None Update !';
                 }
@@ -681,37 +662,35 @@ class WorksAssignmentController extends Controller
     }
 
     // Return Work is assign
-    public function returnWork(Request $request) {
-        $id_work_as = $request ->id_work_as;
-        $id_cus = $request ->id_cus;
-        $real_note = $request -> real_note;
-        $id_worker = $request ->id_worker;
+    public function returnWork(Request $request)
+    {
+        $id_work_as = $request->id_work_as;
+        $id_cus = $request->id_cus;
+        $real_note = $request->real_note;
+        $id_worker = $request->id_worker;
 
-        $up_w_a = WorksAssignment::where('id','=',$id_work_as )->update(['status_work'=>4]);
-        $w_e = Worker::where('id','=',$id_worker)->value('worker_kind');
-        $up_w_k = Work::where('id','=',$id_cus)->update(['kind_work'=>$w_e,'member_read'=>$request->auth_id]);
+        $up_w_a = WorksAssignment::where('id', '=', $id_work_as)->update(['status_work' => 4]);
+        $w_e = Worker::where('id', '=', $id_worker)->value('worker_kind');
+        $up_w_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $w_e, 'member_read' => $request->auth_id]);
 
-        if($request->id_phu)
-        {
+        if ($request->id_phu) {
 
             $w_a_n = new WorksAssignment([
-                'id_cus'=>$id_cus,
-                'id_worker'=>$id_worker,
+                'id_cus' => $id_cus,
+                'id_worker' => $id_worker,
                 'id_phu' => json_encode($request->id_phu),
-                'real_note'=>$real_note
+                'real_note' => $real_note,
             ]);
-        }
-        else
-        {
+        } else {
             $w_a_n = new WorksAssignment([
-                'id_cus'=>$id_cus,
-                'id_worker'=>$id_worker,
-                'real_note'=>$real_note
+                'id_cus' => $id_cus,
+                'id_worker' => $id_worker,
+                'real_note' => $real_note,
             ]);
 
         }
 
-            $w_a_n ->save();
+        $w_a_n->save();
 
         return response()->json('Update Done');
 

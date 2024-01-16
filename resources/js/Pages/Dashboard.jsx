@@ -1543,7 +1543,7 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div>
-                        {params.row.status_admin_check ===2 ? <p>Đang Chỉnh Sửa</p>: ''}
+                        {params.row.status_admin_check ===2 ? <p>Đang Sửa</p>: ''}
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
@@ -1568,14 +1568,7 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             color="white"
-                                            className={`text-green-500 bg-none hover:bg-green-500 ${
-                                                openSpending_total === true ||
-                                                isButtonDisabled === true
-                                                    ? auth.user.id == 3
-                                                        ? "border-red-500 "
-                                                        : "border-orange-500 "
-                                                    : "border-green-500 "
-                                            }   ${classButtonDaPhan} ${DK2} `}
+                                            className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
                                             onClick={() =>
                                                 handleOpenSpendingTotalWithDisable(
                                                     params.row.id

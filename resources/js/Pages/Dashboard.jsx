@@ -1536,11 +1536,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
-                    params.row.status_admin_check === 2 ? "hidden" : ""
+                    isButtonDisabled === true && params.row.status_admin_check == 2 ? "hidden" : ""
                 }`;
                 return (
                     <div>
-                        {params.row.status_admin_check === 2 ? (
+                        { isButtonDisabled === true && params.row.status_admin_check == 2  ? (
                             <p>Đang Sửa</p>
                         ) : (
                             ""

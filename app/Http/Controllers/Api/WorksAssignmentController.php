@@ -708,7 +708,6 @@ class WorksAssignmentController extends Controller
     {
         if ($request->id_work_ass && $request->ac == 2) {
             WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 2, 'admin_check' => $request->auth_id]);
-
             return 'Mark Disable !';
         } else {
             WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 0, 'admin_check' => $request->auth_id]);

@@ -1388,9 +1388,9 @@ function Dashboard({ auth }) {
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
-                        auth_id: auth.user.id,
+                        // auth_id: auth.user.id,
                         real_note: params.row.real_note,
-                        worker_name: params.row.worker_full_name
+                        worker_name: params.row.worker_full_name,
                     };
                     try {
                         const response = await fetch(

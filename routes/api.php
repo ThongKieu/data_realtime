@@ -28,8 +28,8 @@ Route::prefix('web')->group(function () {
         Route::post('worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateWorker');
         Route::post('work', 'App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-continue', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
-        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
-        Route::post('work-assignment-cancle', 'App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
+        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
+        Route::post('work-assignment-cancle', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('work-assignment-warranties', 'App\Http\Controllers\Api\WarrantiesController@insertWarranties');
         Route::post('check-admin', 'App\Http\Controllers\Api\WorksAssignmentController@checkWorkByAdmin');
     });

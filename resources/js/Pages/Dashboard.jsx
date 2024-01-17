@@ -164,7 +164,6 @@ function Dashboard({ auth }) {
                 id_work_ass: id,
             };
 
-            console.log("--------------------", data);
             const response = fetch("api/web/work-assignment/setActive", {
                 method: "POST",
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
@@ -1386,15 +1385,13 @@ function Dashboard({ auth }) {
                 };
 
                 const handleThuHoi = async (e) => {
-                    e.preventDefault();
-                    console.log("thu hoi lich");
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
                         auth_id: auth.user.id,
                         real_note: params.row.real_note,
+                        worker_name: params.row.worker_full_name
                     };
-                    console.log("data______", data);
                     try {
                         const response = await fetch(
                             "api/web/update/work-assignment-return",
@@ -1543,7 +1540,11 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div>
-                        {params.row.status_admin_check ===2 ? <p>Đang Chỉnh Sửa</p>: ''}
+                        {params.row.status_admin_check === 2 ? (
+                            <p>Đang Sửa</p>
+                        ) : (
+                            ""
+                        )}
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
@@ -1568,14 +1569,7 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             color="white"
-                                            className={`text-green-500 bg-none hover:bg-green-500 ${
-                                                openSpending_total === true ||
-                                                isButtonDisabled === true
-                                                    ? auth.user.id == 3
-                                                        ? "border-red-500 "
-                                                        : "border-orange-500 "
-                                                    : "border-green-500 "
-                                            }   ${classButtonDaPhan} ${DK2} `}
+                                            className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
                                             onClick={() =>
                                                 handleOpenSpendingTotalWithDisable(
                                                     params.row.id
@@ -1916,7 +1910,7 @@ function Dashboard({ auth }) {
             user={auth.user}
             checkDate={selectedDate}
         >
-            <Head title="Trang Chủ" />
+            <Head title="Lịch Hẹn" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}
                 style={{ height: `${heightScreenTV}px` }}

@@ -110,8 +110,8 @@ Route::prefix('app')->group(function () {
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
         //work
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
-        Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancleWorkFromAss');
-        Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAss');
+        Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
+        Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
 
     });
     // Customer

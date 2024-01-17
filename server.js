@@ -20,13 +20,6 @@ io.on("connection", (socket) => {
         io.sockets.emit("sentListOnline_Client", message);
     });
 
-    socket.on("sendWorkWebToServer", async (data) => {
-        io.sockets.emit("sendWorkServerToMobile", data);
-    });
-    socket.on("returnWorkWebToServer", async (data) => {
-        io.sockets.emit("returnWorkServerToMobile", data);
-    });
-
     socket.on("addWorkTo_Server", async (formData1) => {
         console.log("Received form data addWork:", formData1);
         io.sockets.emit("sendAddWorkTo_Client", formData1);
@@ -40,14 +33,24 @@ io.on("connection", (socket) => {
         console.log("Received form data UpdateDateTable:", Data);
         io.sockets.emit("UpdateDateTable_To_Client", Data);
     });
-    socket.on("TungTest", async (message) => {
-        console.log("Test: ", message);
-        io.sockets.emit("TungTestClient:", message);
-    });
     socket.on("deleteWorkTo_Server", async (data) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
+
+    
+    // Application
+    socket.on("sendWorkWebToServer", async (data) => {
+        io.sockets.emit("sendWorkServerToMobile", data);
+    });
+    socket.on("returnWorkWebToServer", async (data) => {
+        io.sockets.emit("returnWorkServerToMobile", data);
+    });
+
+
+
+
+
     // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', () => {
         console.log('User disconnected');

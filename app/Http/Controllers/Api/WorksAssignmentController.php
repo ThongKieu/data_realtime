@@ -336,7 +336,7 @@ class WorksAssignmentController extends Controller
         $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
         return 'OK';
     }
-    public function returnWorkFromAss(Request $request)
+    public function returnWorkFromAssignment(Request $request)
     {
         if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->worker_name == null) {
             return -1;
@@ -348,12 +348,16 @@ class WorksAssignmentController extends Controller
         }
 
     }
-    public function cancleWorkFromAss(Request $request)
+    public function cancelWorkFromAssignment(Request $request)
     {
-        $note = $request->real_note;
-        Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
-        WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
-        return response()->json('Hủy Thành Công!');
+        if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->auth_id == null) {
+            return -1;
+        } else {
+            $note = $request->real_note;
+            Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
+            WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
+            return 1;
+        }
     }
 
     public function insertCancleBook(Request $request)
@@ -365,7 +369,7 @@ class WorksAssignmentController extends Controller
         if ($up) {
             return 'Delete work done !';
         }
-        return 'Delete Failse !';
+        return 'Delete Failed !';
     }
     public function insertQuoteFlow(Request $request)
     {

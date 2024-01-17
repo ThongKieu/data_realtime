@@ -200,6 +200,7 @@ class WorkersController extends Controller
             // Close connection
             curl_close($ch);
             // FCM response
+            return 'Send FCM OK';
         } else {
             return 'FCM Token Null';
         }

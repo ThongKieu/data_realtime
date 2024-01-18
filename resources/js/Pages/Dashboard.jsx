@@ -1193,24 +1193,64 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
-                const handleOpenSpendingTotalWithDisable = (row_id) => {
+                const handleButtonAction = (rowId, isOpenState, handleOpenFunction, actionType) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-                    const isDisabled = !openSpending_total;
-                    if (
-                        openSpending_total == true &&
-                        row_id === params.row.id
-                    ) {
-                        setIsButtonDisabled(!isDisabled);
-                        console.log("xin chao true", isDisabled);
-                        socketD.emit("ButtonDisable_To_Server", {
-                            id: row_id,
-                            isDisabled,
-                        });
+                    const isDisabled = !isOpenState;
+                    setIsButtonDisabled(!isDisabled);
+                    socketD.emit("ButtonDisable_To_Server", {
+                        id: rowId,
+                        isDisabled,
+                    });
+
+                    // Thực hiện các thay đổi local dựa trên actionType
+                    switch (actionType) {
+                        case 'openSpendingTotal':
+                            handleOpenSpending_total();
+                            break;
+                        case 'openHuy':
+                            handleOpenFunction(!isOpenState);
+                            // Thêm các xử lý khác nếu cần
+                            break;
+                        case 'openKS':
+                            handleOpenFunction(!isOpenState);
+                            // Thêm các xử lý khác nếu cần
+                            break;
+                        case 'openThuHoi':
+                            handleOpenFunction(!isOpenState);
+                            // Thêm các xử lý khác nếu cần
+                            break;
+                        case 'openAdminCheck':
+                            handleOpenFunction(!isOpenState);
+                            // Thêm các xử lý khác nếu cần
+                            break;
+                        // Thêm các case khác nếu có các hành động khác
+                        default:
+                            break;
                     }
-                    // Thực hiện các thay đổi local
-                    handleOpenSpending_total();
+                };
+                const handleOpenSpendingTotalWithDisable = (rowId) => {
+                    handleButtonAction(rowId, openSpending_total, handleOpenSpending_total, 'openSpendingTotal');
+                    console.log('xin chao openSpendingTotal');
+                };
+                const handleOpenHuyWithDisable = (rowId) => {
+                    handleButtonAction(rowId, openHuy, handleOpenHuy, 'openHuy');
+                    console.log('xin chao openHuy');
                 };
 
+                const handleOpenKSWithDisable = (rowId) => {
+                    handleButtonAction(rowId, openKS, handleOpenKS, 'openKS');
+                    console.log('xin chao openKS');
+                };
+
+                const handleOpenThuHoiWithDisable = (rowId) => {
+                    handleButtonAction(rowId, openThuHoi, handleOpenThuHoi, 'openThuHoi');
+                    console.log('xin chao openThuHoi');
+                };
+
+                const handleOpenAdminCheckWithDisable = (rowId) => {
+                    handleButtonAction(rowId, openAdminCheck, handleOpenAdminCheck, 'openAdminCheck');
+                    console.log('xin chao openAdminCheck');
+                };
                 const handleSentDeleteDone = async () => {
                     try {
                         let data = {
@@ -1536,11 +1576,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
-                    params.row.status_admin_check === 2 ? "hidden" : ""
+                    isButtonDisabled === true && params.row.status_admin_check === 2 ? "hidden" : ""
                 }`;
                 return (
                     <div>
-                        {params.row.status_admin_check === 2 ? (
+                        { isButtonDisabled === true && params.row.status_admin_check === 2  ? (
                             <p>Đang Sửa</p>
                         ) : (
                             ""
@@ -1606,7 +1646,12 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={handleOpenAdminCheck}
+
+                                            onClick={() =>
+                                                handleOpenAdminCheckWithDisable(
+                                                    params.row.id
+                                                )
+                                            }
                                             variant="outlined"
                                         >
                                             <EyeIcon />
@@ -1635,8 +1680,10 @@ function Dashboard({ auth }) {
                                                 >
                                                     <ArrowPathIcon
                                                         className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                        onClick={
-                                                            handleOpenThuHoi
+                                                        onClick={() =>
+                                                            handleOpenThuHoiWithDisable(
+                                                                params.row.id
+                                                            )
                                                         }
                                                     />
                                                 </Tooltip>
@@ -1657,7 +1704,11 @@ function Dashboard({ auth }) {
                                                 >
                                                     <TrashIcon
                                                         className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                        onClick={handleOpenHuy}
+                                                        onClick={() =>
+                                                            handleOpenHuyWithDisable(
+                                                                params.row.id
+                                                            )
+                                                        }
                                                     />
                                                 </Tooltip>
                                             </MenuItem>
@@ -1677,7 +1728,11 @@ function Dashboard({ auth }) {
                                                 >
                                                     <TicketIcon
                                                         className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                        onClick={handleOpenKS}
+                                                        onClick={() =>
+                                                            handleOpenKSWithDisable(
+                                                                params.row.id
+                                                            )
+                                                        }
                                                     />
                                                 </Tooltip>
                                             </MenuItem>
@@ -1699,7 +1754,7 @@ function Dashboard({ auth }) {
                             previewImagesVT={previewImgVt}
                             previewImagesPT={previewImgPt}
                             openAdminCheck={openAdminCheck}
-                            handleOpenAdminCheck={handleOpenAdminCheck}
+                            handleOpenAdminCheck={handleOpenAdminCheckWithDisable}
                             handleFileChangeVt={(e) =>
                                 handleFileChange(
                                     e,
@@ -1735,21 +1790,21 @@ function Dashboard({ auth }) {
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
                             openThuHoi={openThuHoi}
-                            handleOpenThuHoi={handleOpenThuHoi}
+                            handleOpenThuHoi={handleOpenThuHoiWithDisable}
                             setWorkNote={setWorkNote}
                             handleThuHoi={handleThuHoi}
                         />
                         {/*----------------------------- dialog form Huy ----------- */}
                         <HuyDialog
                             openHuy={openHuy}
-                            handleOpenHuy={handleOpenHuy}
+                            handleOpenHuy={handleOpenHuyWithDisable}
                             setWorkNote={setWorkNote}
                             handleSentDeleteDone={handleSentDeleteDone}
                         />
                         {/*----------------------------- dialog form Huy ----------- */}
                         <KhaoSatDialog
                             openKS={openKS}
-                            handleOpenKS={handleOpenKS}
+                            handleOpenKS={handleOpenKSWithDisable}
                             setWorkNote={setWorkNote}
                             handleSentKS={handleSentDeleteDone}
                             cardExpires={cardExpires}

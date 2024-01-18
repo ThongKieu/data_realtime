@@ -25,6 +25,7 @@ return new class extends Migration
 			$table ->tinyInteger('check_in')->default(0)->comment ('0: Chưa checkin; 1: Đã checkin');
             $table ->tinyInteger('status_admin_check')->default(0)->comment ('0: Chưa kiểm tra; 1: Đã kiểm tra');
             $table ->integer('admin_check')->default(0);
+            $table ->integer('flag_check')->default(0);
             $table ->integer('kind_work_assign')->nullable();
             $table->string('seri_number')->nullable();
             $table->string('work_done_date')->nullable();

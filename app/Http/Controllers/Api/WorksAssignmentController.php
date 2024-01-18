@@ -707,10 +707,10 @@ class WorksAssignmentController extends Controller
     public function setActive(Request $request)
     {
         if ($request->id_work_ass && $request->ac == 2) {
-            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 2, 'admin_check' => $request->auth_id]);
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['flag_check' => 1, 'admin_check' => $request->auth_id]);
             return 'Mark Disable !';
         } else {
-            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 0, 'admin_check' => $request->auth_id]);
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['flag_check' => 0, 'admin_check' => $request->auth_id]);
 
             return 'Mark Non disable !';
         }

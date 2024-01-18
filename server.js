@@ -40,12 +40,15 @@ io.on("connection", (socket) => {
 
     
     // Application
+    
     socket.on("sendWorkWebToServer", async (data) => {
         io.sockets.emit("sendWorkServerToMobile", data);
     });
     socket.on("returnWorkWebToServer", async (data) => {
+        console.log(data);
         io.sockets.emit("returnWorkServerToMobile", data);
     });
+
 
 
 

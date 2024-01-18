@@ -366,7 +366,7 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-                socketD.emit("addWorkTo_Server", formData);
+                socketD.emit("UpdateDateTable_To_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -1356,7 +1356,6 @@ function Dashboard({ auth }) {
                         });
 
                         if (res.ok) {
-                            console.log(`Cập nhật thông tin ${type}`, formData);
                             socketD.emit("UpdateDateTable_To_Server", formData);
                         } else {
                             console.error(
@@ -1399,10 +1398,6 @@ function Dashboard({ auth }) {
                                 }
                             );
                             if (res.ok) {
-                                console.log(
-                                    "Đã Gửi Thông Tin Bảo Hành",
-                                    dataBh
-                                );
                                 socketD?.emit(
                                     "UpdateDateTable_To_Server",
                                     "TTBH"
@@ -1419,7 +1414,6 @@ function Dashboard({ auth }) {
                         console.error("Error fetching data lỗi rồi:", error);
                     }
                 };
-
                 const handleUpdateThuChi = async (e) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
@@ -1451,7 +1445,6 @@ function Dashboard({ auth }) {
                     }
                     handleOpenSpending_total();
                 };
-
                 const handleThuHoi = async (e) => {
                     let data = {
                         id: params.id,
@@ -1604,22 +1597,20 @@ function Dashboard({ auth }) {
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
-                    params.row.status_admin_check === 2 ? "hidden" : ""
+                    params.row.flag_check === 1 ? "hidden" : ""
                 }`;
                 return (
                     <div>
-                        {params.row.status_admin_check === 2 ? (
-                            <p>Đang Sửa</p>
-                        ) : (
-                            ""
-                        )}
+                        {params.row.flag_check === 1 ? <p>Đang Sửa</p> : ""}
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
                                 <>
                                     <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white`}
+                                            className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
+                                                params.row.flag_check === 1 ? "hidden" : ""
+                                            }`}
                                         />
                                     </Tooltip>
                                 </>
@@ -1683,7 +1674,7 @@ function Dashboard({ auth }) {
                                     <Menu allowHover>
                                         <MenuHandler>
                                             <EllipsisVerticalIcon
-                                                className={`w-6 h-6 pt-2 cursor-pointer ${classButtonDaPhan} ${DK1}`}
+                                                className={`w-6 h-6 pt-2 cursor-pointer ${classButtonDaPhan} ${DK1} ${DK2}`}
                                             />
                                         </MenuHandler>
                                         <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">

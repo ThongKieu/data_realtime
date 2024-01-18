@@ -7,7 +7,8 @@ const sendPhanThoRequest = async (
     auth,
     socketD,
     copyTextToClipboard,
-    handleOpenTho
+    handleOpenTho,
+    selectedDate
 ) => {
     const id_worker = selectPhanTho.shift();
     const id_phu = selectPhanTho.map((item) => item.value);
@@ -21,16 +22,19 @@ const sendPhanThoRequest = async (
     };
 
     try {
-        const response = await fetch("api/web/work-assignment", {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await fetch(
+            `api/web/work-assignment`,
+            {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         if (response.ok) {
-            socketD.emit("addWorkTo_Server", "Phan Tho");
+            socketD.emit("addWorkTo_Server", selectedDate);
             socketD.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();

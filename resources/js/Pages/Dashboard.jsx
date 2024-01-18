@@ -134,11 +134,12 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            if (isDisabled === true) {
+            if (isDisabled === true && id) {
                 fetchActive(id, 2);
             } else {
                 fetchActive(id, 1);
             }
+            console.log("id socket", id);
             setIsButtonDisabled(isDisabled);
             fetchDataDaPhan();
         });
@@ -163,7 +164,7 @@ function Dashboard({ auth }) {
                 auth_id: auth.user.id,
                 id_work_ass: id,
             };
-
+            console.log("XIN CHAO DATA ACTIVE:", data, "id xin chao:", id);
             const response = fetch("api/web/work-assignment/setActive", {
                 method: "POST",
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
@@ -1193,63 +1194,90 @@ function Dashboard({ auth }) {
                         [name]: value,
                     }));
                 };
-                const handleButtonAction = (rowId, isOpenState, handleOpenFunction, actionType) => {
+                const handleButtonAction = (
+                    rowId,
+                    isOpenState,
+                    handleOpenFunction,
+                    actionType
+                ) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
                     const isDisabled = !isOpenState;
                     setIsButtonDisabled(!isDisabled);
+                    rowId = params.row.id;
                     socketD.emit("ButtonDisable_To_Server", {
                         id: rowId,
                         isDisabled,
                     });
-
-                    // Thực hiện các thay đổi local dựa trên actionType
+                    console.log("rowId:", rowId);
+                    console.log(isDisabled);
                     switch (actionType) {
-                        case 'openSpendingTotal':
-                            handleOpenSpending_total();
-                            break;
-                        case 'openHuy':
+                        case "openSpendingTotal":
                             handleOpenFunction(!isOpenState);
-                            // Thêm các xử lý khác nếu cần
+                            console.log("isOpenState", !isOpenState);
                             break;
-                        case 'openKS':
+                        case "openHuy":
                             handleOpenFunction(!isOpenState);
-                            // Thêm các xử lý khác nếu cần
                             break;
-                        case 'openThuHoi':
+                        case "openKS":
                             handleOpenFunction(!isOpenState);
-                            // Thêm các xử lý khác nếu cần
                             break;
-                        case 'openAdminCheck':
+                        case "openThuHoi":
                             handleOpenFunction(!isOpenState);
-                            // Thêm các xử lý khác nếu cần
                             break;
-                        // Thêm các case khác nếu có các hành động khác
+                        case "openAdminCheck":
+                            handleOpenFunction(!isOpenState);
+                            break;
                         default:
                             break;
                     }
                 };
                 const handleOpenSpendingTotalWithDisable = (rowId) => {
-                    handleButtonAction(rowId, openSpending_total, handleOpenSpending_total, 'openSpendingTotal');
-                    console.log('xin chao openSpendingTotal');
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openSpending_total,
+                        handleOpenSpending_total,
+                        "openSpendingTotal"
+                    );
+                    console.log("xin chao openSpendingTotal", rowId);
                 };
                 const handleOpenHuyWithDisable = (rowId) => {
-                    handleButtonAction(rowId, openHuy, handleOpenHuy, 'openHuy');
-                    console.log('xin chao openHuy');
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openHuy,
+                        handleOpenHuy,
+                        "openHuy"
+                    );
+                    console.log("xin chao openHuy");
                 };
 
                 const handleOpenKSWithDisable = (rowId) => {
-                    handleButtonAction(rowId, openKS, handleOpenKS, 'openKS');
-                    console.log('xin chao openKS');
+                    rowId = params.row.id;
+                    handleButtonAction(rowId, openKS, handleOpenKS, "openKS");
+                    console.log("xin chao openKS");
                 };
 
                 const handleOpenThuHoiWithDisable = (rowId) => {
-                    handleButtonAction(rowId, openThuHoi, handleOpenThuHoi, 'openThuHoi');
-                    console.log('xin chao openThuHoi');
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openThuHoi,
+                        handleOpenThuHoi,
+                        "openThuHoi"
+                    );
+                    console.log("xin chao openThuHoi");
                 };
 
                 const handleOpenAdminCheckWithDisable = (rowId) => {
-                    handleButtonAction(rowId, openAdminCheck, handleOpenAdminCheck, 'openAdminCheck');
-                    console.log('xin chao openAdminCheck');
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openAdminCheck,
+                        handleOpenAdminCheck,
+                        "openAdminCheck"
+                    );
+                    console.log("xin chao openAdminCheck");
                 };
                 const handleSentDeleteDone = async () => {
                     try {
@@ -1576,11 +1604,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
-                    isButtonDisabled === true && params.row.status_admin_check === 2 ? "hidden" : ""
+                    params.row.status_admin_check === 2 ? "hidden" : ""
                 }`;
                 return (
                     <div>
-                        { isButtonDisabled === true && params.row.status_admin_check === 2  ? (
+                        {params.row.status_admin_check === 2 ? (
                             <p>Đang Sửa</p>
                         ) : (
                             ""
@@ -1610,10 +1638,8 @@ function Dashboard({ auth }) {
                                         <Button
                                             color="white"
                                             className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
-                                            onClick={() =>
-                                                handleOpenSpendingTotalWithDisable(
-                                                    params.row.id
-                                                )
+                                            onClick={
+                                                handleOpenSpendingTotalWithDisable
                                             }
                                         >
                                             <ArrowUpTrayIcon />
@@ -1646,11 +1672,8 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-
-                                            onClick={() =>
-                                                handleOpenAdminCheckWithDisable(
-                                                    params.row.id
-                                                )
+                                            onClick={
+                                                handleOpenAdminCheckWithDisable
                                             }
                                             variant="outlined"
                                         >
@@ -1680,10 +1703,8 @@ function Dashboard({ auth }) {
                                                 >
                                                     <ArrowPathIcon
                                                         className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                        onClick={() =>
-                                                            handleOpenThuHoiWithDisable(
-                                                                params.row.id
-                                                            )
+                                                        onClick={
+                                                            handleOpenThuHoiWithDisable
                                                         }
                                                     />
                                                 </Tooltip>
@@ -1704,10 +1725,8 @@ function Dashboard({ auth }) {
                                                 >
                                                     <TrashIcon
                                                         className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                        onClick={() =>
-                                                            handleOpenHuyWithDisable(
-                                                                params.row.id
-                                                            )
+                                                        onClick={
+                                                            handleOpenHuyWithDisable
                                                         }
                                                     />
                                                 </Tooltip>
@@ -1728,10 +1747,8 @@ function Dashboard({ auth }) {
                                                 >
                                                     <TicketIcon
                                                         className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                        onClick={() =>
-                                                            handleOpenKSWithDisable(
-                                                                params.row.id
-                                                            )
+                                                        onClick={
+                                                            handleOpenKSWithDisable
                                                         }
                                                     />
                                                 </Tooltip>
@@ -1754,7 +1771,9 @@ function Dashboard({ auth }) {
                             previewImagesVT={previewImgVt}
                             previewImagesPT={previewImgPt}
                             openAdminCheck={openAdminCheck}
-                            handleOpenAdminCheck={handleOpenAdminCheckWithDisable}
+                            handleOpenAdminCheck={
+                                handleOpenAdminCheckWithDisable
+                            }
                             handleFileChangeVt={(e) =>
                                 handleFileChange(
                                     e,

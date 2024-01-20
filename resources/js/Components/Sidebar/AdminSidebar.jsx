@@ -16,15 +16,15 @@ function AdminSidebar({ children }) {
     const [openSubmenu, setOpenSubmenu] = useState(false);
     const Menus = [
         {
-            title: "Thợ",
+            title: "Quản lý nhân viên",
             icon: <UserGroupIcon className={`w-6 md:w-5 xl:w-6`}  />,
             href: "admin",
             submenu: true,
             submenuItem: [
                 {
-                    title: "Kiểm Tra Liên Hệ",
+                    title: " Danh Sách Người Dùng",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: route("admin/worker-check-call"),
+                    href: route("admin/users"),
                 },
                 {
                     title: " Danh Sách Thợ",
@@ -36,6 +36,7 @@ function AdminSidebar({ children }) {
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/worker-account"),
                 },
+               
             ],
         },
         {
@@ -126,7 +127,12 @@ function AdminSidebar({ children }) {
             icon: <WrenchIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
-            submenuItem: [
+            submenuItem: [ 
+                {
+                title: "Kiểm Tra Liên Hệ",
+                icon: <ChevronDoubleRightIcon className="w-3" />,
+                href: route("admin/worker-check-call"),
+                },
                 {
                     title: "Chặn Số",
                     icon: <ChevronDoubleRightIcon className="w-3" />,

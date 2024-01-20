@@ -397,6 +397,7 @@ class WorksAssignmentController extends Controller
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
         } else {
+            
             $id_cus = $request->id_cus;
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,

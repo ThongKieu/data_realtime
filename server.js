@@ -1,7 +1,9 @@
 // ES
 import { createServer } from "http";
 import { Server } from "socket.io";
+import express from 'express';
 
+const app = express();
 const httpServer = createServer();
 const io = new Server(httpServer, {
     cors: { origin: "*" },
@@ -42,8 +44,14 @@ io.on("connection", (socket) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
     // Xử lý sự kiện khi máy khách ngắt kết nối
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
+    socket.on('disconnect', (id) => {
+        // app.post('/api/web/disconnect', () => {
+        //     // Xử lý logic API ở đây
+        //     // res.json({ message: 'API response' });
+        //     console.log('đã run api!');
+        //   });
+          
+        console.log('User disconnected:',id);
       });
     // socket.on("disconnect", () => {
     //     console.log("User disconnected");

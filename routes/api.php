@@ -84,7 +84,13 @@ Route::prefix('web')->group(function () {
 
     });
 
-    Route::get('worker-with-type', 'App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
+    Route::get('worker-with-type', 'App\Http\\Api\Web\WorkerController@getWorkerWithType');
+
+    Route::prefix('search')->group(function(){
+        Route::get('/','App\Http\Controllers\Api\SearchController@index');
+        Route::post('/','App\Http\Controllers\Api\SearchController@searchAjax');
+
+    });
 
 })->withoutMiddleware("throttle:api")
     ->middleware(

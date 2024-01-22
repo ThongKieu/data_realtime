@@ -37,8 +37,6 @@ io.on("connection", (socket) => {
         console.log("Receiva:", data);
         io.sockets.emit("deleteWorkTo_Client", data);
     });
-
-    
     // Application
     
     socket.on("sendWorkWebToServer", async (data) => {
@@ -48,12 +46,6 @@ io.on("connection", (socket) => {
         console.log(data);
         io.sockets.emit("returnWorkServerToMobile", data);
     });
-
-
-
-
-
-
     // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', () => {
         console.log('User disconnected');

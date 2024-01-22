@@ -407,15 +407,17 @@ class WorksAssignmentController extends Controller
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
+            // dd($request->hasFile('seri_imag'));
             if ($request->hasFile('seri_imag')) {
                 $file_na = '';
                 foreach ($request->file('seri_imag') as $files_seri) {
                     $name_seri = $request->id . '-' . time() . rand(10, 100) . '.' . $files_seri->extension();
                     $files_seri->move('assets/images/work_assignment/' . $request->id . '/seri_imag', $name_seri);
                     $file_na = $file_na . 'assets/images/work_assignment/' . $request->id . '/seri_imag/' . $name_seri . ',';
+                    dd($file_na);
                 }
                 // $serializedArr1 = json_encode($file_na);
-                // dd($file_na);
+
                 $check_ima = WorksAssignment::where('id', '=', $request->id)->value('seri_imag');
                 if ($check_ima != null) {
                     $file_na = $check_ima . $file_na;
@@ -432,6 +434,7 @@ class WorksAssignmentController extends Controller
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $file->extension();
                     $file->move('assets/images/work_assignment/' . $request->id, $name);
                     $files = $files . 'assets/images/work_assignment/' . $request->id . '/' . $name . ',';
+                    dd($files);
                 }
                 // $serializedArr = json_encode($files);
                 // dd($serializedArr);
@@ -451,7 +454,7 @@ class WorksAssignmentController extends Controller
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y '),
                     ]);
-                return response()->json('Update work with image !!!');
+                return response()->json('Update work with image !!! ');
             } else {
                 $up_work_ass = WorksAssignment::where('id', '=', $request->id)
                     ->update([
@@ -707,11 +710,10 @@ class WorksAssignmentController extends Controller
     public function setActive(Request $request)
     {
         if ($request->id_work_ass && $request->ac == 2) {
-            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 2, 'admin_check' => $request->auth_id]);
-
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['flag_check' => 1, 'admin_check' => $request->auth_id]);
             return 'Mark Disable !';
         } else {
-            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['status_admin_check' => 0, 'admin_check' => $request->auth_id]);
+            WorksAssignment::where('id', '=', $request->id_work_ass)->update(['flag_check' => 0, 'admin_check' => $request->auth_id]);
 
             return 'Mark Non disable !';
         }

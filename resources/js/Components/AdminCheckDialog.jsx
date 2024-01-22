@@ -250,7 +250,7 @@ function AdminCheckDialog({
             });
             if (res.ok) {
                 handleSearch();
-                handleOpenAdminCheck();
+                // handleOpenAdminCheck();
                 socketD.emit(
                     "UpdateDateTable_To_Server",
                     "Cập Nhật trạng thái AdminCheck", check_admin

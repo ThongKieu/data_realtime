@@ -25,69 +25,69 @@ class WorksController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $oldday2=Carbon::now();
-        $dc2 =$oldday2->subDay(1)->isoFormat('YYYY-MM-D');
+        $oldday2 = Carbon::now();
+        $dc2 = $oldday2->subDay(1)->isoFormat('YYYY-MM-D');
 
         $dien_nuoc = Work::where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)
             ->where('date_book', '=', $today)
             ->get();
 
-        $dien_nuoc_cu =  Work::where('kind_work', '=', 0)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
-        $dien_lanh =   Work::where('kind_work', '=', 1)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
-
-            $dien_lanh_cu =  Work::where('kind_work', '=', 1)
+        $dien_nuoc_cu = Work::where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)
-            ->where('date_book', '=',$dc2)
+            ->where('date_book', '=', $dc2)
             ->get();
-        $do_go     =    Work::where('kind_work', '=', 2)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
+        $dien_lanh = Work::where('kind_work', '=', 1)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
 
-        $do_go_cu =  Work::where('kind_work', '=', 2)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
-        $nlmt      =   Work::where('kind_work', '=', 3)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
+        $dien_lanh_cu = Work::where('kind_work', '=', 1)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
+        $do_go = Work::where('kind_work', '=', 2)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
 
-        $nlmt_cu =  Work::where('kind_work', '=', 3)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
-        $xay_dung  =    Work::where('kind_work', '=', 4)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
-        $xay_dung_cu =  Work::where('kind_work', '=', 4)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
-        $tai_xe    =    Work::where('kind_work', '=', 5)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
-        $tai_xe_cu =  Work::where('kind_work', '=', 5)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
-        $co_khi    =    Work::where('kind_work', '=', 6)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
-        ->get();
-        $co_khi_cu =  Work::where('kind_work', '=',6)
-        ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
-        ->get();
+        $do_go_cu = Work::where('kind_work', '=', 2)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
+        $nlmt = Work::where('kind_work', '=', 3)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
+
+        $nlmt_cu = Work::where('kind_work', '=', 3)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
+        $xay_dung = Work::where('kind_work', '=', 4)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
+        $xay_dung_cu = Work::where('kind_work', '=', 4)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
+        $tai_xe = Work::where('kind_work', '=', 5)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
+        $tai_xe_cu = Work::where('kind_work', '=', 5)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
+        $co_khi = Work::where('kind_work', '=', 6)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $today)
+            ->get();
+        $co_khi_cu = Work::where('kind_work', '=', 6)
+            ->where('status_cus', '=', 0)
+            ->where('date_book', '=', $dc2)
+            ->get();
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi) + count($dien_nuoc_cu) + count($dien_lanh_cu) + count($do_go_cu) + count($nlmt_cu) + count($xay_dung_cu) + count($tai_xe_cu) + count($co_khi_cu);
         $dataWork = [
             'dien_nuoc' => $dien_nuoc,
@@ -117,13 +117,13 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
 
-        $dien_nuoc =    Work::where('kind_work', '=', '0')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $dien_lanh =    Work::where('kind_work', '=', '1')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $do_go     =    Work::where('kind_work', '=', '2')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $nlmt      =    Work::where('kind_work', '=', '3')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $xay_dung  =    Work::where('kind_work', '=', '4')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $tai_xe    =    Work::where('kind_work', '=', '5')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $co_khi    =    Work::where('kind_work', '=', '6')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $dien_nuoc = Work::where('kind_work', '=', '0')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $dien_lanh = Work::where('kind_work', '=', '1')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $do_go = Work::where('kind_work', '=', '2')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $nlmt = Work::where('kind_work', '=', '3')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $xay_dung = Work::where('kind_work', '=', '4')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $tai_xe = Work::where('kind_work', '=', '5')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+        $co_khi = Work::where('kind_work', '=', '6')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWorkDone = [
             'dien_nuoc_done' => $dien_nuoc,
@@ -144,7 +144,7 @@ class WorksController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $co_khi    =   DB::table('works')
+        $co_khi = DB::table('works')
             ->join('users', 'works.member_read', '=', 'users.id')
             ->where('works.date_book', '=', $today)
             ->where('works.status_cus', '=', 2)
@@ -160,12 +160,12 @@ class WorksController extends Controller
                 "works.district",
                 "works.phone_number",
                 "works.image_work_path",
-                "users.name"
+                "users.name",
             ]);
         $nu_can = count($co_khi);
         return response()->json([
             'num_can' => $nu_can,
-            'info_can' => $co_khi
+            'info_can' => $co_khi,
         ]);
     }
     public function store(StoreWorkRequest $request)
@@ -173,7 +173,7 @@ class WorksController extends Controller
         Work::create($request->validated());
         // dd($request->all());
 
-        $id = Work::where('phone_number', '=', $request->phone_number)->where('work_content', '=', $request->work_content)->orderBy('id','asc')->limit(1)->value('id');
+        $id = Work::where('phone_number', '=', $request->phone_number)->where('work_content', '=', $request->work_content)->orderBy('id', 'asc')->limit(1)->value('id');
         $files = '';
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
@@ -184,9 +184,8 @@ class WorksController extends Controller
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);
             // Work::where('id','=',$id)->update(['image_work_path'=>"'".$serializedArr."'"]);
-            return response()->json('Add image Done');
         }
-        return response()->json('Create Work Done');
+        return 'Create Work OK';
     }
 
     public function updateWork(Request $request)
@@ -227,13 +226,12 @@ class WorksController extends Controller
         return response()->json(['message' => 'No image uploaded'], 400);
     }
     public function insertCancleBook(Request $request)
-
     {
         // dd($request);
         $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->auth_id]);
         if ($up) {
             return 'Delete work done !';
         }
-        return  'Delete Failse !';
+        return 'Delete Failse !';
     }
 }

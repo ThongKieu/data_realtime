@@ -112,6 +112,8 @@ Route::prefix('app')->group(function () {
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
         Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
+        Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
+        Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
 
     });
     // Customer

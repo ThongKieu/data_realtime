@@ -34,4 +34,20 @@ class UsersAdminController extends Controller
         // dd($user);
         return response()->json('Ngon');
     }
+    public function resetPassAdmin(Request $request)
+    {
+       $id = $request-> id;
+    //    dd($id);
+        User::where('id','=',$id)->update(['password'=>Hash::make('Thoviet58568')]);
+
+        return response()->json('Done');
+    }
+    public function resetPerAdmin(Request $request)
+    {
+       $id = $request-> id;
+    //    dd($request);
+        User::where('id','=',$id)->update(['permission'=>$request->permission]);
+
+        return response()->json('Done');
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UsersAdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
         // User admin 
         Route::get('/users',function(){return Inertia::render('Admin/Users/UsersAdmin');})->name('admin/users');
+       
 
         // Worker
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');

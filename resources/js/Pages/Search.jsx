@@ -146,7 +146,7 @@ function Search({ auth }) {
                             label="Tìm Kiếm"
                             name="search"
                             value={keySearch}
-                            onChange={onChange}
+                            onChange={handleChange}
                             className=" shadow-none focus:outline-none "
                         />
                     </div>

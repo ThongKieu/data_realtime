@@ -12,11 +12,11 @@ export default defineConfig({
       ],
       server:{
         // hmr:'localhost'
-        host: ["192.168.0.43"],
+        host: ["192.168.0.142"],
         // host: ["103.15.50.6"],
         port: 5173,
         hmr: {
-            host: ["192.168.0.43"],
+            host: ["192.168.0.142"],
             // host: ["192.168.0.43"],
         },
     },

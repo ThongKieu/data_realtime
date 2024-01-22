@@ -62,8 +62,10 @@ class WorksAssignmentController extends Controller
                     "workers.worker_code",
                     "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                 ]
             );
+
         $dien_lanh = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
@@ -98,6 +100,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_address",
                     "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                 ]
             );
         $do_go = DB::table('works_assignments')
@@ -133,6 +136,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_code",
                     "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                 ]
             );
         $nlmt = DB::table('works_assignments')
@@ -168,6 +172,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_code",
                     "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                 ]
             );
         $xay_dung = DB::table('works_assignments')
@@ -203,6 +208,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_code",
                     "workers.worker_address", "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                 ]
             );
         $tai_xe = DB::table('works_assignments')
@@ -224,6 +230,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.seri_imag",
                     "works_assignments.status_work",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
                     "works.work_content",
@@ -261,6 +268,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.check_in",
                     "works_assignments.seri_number",
                     "works_assignments.status_admin_check",
+                    "works_assignments.flag_check",
                     "works.work_content",
                     "works.date_book",
                     "works.street",
@@ -397,6 +405,7 @@ class WorksAssignmentController extends Controller
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
         } else {
+            
             $id_cus = $request->id_cus;
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,

@@ -9,7 +9,6 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
     console.log("user connected");
-
     socket.on("userOnline", (userId) => {
         console.log(`User ${userId} is online`);
         // Thông báo server khi có người dùng trực tuyến
@@ -19,12 +18,10 @@ io.on("connection", (socket) => {
         console.log("User:", message, "is online");
         io.sockets.emit("sentListOnline_Client", message);
     });
-
     socket.on("addWorkTo_Server", async (formData1) => {
         console.log("Received form data addWork:", formData1);
         io.sockets.emit("sendAddWorkTo_Client", formData1);
     });
-
     socket.on("ButtonDisable_To_Server", async (isDisabled) => {
         console.log("Button Disable:", isDisabled);
         io.sockets.emit("ButtonDisable_To_Client", isDisabled);

@@ -299,7 +299,6 @@ function NavList({ active = false }) {
 function NavbarDefault({ propauth, check }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
-    console.log(check, "xin chao");
     const [socketDelete, setSocketDelete] = useState();
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
@@ -362,7 +361,6 @@ function NavbarDefault({ propauth, check }) {
         { code: "H", name: "Cơ Khí" },
         { code: "F", name: "Xây Dựng" },
     ];
-console.log(infoWorker);
     const renderWorkerGroup = (prefix, status) => (
         <div className="w-full p-1" key={`${prefix}-${status}`}>
             <p className="border-b-[3px] border-b-blue-500 text-center w-full">

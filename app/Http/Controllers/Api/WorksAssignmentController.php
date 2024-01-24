@@ -349,9 +349,9 @@ class WorksAssignmentController extends Controller
         if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->worker_name == null) {
             return -1;
         } else {
-            $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
+            $note = 'Trả lịch (' . $request->worker_name . ' - ' . $request->real_note . ')';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
-            WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+            WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4, 'real_note' => $note]);
             return 1;
         }
 
@@ -361,7 +361,7 @@ class WorksAssignmentController extends Controller
         if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->auth_id == null) {
             return -1;
         } else {
-            $note = $request->real_note;
+            $note = $request->worker_name . 'Huỷ lịch (' . $request->real_note . ')';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
             return 1;
@@ -381,14 +381,14 @@ class WorksAssignmentController extends Controller
     }
     public function insertQuoteFlow(Request $request)
     {
-
-        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
-
-        if ($up == 200) {
-            return 'Delete work done !';
+        if ($request->id == null || $request->auth_id == null) {
+            return -1;
+        } else {
+            $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+            $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
+            return 1;
         }
-        return 'Delete Failse !';
+
     }
     public function continueWorkAss(Request $request)
     {
@@ -405,7 +405,7 @@ class WorksAssignmentController extends Controller
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
         } else {
-            
+
             $id_cus = $request->id_cus;
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,

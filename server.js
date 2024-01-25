@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     socket.on("returnWorkWebToServer", async (data) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
-    // Xử lý sự kiện khi máy khách ngắt kết nối
+    // // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', (id) => {
         // app.post('/api/web/disconnect', () => {
         //     // Xử lý logic API ở đây

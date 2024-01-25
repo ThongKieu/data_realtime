@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import newSocket from "@/Utils/Socket";
+import { useEffect } from "react";
+
 
 const YourComponent = () => {
   const [rowModesModel, setRowModesModel] = useState({});
@@ -31,7 +34,7 @@ const YourComponent = () => {
       });
     }
   };
-
+  console.log(newSocket);
   const processRowUpdateDN = async (data) => {
     try {
       const res = await fetch("api/web/update/work", {
@@ -51,8 +54,16 @@ const YourComponent = () => {
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
     }
+    
   };
 
+  useEffect(()=>{
+    if (newSocket) {
+        console.log('soket',newSocket);
+        newSocket.emit("userOnline");
+        // pushOn();
+    }
+  },[]);
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid

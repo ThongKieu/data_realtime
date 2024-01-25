@@ -391,7 +391,7 @@ class WorksAssignmentController extends Controller
                 foreach ($images as $image) {
 
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $image->movie('assets/images/work_assignment/' . $request->id . '/quote', $name);
                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
                 }
             }

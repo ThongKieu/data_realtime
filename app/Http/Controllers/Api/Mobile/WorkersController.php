@@ -109,14 +109,14 @@ class WorkersController extends Controller
     {
         if ($req->hasFile('avatar_new')) {
             $file = $req->file('avatar_new');
-            $name = $req->sort_name . '.' . $file->extension();
+            $name = $req->id_worker . '.' . $file->extension();
             $file->move('assets/avatar/', $name);
-            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avatar' => $file]);
+            $up = AccountionWorker::where('id_worker', '=', $req->id_worker)->update(['avatar' => $file]);
 
             if ($up) {
                 return 'Update Done!';
             } else {
-                return 'Failse Update';
+                return 'Failse Update!';
             }
         }
     }

@@ -117,6 +117,7 @@ function Dashboard({ auth }) {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
+
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
@@ -150,6 +151,7 @@ function Dashboard({ auth }) {
             });
         };
         window.addEventListener("resize", handleResize);
+	//newSocket.connect();
         return () => {
             window.removeEventListener("resize", handleResize);
             newSocket.off("ButtonDisable_From_Server");
@@ -763,6 +765,7 @@ function Dashboard({ auth }) {
                 const handleOpen = () => {
                     setOpen(!open);
                 };
+		const check_bh = params.row.income_total;
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -775,22 +778,20 @@ function Dashboard({ auth }) {
                         }
                     }
                 };
-                useEffect(() => {
-                    getDataBh();
-                }, []);
                 return (
                     <>
-                        {TTBH.length > 0 ? (
-                            <IconButton
-                                className="w-8 h-8 p-1"
-                                variant="outlined"
-                                onClick={handleOpen}
-                            >
-                                <ClipboardDocumentListIcon className="w-4 h-4" />
-                            </IconButton>
-                        ) : (
-                            <span></span>
-                        )}
+			 <IconButton
+                            className={`${
+                                check_bh === 0 ? "hidden" : ""
+                            } w-8 h-8 p-1`}
+                            variant="outlined"
+                            onClick={() => {
+                                handleOpen();
+                                getDataBh();
+                            }}
+                        >
+                            <ClipboardDocumentListIcon className="w-4 h-4" />
+                        </IconButton>
                         <Dialog open={open} handler={handleOpen} size="lg">
                             <DialogHeader>Ghi Chú</DialogHeader>
                             <DialogBody divider>

@@ -23,7 +23,7 @@ class WorksController extends Controller
             $today = $request->dateCheck;
 
         } else {
-            $today = date('d-m-Y');
+            $today = date('Y-m-d');
         }
         $oldday2=Carbon::now();
         $dc2 =$oldday2->subDay(1)->isoFormat('YYYY-MM-D');
@@ -114,7 +114,7 @@ class WorksController extends Controller
         if ($request->dateCheck) {
             $today = $request->dateCheck;
         } else {
-            $today = date('d-m-Y');
+            $today = date('Y-m-d');
         }
 
         $dien_nuoc =    Work::where('kind_work', '=', '0')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
@@ -142,7 +142,7 @@ class WorksController extends Controller
         if ($request->dateCheck) {
             $today = $request->dateCheck;
         } else {
-            $today = date('d-m-Y');
+            $today = date('Y-m-d');
         }
         $co_khi    =   DB::table('works')
             ->join('users', 'works.member_read', '=', 'users.id')

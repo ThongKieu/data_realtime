@@ -89,11 +89,12 @@ function FloatingButton() {
     };
     //-------------- change value input form -----------
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+         const { name, value } = e.target;
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+       
     };
     //----------- change value input file image form -------------------
     const handleFileChange = (e) => {
@@ -184,6 +185,7 @@ function FloatingButton() {
                                     label="Số điện thoại"
                                     value={formData.phone_number}
                                     id="phone_number"
+                                    type="text"
                                     name="phone_number"
                                     className="shadow-none required"
                                     onChange={handleChange}
@@ -195,6 +197,7 @@ function FloatingButton() {
                                     label="Yêu Cầu Công Việc"
                                     className="shadow-none"
                                     id="work_content"
+                                    type="text"
                                     name="work_content"
                                     value={formData.work_content}
                                     onChange={handleChange}
@@ -205,6 +208,7 @@ function FloatingButton() {
                                     label="Địa Chỉ"
                                     className="shadow-none"
                                     id="street"
+                                    type="text"
                                     name="street"
                                     value={formData.street}
                                     onChange={handleChange}
@@ -237,6 +241,7 @@ function FloatingButton() {
                                     label="Ghi Chú"
                                     className="shadow-none"
                                     id="work_note"
+                                    type="text"
                                     name="work_note"
                                     value={formData.work_note}
                                     onChange={handleChange}

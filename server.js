@@ -1,16 +1,14 @@
 // ES
 import { createServer } from "http";
 import { Server } from "socket.io";
-import express from 'express';
 
-const app = express();
 const httpServer = createServer();
 const io = new Server(httpServer, {
     cors: { origin: "*" },
 });
 
 io.on("connection", (socket) => {
-    console.log("user connected",socket.id);
+    console.log("user connected");
     socket.on("userOnline", (userId) => {
         console.log(`User ${userId} is online`);
         // Thông báo server khi có người dùng trực tuyến

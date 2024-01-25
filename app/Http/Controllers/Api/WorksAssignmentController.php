@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\Web\QuoteFlowController;
 use App\Http\Controllers\Controller;
 use App\Models\Warranties;
 use App\Models\Work;
@@ -379,7 +378,35 @@ class WorksAssignmentController extends Controller
         }
         return 'Delete Failed !';
     }
+    public function insertQuoteFlow(Request $request)
+    {
 
+        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        // dd($up1);
+        if ($up1 == 1) {
+            $seri_imag = '';
+            if ($request->hasFile('image_work_path')) {
+                $images = $request->file('image_work_path');
+                // dd($images);
+                foreach ($images as $image) {
+
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                }
+            }
+
+            // dd($seri_imag);
+            $up = Work::where('id', '=', $request->id_cus)->update(['image_work_path' => $seri_imag]);
+
+            if ($up == 1) {
+                return 'Delete work done !';
+            }
+            return 'Lỗi !!!!!!!!!';
+        } else {
+            return 'Không tìm thấy';
+        }
+    }
     public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {

@@ -1276,6 +1276,30 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
+                const handleSentKS =async () => {
+                    try {
+                        let data = {
+                            id: params.id,
+                            id_cus: params.row.id_cus,
+                            real_note: params.row.real_note,
+                            auth_id: auth.user.id,
+                        };
+                        const response = await fetch(
+                            "api/web/update/work-assignment-cancle",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            handleOpen();
+                        }
+                    } catch (error) {}
+                };
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
@@ -1791,7 +1815,7 @@ function Dashboard({ auth }) {
                             openKS={openKS}
                             handleOpenKS={handleOpenKSWithDisable}
                             setWorkNote={setWorkNote}
-                            handleSentKS={handleSentDeleteDone}
+                            handleSentKS={handleSentKS}
                             cardExpires={cardExpires}
                             handleChange={handleChange}
                             vatCard={vatCard}

@@ -379,7 +379,7 @@ class WorksAssignmentController extends Controller
         }
         return 'Delete Failed !';
     }
-    
+
     public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {
@@ -681,7 +681,7 @@ class WorksAssignmentController extends Controller
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
         // dd($up1);
        if($up1 == 1)
-       {    
+       {
 
             $seri_imag = '';
 
@@ -689,7 +689,7 @@ class WorksAssignmentController extends Controller
                 $images = $request->file('image_work_path');
                 // dd($images);
                 foreach ($images as $image) {
-                   
+
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                     $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';

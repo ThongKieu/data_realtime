@@ -11,7 +11,6 @@ io.on("connection", (socket) => {
     console.log("user connected");
     socket.on("userOnline", (userId) => {
         console.log(`User ${userId} is online`);
-        // Thông báo server khi có người dùng trực tuyến
         io.sockets.emit("userOnline_Client", userId);
     });
     socket.on("pushOnline", (message) => {

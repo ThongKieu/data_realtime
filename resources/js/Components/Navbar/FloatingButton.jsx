@@ -71,6 +71,11 @@ function FloatingButton() {
     const handleOptionChangeDistrict = (event) => {
         setSelectedOption(event.target.value);
     };
+    const formattedToday = getFormattedToday();
+    const [selectedDate, setSelectedDate] = useState(formattedToday);
+    const handleDateChange = (event) => {
+        setSelectedDate(event.target.value);
+    };
     useEffect(() => {
         fetchData();
         setSocketFTB(newSocket, { secure: true });
@@ -94,7 +99,7 @@ function FloatingButton() {
                 ...prevData,
                 [name]: value,
             }));
-       
+
     };
     //----------- change value input file image form -------------------
     const handleFileChange = (e) => {
@@ -124,8 +129,9 @@ function FloatingButton() {
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
+
         try {
-            const response = await fetch(host + url_API, {
+            const response = await fetch(host + `api/web/works?dateCheck=${selectedDate}`, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -135,7 +141,7 @@ function FloatingButton() {
                 body: formData1,
             });
             if (response.status === 200) {
-                socketFTB.emit("addWorkTo_Server", formData1);
+                newSocket.emit("addWorkTo_Server", formData1);
                 handleOpen();
                 setFormData({
                     member_read: 1,
@@ -144,7 +150,6 @@ function FloatingButton() {
                     from_cus: 0,
                     flag_status: 1,
                 });
-                console.log(formData1);
             } else if (response.status === 422 ){
                 alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`)
             }
@@ -154,11 +159,7 @@ function FloatingButton() {
     };
 
     // ------------------------ format date -----------------
-    const formattedToday = getFormattedToday();
-    const [selectedDate, setSelectedDate] = useState(formattedToday);
-    const handleDateChange = (event) => {
-        setSelectedDate(event.target.value);
-    };
+
     return (
         <Fragment>
             <Button

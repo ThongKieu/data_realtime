@@ -160,12 +160,8 @@ function CancelBooking({ auth }) {
     const [socketDelete, setSocketDelete] = useState("");
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
-        fetchDelete();
         newSocket.on("sendAddWorkTo_Client", (data) => {
-            console.log("hell", data);
-            if (data != "") {
-                fetchDelete(data);
-            }
+            fetchDelete(data);
         });
         // lắng nghe server
         return () => {
@@ -177,8 +173,6 @@ function CancelBooking({ auth }) {
             const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setDeleteBooking(jsonData.info_can);
-            console.log("num_can111", jsonData.info_can);
-            // socketDelete.emit("addWorkTo_Server",socketDelete)
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -199,7 +193,8 @@ function CancelBooking({ auth }) {
                     {/* bang ben trai  */}
                     <Box sx={{ width: 1, height: heightScreenTV }}>
                         <DataGrid
-                         autoHeight {...heightScreenTV}
+                            autoHeight
+                            {...heightScreenTV}
                             rows={deleteBooking}
                             columns={columns}
                             disableColumnFilter
@@ -208,8 +203,10 @@ function CancelBooking({ auth }) {
                             slots={{ toolbar: GridToolbar }}
                             initialState={{
                                 ...deleteBooking.initialState,
-                                pagination: { paginationModel: { pageSize: 10 } },
-                              }}
+                                pagination: {
+                                    paginationModel: { pageSize: 10 },
+                                },
+                            }}
                             slotProps={{
                                 toolbar: {
                                     showQuickFilter: true,

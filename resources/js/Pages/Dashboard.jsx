@@ -108,8 +108,6 @@ function Dashboard({ auth }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
-        fetchData();
-        fetchDataDaPhan();
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
@@ -117,21 +115,18 @@ function Dashboard({ auth }) {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
-
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
             fetchDateCheck(data, selectedDate);
+            fetchDateDoneCheck(data, selectedDate);
             fetchDataDashboard(data, selectedDate);
-            fetchData(data, selectedDate);
-            fetchDataDaPhan(data);
         });
-        newSocket.on("sendAddWorkTo_Client", (data) => {
+        newSocket.on("sendAddWorkTo_Client", (selectedDate,data) => {
             if (data !== "") {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
-                fetchDataDaPhan(data);
-                fetchData(data, selectedDate);
+                fetchDateDoneCheck(data, selectedDate);
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
@@ -151,7 +146,7 @@ function Dashboard({ auth }) {
             });
         };
         window.addEventListener("resize", handleResize);
-	//newSocket.connect();
+        //newSocket.connect();
         return () => {
             window.removeEventListener("resize", handleResize);
             newSocket.off("ButtonDisable_From_Server");
@@ -214,32 +209,22 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
-        try {
-            const response = await fetch(url);
-            const jsonData = await response.json();
-            return jsonData;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return null;
-        }
-    };
-    const fetchData = async () => {
-        const url = `api/web/works`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
-            setWorkDataDN(jsonData.dien_nuoc);
-            setWorkDataDNCu(jsonData.dien_nuoc_cu);
-            setWorkDataDL(jsonData.dien_lanh);
-            setWorkDataDG(jsonData.do_go);
-            setWorkDataNLMT(jsonData.nlmt);
-            setWorkDataXD(jsonData.xay_dung);
-            setWorkDataVC(jsonData.tai_xe);
-            setWorkDataHX(jsonData.co_khi);
+        if (url || url != undefined || url != null || url != '') {
+            try {
+                const response = await fetch(url);
+                console.log('xin choa fetchDataDemo',url);
+                const jsonData = await response.json();
+                return jsonData;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return null;
+            }
         }
     };
 
+
     const fetchDateCheck = async (dateCheck) => {
-        const url = `api/web/works?dateCheck=${dateCheck}`;
+        const url = `api/web/works?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
@@ -249,24 +234,13 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
+            setIsLoading(false);
+        } else {
+            console.log("Data lỗi không tồn tại!!");
         }
     };
     const fetchDateDoneCheck = async (dateCheck) => {
-        const url = `/api/web/work-assignment?dateCheck=${dateCheck}`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
-            setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
-        }
-    };
-    // --------------------------- lay du lieu lich da phan ----------------------------------
-    const fetchDataDaPhan = async () => {
-        const url = `/api/web/work-assignment`;
+        const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
             setWorkDataDN_done(jsonData.dien_nuoc_done);
@@ -277,10 +251,8 @@ function Dashboard({ auth }) {
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
             setIsLoading(false);
-            socketD?.emit(
-                "UpdateDateTable_To_Server",
-                "Cập Nhật trạng thái AdminCheck"
-            );
+        } else {
+            console.log("Data lỗi không tồn tại!!");
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -765,7 +737,7 @@ function Dashboard({ auth }) {
                 const handleOpen = () => {
                     setOpen(!open);
                 };
-		const check_bh = params.row.income_total;
+                const check_bh = params.row.income_total;
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -780,7 +752,7 @@ function Dashboard({ auth }) {
                 };
                 return (
                     <>
-			 <IconButton
+                        <IconButton
                             className={`${
                                 check_bh === 0 ? "hidden" : ""
                             } w-8 h-8 p-1`}
@@ -1610,7 +1582,9 @@ function Dashboard({ auth }) {
                                     <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
                                             className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
-                                                params.row.flag_check === 1 ? "hidden" : ""
+                                                params.row.flag_check === 1
+                                                    ? "hidden"
+                                                    : ""
                                             }`}
                                         />
                                     </Tooltip>

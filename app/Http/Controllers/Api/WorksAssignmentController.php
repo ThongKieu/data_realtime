@@ -381,14 +381,13 @@ class WorksAssignmentController extends Controller
     }
     public function insertQuoteFlow(Request $request)
     {
-
-        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
-
-        if ($up == 200) {
-            return 'Delete work done !';
+        if ($request->id == null || $request->auth_id == null) {
+            $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+            $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
+            return 1;
+        } else {
+            return -1;
         }
-        return 'Delete Failse !';
     }
     public function continueWorkAss(Request $request)
     {

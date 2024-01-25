@@ -378,7 +378,7 @@ class WorksAssignmentController extends Controller
         }
         return 'Delete Failed !';
     }
-    public function insertQuoteFlow(Request $request)
+    public function insertQuoteWork(Request $request)
     {
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);

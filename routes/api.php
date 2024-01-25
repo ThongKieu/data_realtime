@@ -45,7 +45,7 @@ Route::prefix('web')->group(function () {
         Route::post('', 'App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
         Route::get('', 'App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties', 'App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
-        Route::post('/quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteFlow');
+        Route::post('/quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
         Route::post('/returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWork');
         Route::post('/setActive', 'App\Http\Controllers\Api\WorksAssignmentController@setActive');
 
@@ -114,7 +114,7 @@ Route::prefix('app')->group(function () {
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
         Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
-        Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteFlow');
+        Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
         Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
 

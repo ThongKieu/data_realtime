@@ -111,7 +111,7 @@ class WorkersController extends Controller
             $file = $req->file('avatar_new');
             $name = $req->sort_name . '.' . $file->extension();
             $file->move('assets/avatar/', $name);
-            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avatar' => $file]);
+            $up = Worker::where('worker_code', '=', $req->sort_name)->update(['avatar' => $file]);
 
             if ($up) {
                 return 'Update Done!';

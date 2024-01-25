@@ -379,17 +379,7 @@ class WorksAssignmentController extends Controller
         }
         return 'Delete Failed !';
     }
-    public function insertQuoteFlow(Request $request)
-    {
-
-        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        $up = QuoteFlowController::addAuto($request->id, $request->auth_id);
-
-        if ($up == 200) {
-            return 'Delete work done !';
-        }
-        return 'Delete Failse !';
-    }
+    
     public function continueWorkAss(Request $request)
     {
         if ($request->ac == 1) {
@@ -564,7 +554,6 @@ class WorksAssignmentController extends Controller
                             }
                         } else {
                             //Thêm  mới 1 hoặc nhiều hình
-                            //  dd($request->all());
                             if ($request->hasFile('bill_imag_new')) {
                                 $images = $request->file('bill_imag_new');
                                 //  dd($images);
@@ -572,7 +561,6 @@ class WorksAssignmentController extends Controller
                                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                                     $image->move('assets/images/work_assignment/' . $request->id . '/bill_imag', $name);
                                     $bill_imag .= 'assets/images/work_assignment/' . $request->id . '/bill_imag/' . $name . ',';
-                                    // dd('11111111111111');
                                 }
                                 WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $bill_imag]);
                                 return "Update bill Image Done!";
@@ -621,44 +609,6 @@ class WorksAssignmentController extends Controller
 
                             return "Update Seri Image Fails!";
                         }
-
-                    // case 4:
-                    //     //Work content
-                    //
-                    //     return 'Update Work_content';
-                    // case 5:
-                    //     //Phone number
-                    //     Work::where('id', '=', $request->id_cus)->update(['phone_number' => $request->phone_number]);
-                    //     return 'Update phone_number';
-                    // case 6:
-                    //     //Address
-                    //     Work::where('id', '=', $request->id_cus)->update(['street' => $request->street]);
-                    //     return 'Update street';
-                    // case 7:
-                    //     //District
-                    //     Work::where('id', '=', $request->id_cus)->update(['district' => $request->district]);
-                    //     return 'Update district';
-                    // case 8:
-                    //     //Name Cus
-                    //     Work::where('id', '=', $request->id_cus)->update(['name_cus' => $request->name_cus]);
-                    //     return 'Update name_cus';
-                    // case 9:
-                    //     //real_note
-                    //     WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $request->real_note]);
-                    //     return 'Update Work_note';
-                    // case 10:
-                    //     // Incoming money
-                    //     // dd($request->all());
-                    //     WorksAssignment::where('id', '=', $request->id)->update(['income_total' => $request->income_total]);
-                    //     return 'Update income_total';
-                    // case 11:
-                    //     // Spend money
-                    //     WorksAssignment::where('id', '=', $request->id)->update(['spending_total' => $request->spending_total]);
-                    //     return 'Update spending_total';
-                    // case 12:
-                    //     // Update seri number
-                    //     WorksAssignment::where('id', '=', $request->id)->update(['seri_number' => $request->seri_number]);
-                    //     return 'Update Seri';
                     case 13:
                         // Admin Check
 
@@ -723,5 +673,40 @@ class WorksAssignmentController extends Controller
             return 'Mark Non disable !';
         }
         return 'Fails!!!!!!!!!!!!!!!!';
+    }
+    // lich khao sat hoac bao gia
+    public function insertQuoteFlow(Request $request)
+    {
+
+        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        // dd($up1);
+       if($up1 == 1)
+       {    
+
+            $seri_imag = '';
+
+            if ($request->hasFile('image_work_path')) {
+                $images = $request->file('image_work_path');
+                // dd($images);
+                foreach ($images as $image) {
+                   
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                }
+            }
+
+            // dd($seri_imag);
+            $up = Work::where('id','=',$request->id_cus)->update(['image_work_path'=>$seri_imag]);
+
+            if ($up == 1) {
+                return 'Delete work done !';
+            }
+            return 'Lỗi !!!!!!!!!';
+       }
+       else
+       {
+        return 'Không tìm thấy' ;
+       }
     }
 }

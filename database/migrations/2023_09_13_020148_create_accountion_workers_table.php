@@ -16,6 +16,7 @@ return new class extends Migration
             $table ->integer('id_worker');
             $table ->string('acc_worker');
             $table ->string('pass_worker');
+            $table->string('avatar')->default('assets/avatar/avata1.png');
             $table ->string('device_key')->nullable();
             $table->longText('FCM_token')->nullable();
             $table->string('last_active')->nullable();

@@ -239,7 +239,6 @@ function AdminCheckDialog({
                 seri_number: cardExpires.seri_number,
             },
         };
-        console.log(check_admin);
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
@@ -250,7 +249,7 @@ function AdminCheckDialog({
             });
             if (res.ok) {
                 handleSearch();
-                // handleOpenAdminCheck();
+                handleOpenAdminCheck();
                 socketD.emit(
                     "UpdateDateTable_To_Server",
                     "Cập Nhật trạng thái AdminCheck", check_admin

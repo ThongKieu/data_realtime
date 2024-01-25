@@ -72,7 +72,6 @@ function ProfileMenu({ propauthprofile }) {
         }
     };
     numberOnline();
-    // console.log("xin chào", propAuthProfile);
     return (
         <div className="flex">
             <NavLink

@@ -24,7 +24,7 @@ class WorksAssignmentController extends Controller
         if ($request->dateCheck) {
             $today = $request->dateCheck;
         } else {
-            $today = date('d-m-Y');
+            $today = date('Y-m-d');
         }
         // thông tin điện nước
         $dien_nuoc = DB::table('works_assignments')
@@ -319,7 +319,7 @@ class WorksAssignmentController extends Controller
         // dd($request);
         $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
-        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('d-m-Y')]);
+        $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
             // dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
@@ -405,7 +405,6 @@ class WorksAssignmentController extends Controller
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             return response()->json('Update continue work !!!');
         } else {
-            
             $id_cus = $request->id_cus;
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,

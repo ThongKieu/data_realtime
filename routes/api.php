@@ -108,10 +108,15 @@ Route::prefix('app')->group(function () {
         Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
         // login
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
+        Route::post('avatar', 'App\Http\Controllers\Api\Mobile\WorkersController@addAvatar');
+
         //work
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');
         Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
+        Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteFlow');
+        Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
+        Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
 
     });
     // Customer

@@ -111,7 +111,7 @@ class WorkersController extends Controller
             $file = $req->file('avatar_new');
             $name = $req->sort_name . '.' . $file->extension();
             $file->move('assets/avatar/', $name);
-            $up = Worker::where('sort_name', '=', $req->sort_name)->update(['avatar' => $file]);
+            $up = Worker::where('worker_code', '=', $req->sort_name)->update(['avatar' => $file]);
 
             if ($up) {
                 return 'Update Done!';
@@ -262,7 +262,7 @@ class WorkersController extends Controller
         $id_work_assignments = $request->id_work_assignments;
         $id_worker = $request->id_worker;
         $id_cus = $request->id_cus;
-        if ($id_work_has && $id_worker) {
+        if ($id_work_assignments && $id_worker) {
             $f = DB::table('works_assignments')->where('id', '=', $id_work_assignments)->where('id_worker', '=', $id_worker)->get('id_cus');
             if ($f != null) {
                 $update_assignments = DB::table('works_assignments')->where('id', '=', $id_work_assignments)->update(['status_work' => 5, 'real_note' => $request->get('real_note')]);

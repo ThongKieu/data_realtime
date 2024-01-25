@@ -40,9 +40,15 @@ io.on("connection", (socket) => {
     socket.on("returnWorkWebToServer", async (data) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
-    // Xử lý sự kiện khi máy khách ngắt kết nối
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
+    // // Xử lý sự kiện khi máy khách ngắt kết nối
+    socket.on('disconnect', (id) => {
+        // app.post('/api/web/disconnect', () => {
+        //     // Xử lý logic API ở đây
+        //     // res.json({ message: 'API response' });
+        //     console.log('đã run api!');
+        //   });
+          
+        console.log('User disconnected:',socket.id);
       });
     // socket.on("disconnect", () => {
     //     console.log("User disconnected");

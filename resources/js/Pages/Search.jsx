@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
@@ -92,20 +92,59 @@ const TABLE_ROWS = [
     },
 ];
 function Search({ auth }) {
-    const [email, setEmail] = React.useState("");
-    const onChange = ({ target }) => setEmail(target.value);
+    // const onChange = ({ target }) => setEmail(target.value);
+    const [dataReturn, setDataReturn] = useState('');
+    const [keySearch, setKey] = useState('');
+
+    const fetchSearch = async () => {
+
+
+        try {
+            let data = {
+                keySearch: keySearch
+            };
+            const response = await fetch("api/web/search", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+
+            if (response.ok) {
+                const responseData = await response.json(); // Convert response to JSON
+                setDataReturn(responseData);
+                console.log('Response Data:', responseData);
+            } else {
+                console.error('Error:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.log("hihi", error);
+        }
+    };
+
+
+    const handleChange = (e) => {
+        setKey(e.target.value);
+    };
+    console.log(keySearch);
+    useEffect(() => {
+        fetchSearch();
+    }, []);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="chat" />
             <Card className="w-full overflow-scroll">
                 <Box sx={{ width: 1 }}>
                     <div className="pt-3 focus:outline-none">
-                        <Input
+                    <Input
                             type="text"
                             label="Tìm Kiếm"
-                            value={email}
-                            onChange={onChange}
-                            className="pr-20 shadow-none focus:outline-none"
+                            name="search"
+                            value={keySearch}
+                            onChange={handleChange}
+                            className="shadow-none focus:outline-none"
                         />
                     </div>
                     <table className="w-full text-left table-auto min-w-max">

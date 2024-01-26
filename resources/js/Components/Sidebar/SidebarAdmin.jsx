@@ -115,6 +115,19 @@ export function SidebarAdmin() {
                                                     className="w-5 h-3"
                                                 />
                                             </ListItemPrefix>
+                                            Danh Sách Người Dùng
+                                        </ListItem>
+                                    </Link>
+                                    <Link
+                                        href={route("admin/worker-check-call")}
+                                    >
+                                        <ListItem>
+                                            <ListItemPrefix>
+                                                <ChevronDoubleRightIcon
+                                                    strokeWidth={3}
+                                                    className="w-5 h-3"
+                                                />
+                                            </ListItemPrefix>
                                             Kiểm Tra Liên Hệ
                                         </ListItem>
                                     </Link>
@@ -294,9 +307,7 @@ export function SidebarAdmin() {
                                         </ListItemPrefix>
                                         Bảng Giá
                                     </ListItem>
-                                    <Link
-                                        href={route("admin/post-list")}
-                                    >
+                                    <Link href={route("admin/post-list")}>
                                         <ListItem>
                                             <ListItemPrefix>
                                                 <ChevronDoubleRightIcon

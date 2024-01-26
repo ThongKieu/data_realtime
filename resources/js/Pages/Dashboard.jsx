@@ -219,6 +219,8 @@ function Dashboard({ auth }) {
                 console.error("Error fetching data:", error);
                 return null;
             }
+        } else{
+            console.error('Fail connect fetch data demo');
         }
     };
 

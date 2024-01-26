@@ -68,13 +68,22 @@ function Dashboard({ auth }) {
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
-    const [workDataDNCu, setWorkDataDNCu] = useState([]);
     const [workDataDL, setWorkDataDL] = useState([]);
     const [workDataDG, setWorkDataDG] = useState([]);
     const [workDataNLMT, setWorkDataNLMT] = useState([]);
     const [workDataXD, setWorkDataXD] = useState([]);
     const [workDataVC, setWorkDataVC] = useState([]);
     const [workDataHX, setWorkDataHX] = useState([]);
+    //---- Lịch Chưa Xử Lý Của Ngày Hôm Trước-------------------
+    const [workDataDN_cu, setWorkDataDN_cu] = useState([]);
+    const [workDataDL_cu, setWorkDataDL_cu] = useState([]);
+    const [workDataDG_cu, setWorkDataDG_cu] = useState([]);
+    const [workDataNLMT_cu, setWorkDataNLMT_cu] = useState([]);
+    const [workDataXD_cu, setWorkDataXD_cu] = useState([]);
+    const [workDataVC_cu, setWorkDataVC_cu] = useState([]);
+    const [workDataHX_cu, setWorkDataHX_cu] = useState([]);
+    // ---- Gộp Data--------------
+    const totalArray = workDataDN_cu.concat(workDataDL_cu,workDataDG_cu,workDataNLMT_cu,workDataXD_cu,workDataVC_cu,workDataHX_cu);
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
@@ -99,6 +108,8 @@ function Dashboard({ auth }) {
     const [workDataXD_done, setWorkDataXD_done] = useState([]);
     const [workDataVC_done, setWorkDataVC_done] = useState([]);
     const [workDataHX_done, setWorkDataHX_done] = useState([]);
+
+
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const [screenSize, setScreenSize] = useState({
@@ -228,6 +239,7 @@ function Dashboard({ auth }) {
     const fetchDateCheck = async (dateCheck) => {
         const url = `api/web/works?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
+        console.log(jsonData);
         if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
@@ -236,6 +248,13 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
+            setWorkDataDN_cu(jsonData.dien_nuoc_cu);
+            setWorkDataDL_cu(jsonData.dien_lanh_cu);
+            setWorkDataDG_cu(jsonData.do_go_cu);
+            setWorkDataNLMT_cu(jsonData.nlmt_cu);
+            setWorkDataXD_cu(jsonData.xay_dung_cu);
+            setWorkDataVC_cu(jsonData.tai_xe_cu);
+            setWorkDataHX_cu(jsonData.co_khi_cu);
             setIsLoading(false);
         } else {
             console.log("Data lỗi không tồn tại!!");
@@ -1599,7 +1618,7 @@ function Dashboard({ auth }) {
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
                 return (
-                    <div>
+                    <>
                         {params.row.flag_check === 1 ? <p>Đang Sửa</p> : ""}
                         <div className="flex">
                             {check_admin ||
@@ -1850,12 +1869,11 @@ function Dashboard({ auth }) {
                             params={params}
                             handleDataFromChild={handleDataFromChild}
                         />
-                    </div>
+                    </>
                 );
             },
         },
     ];
-
     const DNCU = useRef(null);
     const DN = useRef(null);
     const DL = useRef(null);
@@ -1884,7 +1902,7 @@ function Dashboard({ auth }) {
     const dataGridLichChuaPhan = [
         {
             id: "workDNCu",
-            rowsDataGrid: workDataDNCu,
+            rowsDataGrid: totalArray,
             contentDataGird: "Lịch Ngày Trước Chưa Xử Lý",
             ref: DNCU,
         },

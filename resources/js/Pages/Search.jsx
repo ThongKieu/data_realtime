@@ -90,12 +90,155 @@ const TABLE_ROWS = [
         TongThu: "1.580.000 đ",
         soPhieuThu: "1111",
     },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG1",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: " ",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: "3 t",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
+    {
+        idCV: "QTG1",
+        NoiDungCV: "Thay cánh quạt 1580k",
+        TG: "2023-08-21",
+        BH: " ",
+        TenKH: "Manager",
+        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
+        sdt: "908723426",
+        ghiChu: "chua tt",
+        ThoLam: "John Michael",
+        TongChi: "555.000 đ",
+        TongThu: "1.580.000 đ",
+        soPhieuThu: "1111",
+    },
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
     const [dataReturn, setDataReturn] = useState("");
     const [keySearch, setKey] = useState("");
-
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight - 100,
+    });
     const fetchSearch = async () => {
         try {
             let data = {
@@ -120,29 +263,48 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    console.log('Xin Chao',dataReturn);
+    console.log("Xin Chao", dataReturn);
     const handleChange = (e) => {
         setKey(e.target.value);
     };
     console.log(keySearch);
     useEffect(() => {
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        window.addEventListener("resize", handleResize);
         fetchSearch();
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="chat" />
-            <Card className="w-full overflow-scroll">
-                <div className="pt-3 focus:outline-none">
-                    <Input
-                        type="text"
-                        label="Tìm Kiếm"
-                        name="search"
-                        value={keySearch}
-                        onChange={handleChange}
-                        className="shadow-none focus:outline-none"
-                    />
-                </div>
-                <table className="w-full text-left table-auto min-w-max">
+            <Head title="Tìm Kiếm Khách Hàng" />
+            <div className="p-2">
+                <Input
+                    type="text"
+                    label="Tìm Kiếm"
+                    name="search"
+                    value={keySearch}
+                    onChange={handleChange}
+                    className="rounded-none shadow-none focus:outline-none"
+                />
+            </div>
+            <Box
+                sx={{
+                    height: `${screenSize.height}px`,
+                    width: "100%",
+                }}
+                className="p-2 pr-0 overflow-scroll "
+            >
+                <table
+                    className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
+                    style={{ height: `${screenSize.height - 50}px` }}
+                >
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head) => (
@@ -185,16 +347,6 @@ function Search({ auth }) {
                                 const classes = isLast
                                     ? "p-4"
                                     : "p-4 border-b border-blue-gray-50";
-                                if (BH !== " ") {
-                                    <Button
-                                        className="p-2 "
-                                        color="orange"
-                                        variant="outlined"
-                                    >
-                                        Bảo Hành
-                                    </Button>;
-                                }
-
                                 return (
                                     <tr key={index}>
                                         <td className={classes}>
@@ -330,7 +482,7 @@ function Search({ auth }) {
                         )}
                     </tbody>
                 </table>
-            </Card>
+            </Box>
         </AuthenticatedLayout>
     );
 }

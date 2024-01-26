@@ -22,7 +22,7 @@ function AdminSidebar({ children }) {
             submenu: true,
             submenuItem: [
                 {
-                    title: "Quản Lý Người Dùng",
+                    title: "Danh Sách Người Dùng",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/users"),
                 },
@@ -31,6 +31,7 @@ function AdminSidebar({ children }) {
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/worker-check-call"),
                 },
+
                 {
                     title: " Danh Sách Thợ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
@@ -132,6 +133,11 @@ function AdminSidebar({ children }) {
             href: "admin",
             submenu: true,
             submenuItem: [
+                {
+                    title: "Kiểm Tra Liên Hệ",
+                    icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/worker-check-call"),
+                },
                 {
                     title: "Chặn Số",
                     icon: <ChevronDoubleRightIcon className="w-3" />,

@@ -724,7 +724,7 @@ class WorksAssignmentController extends Controller
             }
 
             // dd($seri_imag);
-            $up = Work::where('id','=',$request->id_cus)->update(['image_work_path'=>$seri_imag]);
+            $up = WorksAssignment::where('id','=',$request->id)->update(['bill_imag'=>$seri_imag]);
 
             if ($up == 1) {
                 return 'Delete work done !';

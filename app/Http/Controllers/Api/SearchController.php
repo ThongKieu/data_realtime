@@ -30,11 +30,11 @@ class SearchController extends Controller
             ->where('works_assignments.id','>','0')
             ->where('works.phone_number','like',$key)
             ->orWhere('works.street','like',$key)
-            ->orderBy('works_assignments.id','asc')
+            ->orderBy('works_assignments.id','desc')
             ->limit(100)->get();
             return response()->json($data);
         }
-        $data = WorksAssignment::where('id','!=','0')->orderBy('id','asc')->limit(100)->get();
+        $data = WorksAssignment::where('id','!=','0')->orderBy('id','desc')->limit(100)->get();
         return response()->json($data);
     }
 }

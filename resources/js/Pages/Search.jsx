@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
@@ -93,15 +93,13 @@ const TABLE_ROWS = [
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
-    const [dataReturn, setDataReturn] = useState('');
-    const [keySearch, setKey] = useState('');
+    const [dataReturn, setDataReturn] = useState("");
+    const [keySearch, setKey] = useState("");
 
     const fetchSearch = async () => {
-
-
         try {
             let data = {
-                keySearch: keySearch
+                keySearch: keySearch,
             };
             const response = await fetch("api/web/search", {
                 method: "POST",
@@ -111,20 +109,18 @@ function Search({ auth }) {
                 },
             });
             // console.log("XIN CHAO DATA ACTIVE:",response.ok);
-
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
                 setDataReturn(responseData);
-                console.log('Response Data:', responseData);
+                console.log("Response Data:", responseData);
             } else {
-                console.error('Error:', response.status, response.statusText);
+                console.error("Error:", response.status, response.statusText);
             }
         } catch (error) {
             console.log("hihi", error);
         }
     };
-
-
+    console.log('Xin Chao',dataReturn);
     const handleChange = (e) => {
         setKey(e.target.value);
     };
@@ -136,207 +132,204 @@ function Search({ auth }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title="chat" />
             <Card className="w-full overflow-scroll">
-                <Box sx={{ width: 1 }}>
-                    <div className="pt-3 focus:outline-none">
+                <div className="pt-3 focus:outline-none">
                     <Input
-                            type="text"
-                            label="Tìm Kiếm"
-                            name="search"
-                            value={keySearch}
-                            onChange={handleChange}
-                            className="shadow-none focus:outline-none"
-                        />
-                    </div>
-                    <table className="w-full text-left table-auto min-w-max">
-                        <thead>
-                            <tr>
-                                {TABLE_HEAD.map((head) => (
-                                    <th
-                                        key={head}
-                                        className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                        type="text"
+                        label="Tìm Kiếm"
+                        name="search"
+                        value={keySearch}
+                        onChange={handleChange}
+                        className="shadow-none focus:outline-none"
+                    />
+                </div>
+                <table className="w-full text-left table-auto min-w-max">
+                    <thead>
+                        <tr>
+                            {TABLE_HEAD.map((head) => (
+                                <th
+                                    key={head}
+                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                >
+                                    <Typography
+                                        variant="small"
+                                        color="blue-gray"
+                                        className="font-normal leading-none opacity-70"
                                     >
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal leading-none opacity-70"
-                                        >
-                                            {head}
-                                        </Typography>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {TABLE_ROWS.map(
-                                (
-                                    {
-                                        idCV,
-                                        NoiDungCV,
-                                        TG,
-                                        BH,
-                                        TenKH,
-                                        DiaChi,
-                                        sdt,
-                                        ghiChu,
-                                        ThoLam,
-                                        TongChi,
-                                        TongThu,
-                                        BHhanh,
-                                        soPhieuThu,
-                                    },
-                                    index
-                                ) => {
-                                    const isLast =
-                                        index === TABLE_ROWS.length - 1;
-                                    const classes = isLast
-                                        ? "p-4"
-                                        : "p-4 border-b border-blue-gray-50";
-                                    if (BH !== " ") {
-                                        <Button
-                                            className="p-2 "
-                                            color="orange"
-                                            variant="outlined"
-                                        >
-                                            Bảo Hành
-                                        </Button>;
-                                    }
-
-                                    return (
-                                        <tr key={index}>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {idCV}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {NoiDungCV}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TG}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {BH}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TenKH}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {DiaChi}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {sdt}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {ghiChu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {ThoLam}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TongChi}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TongThu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {soPhieuThu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Button
-                                                    className={`${
-                                                        BH !== " "
-                                                            ? "block"
-                                                            : "hidden"
-                                                    }`}
-                                                    color="orange"
-                                                    variant="outlined"
-                                                >
-                                                    Bảo Hành
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    );
+                                        {head}
+                                    </Typography>
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {TABLE_ROWS.map(
+                            (
+                                {
+                                    idCV,
+                                    NoiDungCV,
+                                    TG,
+                                    BH,
+                                    TenKH,
+                                    DiaChi,
+                                    sdt,
+                                    ghiChu,
+                                    ThoLam,
+                                    TongChi,
+                                    TongThu,
+                                    BHhanh,
+                                    soPhieuThu,
+                                },
+                                index
+                            ) => {
+                                const isLast = index === TABLE_ROWS.length - 1;
+                                const classes = isLast
+                                    ? "p-4"
+                                    : "p-4 border-b border-blue-gray-50";
+                                if (BH !== " ") {
+                                    <Button
+                                        className="p-2 "
+                                        color="orange"
+                                        variant="outlined"
+                                    >
+                                        Bảo Hành
+                                    </Button>;
                                 }
-                            )}
-                        </tbody>
-                    </table>
-                </Box>
+
+                                return (
+                                    <tr key={index}>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {idCV}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {NoiDungCV}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {TG}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                as="a"
+                                                href="#"
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-medium"
+                                            >
+                                                {BH}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {TenKH}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {DiaChi}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {sdt}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                as="a"
+                                                href="#"
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-medium"
+                                            >
+                                                {ghiChu}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {ThoLam}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {TongChi}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal"
+                                            >
+                                                {TongThu}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Typography
+                                                as="a"
+                                                href="#"
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-medium"
+                                            >
+                                                {soPhieuThu}
+                                            </Typography>
+                                        </td>
+                                        <td className={classes}>
+                                            <Button
+                                                className={`${
+                                                    BH !== " "
+                                                        ? "block"
+                                                        : "hidden"
+                                                }`}
+                                                color="orange"
+                                                variant="outlined"
+                                            >
+                                                Bảo Hành
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                );
+                            }
+                        )}
+                    </tbody>
+                </table>
             </Card>
         </AuthenticatedLayout>
     );

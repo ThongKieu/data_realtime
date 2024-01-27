@@ -1657,7 +1657,9 @@ function Dashboard({ auth }) {
                 };
                 return (
                     <>
-                        {params.row.flag_check === 1 ? <p>Đang Sửa</p> : ""}
+                        <div>
+                        {params.row.flag_check === 1 ? <p className="w-full text-center">Đang Sửa</p> : ""}
+                        </div>
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (

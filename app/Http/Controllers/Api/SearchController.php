@@ -43,6 +43,7 @@ class SearchController extends Controller
                 "works.image_work_path",
                 "works.kind_work",
                 "workers.worker_full_name",
+                "workers.worker_code",
                 // "workers.worker_name",
                 "works.name_cus"]);
         return $data;
@@ -83,6 +84,7 @@ class SearchController extends Controller
                 "works.image_work_path",
                 "works.kind_work",
                 "workers.worker_full_name",
+                "workers.worker_code",
                 // "workers.worker_name",
                 "works.name_cus"]);
             return response()->json($data);
@@ -116,6 +118,7 @@ class SearchController extends Controller
                 "works.image_work_path",
                 "works.kind_work",
                 "workers.worker_full_name",
+                "workers.worker_code",
                 // "workers.worker_name",
                 "works.name_cus"]);
         return response()->json($data);

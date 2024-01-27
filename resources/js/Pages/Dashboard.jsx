@@ -83,7 +83,14 @@ function Dashboard({ auth }) {
     const [workDataVC_cu, setWorkDataVC_cu] = useState([]);
     const [workDataHX_cu, setWorkDataHX_cu] = useState([]);
     // ---- Gộp Data--------------
-    const totalArray = workDataDN_cu.concat(workDataDL_cu,workDataDG_cu,workDataNLMT_cu,workDataXD_cu,workDataVC_cu,workDataHX_cu);
+    const totalArray = workDataDN_cu.concat(
+        workDataDL_cu,
+        workDataDG_cu,
+        workDataNLMT_cu,
+        workDataXD_cu,
+        workDataVC_cu,
+        workDataHX_cu
+    );
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
@@ -109,7 +116,6 @@ function Dashboard({ auth }) {
     const [workDataVC_done, setWorkDataVC_done] = useState([]);
     const [workDataHX_done, setWorkDataHX_done] = useState([]);
 
-
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const [screenSize, setScreenSize] = useState({
@@ -133,7 +139,7 @@ function Dashboard({ auth }) {
             fetchDateDoneCheck(data, selectedDate);
             fetchDataDashboard(data, selectedDate);
         });
-        newSocket.on("sendAddWorkTo_Client", (selectedDate,data) => {
+        newSocket.on("sendAddWorkTo_Client", (selectedDate, data) => {
             if (data !== "") {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
@@ -148,7 +154,7 @@ function Dashboard({ auth }) {
             }
             console.log("id socket", id);
             setIsButtonDisabled(isDisabled);
-            fetchDataDaPhan();
+            fetchDateDoneCheck(selectedDate);
         });
         const handleResize = () => {
             setScreenSize({
@@ -220,21 +226,20 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
-        if (url || url != undefined || url != null || url != '') {
+        if (url || url != undefined || url != null || url != "") {
             try {
                 const response = await fetch(url);
-                console.log('xin choa fetchDataDemo',url);
+                console.log("xin choa fetchDataDemo", url);
                 const jsonData = await response.json();
                 return jsonData;
             } catch (error) {
                 console.error("Error fetching data:", error);
                 return null;
             }
-        } else{
-            console.error('Fail connect fetch data demo');
+        } else {
+            console.error("Fail connect fetch data demo");
         }
     };
-
 
     const fetchDateCheck = async (dateCheck) => {
         const url = `api/web/works?dateCheck=${selectedDate}`;
@@ -757,6 +762,7 @@ function Dashboard({ auth }) {
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => {
                     setOpen(!open);
+                    getDataBh();
                 };
                 const check_bh = params.row.income_total;
                 const getDataBh = async () => {
@@ -780,7 +786,6 @@ function Dashboard({ auth }) {
                             variant="outlined"
                             onClick={() => {
                                 handleOpen();
-                                getDataBh();
                             }}
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
@@ -1297,7 +1302,7 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
-                const handleSentKS =async () => {
+                const handleSentKS = async () => {
                     try {
                         let data = {
                             id: params.id,
@@ -1617,6 +1622,39 @@ function Dashboard({ auth }) {
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
+                const [dataBH, setDataBH] = useState([
+                    {
+                        id: 0,
+                        warranty_time: 0,
+                        unit: "kbh",
+                        warranty_info: "Không Bảo Hành",
+                    }
+                ]);
+                const fetchDataBH = async (id) => {
+                    if (id || id != "undefined") {
+                        try {
+                            const response = await fetch(
+                                `api/web/work-assignment/warranties?id=${id}`
+                            );
+                            const jsonData = await response.json();
+                            if (response.ok && jsonData.length != 0) {
+                                const formatJson = jsonData.map((item) => ({
+                                    id: item.id,
+                                    warranty_info: item.warranty_info,
+                                    warranty_time: item.warranty_time,
+                                    unit: item.unit,
+                                }));
+                                setDataBH(formatJson);
+                            }
+                        } catch (error) {
+                            console.error("Error fetching data:", error);
+                        }
+                    }
+                };
+                const handleDataBh = (id) => {
+                    fetchDataBH(id);
+                    console.log('id:dddd',dataBH);
+                };
                 return (
                     <>
                         {params.row.flag_check === 1 ? <p>Đang Sửa</p> : ""}
@@ -1683,9 +1721,10 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={
-                                                handleOpenAdminCheckWithDisable
-                                            }
+                                            onClick={()=>{
+                                                handleOpenAdminCheckWithDisable();
+                                                handleDataBh(params.row.id);
+                                            }}
                                             variant="outlined"
                                         >
                                             <EyeIcon />
@@ -1775,6 +1814,7 @@ function Dashboard({ auth }) {
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
+                            dataBH1={dataBH}
                             imageVt1={imageVt1}
                             host={host}
                             params={params}

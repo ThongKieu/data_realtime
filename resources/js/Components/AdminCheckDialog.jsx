@@ -44,6 +44,7 @@ function AdminCheckDialog({
     handleChange,
     socketD,
     handleSearch,
+    dataBH1
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -67,43 +68,38 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [dataBH, setDataBH] = useState([
-        {
-            id: 0,
-            warranty_time: 0,
-            unit: "kbh",
-            warranty_info: "Không Bảo Hành",
-        },
-    ]);
-    const fetchDataBH = async (id) => {
-        if (id || id != "undefined") {
-            try {
-                const response = await fetch(
-                    `api/web/work-assignment/warranties?id=${id}`
-                );
-                const jsonData = await response.json();
-                if (response.ok && jsonData.length != 0) {
-                    const formatJson = jsonData.map((item) => ({
-                        id: item.id,
-                        warranty_info: item.warranty_info,
-                        warranty_time: item.warranty_time,
-                        unit: item.unit,
-                    }));
-                    setDataBH(formatJson);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-    };
-    useEffect(() => {
-        if (params.row.id) {
-            fetchDataBH(params.row.id);
-        }
-    }, []);
-    const handleDataBh = (id) => {
-        fetchDataBH(id);
-    };
+    const [dataBH, setDataBH] = useState(dataBH1);
+    console.log(dataBH);
+    console.log('databh1111',dataBH1);
+    // const fetchDataBH = async (id) => {
+    //     if (id || id != "undefined") {
+    //         try {
+    //             const response = await fetch(
+    //                 `api/web/work-assignment/warranties?id=${id}`
+    //             );
+    //             const jsonData = await response.json();
+    //             if (response.ok && jsonData.length != 0) {
+    //                 const formatJson = jsonData.map((item) => ({
+    //                     id: item.id,
+    //                     warranty_info: item.warranty_info,
+    //                     warranty_time: item.warranty_time,
+    //                     unit: item.unit,
+    //                 }));
+    //                 setDataBH(formatJson);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching data:", error);
+    //         }
+    //     }
+    // };
+    // useEffect(() => {
+    //     if (params.row.id) {
+    //         fetchDataBH(params.row.id);
+    //     }
+    // }, []);
+    // const handleDataBh = (id) => {
+    //     fetchDataBH(id);
+    // };
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
 
@@ -339,7 +335,7 @@ function AdminCheckDialog({
                                 </DialogHeader>
                                 <Divider />
                                 <DialogBody>
-                                    {dataBH.map((item, index) => (
+                                    {dataBH1.map((item, index) => (
                                         <div
                                             key={index}
                                             className="flex justify-between gap-1 mb-2"
@@ -451,7 +447,7 @@ function AdminCheckDialog({
                                 </DialogFooter>
                             </Dialog>
                         </i>
-                        {dataBH?.map((element, index) => (
+                        {dataBH1?.map((element, index) => (
                             <span className="flex p-2 mt-1 border" key={index}>
                                 {`${element.warranty_time} ${`${
                                     element.unit === "d"

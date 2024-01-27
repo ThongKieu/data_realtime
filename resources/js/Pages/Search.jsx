@@ -34,211 +34,60 @@ const TABLE_ROWS = [
         TongThu: "1.580.000 đ",
         soPhieuThu: "1111",
     },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG1",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: " ",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG1",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: " ",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG1",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: " ",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
-    const [dataReturn, setDataReturn] = useState("");
+    const [dataReturn, setDataReturn] = useState([
+        {
+            id: 6,
+            id_cus: 22,
+            id_phu: "0",
+            id_worker: 20,
+            work_content: "Sửa máy  lạnh",
+            date_book: "2024-01-25",
+            street: "sư vạn hạnh",
+            district: "khác",
+            image_work_path: null,
+            income_total: 0,
+            name_cus: "Thống Kiều",
+            phone_number: "947613923",
+            real_note: "cần thang",
+            seri_imag: null,
+            bill_imag: null,
+            seri_number: null,
+            spending_total: 0,
+            status_admin_check: 0,
+            worker_full_name: "Nguyễn Thế Minh",
+        },
+    ]);
     const [keySearch, setKey] = useState("");
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
     });
+    const [dataDefault, setDataDefault] = useState([
+        {
+            id: 6,
+            id_cus: 22,
+            id_phu: "0",
+            id_worker: 20,
+            work_content: "Sửa máy  lạnh",
+            date_book: "2024-01-25",
+            street: "sư vạn hạnh",
+            district: "khác",
+            image_work_path: null,
+            income_total: 0,
+            name_cus: "Thống Kiều",
+            phone_number: "947613923",
+            real_note: "cần thang",
+            seri_imag: null,
+            bill_imag: null,
+            seri_number: null,
+            spending_total: 0,
+            status_admin_check: 0,
+            worker_full_name: "Nguyễn Thế Minh",
+        },
+    ]);
     const fetchSearch = async () => {
         try {
             let data = {
@@ -263,11 +112,7 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    console.log("Xin Chao", dataReturn);
-    const handleChange = (e) => {
-        setKey(e.target.value);
-    };
-    console.log(keySearch);
+    console.log("fetchSearch", dataReturn);
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -275,8 +120,8 @@ function Search({ auth }) {
                 height: window.innerHeight - 100,
             });
         };
-        window.addEventListener("resize", handleResize);
         fetchSearch();
+        window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
         };
@@ -290,7 +135,8 @@ function Search({ auth }) {
                     label="Tìm Kiếm"
                     name="search"
                     value={keySearch}
-                    onChange={handleChange}
+                    onChange={(e) => setKey(e.target.value)}
+                    onKeyUp={fetchSearch}
                     className="rounded-none shadow-none focus:outline-none"
                 />
             </div>
@@ -303,7 +149,7 @@ function Search({ auth }) {
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                    style={{ height: `${screenSize.height - 50}px` }}
+                    // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
@@ -324,161 +170,150 @@ function Search({ auth }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {TABLE_ROWS.map(
-                            (
-                                {
-                                    idCV,
-                                    NoiDungCV,
-                                    TG,
-                                    BH,
-                                    TenKH,
-                                    DiaChi,
-                                    sdt,
-                                    ghiChu,
-                                    ThoLam,
-                                    TongChi,
-                                    TongThu,
-                                    BHhanh,
-                                    soPhieuThu,
-                                },
-                                index
-                            ) => {
-                                const isLast = index === TABLE_ROWS.length - 1;
-                                const classes = isLast
-                                    ? "p-4"
-                                    : "p-4 border-b border-blue-gray-50";
-                                return (
-                                    <tr key={index}>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {idCV}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {NoiDungCV}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {TG}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                as="a"
-                                                href="#"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-medium"
-                                            >
-                                                {BH}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {TenKH}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {DiaChi}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {sdt}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                as="a"
-                                                href="#"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-medium"
-                                            >
-                                                {ghiChu}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {ThoLam}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {TongChi}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {TongThu}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                as="a"
-                                                href="#"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-medium"
-                                            >
-                                                {soPhieuThu}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Button
-                                                className={`${
-                                                    BH !== " "
-                                                        ? "block"
-                                                        : "hidden"
-                                                }`}
-                                                color="orange"
-                                                variant="outlined"
-                                            >
-                                                Bảo Hành
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                );
-                            }
+                        {dataReturn != "" ? (
+                            <>
+                                {dataReturn?.map((item, index) => {
+                                    const isLast =
+                                        index === TABLE_ROWS.length - 1;
+                                    const classes = isLast
+                                        ? "p-4"
+                                        : "p-4 border-b border-blue-gray-50";
+                                    return (
+                                        <tr key={index} className="hover:bg-blue-gray-100">
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.id}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.work_content}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.date_book}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.id_cus}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.name_cus}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.street} -{" "}
+                                                    {item.district}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.phone_number}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.real_note}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.worker_full_name}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.spending_total}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.income_total}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.seri_number}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Button
+                                                    // className={`${
+                                                    //     BH !== " " ? "block" : "hidden"
+                                                    // }`}
+                                                    color="orange"
+                                                    variant="outlined"
+                                                >
+                                                    Bảo Hành
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </>
+                        ) : (
+                            <tr className="w-full text-center hover:bg-blue-gray-100">
+                                <td colSpan={13}>Không Có Dữ Liệu</td>
+                            </tr>
                         )}
                     </tbody>
                 </table>

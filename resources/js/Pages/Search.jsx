@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Typography, Input, Button, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
-import { Box } from "@mui/material";
+import {
+    Typography,
+    Input,
+    Button,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
+} from "@material-tailwind/react";
+import { Box, Divider } from "@mui/material";
+import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 const TABLE_HEAD = [
     "Mã CV",
     "Nội dung",
@@ -16,7 +25,7 @@ const TABLE_HEAD = [
     "Tổng chi",
     "Tổng thu",
     "Số phiếu thu",
-    "BH",
+    "Yêu Cầu Bảo Hành",
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
@@ -64,7 +73,6 @@ function Search({ auth }) {
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
                 setDataReturn(responseData);
-                console.log("Response Data:", responseData);
             } else {
                 console.error("Error:", response.status, response.statusText);
             }
@@ -72,37 +80,6 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    
-    console.log("fetchSearch", dataReturn);
-    const [openDialog, setOpenDialog] = useState(false);
-    const handleOpenDialog = () => setOpenDialog(!openDialog);
-
-    const handleGetWarranties = async () => {
-        try {
-            let data = {
-                id: id,
-            };
-            const response = await fetch("api/web/search/getWarraties", {
-                method: "POST",
-                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                headers: {
-                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                },
-            });
-            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
-            if (response.ok) {
-                const responseData = await response.json(); // Convert response to JSON
-                // setDataReturn(responseData);
-                console.log("Response Data:", responseData);
-            } else {
-                console.error("Error:", response.status, response.statusText);
-            }
-        } catch (error) {
-            console.log("hihi", error);
-        }
-    };
-    const handleMakeWarranties = () => { };
-
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -116,6 +93,17 @@ function Search({ auth }) {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const handleOpenDialogBH = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialog(!openDialog);
+    };
+    const [openDialogNote, setOpenDialogNote] = useState(false);
+    const handleOpenDialogNote = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialogNote(!openDialogNote);
+    };
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Tìm Kiếm Khách Hàng" />
@@ -143,9 +131,9 @@ function Search({ auth }) {
                 >
                     <thead>
                         <tr>
-                            {TABLE_HEAD.map((head) => (
+                            {TABLE_HEAD.map((head, index) => (
                                 <th
-                                    key={head}
+                                    key={index}
                                     className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                                 >
                                     <Typography
@@ -172,58 +160,183 @@ function Search({ auth }) {
                                             key={index}
                                             className="hover:bg-blue-gray-100"
                                         >
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[30px]`}
+                                            >
                                                 {item.id}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.work_content}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[70px]`}
+                                            >
                                                 {item.date_book}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} text-center w-[50px]`}
+                                            >
                                                 <Button
-                                                    onClick={handleOpenDialog}> BH </Button>
-                                                <Dialog open={openDialog} handler={handleOpenDialog}>
-                                                    <DialogHeader>Hi</DialogHeader>
-                                                    <DialogBody>{item.id_cus}</DialogBody>
-                                                    <DialogFooter>
-                                                        <Button
-                                                            variant="text"
-                                                            color="red"
-                                                            onClick={handleOpenDialog}
-                                                            className="mr-1"
+                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    onClick={() =>
+                                                        handleOpenDialogBH(
+                                                            item.id_cus
+                                                        )
+                                                    }
+                                                    variant="outlined"
+                                                >
+                                                    BH
+                                                </Button>
+                                                {openDialog &&
+                                                    selectedItemId ===
+                                                        item.id_cus && (
+                                                        <Dialog
+                                                            open={openDialog}
+                                                            handler={
+                                                                handleOpenDialogBH
+                                                            }
                                                         >
-                                                            <span>Thoát</span></Button>
-                                                    </DialogFooter>
-                                                </Dialog>
+                                                            <DialogHeader>
+                                                                Thông Tin Bảo
+                                                                Hành
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                {item.id_cus}
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogBH
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Cancel
+                                                                    </span>
+                                                                </Button>
+                                                                <Button
+                                                                    variant="gradient"
+                                                                    color="green"
+                                                                    onClick={
+                                                                        handleOpenDialogBH
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        Confirm
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
                                             </td>
-                                            <td className={classes}>
-                                                {" "}
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.name_cus}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.street} - {item.district}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[100px]`}
+                                            >
                                                 {item.phone_number}
                                             </td>
-                                            <td className={classes}>
-                                                {item.real_note}
+                                            <td
+                                                className={`${classes} w-[200px]`}
+                                            >
+                                                <Button
+                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    onClick={() =>
+                                                        handleOpenDialogNote(
+                                                            item.id_cus
+                                                        )
+                                                    }
+                                                    variant="outlined"
+                                                >
+                                                    Ghi Chú
+                                                </Button>
+                                                {openDialogNote &&
+                                                    selectedItemId ===
+                                                        item.id_cus && (
+                                                        <Dialog
+                                                            open={
+                                                                openDialogNote
+                                                            }
+                                                            handler={
+                                                                handleOpenDialogNote
+                                                            }
+                                                        >
+                                                            <DialogHeader>
+                                                                Thông Tin Ghi Chú
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                {item.real_note}
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogNote
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Cancel
+                                                                    </span>
+                                                                </Button>
+                                                                <Button
+                                                                    variant="gradient"
+                                                                    color="green"
+                                                                    onClick={
+                                                                        handleOpenDialogNote
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        Confirm
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
                                             </td>
-                                            <td className={classes}>
-                                                {item.worker_full_name}
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                ({item.worker_code})-
+                                                {getFirstName(
+                                                    item.worker_full_name
+                                                )}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.spending_total}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.income_total}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 {item.seri_number}
                                             </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
                                                 <Button
                                                     // className={`${
                                                     //     BH !== " " ? "block" : "hidden"

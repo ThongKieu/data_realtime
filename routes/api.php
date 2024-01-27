@@ -89,6 +89,8 @@ Route::prefix('web')->group(function () {
         Route::get('/','App\Http\Controllers\Api\SearchController@index');
         Route::post('/','App\Http\Controllers\Api\SearchController@searchAjax');
         Route::post('/warranty','App\Http\Controllers\Api\SearchController@createWarrantyFromSearch');
+        Route::get('/warranty','App\Http\Controllers\Api\SearchController@getWarraties');
+
     });
 })->withoutMiddleware("throttle:api")
     ->middleware(

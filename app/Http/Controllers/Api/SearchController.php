@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Warranties;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
@@ -125,4 +126,7 @@ class SearchController extends Controller
    {
     
    } 
+   public function getWarraties(Request $request) {
+     Warranties::where('id_work_has','=',$request->id);
+   }
 }

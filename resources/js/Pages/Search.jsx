@@ -113,6 +113,31 @@ function Search({ auth }) {
         }
     };
     console.log("fetchSearch", dataReturn);
+    const handleGetWarranties = async ()=>{
+        try {
+            let data = {
+                id: id,
+            };
+            const response = await fetch("api/web/search/getWarraties", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+            if (response.ok) {
+                const responseData = await response.json(); // Convert response to JSON
+                // setDataReturn(responseData);
+                console.log("Response Data:", responseData);
+            } else {
+                console.error("Error:", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.log("hihi", error);
+        }
+    };
+    const handleMakeWarranties = ()=>{};
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({

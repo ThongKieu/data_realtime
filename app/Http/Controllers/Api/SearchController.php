@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Warranties;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
@@ -50,8 +51,8 @@ class SearchController extends Controller
     }
     public function searchAjax(Request $request)
     {
-        // dd($request->all());
-        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '')
+        
+        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '' || $request->keySearch != [] ) 
         {
             $key= '%'.$request->keySearch.'%';
             $data = DB::table('works_assignments')
@@ -123,4 +124,25 @@ class SearchController extends Controller
                 "works.name_cus"]);
         return response()->json($data);
     }
+
+   public function createWarrantyFromSearch(Request $request ) 
+   {
+    
+   } 
+   public function getWarraties(Request $request) {
+     if($request->id)
+     {
+        $warran= Warranties::where('id_work_has','=',$request->id)->get();
+        if(count($warran) > 0 )
+        {
+            return $warran;
+
+        }
+        else 
+        {
+            return null;
+        }
+     }
+     else{ return "No ID found!";}
+   }
 }

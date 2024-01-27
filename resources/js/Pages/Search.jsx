@@ -72,11 +72,12 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    console.log("fetchSearch", dataReturn);
-    const [openDialog,setOpenDialog]= useState(false);
-    const handleOpenDialog = ()=>setOpenDialog(!openDialog);
     
-    const handleGetWarranties = async ()=>{
+    console.log("fetchSearch", dataReturn);
+    const [openDialog, setOpenDialog] = useState(false);
+    const handleOpenDialog = () => setOpenDialog(!openDialog);
+
+    const handleGetWarranties = async () => {
         try {
             let data = {
                 id: id,
@@ -100,8 +101,8 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    const handleMakeWarranties = ()=>{};
-    
+    const handleMakeWarranties = () => { };
+
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -138,7 +139,7 @@ function Search({ auth }) {
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                    // style={{ height: `${screenSize.height - 50}px` }}
+                // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
@@ -181,12 +182,20 @@ function Search({ auth }) {
                                                 {item.date_book}
                                             </td>
                                             <td className={classes}>
-                                                <Button 
-                                                onClick={handleOpenDialog}> BH </Button>
+                                                <Button
+                                                    onClick={handleOpenDialog}> BH </Button>
                                                 <Dialog open={openDialog} handler={handleOpenDialog}>
-                                                    <DialogHeader></DialogHeader>
+                                                    <DialogHeader>Hi</DialogHeader>
                                                     <DialogBody>{item.id_cus}</DialogBody>
-                                                    <DialogFooter></DialogFooter>
+                                                    <DialogFooter>
+                                                        <Button
+                                                            variant="text"
+                                                            color="red"
+                                                            onClick={handleOpenDialog}
+                                                            className="mr-1"
+                                                        >
+                                                            <span>Thoát</span></Button>
+                                                    </DialogFooter>
                                                 </Dialog>
                                             </td>
                                             <td className={classes}>

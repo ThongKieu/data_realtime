@@ -50,9 +50,9 @@ class SearchController extends Controller
     }
     public function searchAjax(Request $request)
     {
-        
+        // dd($request->all());
         if($request ->keySearch || $request->keySearch != null || $request->keySearch != '' || $request->keySearch != [] ) 
-        {
+        { 
             $key= '%'.$request->keySearch.'%';
             $data = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
@@ -88,7 +88,9 @@ class SearchController extends Controller
                 "works.name_cus"]);
             return response()->json($data);
         }
-        $data = DB::table('works_assignments')
+       else
+       {
+            $data = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->join('warranties','works_assignments.id', '=', 'warranties.id_work_has')
@@ -120,6 +122,7 @@ class SearchController extends Controller
                 // "workers.worker_name",
                 "works.name_cus"]);
         return response()->json($data);
+       }
     }
 
    public function createWarrantyFromSearch(Request $request ) 

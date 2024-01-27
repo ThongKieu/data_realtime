@@ -20,13 +20,12 @@ class SearchController extends Controller
     public function searchAjax(Request $request)
     {
         // dd($request->all());
-        if($request ->keySearch || $request->keySearch != null)
+        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '')
         {
             $key= '%'.$request->keySearch.'%';
             $data = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->join('warranties','works_assignments.id', '=', 'warranties.id_work_has')
             ->where('works_assignments.id','>','0')
             ->where('works.phone_number','like',$key)
             ->orWhere('works.street','like',$key)
@@ -61,8 +60,7 @@ class SearchController extends Controller
         $data = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->join('warranties','works_assignments.id', '=', 'warranties.id_work_has')
-            ->where('works_assignments.id','>','0')
+            ->where('works_assignments.id','!=','0')
             ->orderBy('works_assignments.id','desc')
             ->limit(100)->get([
                 "works_assignments.id",

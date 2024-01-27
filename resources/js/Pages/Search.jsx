@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Card, Typography, Input, Button } from "@material-tailwind/react";
+import { Typography, Input, Button } from "@material-tailwind/react";
 import { Box } from "@mui/material";
 const TABLE_HEAD = [
     "Mã CV",
@@ -17,23 +17,6 @@ const TABLE_HEAD = [
     "Tổng thu",
     "Số phiếu thu",
     "BH",
-];
-
-const TABLE_ROWS = [
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
@@ -65,29 +48,6 @@ function Search({ auth }) {
         width: window.innerWidth,
         height: window.innerHeight - 100,
     });
-    const [dataDefault, setDataDefault] = useState([
-        {
-            id: 6,
-            id_cus: 22,
-            id_phu: "0",
-            id_worker: 20,
-            work_content: "Sửa máy  lạnh",
-            date_book: "2024-01-25",
-            street: "sư vạn hạnh",
-            district: "khác",
-            image_work_path: null,
-            income_total: 0,
-            name_cus: "Thống Kiều",
-            phone_number: "947613923",
-            real_note: "cần thang",
-            seri_imag: null,
-            bill_imag: null,
-            seri_number: null,
-            spending_total: 0,
-            status_admin_check: 0,
-            worker_full_name: "Nguyễn Thế Minh",
-        },
-    ]);
     const fetchSearch = async () => {
         try {
             let data = {
@@ -198,127 +158,51 @@ function Search({ auth }) {
                         {dataReturn != "" ? (
                             <>
                                 {dataReturn?.map((item, index) => {
-                                    const isLast =
-                                        index === TABLE_ROWS.length - 1;
+                                    const isLast = index === item.length - 1;
                                     const classes = isLast
-                                        ? "p-4"
-                                        : "p-4 border-b border-blue-gray-50";
+                                        ? "p-1"
+                                        : "p-1 border-b border-blue-gray-50";
                                     return (
-                                        <tr key={index} className="hover:bg-blue-gray-100">
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-blue-gray-100"
+                                        >
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.id}
-                                                </Typography>
+                                                {item.id}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.work_content}
-                                                </Typography>
+                                                {item.work_content}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.date_book}
-                                                </Typography>
+                                                {item.date_book}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {item.id_cus}
-                                                </Typography>
+                                                {item.id_cus}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.name_cus}
-                                                </Typography>
+                                                {" "}
+                                                {item.name_cus}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.street} -{" "}
-                                                    {item.district}
-                                                </Typography>
+                                                {item.street} - {item.district}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.phone_number}
-                                                </Typography>
+                                                {item.phone_number}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {item.real_note}
-                                                </Typography>
+                                                {item.real_note}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.worker_full_name}
-                                                </Typography>
+                                                {item.worker_full_name}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.spending_total}
-                                                </Typography>
+                                                {item.spending_total}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.income_total}
-                                                </Typography>
+                                                {item.income_total}
                                             </td>
                                             <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {item.seri_number}
-                                                </Typography>
+                                                {item.seri_number}
                                             </td>
                                             <td className={classes}>
                                                 <Button

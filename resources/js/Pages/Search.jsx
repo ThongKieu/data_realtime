@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Typography, Input, Button } from "@material-tailwind/react";
+import { Typography, Input, Button, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 import { Box } from "@mui/material";
 const TABLE_HEAD = [
     "Mã CV",
@@ -73,6 +73,9 @@ function Search({ auth }) {
         }
     };
     console.log("fetchSearch", dataReturn);
+    const [openDialog,setOpenDialog]= useState(false);
+    const handleOpenDialog = ()=>setOpenDialog(!openDialog);
+    
     const handleGetWarranties = async ()=>{
         try {
             let data = {
@@ -98,6 +101,7 @@ function Search({ auth }) {
         }
     };
     const handleMakeWarranties = ()=>{};
+    
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -177,7 +181,13 @@ function Search({ auth }) {
                                                 {item.date_book}
                                             </td>
                                             <td className={classes}>
-                                                {item.id_cus}
+                                                <Button 
+                                                onClick={handleOpenDialog}> BH </Button>
+                                                <Dialog open={openDialog} handler={handleOpenDialog}>
+                                                    <DialogHeader></DialogHeader>
+                                                    <DialogBody>{item.id_cus}</DialogBody>
+                                                    <DialogFooter></DialogFooter>
+                                                </Dialog>
                                             </td>
                                             <td className={classes}>
                                                 {" "}

@@ -127,6 +127,19 @@ class SearchController extends Controller
     
    } 
    public function getWarraties(Request $request) {
-     Warranties::where('id_work_has','=',$request->id);
+     if($request->id)
+     {
+        $warran= Warranties::where('id_work_has','=',$request->id)->get();
+        if(count($warran) > 0 )
+        {
+            return $warran;
+
+        }
+        else 
+        {
+            return null;
+        }
+     }
+     else{ return "No ID found!";}
    }
 }

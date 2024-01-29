@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { Box, Divider } from "@mui/material";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
+import { host } from "@/Utils/UrlApi";
 const TABLE_HEAD = [
     "Mã CV",
     "Nội dung",
@@ -94,16 +95,35 @@ function Search({ auth }) {
         };
     }, []);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const handleOpenDialogBH = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialog(!openDialog);
     };
-    const [openDialogNote, setOpenDialogNote] = useState(false);
     const handleOpenDialogNote = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialogNote(!openDialogNote);
     };
+    const [dataWan, setDataWan] = useState();
+    const [imgNote, setImgNote] = useState([]);
+    const handleGetDataBH = async (id_row) => {
+        try {
+            const url = `/api/web/work-assignment/warranties?id=${id_row}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            setDataWan(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const handleGetImgNote = (index) => {
+        const data = dataReturn[index].image_work_path;
+        const parts = data?.split(",");
+        const filteredArray = parts?.filter((item) => item.trim() !== "");
+        setImgNote(filteredArray);
+    };
+    console.log(imgNote);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Tìm Kiếm Khách Hàng" />
@@ -180,11 +200,14 @@ function Search({ auth }) {
                                             >
                                                 <Button
                                                     className="p-2 text-orange-400 border border-orange-400"
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         handleOpenDialogBH(
                                                             item.id_cus
-                                                        )
-                                                    }
+                                                        );
+                                                        handleGetDataBH(
+                                                            item.id
+                                                        );
+                                                    }}
                                                     variant="outlined"
                                                 >
                                                     BH
@@ -203,9 +226,73 @@ function Search({ auth }) {
                                                                 Hành
                                                             </DialogHeader>
                                                             <Divider />
-                                                            <DialogBody>
-                                                                {item.id_cus}
-                                                            </DialogBody>
+                                                            {dataWan !==
+                                                            undefined ? (
+                                                                <DialogBody>
+                                                                    {dataWan.map(
+                                                                        (
+                                                                            item,
+                                                                            index
+                                                                        ) => {
+                                                                            return (
+                                                                                <div
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                    className="p-2 mb-2 border border-green-500 rounded-md"
+                                                                                >
+                                                                                    <div>
+                                                                                        <span className="pr-2">
+                                                                                            Bảo
+                                                                                            Hành:
+                                                                                        </span>
+                                                                                        <span>
+                                                                                            {item.warranty_time ===
+                                                                                            0
+                                                                                                ? "kbh"
+                                                                                                : `${
+                                                                                                      item.warranty_time
+                                                                                                  } ${
+                                                                                                      item.unit ===
+                                                                                                      "d"
+                                                                                                          ? "ngày"
+                                                                                                          : item.unit ===
+                                                                                                            "w"
+                                                                                                          ? "tuần"
+                                                                                                          : item.unit ===
+                                                                                                            "m"
+                                                                                                          ? "tháng"
+                                                                                                          : item.unit ===
+                                                                                                            "y"
+                                                                                                          ? "năm"
+                                                                                                          : ""
+                                                                                                  }`}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className="pr-2">
+                                                                                            Nội
+                                                                                            Dung:
+                                                                                        </span>
+                                                                                        <span>
+                                                                                            {
+                                                                                                item.warranty_info
+                                                                                            }
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </DialogBody>
+                                                            ) : (
+                                                                <DialogBody>
+                                                                    <p>
+                                                                        Không có
+                                                                        dữ liệu
+                                                                    </p>
+                                                                </DialogBody>
+                                                            )}
                                                             <Divider />
                                                             <DialogFooter>
                                                                 <Button
@@ -217,18 +304,7 @@ function Search({ auth }) {
                                                                     className="mr-1"
                                                                 >
                                                                     <span>
-                                                                        Cancel
-                                                                    </span>
-                                                                </Button>
-                                                                <Button
-                                                                    variant="gradient"
-                                                                    color="green"
-                                                                    onClick={
-                                                                        handleOpenDialogBH
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        Confirm
+                                                                        Đóng
                                                                     </span>
                                                                 </Button>
                                                             </DialogFooter>
@@ -255,11 +331,20 @@ function Search({ auth }) {
                                             >
                                                 <Button
                                                     className="p-2 text-orange-400 border border-orange-400"
-                                                    onClick={() =>
-                                                        handleOpenDialogNote(
-                                                            item.id_cus
-                                                        )
-                                                    }
+                                                    onClick={() => {
+                                                        if (!openDialogNote) {
+                                                            handleOpenDialogNote(
+                                                                item.id_cus
+                                                            );
+                                                            handleGetImgNote(
+                                                                index
+                                                            );
+                                                        } else {
+                                                            handleOpenDialogNote(
+                                                                item.id_cus
+                                                            );
+                                                        }
+                                                    }}
                                                     variant="outlined"
                                                 >
                                                     Ghi Chú
@@ -276,11 +361,41 @@ function Search({ auth }) {
                                                             }
                                                         >
                                                             <DialogHeader>
-                                                                Thông Tin Ghi Chú
+                                                                Thông Tin Ghi
+                                                                Chú
                                                             </DialogHeader>
                                                             <Divider />
                                                             <DialogBody>
-                                                                {item.real_note}
+                                                                <span className="pr-2 italic underline">
+                                                                    Nội dung ghi
+                                                                    chú:
+                                                                </span>
+                                                                <span>
+                                                                    {
+                                                                        item.real_note
+                                                                    }
+                                                                </span>
+                                                                <Divider className="mb-2" />
+                                                                <div>
+                                                                    {imgNote?.map(
+                                                                        (
+                                                                            item,index
+                                                                        ) => {
+                                                                            return (
+                                                                                <div className="grid grid-cols-4 mt-2" key={index}>
+                                                                                    <img
+                                                                                        src={
+                                                                                            host +
+                                                                                            item
+                                                                                        }
+                                                                                        alt=""
+                                                                                        className="w-full"
+                                                                                    />
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </div>
                                                             </DialogBody>
                                                             <Divider />
                                                             <DialogFooter>
@@ -293,18 +408,7 @@ function Search({ auth }) {
                                                                     className="mr-1"
                                                                 >
                                                                     <span>
-                                                                        Cancel
-                                                                    </span>
-                                                                </Button>
-                                                                <Button
-                                                                    variant="gradient"
-                                                                    color="green"
-                                                                    onClick={
-                                                                        handleOpenDialogNote
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        Confirm
+                                                                        Thoát
                                                                     </span>
                                                                 </Button>
                                                             </DialogFooter>

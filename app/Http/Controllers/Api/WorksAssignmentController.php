@@ -381,30 +381,22 @@ class WorksAssignmentController extends Controller
     public function insertQuoteWork(Request $request)
     {
 
-        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        // dd($up1);
-        if ($up1 == 1) {
-            $seri_imag = '';
-            if ($request->hasFile('image_work_path')) {
-                $images = $request->file('image_work_path');
-                // dd($images);
-                foreach ($images as $image) {
+        $seri_imag = '';
 
-                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
-                }
+        if ($request->hasFile('image_work_path')) {
+            $images = $request->file('image_work_path');
+            // dd($images);
+            foreach ($images as $image) {
+                $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
             }
-
-            // dd($seri_imag);
-            $up = Work::where('id', '=', $request->id_cus)->update(['image_work_path' => $seri_imag]);
-
-            if ($up == 1) {
-                return 'Delete work done !';
-            }
-            return 'Lỗi !!!!!!!!!';
+        }
+        $update = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3, 'bill_imag' => $seri_imag]);
+        if ($update) {
+            return 'true';
         } else {
-            return 'Không tìm thấy';
+            return 'failed';
         }
     }
     public function continueWorkAss(Request $request)
@@ -707,8 +699,7 @@ class WorksAssignmentController extends Controller
 
         $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
         // dd($up1);
-       if($up1 == 1)
-       {
+        if ($up1 == 1) {
 
             $seri_imag = '';
 
@@ -723,16 +714,14 @@ class WorksAssignmentController extends Controller
             }
 
             // dd($seri_imag);
-            $up = WorksAssignment::where('id','=',$request->id)->update(['bill_imag'=>$seri_imag]);
+            $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
 
             if ($up == 1) {
                 return 'Delete work done !';
             }
             return 'Lỗi !!!!!!!!!';
-       }
-       else
-       {
-        return 'Không tìm thấy' ;
-       }
+        } else {
+            return 'Không tìm thấy';
+        }
     }
 }

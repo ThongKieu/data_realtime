@@ -81,6 +81,33 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
+    const handelBH = async (id, id_cus, worker_full_name ) => {
+        let data = {
+                    id: id,
+                    id_cus:id_cus,
+                    worker_full_name:worker_full_name
+                };
+        console.log(data);
+        try {
+            const response = await fetch("api/web/search/warranty", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+            if (response.ok) {
+                // const responseData = await response.json(); // Convert response to JSON
+                // setDataReturn(responseData);
+                window.history.back();
+            } else {
+                console.error("Error:", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.log("hihi", error);
+        }
+    };
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -147,7 +174,7 @@ function Search({ auth }) {
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                    // style={{ height: `${screenSize.height - 50}px` }}
+                // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
@@ -447,6 +474,7 @@ function Search({ auth }) {
                                                     // }`}
                                                     color="orange"
                                                     variant="outlined"
+                                                    onClick={()=>handelBH(item.id,item.id_cus, item.worker_full_name)}
                                                 >
                                                     Bảo Hành
                                                 </Button>

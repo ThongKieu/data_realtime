@@ -69,37 +69,6 @@ function AdminCheckDialog({
         className: "min-w-[72px]",
     };
     const [dataBH, setDataBH] = useState(dataBH1);
-    console.log(dataBH);
-    console.log('databh1111',dataBH1);
-    // const fetchDataBH = async (id) => {
-    //     if (id || id != "undefined") {
-    //         try {
-    //             const response = await fetch(
-    //                 `api/web/work-assignment/warranties?id=${id}`
-    //             );
-    //             const jsonData = await response.json();
-    //             if (response.ok && jsonData.length != 0) {
-    //                 const formatJson = jsonData.map((item) => ({
-    //                     id: item.id,
-    //                     warranty_info: item.warranty_info,
-    //                     warranty_time: item.warranty_time,
-    //                     unit: item.unit,
-    //                 }));
-    //                 setDataBH(formatJson);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching data:", error);
-    //         }
-    //     }
-    // };
-    // useEffect(() => {
-    //     if (params.row.id) {
-    //         fetchDataBH(params.row.id);
-    //     }
-    // }, []);
-    // const handleDataBh = (id) => {
-    //     fetchDataBH(id);
-    // };
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
 

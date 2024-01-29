@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { Box, Divider } from "@mui/material";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
+import { host } from "@/Utils/UrlApi";
 const TABLE_HEAD = [
     "Mã CV",
     "Nội dung",
@@ -80,6 +81,33 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
+    const handelBH = async (id, id_cus, worker_full_name) => {
+        let data = {
+            id: id,
+            id_cus: id_cus,
+            worker_full_name: worker_full_name,
+        };
+        console.log(data);
+        try {
+            const response = await fetch("api/web/search/warranty", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+            if (response.ok) {
+                // const responseData = await response.json(); // Convert response to JSON
+                // setDataReturn(responseData);
+                window.history.back();
+            } else {
+                console.error("Error:", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.log("hihi", error);
+        }
+    };
     useEffect(() => {
         const handleResize = () => {
             setScreenSize({
@@ -94,15 +122,60 @@ function Search({ auth }) {
         };
     }, []);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const handleOpenDialogBH = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialog(!openDialog);
     };
-    const [openDialogNote, setOpenDialogNote] = useState(false);
     const handleOpenDialogNote = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialogNote(!openDialogNote);
+    };
+    const [dataWan, setDataWan] = useState();
+    const [imgNote, setImgNote] = useState([]);
+    const handleGetDataBH = async (id_row) => {
+        try {
+            const url = `/api/web/work-assignment/warranties?id=${id_row}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            setDataWan(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const handleGetImgNote = (index) => {
+        const data = dataReturn[index].image_work_path;
+        const parts = data?.split(",");
+        const filteredArray = parts?.filter((item) => item.trim() !== "");
+        setImgNote(filteredArray);
+    };
+    const ReadMore = ({ text, maxLength }) => {
+        const [isReadMore, setIsReadMore] = useState(false);
+
+        const toggleReadMore = () => {
+            setIsReadMore(!isReadMore);
+        };
+
+        const displayText = isReadMore
+            ? text
+            : `${text.slice(0, maxLength)}...`;
+
+        return (
+            <div>
+                <p>{displayText}</p>
+                {text.length > maxLength && (
+                    <Button
+                        color="orange"
+                        variant="outlined"
+                        className="p-1"
+                        onClick={toggleReadMore}
+                    >
+                        {isReadMore ? "Thu gọn" : "Xem Thêm"}
+                    </Button>
+                )}
+            </div>
+        );
     };
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -123,23 +196,23 @@ function Search({ auth }) {
                     height: `${screenSize.height}px`,
                     width: "100%",
                 }}
-                className="p-2 pr-0 overflow-scroll "
+                className="p-2 pr-0 overflow-scroll"
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                // style={{ height: `${screenSize.height - 50}px` }}
+                    // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head, index) => (
                                 <th
                                     key={index}
-                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                    className="p-2 text-center border border-blue-gray-300 bg-blue-gray-50"
                                 >
                                     <Typography
                                         variant="small"
                                         color="blue-gray"
-                                        className="font-normal leading-none opacity-70"
+                                        className="font-black leading-none opacity-70"
                                     >
                                         {head}
                                     </Typography>
@@ -153,25 +226,41 @@ function Search({ auth }) {
                                 {dataReturn?.map((item, index) => {
                                     const isLast = index === item.length - 1;
                                     const classes = isLast
-                                        ? "p-1"
-                                        : "p-1 border-b border-blue-gray-50";
+                                        ? "p-1 text-center"
+                                        : "p-1 border border-blue-gray-300 text-center";
+                                    const formatter = new Intl.NumberFormat(
+                                        "vi-VN",
+                                        {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }
+                                    );
+                                    const maxLength = 50;
                                     return (
                                         <tr
                                             key={index}
-                                            className="hover:bg-blue-gray-100"
+                                            className="border hover:bg-blue-gray-100 border-blue-gray-100"
                                         >
                                             <td
-                                                className={`${classes} w-[30px]`}
+                                                className={`${classes} w-[60px] `}
                                             >
                                                 {item.id}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[200px]`}
                                             >
-                                                {item.work_content}
+                                                {maxLength < 30 ? (
+                                                    <p>{item.work_content}</p>
+                                                ) : (
+                                                    <ReadMore
+                                                        text={item.work_content}
+                                                        maxLength={maxLength}
+                                                    />
+                                                )}
+                                                {/* {item.work_content} */}
                                             </td>
                                             <td
-                                                className={`${classes} w-[70px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 {item.date_book}
                                             </td>
@@ -179,12 +268,15 @@ function Search({ auth }) {
                                                 className={`${classes} text-center w-[50px]`}
                                             >
                                                 <Button
-                                                    className="p-2 text-orange-400 border border-orange-400"
-                                                    onClick={() =>
+                                                    className="p-2 text-orange-400 border border-orange-400 rounded-md"
+                                                    onClick={() => {
                                                         handleOpenDialogBH(
                                                             item.id_cus
-                                                        )
-                                                    }
+                                                        );
+                                                        handleGetDataBH(
+                                                            item.id
+                                                        );
+                                                    }}
                                                     variant="outlined"
                                                 >
                                                     BH
@@ -203,9 +295,73 @@ function Search({ auth }) {
                                                                 Hành
                                                             </DialogHeader>
                                                             <Divider />
-                                                            <DialogBody>
-                                                                {item.id_cus}
-                                                            </DialogBody>
+                                                            {dataWan !==
+                                                            undefined ? (
+                                                                <DialogBody>
+                                                                    {dataWan.map(
+                                                                        (
+                                                                            item,
+                                                                            index
+                                                                        ) => {
+                                                                            return (
+                                                                                <div
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                    className="p-2 mb-2 border border-green-500 rounded-md"
+                                                                                >
+                                                                                    <div>
+                                                                                        <span className="pr-2">
+                                                                                            Bảo
+                                                                                            Hành:
+                                                                                        </span>
+                                                                                        <span>
+                                                                                            {item.warranty_time ===
+                                                                                            0
+                                                                                                ? "kbh"
+                                                                                                : `${
+                                                                                                      item.warranty_time
+                                                                                                  } ${
+                                                                                                      item.unit ===
+                                                                                                      "d"
+                                                                                                          ? "ngày"
+                                                                                                          : item.unit ===
+                                                                                                            "w"
+                                                                                                          ? "tuần"
+                                                                                                          : item.unit ===
+                                                                                                            "m"
+                                                                                                          ? "tháng"
+                                                                                                          : item.unit ===
+                                                                                                            "y"
+                                                                                                          ? "năm"
+                                                                                                          : ""
+                                                                                                  }`}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className="pr-2">
+                                                                                            Nội
+                                                                                            Dung:
+                                                                                        </span>
+                                                                                        <span>
+                                                                                            {
+                                                                                                item.warranty_info
+                                                                                            }
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </DialogBody>
+                                                            ) : (
+                                                                <DialogBody>
+                                                                    <p>
+                                                                        Không có
+                                                                        dữ liệu
+                                                                    </p>
+                                                                </DialogBody>
+                                                            )}
                                                             <Divider />
                                                             <DialogFooter>
                                                                 <Button
@@ -217,18 +373,7 @@ function Search({ auth }) {
                                                                     className="mr-1"
                                                                 >
                                                                     <span>
-                                                                        Cancel
-                                                                    </span>
-                                                                </Button>
-                                                                <Button
-                                                                    variant="gradient"
-                                                                    color="green"
-                                                                    onClick={
-                                                                        handleOpenDialogBH
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        Confirm
+                                                                        Đóng
                                                                     </span>
                                                                 </Button>
                                                             </DialogFooter>
@@ -236,30 +381,39 @@ function Search({ auth }) {
                                                     )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[100px]`}
                                             >
                                                 {item.name_cus}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[200px]`}
                                             >
                                                 {item.street} - {item.district}
                                             </td>
                                             <td
-                                                className={`${classes} w-[100px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 {item.phone_number}
                                             </td>
                                             <td
-                                                className={`${classes} w-[200px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 <Button
-                                                    className="p-2 text-orange-400 border border-orange-400"
-                                                    onClick={() =>
-                                                        handleOpenDialogNote(
-                                                            item.id_cus
-                                                        )
-                                                    }
+                                                    className="p-1 text-orange-400 border border-orange-400 rounded-sm"
+                                                    onClick={() => {
+                                                        if (!openDialogNote) {
+                                                            handleOpenDialogNote(
+                                                                item.id_cus
+                                                            );
+                                                            handleGetImgNote(
+                                                                index
+                                                            );
+                                                        } else {
+                                                            handleOpenDialogNote(
+                                                                item.id_cus
+                                                            );
+                                                        }
+                                                    }}
                                                     variant="outlined"
                                                 >
                                                     Ghi Chú
@@ -276,11 +430,47 @@ function Search({ auth }) {
                                                             }
                                                         >
                                                             <DialogHeader>
-                                                                Thông Tin Ghi Chú
+                                                                Thông Tin Ghi
+                                                                Chú
                                                             </DialogHeader>
                                                             <Divider />
                                                             <DialogBody>
-                                                                {item.real_note}
+                                                                <span className="pr-2 italic underline">
+                                                                    Nội dung ghi
+                                                                    chú:
+                                                                </span>
+                                                                <span>
+                                                                    {
+                                                                        item.real_note
+                                                                    }
+                                                                </span>
+                                                                <Divider className="mb-2" />
+                                                                <div>
+                                                                    {imgNote?.map(
+                                                                        (
+                                                                            item,
+                                                                            index
+                                                                        ) => {
+                                                                            return (
+                                                                                <div
+                                                                                    className="grid grid-cols-4 mt-2"
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                >
+                                                                                    <img
+                                                                                        src={
+                                                                                            host +
+                                                                                            item
+                                                                                        }
+                                                                                        alt=""
+                                                                                        className="w-full"
+                                                                                    />
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </div>
                                                             </DialogBody>
                                                             <Divider />
                                                             <DialogFooter>
@@ -293,18 +483,7 @@ function Search({ auth }) {
                                                                     className="mr-1"
                                                                 >
                                                                     <span>
-                                                                        Cancel
-                                                                    </span>
-                                                                </Button>
-                                                                <Button
-                                                                    variant="gradient"
-                                                                    color="green"
-                                                                    onClick={
-                                                                        handleOpenDialogNote
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        Confirm
+                                                                        Thoát
                                                                     </span>
                                                                 </Button>
                                                             </DialogFooter>
@@ -312,7 +491,7 @@ function Search({ auth }) {
                                                     )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[100px]`}
                                             >
                                                 ({item.worker_code})-
                                                 {getFirstName(
@@ -320,29 +499,42 @@ function Search({ auth }) {
                                                 )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px] text-right`}
                                             >
-                                                {item.spending_total}
+                                                {formatter.format(
+                                                    item.spending_total
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px] text-right`}
                                             >
-                                                {item.income_total}
+                                                {formatter.format(
+                                                    item.income_total
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[70px]`}
                                             >
-                                                {item.seri_number}
+                                                {item.seri_number !== "null" ? (
+                                                    <p>{item.seri_number}</p>
+                                                ) : (
+                                                    <p>k pt</p>
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px]`}
                                             >
                                                 <Button
-                                                    // className={`${
-                                                    //     BH !== " " ? "block" : "hidden"
-                                                    // }`}
+                                                    className={`p-1 rounded-sm`}
                                                     color="orange"
                                                     variant="outlined"
+                                                    onClick={() =>
+                                                        handelBH(
+                                                            item.id,
+                                                            item.id_cus,
+                                                            item.worker_full_name
+                                                        )
+                                                    }
                                                 >
                                                     Bảo Hành
                                                 </Button>

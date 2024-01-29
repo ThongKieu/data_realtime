@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Warranties;
+use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Illuminate\Http\Request;
@@ -130,7 +131,28 @@ class SearchController extends Controller
 
    public function createWarrantyFromSearch(Request $request ) 
    {
-    
+        $id_cus = $request->id_cus;
+        $data = Work::where('id','=',$id_cus)->get();
+        $date = date('Y-m-d');
+        foreach ($data as $item)
+        {
+            $work_content = 'BH - '. $item -> work_content;
+            $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            $w = new Work([
+            'work_content' => $work_content,
+            'work_note' => $note,
+            'name_cus' => $item -> name_cus,
+            'date_book' => $date,
+            'phone_number' => $item -> phone_number,
+            'street' => $item -> street,
+            'district' => $item -> district,
+            'kind_work' => $item -> kind_work,
+            // 'status_cus'=> $item -> status_cus,
+            'image_work_path'=> $item -> image_work_path
+            ]);
+            $w ->save();
+        }
+        return $request->all();
    } 
    public function getWarraties(Request $request) {
      if($request->id)

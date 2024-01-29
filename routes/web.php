@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UsersAdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -61,7 +62,9 @@ Route::middleware('auth')->group(function () {
         // posts list
         Route::get('/post-list ',function(){return Inertia::render('Admin/Posts/PostList');})->name('admin/post-list');
         Route::get('/create-post ',function(){return Inertia::render('Admin/Posts/CreatePost');})->name('admin/create-post');
+        Route::get('/users',function(){return Inertia::render('Admin/Users/UsersAdmin');})->name('admin/users');
     });
+
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');

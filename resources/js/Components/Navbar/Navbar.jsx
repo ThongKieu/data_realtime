@@ -214,12 +214,12 @@ function ProfileMenu({ propauthprofile }) {
 
 // nav list component
 const navListItems = [
-    {
-        id: 1,
-        label: "Trang Chủ",
-        icon: HomeIcon,
-        href: "dashboard",
-    },
+    // {
+    //     id: 1,
+    //     label: "Trang Chủ",
+    //     icon: HomeIcon,
+    //     href: "dashboard",
+    // },
     {
         id: 2,
         label: "Tìm Kiếm",
@@ -241,13 +241,26 @@ function NavList({ active = false }) {
     ));
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-            {renderItems}
+            <a href={`${host}`} className="flex flex-row gap-2 p-2 font-normal text-black lg:rounded-full hover:bg-blue-gray-50">
+                <span>
+                    <HomeIcon className="h-[18px] w-[18px]" />
+                </span>
+                <span>Trang Chủ</span>
+            </a>
+            <NavLink href={route(`search`)} className="flex flex-row gap-2 font-normal text-black lg:rounded-full">
+                <MenuItem className="flex gap-2 text-black lg:rounded-full">
+                    <span>
+                        <UserCircleIcon className="h-[18px] w-[18px]" />
+                    </span>
+                    <span>Tìm Kiếm</span>
+                </MenuItem>
+            </NavLink>
             <IdentificationIcon className="h-[18px] w-[18px] " />
             <Menu allowHover>
                 <MenuHandler>
                     <Typography
                         as="span"
-                        className="text-sm font-normal cursor-pointer"
+                        className="flex flex-row gap-2 text-sm font-normal text-black cursor-pointer lg:rounded-full"
                     >
                         Thông Tin Thợ
                     </Typography>
@@ -273,7 +286,7 @@ function NavList({ active = false }) {
                 <MenuHandler>
                     <Typography
                         as="span"
-                        className="text-sm font-normal cursor-pointer"
+                        className="flex flex-row gap-2 font-normal text-black cursor-pointer lg:rounded-full"
                     >
                         Khác
                     </Typography>

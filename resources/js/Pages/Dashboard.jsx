@@ -68,13 +68,29 @@ function Dashboard({ auth }) {
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
     const [workDataDN, setWorkDataDN] = useState([]);
-    const [workDataDNCu, setWorkDataDNCu] = useState([]);
     const [workDataDL, setWorkDataDL] = useState([]);
     const [workDataDG, setWorkDataDG] = useState([]);
     const [workDataNLMT, setWorkDataNLMT] = useState([]);
     const [workDataXD, setWorkDataXD] = useState([]);
     const [workDataVC, setWorkDataVC] = useState([]);
     const [workDataHX, setWorkDataHX] = useState([]);
+    //---- Lịch Chưa Xử Lý Của Ngày Hôm Trước-------------------
+    const [workDataDN_cu, setWorkDataDN_cu] = useState([]);
+    const [workDataDL_cu, setWorkDataDL_cu] = useState([]);
+    const [workDataDG_cu, setWorkDataDG_cu] = useState([]);
+    const [workDataNLMT_cu, setWorkDataNLMT_cu] = useState([]);
+    const [workDataXD_cu, setWorkDataXD_cu] = useState([]);
+    const [workDataVC_cu, setWorkDataVC_cu] = useState([]);
+    const [workDataHX_cu, setWorkDataHX_cu] = useState([]);
+    // ---- Gộp Data--------------
+    const totalArray = workDataDN_cu.concat(
+        workDataDL_cu,
+        workDataDG_cu,
+        workDataNLMT_cu,
+        workDataXD_cu,
+        workDataVC_cu,
+        workDataHX_cu
+    );
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
@@ -99,6 +115,7 @@ function Dashboard({ auth }) {
     const [workDataXD_done, setWorkDataXD_done] = useState([]);
     const [workDataVC_done, setWorkDataVC_done] = useState([]);
     const [workDataHX_done, setWorkDataHX_done] = useState([]);
+
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const [screenSize, setScreenSize] = useState({
@@ -108,8 +125,6 @@ function Dashboard({ auth }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
-        fetchData();
-        fetchDataDaPhan();
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
@@ -117,21 +132,18 @@ function Dashboard({ auth }) {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
-
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
             fetchDateCheck(data, selectedDate);
+            fetchDateDoneCheck(data, selectedDate);
             fetchDataDashboard(data, selectedDate);
-            fetchData(data, selectedDate);
-            fetchDataDaPhan(data);
         });
-        newSocket.on("sendAddWorkTo_Client", (data) => {
+        newSocket.on("sendAddWorkTo_Client", (selectedDate, data) => {
             if (data !== "") {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
-                fetchDataDaPhan(data);
-                fetchData(data, selectedDate);
+                fetchDateDoneCheck(data, selectedDate);
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
@@ -142,7 +154,7 @@ function Dashboard({ auth }) {
             }
             console.log("id socket", id);
             setIsButtonDisabled(isDisabled);
-            fetchDataDaPhan();
+            fetchDateDoneCheck(selectedDate);
         });
         const handleResize = () => {
             setScreenSize({
@@ -151,7 +163,7 @@ function Dashboard({ auth }) {
             });
         };
         window.addEventListener("resize", handleResize);
-	//newSocket.connect();
+        //newSocket.connect();
         return () => {
             window.removeEventListener("resize", handleResize);
             newSocket.off("ButtonDisable_From_Server");
@@ -214,33 +226,25 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
-        try {
-            const response = await fetch(url);
-            const jsonData = await response.json();
-            return jsonData;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return null;
-        }
-    };
-    const fetchData = async () => {
-        const url = `api/web/works`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
-            setWorkDataDN(jsonData.dien_nuoc);
-            setWorkDataDNCu(jsonData.dien_nuoc_cu);
-            setWorkDataDL(jsonData.dien_lanh);
-            setWorkDataDG(jsonData.do_go);
-            setWorkDataNLMT(jsonData.nlmt);
-            setWorkDataXD(jsonData.xay_dung);
-            setWorkDataVC(jsonData.tai_xe);
-            setWorkDataHX(jsonData.co_khi);
+        if (url || url != undefined || url != null || url != "") {
+            try {
+                const response = await fetch(url);
+                console.log("xin choa fetchDataDemo", url);
+                const jsonData = await response.json();
+                return jsonData;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return null;
+            }
+        } else {
+            console.error("Fail connect fetch data demo");
         }
     };
 
     const fetchDateCheck = async (dateCheck) => {
-        const url = `api/web/works?dateCheck=${dateCheck}`;
+        const url = `api/web/works?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
+        console.log(jsonData);
         if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
@@ -249,24 +253,20 @@ function Dashboard({ auth }) {
             setWorkDataXD(jsonData.xay_dung);
             setWorkDataVC(jsonData.tai_xe);
             setWorkDataHX(jsonData.co_khi);
+            setWorkDataDN_cu(jsonData.dien_nuoc_cu);
+            setWorkDataDL_cu(jsonData.dien_lanh_cu);
+            setWorkDataDG_cu(jsonData.do_go_cu);
+            setWorkDataNLMT_cu(jsonData.nlmt_cu);
+            setWorkDataXD_cu(jsonData.xay_dung_cu);
+            setWorkDataVC_cu(jsonData.tai_xe_cu);
+            setWorkDataHX_cu(jsonData.co_khi_cu);
+            setIsLoading(false);
+        } else {
+            console.log("Data lỗi không tồn tại!!");
         }
     };
     const fetchDateDoneCheck = async (dateCheck) => {
-        const url = `/api/web/work-assignment?dateCheck=${dateCheck}`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
-            setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
-        }
-    };
-    // --------------------------- lay du lieu lich da phan ----------------------------------
-    const fetchDataDaPhan = async () => {
-        const url = `/api/web/work-assignment`;
+        const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
             setWorkDataDN_done(jsonData.dien_nuoc_done);
@@ -277,10 +277,8 @@ function Dashboard({ auth }) {
             setWorkDataVC_done(jsonData.tai_xe_done);
             setWorkDataHX_done(jsonData.co_khi_done);
             setIsLoading(false);
-            socketD?.emit(
-                "UpdateDateTable_To_Server",
-                "Cập Nhật trạng thái AdminCheck"
-            );
+        } else {
+            console.log("Data lỗi không tồn tại!!");
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -764,8 +762,9 @@ function Dashboard({ auth }) {
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => {
                     setOpen(!open);
+                    getDataBh();
                 };
-		const check_bh = params.row.income_total;
+                const check_bh = params.row.income_total;
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -780,14 +779,13 @@ function Dashboard({ auth }) {
                 };
                 return (
                     <>
-			 <IconButton
+                        <IconButton
                             className={`${
                                 check_bh === 0 ? "hidden" : ""
                             } w-8 h-8 p-1`}
                             variant="outlined"
                             onClick={() => {
                                 handleOpen();
-                                getDataBh();
                             }}
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
@@ -1304,6 +1302,30 @@ function Dashboard({ auth }) {
                         }
                     } catch (error) {}
                 };
+                const handleSentKS = async () => {
+                    try {
+                        let data = {
+                            id: params.id,
+                            id_cus: params.row.id_cus,
+                            real_note: params.row.real_note,
+                            auth_id: auth.user.id,
+                        };
+                        const response = await fetch(
+                            "api/web/update/work-assignment-cancle",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
+                        if (response.ok) {
+                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            handleOpen();
+                        }
+                    } catch (error) {}
+                };
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
@@ -1600,9 +1622,44 @@ function Dashboard({ auth }) {
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
+                const [dataBH, setDataBH] = useState([
+                    {
+                        id: 0,
+                        warranty_time: 0,
+                        unit: "kbh",
+                        warranty_info: "Không Bảo Hành",
+                    }
+                ]);
+                const fetchDataBH = async (id) => {
+                    if (id || id != "undefined") {
+                        try {
+                            const response = await fetch(
+                                `api/web/work-assignment/warranties?id=${id}`
+                            );
+                            const jsonData = await response.json();
+                            if (response.ok && jsonData.length != 0) {
+                                const formatJson = jsonData.map((item) => ({
+                                    id: item.id,
+                                    warranty_info: item.warranty_info,
+                                    warranty_time: item.warranty_time,
+                                    unit: item.unit,
+                                }));
+                                setDataBH(formatJson);
+                            }
+                        } catch (error) {
+                            console.error("Error fetching data:", error);
+                        }
+                    }
+                };
+                const handleDataBh = (id) => {
+                    fetchDataBH(id);
+                    console.log('id:dddd',dataBH);
+                };
                 return (
-                    <div>
-                        {params.row.flag_check === 1 ? <p>Đang Sửa</p> : ""}
+                    <>
+                        <div>
+                        {params.row.flag_check === 1 ? <p className="w-full text-center">Đang Sửa</p> : ""}
+                        </div>
                         <div className="flex">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
@@ -1610,7 +1667,9 @@ function Dashboard({ auth }) {
                                     <Tooltip content="Admin đã xác nhận">
                                         <CheckCircleIcon
                                             className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
-                                                params.row.flag_check === 1 ? "hidden" : ""
+                                                params.row.flag_check === 1
+                                                    ? "hidden"
+                                                    : ""
                                             }`}
                                         />
                                     </Tooltip>
@@ -1664,9 +1723,10 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={
-                                                handleOpenAdminCheckWithDisable
-                                            }
+                                            onClick={()=>{
+                                                handleOpenAdminCheckWithDisable();
+                                                handleDataBh(params.row.id);
+                                            }}
                                             variant="outlined"
                                         >
                                             <EyeIcon />
@@ -1756,6 +1816,7 @@ function Dashboard({ auth }) {
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
+                            dataBH1={dataBH}
                             imageVt1={imageVt1}
                             host={host}
                             params={params}
@@ -1817,7 +1878,7 @@ function Dashboard({ auth }) {
                             openKS={openKS}
                             handleOpenKS={handleOpenKSWithDisable}
                             setWorkNote={setWorkNote}
-                            handleSentKS={handleSentDeleteDone}
+                            handleSentKS={handleSentKS}
                             cardExpires={cardExpires}
                             handleChange={handleChange}
                             vatCard={vatCard}
@@ -1850,12 +1911,11 @@ function Dashboard({ auth }) {
                             params={params}
                             handleDataFromChild={handleDataFromChild}
                         />
-                    </div>
+                    </>
                 );
             },
         },
     ];
-
     const DNCU = useRef(null);
     const DN = useRef(null);
     const DL = useRef(null);
@@ -1884,7 +1944,7 @@ function Dashboard({ auth }) {
     const dataGridLichChuaPhan = [
         {
             id: "workDNCu",
-            rowsDataGrid: workDataDNCu,
+            rowsDataGrid: totalArray,
             contentDataGird: "Lịch Ngày Trước Chưa Xử Lý",
             ref: DNCU,
         },

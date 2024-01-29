@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Card, Typography, Input, Button } from "@material-tailwind/react";
-import { Box } from "@mui/material";
+import {
+    Typography,
+    Input,
+    Button,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
+} from "@material-tailwind/react";
+import { Box, Divider } from "@mui/material";
+import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 const TABLE_HEAD = [
     "Mã CV",
     "Nội dung",
@@ -16,275 +25,322 @@ const TABLE_HEAD = [
     "Tổng chi",
     "Tổng thu",
     "Số phiếu thu",
-    "BH",
-];
-
-const TABLE_ROWS = [
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: "3 t",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
-    {
-        idCV: "QTG1",
-        NoiDungCV: "Thay cánh quạt 1580k",
-        TG: "2023-08-21",
-        BH: " ",
-        TenKH: "Manager",
-        DiaChi: "D20/532P, Nguyễn Văn Linh, ",
-        sdt: "908723426",
-        ghiChu: "chua tt",
-        ThoLam: "John Michael",
-        TongChi: "555.000 đ",
-        TongThu: "1.580.000 đ",
-        soPhieuThu: "1111",
-    },
+    "Yêu Cầu Bảo Hành",
 ];
 function Search({ auth }) {
-    const [email, setEmail] = React.useState("");
-    const onChange = ({ target }) => setEmail(target.value);
+    // const onChange = ({ target }) => setEmail(target.value);
+    const [dataReturn, setDataReturn] = useState([
+        {
+            id: 6,
+            id_cus: 22,
+            id_phu: "0",
+            id_worker: 20,
+            work_content: "Sửa máy  lạnh",
+            date_book: "2024-01-25",
+            street: "sư vạn hạnh",
+            district: "khác",
+            image_work_path: null,
+            income_total: 0,
+            name_cus: "Thống Kiều",
+            phone_number: "947613923",
+            real_note: "cần thang",
+            seri_imag: null,
+            bill_imag: null,
+            seri_number: null,
+            spending_total: 0,
+            status_admin_check: 0,
+            worker_full_name: "Nguyễn Thế Minh",
+        },
+    ]);
+    const [keySearch, setKey] = useState("");
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight - 100,
+    });
+    const fetchSearch = async () => {
+        try {
+            let data = {
+                keySearch: keySearch,
+            };
+            const response = await fetch("api/web/search", {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+            if (response.ok) {
+                const responseData = await response.json(); // Convert response to JSON
+                setDataReturn(responseData);
+            } else {
+                console.error("Error:", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.log("hihi", error);
+        }
+    };
+    useEffect(() => {
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        fetchSearch();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const handleOpenDialogBH = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialog(!openDialog);
+    };
+    const [openDialogNote, setOpenDialogNote] = useState(false);
+    const handleOpenDialogNote = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialogNote(!openDialogNote);
+    };
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="chat" />
-            <Card className="w-full overflow-scroll">
-                <Box sx={{ width: 1 }}>
-                    <div className="pt-3 focus:outline-none">
-                        <Input
-                            type="text"
-                            label="Tìm Kiếm"
-                            value={email}
-                            onChange={onChange}
-                            className="pr-20 shadow-none focus:outline-none"
-                        />
-                    </div>
-                    <table className="w-full text-left table-auto min-w-max">
-                        <thead>
-                            <tr>
-                                {TABLE_HEAD.map((head) => (
-                                    <th
-                                        key={head}
-                                        className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+            <Head title="Tìm Kiếm Khách Hàng" />
+            <div className="p-2">
+                <Input
+                    type="text"
+                    label="Tìm Kiếm"
+                    name="search"
+                    value={keySearch}
+                    onChange={(e) => setKey(e.target.value)}
+                    onKeyUp={fetchSearch}
+                    className="rounded-none shadow-none focus:outline-none"
+                />
+            </div>
+            <Box
+                sx={{
+                    height: `${screenSize.height}px`,
+                    width: "100%",
+                }}
+                className="p-2 pr-0 overflow-scroll "
+            >
+                <table
+                    className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
+                // style={{ height: `${screenSize.height - 50}px` }}
+                >
+                    <thead>
+                        <tr>
+                            {TABLE_HEAD.map((head, index) => (
+                                <th
+                                    key={index}
+                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                >
+                                    <Typography
+                                        variant="small"
+                                        color="blue-gray"
+                                        className="font-normal leading-none opacity-70"
                                     >
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal leading-none opacity-70"
-                                        >
-                                            {head}
-                                        </Typography>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {TABLE_ROWS.map(
-                                (
-                                    {
-                                        idCV,
-                                        NoiDungCV,
-                                        TG,
-                                        BH,
-                                        TenKH,
-                                        DiaChi,
-                                        sdt,
-                                        ghiChu,
-                                        ThoLam,
-                                        TongChi,
-                                        TongThu,
-                                        BHhanh,
-                                        soPhieuThu,
-                                    },
-                                    index
-                                ) => {
-                                    const isLast =
-                                        index === TABLE_ROWS.length - 1;
+                                        {head}
+                                    </Typography>
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dataReturn != "" ? (
+                            <>
+                                {dataReturn?.map((item, index) => {
+                                    const isLast = index === item.length - 1;
                                     const classes = isLast
-                                        ? "p-4"
-                                        : "p-4 border-b border-blue-gray-50";
-                                    if (BH !== " ") {
-                                        <Button
-                                            className="p-2 "
-                                            color="orange"
-                                            variant="outlined"
-                                        >
-                                            Bảo Hành
-                                        </Button>;
-                                    }
-
+                                        ? "p-1"
+                                        : "p-1 border-b border-blue-gray-50";
                                     return (
-                                        <tr key={index}>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {idCV}
-                                                </Typography>
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-blue-gray-100"
+                                        >
+                                            <td
+                                                className={`${classes} w-[30px]`}
+                                            >
+                                                {item.id}
                                             </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {NoiDungCV}
-                                                </Typography>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.work_content}
                                             </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TG}
-                                                </Typography>
+                                            <td
+                                                className={`${classes} w-[70px]`}
+                                            >
+                                                {item.date_book}
                                             </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {BH}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TenKH}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {DiaChi}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {sdt}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {ghiChu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {ThoLam}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TongChi}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {TongThu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    as="a"
-                                                    href="#"
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-medium"
-                                                >
-                                                    {soPhieuThu}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
+                                            <td
+                                                className={`${classes} text-center w-[50px]`}
+                                            >
                                                 <Button
-                                                    className={`${
-                                                        BH !== " "
-                                                            ? "block"
-                                                            : "hidden"
-                                                    }`}
+                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    onClick={() =>
+                                                        handleOpenDialogBH(
+                                                            item.id_cus
+                                                        )
+                                                    }
+                                                    variant="outlined"
+                                                >
+                                                    BH
+                                                </Button>
+                                                {openDialog &&
+                                                    selectedItemId ===
+                                                        item.id_cus && (
+                                                        <Dialog
+                                                            open={openDialog}
+                                                            handler={
+                                                                handleOpenDialogBH
+                                                            }
+                                                        >
+                                                            <DialogHeader>
+                                                                Thông Tin Bảo
+                                                                Hành
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                {item.id_cus}
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogBH
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Cancel
+                                                                    </span>
+                                                                </Button>
+                                                                <Button
+                                                                    variant="gradient"
+                                                                    color="green"
+                                                                    onClick={
+                                                                        handleOpenDialogBH
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        Confirm
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.name_cus}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.street} - {item.district}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[100px]`}
+                                            >
+                                                {item.phone_number}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[200px]`}
+                                            >
+                                                <Button
+                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    onClick={() =>
+                                                        handleOpenDialogNote(
+                                                            item.id_cus
+                                                        )
+                                                    }
+                                                    variant="outlined"
+                                                >
+                                                    Ghi Chú
+                                                </Button>
+                                                {openDialogNote &&
+                                                    selectedItemId ===
+                                                        item.id_cus && (
+                                                        <Dialog
+                                                            open={
+                                                                openDialogNote
+                                                            }
+                                                            handler={
+                                                                handleOpenDialogNote
+                                                            }
+                                                        >
+                                                            <DialogHeader>
+                                                                Thông Tin Ghi Chú
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                {item.real_note}
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogNote
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Cancel
+                                                                    </span>
+                                                                </Button>
+                                                                <Button
+                                                                    variant="gradient"
+                                                                    color="green"
+                                                                    onClick={
+                                                                        handleOpenDialogNote
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        Confirm
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                ({item.worker_code})-
+                                                {getFirstName(
+                                                    item.worker_full_name
+                                                )}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.spending_total}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.income_total}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                {item.seri_number}
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[150px]`}
+                                            >
+                                                <Button
+                                                    // className={`${
+                                                    //     BH !== " " ? "block" : "hidden"
+                                                    // }`}
                                                     color="orange"
                                                     variant="outlined"
                                                 >
@@ -293,12 +349,16 @@ function Search({ auth }) {
                                             </td>
                                         </tr>
                                     );
-                                }
-                            )}
-                        </tbody>
-                    </table>
-                </Box>
-            </Card>
+                                })}
+                            </>
+                        ) : (
+                            <tr className="w-full text-center hover:bg-blue-gray-100">
+                                <td colSpan={13}>Không Có Dữ Liệu</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </Box>
         </AuthenticatedLayout>
     );
 }

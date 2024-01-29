@@ -17,15 +17,21 @@ function AdminSidebar({ children }) {
     const Menus = [
         {
             title: "Thợ",
-            icon: <UserGroupIcon className={`w-6 md:w-5 xl:w-6`}  />,
+            icon: <UserGroupIcon className={`w-6 md:w-5 xl:w-6`} />,
             href: "admin",
             submenu: true,
             submenuItem: [
+                {
+                    title: "Danh Sách Người Dùng",
+                    icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/users"),
+                },
                 {
                     title: "Kiểm Tra Liên Hệ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/worker-check-call"),
                 },
+
                 {
                     title: " Danh Sách Thợ",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
@@ -128,6 +134,11 @@ function AdminSidebar({ children }) {
             submenu: true,
             submenuItem: [
                 {
+                    title: "Kiểm Tra Liên Hệ",
+                    icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/worker-check-call"),
+                },
+                {
                     title: "Chặn Số",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/tools-admin-block"),
@@ -190,7 +201,7 @@ function AdminSidebar({ children }) {
                                     Menu.gap ? "mt-7" : "mt-2"
                                 }${activeIndex === index ? "bg-red-500" : ""} ${
                                     open ? " mt-2" : "md:p-1 xl:p-2 mt-0"
-                                }` }
+                                }`}
                                 onClick={() => {
                                     if (openSubmenu === index) {
                                         setOpenSubmenu(false);

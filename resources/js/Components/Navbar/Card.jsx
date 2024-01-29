@@ -14,11 +14,9 @@ function CardMain() {
             fetchData();
             fetchDataOrderDone();
             newSocket.on("sendAddWorkTo_Client", (data) => {
-                if (data != "") {
-                    fetchDelete(data);
-                    fetchData(data);
-                    fetchDataOrderDone(data);
-                }
+                fetchDelete(data);
+                fetchData(data);
+                fetchDataOrderDone(data);
             });
             setHasLoaded(true);
         }

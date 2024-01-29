@@ -378,7 +378,7 @@ class WorksAssignmentController extends Controller
         }
         return 'Delete Failed !';
     }
-    public function insertQuoteFlow(Request $request)
+    public function insertQuoteWork(Request $request)
     {
 
         $seri_imag = '';
@@ -394,9 +394,9 @@ class WorksAssignmentController extends Controller
         }
         $update = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3, 'bill_imag' => $seri_imag]);
         if ($update) {
-            return 'OK !!';
+            return 'true';
         } else {
-            return 'Failed !!';
+            return 'failed';
         }
     }
     public function continueWorkAss(Request $request)
@@ -693,5 +693,35 @@ class WorksAssignmentController extends Controller
         }
         return 'Fails!!!!!!!!!!!!!!!!';
     }
+    // lich khao sat hoac bao gia
+    public function insertQuoteFlow(Request $request)
+    {
 
+        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        // dd($up1);
+        if ($up1 == 1) {
+
+            $seri_imag = '';
+
+            if ($request->hasFile('image_work_path')) {
+                $images = $request->file('image_work_path');
+                // dd($images);
+                foreach ($images as $image) {
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                }
+            }
+
+            // dd($seri_imag);
+            $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
+
+            if ($up == 1) {
+                return 'Delete work done !';
+            }
+            return 'Lỗi !!!!!!!!!';
+        } else {
+            return 'Không tìm thấy';
+        }
+    }
 }

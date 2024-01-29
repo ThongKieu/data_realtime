@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import {
@@ -7,13 +7,19 @@ import {
     Input,
     Button,
     Textarea,
-    Spinner, Dialog,
+    Spinner,
+    Dialog,
     DialogHeader,
     DialogBody,
-    DialogFooter, Tooltip
+    DialogFooter,
+    Tooltip,
 } from "@material-tailwind/react";
 import { Box, Divider } from "@mui/material";
-import { DataGrid, GridToolbarQuickFilter, GridToolbar } from "@mui/x-data-grid";
+import {
+    DataGrid,
+    GridToolbarQuickFilter,
+    GridToolbar,
+} from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 import {
     TrashIcon,
@@ -31,11 +37,17 @@ import {
     BookmarkSquareIcon,
 } from "@heroicons/react/24/outline";
 
-function UsersAdmin({auth}) {
+function UsersAdmin({ auth }) {
     const [isLoading, setIsLoading] = useState(true);
     const column = [
         {
-            field: "id", headerName: "STT", type: "text", width: 30, editable: false, align: "left", headerAlign: "left",
+            field: "id",
+            headerName: "STT",
+            type: "text",
+            width: 30,
+            editable: false,
+            align: "left",
+            headerAlign: "left",
         },
         {
             field: "name",
@@ -61,14 +73,16 @@ function UsersAdmin({auth}) {
             editable: false,
             renderCell: (params) => {
                 return (
-                   <div className='m-auto text-center'>
-                     <a href={`tel:${params.row.phone_cty}`}>{params.row.phone_cty}</a>
-                   </div>
+                    <div className="m-auto text-center">
+                        <a href={`tel:${params.row.phone_cty}`}>
+                            {params.row.phone_cty}
+                        </a>
+                    </div>
                 );
             },
         },
         {
-            field: 'permission',
+            field: "permission",
             headerName: "Quyền",
             type: "text",
             width: 250,
@@ -81,54 +95,90 @@ function UsersAdmin({auth}) {
                 // console.log(params);
                 const handleRessetPermission = async (id) => {
                     try {
-                        console.log('xin chao', permission);
+                        console.log("xin chao", permission);
 
                         let data = { id: id, permission: permission };
-                        const response = await fetch(host + "api/web/users/resper", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
+                        const response = await fetch(
+                            host + "api/web/users/resper",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
                         if (response.ok) {
                             handleOpenPer();
-                            alert('Đổi Quyền Thành Công');
+                            alert("Đổi Quyền Thành Công");
                             window.location.reload();
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
                     }
-
                 };
                 return (
                     <>
-                        <div className=' w-full flex flex-row justify-between items-center'>
-                            <div>
+                        <div
+                            className={`flex flex-row items-center justify-${
+                                auth.user.permission == 2 ? "between" : "center"
+                            } w-full`}
+                        >
+                            <>
                                 {params.row.permission == 0 ? (
-                                    <p className="text-green-500 text-center">
+                                    <p className="text-center text-green-500">
                                         Người dùng
-                                    </p>) : (
-                                    params.row.permission == 1 ? (<p className='text-center text-blue-500'>Admin</p>) : (
-                                        <p className='text-center text-red-500'>Supper Admin</p>))}
-
-                            </div>
-                            <div>
-                               {auth.user.permission == 2 ?(<Tooltip content='Doi Quyền'>
-                                    <Button onClick={handleOpenPer} color='blue' variant="outlined" className='p-2'>
-                                        <UserPlusIcon className='w-5 h-5 p-0 text-blue-500 ' />
-                                    </Button>
-                                </Tooltip>):(``)}
-                            </div>
+                                    </p>
+                                ) : params.row.permission == 1 ? (
+                                    <p className="text-center text-blue-500">
+                                        Admin
+                                    </p>
+                                ) : (
+                                    <p className="text-center text-red-500">
+                                        Supper Admin
+                                    </p>
+                                )}
+                            </>
+                            <>
+                                {auth.user.permission == 2 ? (
+                                    <Tooltip content="Doi Quyền">
+                                        <Button
+                                            onClick={handleOpenPer}
+                                            color="blue"
+                                            variant="outlined"
+                                            className="p-2"
+                                        >
+                                            <UserPlusIcon className="w-5 h-5 p-0 text-blue-500 " />
+                                        </Button>
+                                    </Tooltip>
+                                ) : (
+                                    ""
+                                )}
+                            </>
                         </div>
-                        <Dialog open={openPer} handler={handleOpenPer} size='sm'>
+                        <Dialog
+                            open={openPer}
+                            handler={handleOpenPer}
+                            size="sm"
+                        >
                             <div className="flex items-center justify-center">
-                                <DialogHeader>Nhập Thông Tin</DialogHeader></div>
+                                <DialogHeader>Nhập Thông Tin</DialogHeader>
+                            </div>
                             <Divider></Divider>
 
-                            <DialogBody className='w-full'>
-                                <select className='w-full' name='permission' onChange={(e) => { setPermission(e.target.value) }} value={permission}>
-                                    <option value="0"> Người dùng thường </option>
+                            <DialogBody className="w-full">
+                                <select
+                                    className="w-full"
+                                    name="permission"
+                                    onChange={(e) => {
+                                        setPermission(e.target.value);
+                                    }}
+                                    value={permission}
+                                >
+                                    <option value="0">
+                                        {" "}
+                                        Người dùng thường{" "}
+                                    </option>
                                     <option value="1"> Quyền vào Admin </option>
                                     <option value="2"> Quản lý cấp cao </option>
                                 </select>
@@ -143,7 +193,13 @@ function UsersAdmin({auth}) {
                                 >
                                     <span>Hủy</span>
                                 </Button>
-                                <Button variant="gradient" color="green" onClick={() => { handleRessetPermission(params.row.id) }}>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={() => {
+                                        handleRessetPermission(params.row.id);
+                                    }}
+                                >
                                     <span>Lưu</span>
                                 </Button>
                             </DialogFooter>
@@ -157,28 +213,26 @@ function UsersAdmin({auth}) {
                             ></ClipboardDocumentListIcon>
                         </Button> */}
                     </>
-
                 );
             },
         },
         {
-            field: 'is_online',
+            field: "is_online",
             headerName: "Trạng Thái",
             type: "text",
             width: 250,
             editable: false,
             renderCell: (params) => {
                 return (
-                    <div className='m-auto'>
+                    <div className="m-auto">
                         {params.row.is_online != 1 ? (
-                            <p className="text-red-500 text-center">
-                                Offline
-                            </p>
+                            <p className="text-center text-red-500">Offline</p>
                         ) : (
-                            <p className='text-center'>{params.row.is_online}</p>
+                            <p className="text-center">
+                                {params.row.is_online}
+                            </p>
                         )}
                     </div>
-
                 );
             },
         },
@@ -189,10 +243,7 @@ function UsersAdmin({auth}) {
             width: 80,
             editable: false,
             renderCell: (params) => {
-
-                return (
-                    <img src={host + params.row.avatar} className='w-10' />
-                );
+                return <img src={host + params.row.avatar} className="w-10" />;
             },
         },
         {
@@ -202,13 +253,15 @@ function UsersAdmin({auth}) {
             width: 100,
             editable: false,
             renderCell: (params) => {
-
                 return (
-                    <div className='m-auto'>
+                    <div className="m-auto">
                         <Button
-                            onClick={() => { handleResset(params.row.id) }}
-                            className='bg-white  text-center'                    >
-                            <ArrowPathIcon className='w-5 text-black '></ArrowPathIcon>
+                            onClick={() => {
+                                handleResset(params.row.id);
+                            }}
+                            className="text-center bg-white"
+                        >
+                            <ArrowPathIcon className="w-5 text-black "></ArrowPathIcon>
                         </Button>
                     </div>
                 );
@@ -229,10 +282,16 @@ function UsersAdmin({auth}) {
         }
     };
     const handleAddUser = async () => {
-        if (formData.name == null || formData.email == null || formData.sdt == null || formData.name == '' || formData.email == '' || formData.sdt == '') {
-            alert(' Thiếu Thông Tin!!!!!!!!!!!!!!');
-        }
-        else {
+        if (
+            formData.name == null ||
+            formData.email == null ||
+            formData.sdt == null ||
+            formData.name == "" ||
+            formData.email == "" ||
+            formData.sdt == ""
+        ) {
+            alert(" Thiếu Thông Tin!!!!!!!!!!!!!!");
+        } else {
             try {
                 // let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 const response = await fetch(host + "api/web/users", {
@@ -259,7 +318,7 @@ function UsersAdmin({auth}) {
     const handleOpen = () => setOpen(!open);
     const [getData, usersData] = useState([]);
     const [formDataPer, usersDataPer] = useState({
-        permission: '',
+        permission: "",
     });
     const [formData, setFormData] = useState({
         name: "",
@@ -287,7 +346,7 @@ function UsersAdmin({auth}) {
             [name]: value,
         }));
     };
-    // đổi mật khâu   
+    // đổi mật khâu
     const handleResset = async () => {
         try {
             // console.log(id);
@@ -302,16 +361,14 @@ function UsersAdmin({auth}) {
             });
             if (response.ok) {
                 // handleOpen();
-                alert('Tài Khoản Đã đổi mật khẩu: ');
+                alert("Tài Khoản Đã đổi mật khẩu: ");
                 window.location.reload();
             }
         } catch (error) {
             console.log("Lỗi:", error);
         }
-
     };
-    // Đổi quyền    
-
+    // Đổi quyền
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -319,45 +376,66 @@ function UsersAdmin({auth}) {
             <div className="flex justify-center h-screen p-2">
                 <Card className="flex flex-row w-full h-full m-auto bg-white">
                     <Card className=" rounded w-[100%]">
-                        <div className='bg-green-400 grid grid-cols-5 gap-2'>
-                            <Typography className="m-2 font-extrabold text-white col-start-3">
+                        <div className="grid grid-cols-5 gap-2 bg-green-400">
+                            <Typography className="col-start-3 m-2 font-extrabold text-white">
                                 Danh Sách Người Dùng WEBSITE
                             </Typography>
-                            <Button onClick={handleOpen} variant="gradient" className='col-start-5 m-2'>
+                            <Button
+                                onClick={handleOpen}
+                                variant="gradient"
+                                className="col-start-5 m-2"
+                            >
                                 Thêm người dùng
                             </Button>
                             <Dialog open={open} handler={handleOpen}>
                                 <div className="flex items-center justify-center">
-                                    <DialogHeader>Nhập Thông Tin</DialogHeader></div>
+                                    <DialogHeader>Nhập Thông Tin</DialogHeader>
+                                </div>
 
                                 <Divider></Divider>
-                                <DialogBody className='grid grid-cols-2 gap-3'>
+                                <DialogBody className="grid grid-cols-2 gap-3">
 
                                     <Input
-                                        className='shadow-none'
-                                        label='Tên'
+                                        className="shadow-none"
+                                        label="Tên"
                                         value={formData.ten}
-                                        name='name'
+                                        name="name"
                                         required
-                                        onChange={handleChange} />
+                                        onChange={handleChange}
+                                    />
                                     <Input
-                                        className='shadow-none'
-                                        label='Số Liên Hệ'
+                                        className="shadow-none"
+                                        label="Số Liên Hệ"
                                         value={formData.sdt}
-                                        name='sdt'
+                                        name="sdt"
                                         required
-                                        onChange={handleChange} />
+                                        onChange={handleChange}
+                                    />
                                     <Input
-                                        className='shadow-none'
-                                        label='Email'
+                                        className="shadow-none"
+                                        label="Email"
                                         value={formData.email}
-                                        name='email'
+                                        name="email"
                                         required
-                                        onChange={handleChange} />
-                                    <select name='permission' onChange={handleChange} value={formData.permission}>
-                                        <option value="0"> Người dùng thường </option>
-                                        <option value="1"> Quyền vào Admin </option>
-                                        <option value="2"> Quản lý cấp cao </option>
+                                        onChange={handleChange}
+                                    />
+                                    <select
+                                        name="permission"
+                                        onChange={handleChange}
+                                        value={formData.permission}
+                                    >
+                                        <option value="0">
+                                            {" "}
+                                            Người dùng thường{" "}
+                                        </option>
+                                        <option value="1">
+                                            {" "}
+                                            Quyền vào Admin{" "}
+                                        </option>
+                                        <option value="2">
+                                            {" "}
+                                            Quản lý cấp cao{" "}
+                                        </option>
                                     </select>
                                 </DialogBody>
                                 <Divider></Divider>
@@ -370,14 +448,16 @@ function UsersAdmin({auth}) {
                                     >
                                         <span>Hủy</span>
                                     </Button>
-                                    <Button variant="gradient" color="green" onClick={handleAddUser}>
+                                    <Button
+                                        variant="gradient"
+                                        color="green"
+                                        onClick={handleAddUser}
+                                    >
                                         <span>Lưu</span>
                                     </Button>
                                 </DialogFooter>
                             </Dialog>
                         </div>
-
-
 
                         <Divider className="w-full" />
                         {isLoading ? (
@@ -388,10 +468,8 @@ function UsersAdmin({auth}) {
                                 </p>
                             </div>
                         ) : (
-
                             <Box className={`h-x]`}>
                                 <DataGrid
-
                                     {...getData}
                                     rows={getData}
                                     disableColumnFilter
@@ -405,12 +483,13 @@ function UsersAdmin({auth}) {
                                         },
                                     }}
                                 />
-                            </Box>)}
+                            </Box>
+                        )}
                     </Card>
                 </Card>
             </div>
         </AuthenticatedLayout>
-    )
+    );
 }
 
-export default UsersAdmin
+export default UsersAdmin;

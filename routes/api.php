@@ -92,6 +92,9 @@ Route::prefix('web')->group(function () {
         Route::get('/warranty','App\Http\Controllers\Api\SearchController@getWarraties');
 
     });
+    Route::prefix('noti')->group(function () {
+        Route::post('/','App\Http\Controllers\Api\NoticationAllController@index');
+    });
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(

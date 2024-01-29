@@ -126,3 +126,6 @@
 .tox-statusbar__branding{
     display: none !important;
 }
+.MuiBox-root>div{
+    border:none;
+}

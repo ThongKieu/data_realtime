@@ -81,12 +81,12 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    const handelBH = async (id, id_cus, worker_full_name ) => {
+    const handelBH = async (id, id_cus, worker_full_name) => {
         let data = {
-                    id: id,
-                    id_cus:id_cus,
-                    worker_full_name:worker_full_name
-                };
+            id: id,
+            id_cus: id_cus,
+            worker_full_name: worker_full_name,
+        };
         console.log(data);
         try {
             const response = await fetch("api/web/search/warranty", {
@@ -150,7 +150,33 @@ function Search({ auth }) {
         const filteredArray = parts?.filter((item) => item.trim() !== "");
         setImgNote(filteredArray);
     };
-    console.log(imgNote);
+    const ReadMore = ({ text, maxLength }) => {
+        const [isReadMore, setIsReadMore] = useState(false);
+
+        const toggleReadMore = () => {
+            setIsReadMore(!isReadMore);
+        };
+
+        const displayText = isReadMore
+            ? text
+            : `${text.slice(0, maxLength)}...`;
+
+        return (
+            <div>
+                <p>{displayText}</p>
+                {text.length > maxLength && (
+                    <Button
+                        color="orange"
+                        variant="outlined"
+                        className="p-1"
+                        onClick={toggleReadMore}
+                    >
+                        {isReadMore ? "Thu gọn" : "Xem Thêm"}
+                    </Button>
+                )}
+            </div>
+        );
+    };
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Tìm Kiếm Khách Hàng" />
@@ -170,23 +196,23 @@ function Search({ auth }) {
                     height: `${screenSize.height}px`,
                     width: "100%",
                 }}
-                className="p-2 pr-0 overflow-scroll "
+                className="p-2 pr-0 overflow-scroll"
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                // style={{ height: `${screenSize.height - 50}px` }}
+                    // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head, index) => (
                                 <th
                                     key={index}
-                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                    className="p-2 text-center border border-blue-gray-300 bg-blue-gray-50"
                                 >
                                     <Typography
                                         variant="small"
                                         color="blue-gray"
-                                        className="font-normal leading-none opacity-70"
+                                        className="font-black leading-none opacity-70"
                                     >
                                         {head}
                                     </Typography>
@@ -200,25 +226,41 @@ function Search({ auth }) {
                                 {dataReturn?.map((item, index) => {
                                     const isLast = index === item.length - 1;
                                     const classes = isLast
-                                        ? "p-1"
-                                        : "p-1 border-b border-blue-gray-50";
+                                        ? "p-1 text-center"
+                                        : "p-1 border border-blue-gray-300 text-center";
+                                    const formatter = new Intl.NumberFormat(
+                                        "vi-VN",
+                                        {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }
+                                    );
+                                    const maxLength = 50;
                                     return (
                                         <tr
                                             key={index}
-                                            className="hover:bg-blue-gray-100"
+                                            className="border hover:bg-blue-gray-100 border-blue-gray-100"
                                         >
                                             <td
-                                                className={`${classes} w-[30px]`}
+                                                className={`${classes} w-[60px] `}
                                             >
                                                 {item.id}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[200px]`}
                                             >
-                                                {item.work_content}
+                                                {maxLength < 30 ? (
+                                                    <p>{item.work_content}</p>
+                                                ) : (
+                                                    <ReadMore
+                                                        text={item.work_content}
+                                                        maxLength={maxLength}
+                                                    />
+                                                )}
+                                                {/* {item.work_content} */}
                                             </td>
                                             <td
-                                                className={`${classes} w-[70px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 {item.date_book}
                                             </td>
@@ -226,7 +268,7 @@ function Search({ auth }) {
                                                 className={`${classes} text-center w-[50px]`}
                                             >
                                                 <Button
-                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    className="p-2 text-orange-400 border border-orange-400 rounded-md"
                                                     onClick={() => {
                                                         handleOpenDialogBH(
                                                             item.id_cus
@@ -339,25 +381,25 @@ function Search({ auth }) {
                                                     )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[100px]`}
                                             >
                                                 {item.name_cus}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[200px]`}
                                             >
                                                 {item.street} - {item.district}
                                             </td>
                                             <td
-                                                className={`${classes} w-[100px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 {item.phone_number}
                                             </td>
                                             <td
-                                                className={`${classes} w-[200px]`}
+                                                className={`${classes} w-[60px]`}
                                             >
                                                 <Button
-                                                    className="p-2 text-orange-400 border border-orange-400"
+                                                    className="p-1 text-orange-400 border border-orange-400 rounded-sm"
                                                     onClick={() => {
                                                         if (!openDialogNote) {
                                                             handleOpenDialogNote(
@@ -406,10 +448,16 @@ function Search({ auth }) {
                                                                 <div>
                                                                     {imgNote?.map(
                                                                         (
-                                                                            item,index
+                                                                            item,
+                                                                            index
                                                                         ) => {
                                                                             return (
-                                                                                <div className="grid grid-cols-4 mt-2" key={index}>
+                                                                                <div
+                                                                                    className="grid grid-cols-4 mt-2"
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                >
                                                                                     <img
                                                                                         src={
                                                                                             host +
@@ -443,7 +491,7 @@ function Search({ auth }) {
                                                     )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[100px]`}
                                             >
                                                 ({item.worker_code})-
                                                 {getFirstName(
@@ -451,30 +499,42 @@ function Search({ auth }) {
                                                 )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px] text-right`}
                                             >
-                                                {item.spending_total}
+                                                {formatter.format(
+                                                    item.spending_total
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px] text-right`}
                                             >
-                                                {item.income_total}
+                                                {formatter.format(
+                                                    item.income_total
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[70px]`}
                                             >
-                                                {item.seri_number}
+                                                {item.seri_number !== "null" ? (
+                                                    <p>{item.seri_number}</p>
+                                                ) : (
+                                                    <p>k pt</p>
+                                                )}
                                             </td>
                                             <td
-                                                className={`${classes} w-[150px]`}
+                                                className={`${classes} w-[90px]`}
                                             >
                                                 <Button
-                                                    // className={`${
-                                                    //     BH !== " " ? "block" : "hidden"
-                                                    // }`}
+                                                    className={`p-1 rounded-sm`}
                                                     color="orange"
                                                     variant="outlined"
-                                                    onClick={()=>handelBH(item.id,item.id_cus, item.worker_full_name)}
+                                                    onClick={() =>
+                                                        handelBH(
+                                                            item.id,
+                                                            item.id_cus,
+                                                            item.worker_full_name
+                                                        )
+                                                    }
                                                 >
                                                     Bảo Hành
                                                 </Button>

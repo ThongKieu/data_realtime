@@ -666,8 +666,7 @@ function Dashboard({ auth }) {
                     }
                 };
                 return (
-                    <>
-                        <div className="flex">
+                        <div className="flex flex-row justify-center">
                             <Tooltip
                                 content="Phân Thợ"
                                 animate={{
@@ -722,7 +721,7 @@ function Dashboard({ auth }) {
                                     onClick={handleSentNhanDoi}
                                 />
                             </Tooltip>
-                        </div>
+
                         <ThoDialog
                             open={openTho}
                             handleOpenTho={handleOpenTho}
@@ -738,7 +737,7 @@ function Dashboard({ auth }) {
                             setWorkNote={setWorkNote}
                             handleSentDelete={handleSentDelete}
                         />
-                    </>
+                         </div>
                 );
             },
         },
@@ -1628,7 +1627,7 @@ function Dashboard({ auth }) {
                         warranty_time: 0,
                         unit: "kbh",
                         warranty_info: "Không Bảo Hành",
-                    }
+                    },
                 ]);
                 const fetchDataBH = async (id) => {
                     if (id || id != "undefined") {
@@ -1653,14 +1652,16 @@ function Dashboard({ auth }) {
                 };
                 const handleDataBh = (id) => {
                     fetchDataBH(id);
-                    console.log('id:dddd',dataBH);
+                    console.log("id:dddd", dataBH);
                 };
                 return (
-                    <>
-                        <div>
-                        {params.row.flag_check === 1 ? <p className="w-full text-center">Đang Sửa</p> : ""}
-                        </div>
-                        <div className="flex">
+                    <div className="text-center">
+                        {params.row.flag_check === 1 ? (
+                            <p className="w-full text-center">Đang Sửa</p>
+                        ) : (
+                            <p className="hidden w-full">''</p>
+                        )}
+                        <div className="flex flex-row justify-center">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
                                 <>
@@ -1723,7 +1724,7 @@ function Dashboard({ auth }) {
                                     >
                                         <Button
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={()=>{
+                                            onClick={() => {
                                                 handleOpenAdminCheckWithDisable();
                                                 handleDataBh(params.row.id);
                                             }}
@@ -1911,7 +1912,7 @@ function Dashboard({ auth }) {
                             params={params}
                             handleDataFromChild={handleDataFromChild}
                         />
-                    </>
+                    </div>
                 );
             },
         },
@@ -2029,7 +2030,6 @@ function Dashboard({ auth }) {
         },
         // Thêm các mục khác tương tự ở đây
     ];
-
     return (
         <AuthenticatedLayout
             children={auth.user}
@@ -2099,6 +2099,12 @@ function Dashboard({ auth }) {
                                                             outline:
                                                                 "none !important",
                                                         },
+                                                    ".MuiDataGrid-withBorderColor":
+                                                        {
+                                                            borderRight:
+                                                                "1px solid #e0e0e0",
+                                                        },
+
                                                 }}
                                                 rows={result.rowsDataGrid}
                                                 columns={columns}
@@ -2114,6 +2120,9 @@ function Dashboard({ auth }) {
                                                 slots={{
                                                     columnHeaders: () => null,
                                                     pagination: () => null,
+                                                }}
+                                                slotProps={{
+                                                    cell: { border: "red" },
                                                 }}
                                             />
                                         </Box>
@@ -2178,6 +2187,12 @@ function Dashboard({ auth }) {
                                                             outline:
                                                                 "none !important",
                                                         },
+                                                    ".MuiDataGrid-withBorderColor":
+                                                        {
+                                                            borderRight:
+                                                                "1px solid #e0e0e0",
+                                                        },
+
                                                 }}
                                                 width={100}
                                                 autoHeight

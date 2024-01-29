@@ -136,8 +136,8 @@ class SearchController extends Controller
         $date = date('Y-m-d');
         foreach ($data as $item)
         {
-            $work_content =  $item -> work_content;
-            $note ='BH -'.$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            $work_content = 'BH - '. $item -> work_content;
+            $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
             $w = new Work([
             'work_content' => $work_content,
             'work_note' => $note,

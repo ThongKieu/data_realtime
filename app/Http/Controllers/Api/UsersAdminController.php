@@ -27,12 +27,15 @@ class UsersAdminController extends Controller
             'password' => ['required',Rules\Password::defaults()],
             'permission' => 'required',
         ]);
-
+        $code = User::where('id','>',0)->orderBy('id','desc')->limit(1)->value('id');
+        $code +=1;
+        $n_code = 'VP'.$code;
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'permission' =>$request->permission,
+            'code' => $n_code,
         ]);
         // dd($user);
         return response()->json('Ngon');

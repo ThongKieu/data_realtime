@@ -19,74 +19,77 @@ class WorksController extends Controller
     public function index(Request $request)
     {
         // get data not set for worker
+        // dd($request->dateCheck);
         if ($request->dateCheck) {
             $today = $request->dateCheck;
 
         } else {
             $today = date('Y-m-d');
         }
+
         $oldday2=Carbon::now();
+        $dc1 =$oldday2->subDay(1)->isoFormat('YYYY-MM-D');
         $dc2 =$oldday2->subDay(7)->isoFormat('YYYY-MM-D');
-        
-        $dien_nuoc = Work::where('kind_work', '=', 0)
+        // dd($dc2);
+        $dien_nuoc = Work::where('date_book', '=', $today)
+            ->where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)
-            ->where('date_book', '=', $today)
             ->get();
-
-        $dien_nuoc_cu =  Work::where('kind_work', '=', 0)
+        $dien_nuoc_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=', 0)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
-        $dien_lanh =   Work::where('kind_work', '=', 1)
+        // dd($dien_nuoc_cu);
+        $dien_lanh =   Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 1)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
 
-            $dien_lanh_cu =  Work::where('kind_work', '=', 1)
+            $dien_lanh_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+            ->where('kind_work', '=', 1)
             ->where('status_cus', '=', 0)
-            ->where('date_book', '=',$dc2)
             ->get();
-        $do_go     =    Work::where('kind_work', '=', 2)
+        $do_go     =    Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 2)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
 
-        $do_go_cu =  Work::where('kind_work', '=', 2)
+        $do_go_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=', 2)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
-        $nlmt      =   Work::where('kind_work', '=', 3)
+        $nlmt      =   Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 3)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
 
-        $nlmt_cu =  Work::where('kind_work', '=', 3)
+        $nlmt_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=', 3)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
-        $xay_dung  =    Work::where('kind_work', '=', 4)
+        $xay_dung  =    Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 4)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
-        $xay_dung_cu =  Work::where('kind_work', '=', 4)
+        $xay_dung_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=', 4)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
-        $tai_xe    =    Work::where('kind_work', '=', 5)
+        $tai_xe    =    Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 5)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
-        $tai_xe_cu =  Work::where('kind_work', '=', 5)
+        $tai_xe_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=', 5)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
-        $co_khi    =    Work::where('kind_work', '=', 6)
+        $co_khi    =    Work::where('date_book', '=', $today)
+        ->where('kind_work', '=', 6)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=', $today)
         ->get();
-        $co_khi_cu =  Work::where('kind_work', '=',6)
+        $co_khi_cu =  Work::whereBetween('date_book', [$dc2,$dc1])
+        ->where('kind_work', '=',6)
         ->where('status_cus', '=', 0)
-        ->where('date_book', '=',$dc2)
         ->get();
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi) + count($dien_nuoc_cu) + count($dien_lanh_cu) + count($do_go_cu) + count($nlmt_cu) + count($xay_dung_cu) + count($tai_xe_cu) + count($co_khi_cu);
         $dataWork = [

@@ -11,6 +11,10 @@ import {
     DialogHeader,
     DialogFooter,
     IconButton,
+    Tabs,
+    TabsHeader,
+    TabsBody,
+    Tab,
 } from "@material-tailwind/react";
 import {
     XMarkIcon,
@@ -44,7 +48,6 @@ function AdminCheckDialog({
     handleChange,
     socketD,
     handleSearch,
-    dataBH1
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -68,7 +71,40 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [dataBH, setDataBH] = useState(dataBH1);
+    const [dataBH, setDataBH] = useState([
+        {
+            id: 0,
+            warranty_time: 0,
+            unit: "kbh",
+            warranty_info: "Không Bảo Hành",
+        },
+    ]);
+    const fetchDataBH = async (id) => {
+        if (id || id != "undefined") {
+            try {
+                const response = await fetch(
+                    `api/web/work-assignment/warranties?id=${id}`
+                );
+                const jsonData = await response.json();
+                if (response.ok && jsonData.length != 0) {
+                    const formatJson = jsonData.map((item) => ({
+                        id: item.id,
+                        warranty_info: item.warranty_info,
+                        warranty_time: item.warranty_time,
+                        unit: item.unit,
+                    }));
+                    setDataBH(formatJson);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+    };
+    // useEffect(() => {
+    //     if (params.row.id) {
+    //         fetchDataBH(params.row.id);
+    //     }
+    // }, []);
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
 
@@ -217,7 +253,8 @@ function AdminCheckDialog({
                 handleOpenAdminCheck();
                 socketD.emit(
                     "UpdateDateTable_To_Server",
-                    "Cập Nhật trạng thái AdminCheck", check_admin
+                    "Cập Nhật trạng thái AdminCheck",
+                    check_admin
                 );
             } else {
                 console.error(
@@ -234,6 +271,11 @@ function AdminCheckDialog({
         height: window.innerHeight - 300,
     });
     var heightScreenTV = screenSize.height;
+    const [isReadMore, setIsReadMore] = useState(false);
+    const toggleReadMore = (id) => {
+        setIsReadMore(!isReadMore);
+        fetchDataBH(id);
+    };
     return (
         <Dialog
             open={openAdminCheck}
@@ -241,9 +283,15 @@ function AdminCheckDialog({
             className="w-full max-w-full min-w-full 2xl:min-w-[60%]"
         >
             <div className="flex items-center justify-center italic font-thin">
-                <DialogHeader className="font-sans underline ">ADMIN KIỂM TRA</DialogHeader>
+                <DialogHeader className="font-sans underline ">
+                    ADMIN KIỂM TRA
+                </DialogHeader>
             </div>
-            <DialogBody className={`overflow-y-auto`} style={{height:`${heightScreenTV}px`}} divider>
+            <DialogBody
+                className={`overflow-y-auto`}
+                style={{ height: `${heightScreenTV}px` }}
+                divider
+            >
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                     <div className="w-full p-2 text-sm border border-green-500 ">
                         <div>
@@ -287,7 +335,7 @@ function AdminCheckDialog({
                                 onClick={
                                     handleOpenBH
                                         ? handleOpenBH
-                                        : handleDataBh(params.row.id)
+                                        : fetchDataBH(params.row.id)
                                 }
                             />
                             <Dialog
@@ -304,11 +352,31 @@ function AdminCheckDialog({
                                 </DialogHeader>
                                 <Divider />
                                 <DialogBody>
-                                    {dataBH1.map((item, index) => (
+                                    {dataBH.map((item, index) => (
                                         <div
                                             key={index}
                                             className="flex justify-between gap-1 mb-2"
                                         >
+                                            <div className="flex-none">
+                                                <Input
+                                                    label="Thời Gian Bảo Hành"
+                                                    id="warranty_time"
+                                                    name="warranty_time"
+                                                    type="number"
+                                                    min="1"
+                                                    max="30"
+                                                    defaultValue={
+                                                        item.warranty_time
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleChangeBH(
+                                                            e,
+                                                            item.id
+                                                        )
+                                                    }
+                                                    className="w-[100%] shadow-none"
+                                                />
+                                            </div>
                                             <div>
                                                 <Select
                                                     value={item.unit}
@@ -332,26 +400,6 @@ function AdminCheckDialog({
                                                 </Select>
                                             </div>
 
-                                            <div className="flex-none">
-                                                <Input
-                                                    label="Thời Gian Bảo Hành"
-                                                    id="warranty_time"
-                                                    name="warranty_time"
-                                                    type="number"
-                                                    min="1"
-                                                    max="30"
-                                                    defaultValue={
-                                                        item.warranty_time
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleChangeBH(
-                                                            e,
-                                                            item.id
-                                                        )
-                                                    }
-                                                    className="w-[100%] shadow-none"
-                                                />
-                                            </div>
                                             <div className="flex-1">
                                                 <Input
                                                     label="Nội Dung Bảo Hành"
@@ -416,21 +464,39 @@ function AdminCheckDialog({
                                 </DialogFooter>
                             </Dialog>
                         </i>
-                        {dataBH1?.map((element, index) => (
-                            <span className="flex p-2 mt-1 border" key={index}>
-                                {`${element.warranty_time} ${`${
-                                    element.unit === "d"
-                                        ? "ngày"
-                                        : element.unit === "w"
-                                        ? "tuần"
-                                        : element.unit === "m"
-                                        ? "tháng"
-                                        : element.unit === "y"
-                                        ? "năm"
-                                        : ""
-                                }`} ${element.warranty_info}`}
-                            </span>
-                        ))}
+                        <p
+                            onClick={() => {
+                                toggleReadMore(params.row.id);
+                            }}
+                            className="p-1 mt-1 text-center border border-green-500 rounded-md cursor-pointer"
+                        >
+                            {isReadMore ? "Thu gọn" : "Xem Bảo Hành"}
+                        </p>
+
+                        <div
+                            className={`${
+                                isReadMore !== true ? "hidden" : ""
+                            } border border-green-500 border-t-0 mb-0 mx-2`}
+                        >
+                            {dataBH?.map((element, index) => (
+                                <span
+                                    className={`flex p-2 mt-1 border `}
+                                    key={index}
+                                >
+                                    {`${element.warranty_time} ${`${
+                                        element.unit === "d"
+                                            ? "ngày"
+                                            : element.unit === "w"
+                                            ? "tuần"
+                                            : element.unit === "m"
+                                            ? "tháng"
+                                            : element.unit === "y"
+                                            ? "năm"
+                                            : ""
+                                    }`} ${element.warranty_info}`}
+                                </span>
+                            ))}{" "}
+                        </div>
                     </div>
                     <div className="flex-1 p-2 border border-green-500 border-x-0">
                         <i className="flex justify-between">
@@ -681,7 +747,12 @@ function AdminCheckDialog({
                     className="px-3 py-2 mx-4 shadow-none"
                     variant="outlined"
                     onClick={handleUpdateStatusCheckAdmin}
-                    disabled = {params.row.income_total === 0 ? 'disabled' : ''}
+                    disabled={
+                        params.row.income_total !== 0 ||
+                        params.row.status_work === 6
+                            ? ""
+                            : "disabled"
+                    }
                 >
                     Xác Nhận Thông Tin
                 </Button>

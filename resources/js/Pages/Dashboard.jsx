@@ -1621,39 +1621,6 @@ function Dashboard({ auth }) {
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
-                const [dataBH, setDataBH] = useState([
-                    {
-                        id: 0,
-                        warranty_time: 0,
-                        unit: "kbh",
-                        warranty_info: "Không Bảo Hành",
-                    },
-                ]);
-                const fetchDataBH = async (id) => {
-                    if (id || id != "undefined") {
-                        try {
-                            const response = await fetch(
-                                `api/web/work-assignment/warranties?id=${id}`
-                            );
-                            const jsonData = await response.json();
-                            if (response.ok && jsonData.length != 0) {
-                                const formatJson = jsonData.map((item) => ({
-                                    id: item.id,
-                                    warranty_info: item.warranty_info,
-                                    warranty_time: item.warranty_time,
-                                    unit: item.unit,
-                                }));
-                                setDataBH(formatJson);
-                            }
-                        } catch (error) {
-                            console.error("Error fetching data:", error);
-                        }
-                    }
-                };
-                const handleDataBh = (id) => {
-                    fetchDataBH(id);
-                    console.log("id:dddd", dataBH);
-                };
                 return (
                     <div className="text-center">
                         {params.row.flag_check === 1 ? (
@@ -1726,7 +1693,6 @@ function Dashboard({ auth }) {
                                             className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
                                             onClick={() => {
                                                 handleOpenAdminCheckWithDisable();
-                                                handleDataBh(params.row.id);
                                             }}
                                             variant="outlined"
                                         >
@@ -1817,7 +1783,6 @@ function Dashboard({ auth }) {
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
-                            dataBH1={dataBH}
                             imageVt1={imageVt1}
                             host={host}
                             params={params}

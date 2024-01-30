@@ -1,84 +1,27 @@
-import React, { useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import newSocket from "@/Utils/Socket";
-import { useEffect } from "react";
+import React, { useState, useRef } from "react";
+ 
 
+const Box = () => { const [isFire, setIsFire] = useState(false); const boxRef = useRef(null);
 
-const YourComponent = () => {
-  const [rowModesModel, setRowModesModel] = useState({});
+const handleMouseDown = (event) => { const shiftX = event.clientX - boxRef.current.getBoundingClientRect().left; const shiftY = event.clientY - boxRef.current.getBoundingClientRect().top;
 
-  const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "work_content", headerName: "Yêu Cầu Công Việc", width: 200, editable: true },
-  ];
+boxRef.current.style.position = "absolute"; boxRef.current.style.zIndex = 1000; document.body.append(boxRef.current);
 
-  const workDataDN = [
-    { id: 1, work_content: "Task 1" },
-    { id: 2, work_content: "Task 2" },
-    { id: 3, work_content: "Task 3" },
-    // ...
-  ];
+moveAt(event.pageX, event.pageY);
 
-  const handleCellEditStop = (params, event) => {
-    if (params.reason === "tab" || params.reason === "enter") {
-      // Bấm Tab hoặc Enter, gửi dữ liệu lên máy chủ và tắt sự kiện chỉnh sửa ô
-      const data = {
-        ac: "1",
-        id: params.id,
-        work_content: params.props.value,
-      };
-      processRowUpdateDN(data);
-      setRowModesModel({
-        ...rowModesModel,
-        [params.id]: { mode: "view" },
-      });
-    }
-  };
-  console.log(newSocket);
-  const processRowUpdateDN = async (data) => {
-    try {
-      const res = await fetch("api/web/update/work", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+function moveAt(pageX, pageY) { boxRef.current.style.left = pageX - shiftX + "px"; boxRef.current.style.top = pageY - shiftY + "px"; }
 
-      if (res.ok) {
-        console.log("Sửa thông tin lịch chưa phân", data);
-        socketD.emit("addWorkTo_Server", data);
-      } else {
-        console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Lỗi khi fetch dữ liệu:", error);
-    }
-    
-  };
+function onMouseMove(event) { moveAt(event.pageX, event.pageY); }
 
-  useEffect(()=>{
-    if (newSocket) {
-        console.log('soket',newSocket);
-        newSocket.emit("userOnline");
-        // pushOn();
-    }
-  },[]);
-  return (
-    <div style={{ height: 400, width: "100%" }}>
-      <DataGrid
-        rows={workDataDN}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        onCellEditStop={handleCellEditStop}
-        hideFooterPagination={true}
-        slotProps={{
-          className: "text-center",
-        }}
-      />
-    </div>
-  );
-};
+document.addEventListener("mousemove", onMouseMove);
 
-export default YourComponent;
+boxRef.current.onmouseup = function() { document.removeEventListener("mousemove", onMouseMove); boxRef.current.onmouseup = null; };
+
+boxRef.current.ondragstart = function() { return false; };
+
+boxRef.current.onclick = function() { setIsFire(true); }; };
+
+return (
+
+  <div ref={boxRef} onMouseDown={handleMouseDown} style={{ position: "absolute", backgroundColor: isFire ? "red" : "lightblue", width: "100px", height: "100px", cursor: "pointer", transition: "transform 0.3s", }} > <div style={{ position: "absolute", top: "0", right: "0", backgroundColor: "red", width: "20px", height: "20px", borderRadius: "50%" }}> {isFire && <div>!</div>} </div> </div> ); };
+  export default Box;

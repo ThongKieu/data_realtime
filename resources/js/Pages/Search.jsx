@@ -81,11 +81,12 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-    const handelBH = async (id, id_cus, worker_full_name) => {
+    const handelBH = async (id, id_cus, worker_full_name,code) => {
         let data = {
             id: id,
             id_cus: id_cus,
             worker_full_name: worker_full_name,
+            worker_code:code,
         };
         console.log(data);
         try {
@@ -532,7 +533,8 @@ function Search({ auth }) {
                                                         handelBH(
                                                             item.id,
                                                             item.id_cus,
-                                                            item.worker_full_name
+                                                            item.worker_full_name,
+                                                            item.worker_code
                                                         )
                                                     }
                                                 >

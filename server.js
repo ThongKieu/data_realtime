@@ -13,6 +13,9 @@ io.on("connection", (socket) => {
         console.log(`User ${userId} is online`);
         io.sockets.emit("userOnline_Client", userId);
     });
+    socket.on("notication_Server", async (data) => {
+        io.sockets.emit("notication_Client", data);
+    });
     socket.on("pushOnline", (message) => {
         console.log("User:", message, "is online");
         io.sockets.emit("sentListOnline_Client", message);

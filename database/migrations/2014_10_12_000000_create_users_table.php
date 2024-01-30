@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->integer('permission')->default(0);
             $table->integer('is_online')->default(0);
+            $table->string('code')->nullable();
             $table->string('avatar')->default('assets/avatar/avata1.png');
             $table->rememberToken();
             $table->timestamps();

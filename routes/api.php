@@ -85,11 +85,11 @@ Route::prefix('web')->group(function () {
     });
 
     Route::get('worker-with-type', 'App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
-    Route::prefix('search')->group(function(){
-        Route::get('/','App\Http\Controllers\Api\SearchController@index');
-        Route::post('/','App\Http\Controllers\Api\SearchController@searchAjax');
-        Route::post('/warranty','App\Http\Controllers\Api\SearchController@createWarrantyFromSearch');
-        Route::get('/warranty','App\Http\Controllers\Api\SearchController@getWarraties');
+    Route::prefix('search')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\SearchController@index');
+        Route::post('/', 'App\Http\Controllers\Api\SearchController@searchAjax');
+        Route::post('/warranty', 'App\Http\Controllers\Api\SearchController@createWarrantyFromSearch');
+        Route::get('/warranty', 'App\Http\Controllers\Api\SearchController@getWarraties');
 
     });
 })->withoutMiddleware("throttle:api")
@@ -111,12 +111,13 @@ Route::get('getSmsBrand', 'App\Http\Controllers\Api\OTPController@GetSms');
 Route::prefix('app')->group(function () {
     // Worker
     Route::prefix('worker')->group(function () {
-        Route::get('test', 'App\Http\Controllers\Api\Mobile\WorkersController@test');
+
         // fcm
         Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
-        // login
+        // user
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
         Route::post('avatar', 'App\Http\Controllers\Api\Mobile\WorkersController@addAvatar');
+        Route::post('changePassword', 'App\Http\Controllers\Api\Mobile\WorkersController@changePasswordWorker');
 
         //work
         Route::post('getAllWorks', 'App\Http\Controllers\Api\Mobile\WorkersController@getAllWorks');

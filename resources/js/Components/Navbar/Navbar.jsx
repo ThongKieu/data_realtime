@@ -52,6 +52,7 @@ function ProfileMenu({ propauthprofile }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
+    const [noti, setNoti] = useState('');
     const numberOnline = async () => {
         try {
             const response = await fetch(host + "api/web/list-online", {
@@ -71,7 +72,38 @@ function ProfileMenu({ propauthprofile }) {
             console.error("Error fetching data:", error);
         }
     };
+    const fetchNoti = async () => {
+        try {
+            let code = propauthprofile.code;
+            const response = await fetch(host + `api/web/noti/soket_noti?code=${code}`, {
+
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            if (response.ok) {
+                const jsonData = await response.json();
+                // Xử lý dữ liệu lấy được từ API
+                setNoti(jsonData);
+                newSocket.emit('notication_Server');
+            }
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+
+    // fetchNoti();
     numberOnline();
+    useEffect(() => {
+        fetchNoti();
+
+        newSocket.on('notication_Client', () => {
+            fetchNoti();
+        });
+    }, []);
+
     return (
         <div className="flex">
             <NavLink
@@ -129,7 +161,11 @@ function ProfileMenu({ propauthprofile }) {
                         strokeLinejoin="round"
                         d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
                     />
+
                 </svg>
+                    <div className={`bg-red-400 w-4 h-4 text-center rounded-full m-auto  ${(noti == 0)?('hidden'):(``)}`}>
+                        <p className="text-xs text-black">{noti}</p>
+                    </div>
             </NavLink>
 
             <Menu
@@ -154,9 +190,8 @@ function ProfileMenu({ propauthprofile }) {
                         />
                         <ChevronDownIcon
                             strokeWidth={2.5}
-                            className={`h-3 w-3 transition-transform ${
-                                isMenuOpen ? "rotate-180" : ""
-                            }`}
+                            className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
+                                }`}
                         />
                     </Button>
                 </MenuHandler>
@@ -179,7 +214,7 @@ function ProfileMenu({ propauthprofile }) {
                                 as="span"
                                 variant="small"
                                 className="font-normal"
-                                // color={isLastItem ? "red" : "inherit"}
+                            // color={isLastItem ? "red" : "inherit"}
                             >
                                 Thông Tin Tài Khoản
                             </Typography>
@@ -200,7 +235,7 @@ function ProfileMenu({ propauthprofile }) {
                                 as="span"
                                 variant="small"
                                 className="font-normal"
-                                // color={isLastItem ? "red" : "inherit"}
+                            // color={isLastItem ? "red" : "inherit"}
                             >
                                 Sign Out
                             </Typography>

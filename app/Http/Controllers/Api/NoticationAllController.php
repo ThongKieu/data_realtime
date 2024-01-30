@@ -12,19 +12,12 @@ class NoticationAllController extends Controller
     //
     public function index(Request $request)
     {
-        $admin_name = '%'.$request->code.'%';
-        $get_noti = NoticationAll::where('user_read','not like',$admin_name)->get();
-
-        $c_all_noti = count($get_noti);
-
+      
         $new_work_from_app = NoticationAll:: where('from_table', '=',1)->get();
         $new_work_from_worker = NoticationAll:: where('from_table', '=',2)->get();
         $new_return_work_from_worker = NoticationAll:: where('from_table', '=',3)->get();
         $new_feeback = NoticationAll:: where('from_table', '=',4)->get();
-
-
         $data_return = [
-            'c_all_noti' => $c_all_noti,
             'new_work_from_app'=> $new_work_from_app,
             'new_work_from_worker'=> $new_work_from_worker,
             'new_feeback'=> $new_feeback,
@@ -32,6 +25,14 @@ class NoticationAllController extends Controller
         ];
 
         return $data_return;
+    }
+    public function soketNoti (Request $request)
+    {
+        $admin_name = '%'.$request->code.'%';
+        $get_noti = NoticationAll::where('user_read','not like',$admin_name)->get();
+
+        $c_all_noti = count($get_noti);
+        return $c_all_noti;
     }
     
     public static function create($from_table,$info_notication,$flag_noti)

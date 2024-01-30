@@ -5,64 +5,38 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
 import { useEffect } from "react";
+import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 const data = [
-    // {
-    //     label: "Lịch Từ App Khách",
-    //     value: "New_order",
-    //     icon: Square3Stack3DIcon,
-    //     desc: (
-    //         <TableDataTV
-    //             tableHead={TABLE_HEAD_NOTICE_NEW_ORDER}
-    //             tableRows={TABLE_HEAD_NOTICE_NEW_ORDER}
-    //         />
-    //     ),
-    // },
-    // {
-    //     label: "Thông Tin Thợ Báo Lịch",
-    //     value: "profile_worker",
-    //     icon: UserCircleIcon,
-    //     desc: (
-    //         <TableDataTV
-    //             tableHead={TABLE_HEAD_NOTICE_THO_BAO_LICH}
-    //             tableRows={TABLE_HEAD_NOTICE_THO_BAO_LICH}
-    //         />
-    //     ),
-    // },
-    // {
-    //     label: "Thợ Xin Lịch",
-    //     value: "Empty",
-    //     icon: Cog6ToothIcon,
-    //     desc: (
-    //         <TableDataTV
-    //             tableHead={TABLE_HEAD_NOTICE_INFO_WORKER}
-    //             tableRows={TABLE_HEAD_NOTICE_INFO_WORKER}
-    //         />
-    //     ),
-    // },
-    // {
-    //     label: "Khách Phàn Nàn",
-    //     value: "Feedback",
-    //     icon: FaceFrownIcon,
-    //     desc: (
-    //         <TableDataTV
-    //             tableHead={TABLE_HEAD_NOTICE_FEEDBACK}
-    //             tableRows={TABLE_HEAD_NOTICE_FEEDBACK}
-    //         />
-    //     ),
-    // },
+    {
+        label: "Lịch Từ App Khách",
+        value: "New_order",
+    },
+    {
+        label: "Thông Tin Thợ Báo Lịch",
+        value: "profile_worker",
+
+    },
+    {
+        label: "Thợ Xin Lịch",
+        value: "Empty",
+    },
+    {
+        label: "Khách Phàn Nàn",
+        value: "Feedback",
+    },
 ];
 
 function Notice({ auth }) {
-   
+
     const [dataNoti, getNoti] = useState('');
     const fetchNotiUser = async () => {
         try {
-            let data = {code:auth.user.code};
+            let data = { code: auth.user.code };
             const response = fetch("api/web/noti", {
                 headers: {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
-                method:'POST',
+                method: 'POST',
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
             });
             if (response.status == 200) {
@@ -74,7 +48,7 @@ function Notice({ auth }) {
             console.log("push on Loi", error);
         }
     }
-console.log('-------', auth.user.code);
+    console.log('-------', auth.user.code);
 
     useEffect(() => {
         fetchNotiUser()
@@ -82,7 +56,20 @@ console.log('-------', auth.user.code);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Có Lịch Mới" />
-            
+
+            <Card >
+                <CardBody className="grid grid-cols-4 gap-1"
+                >
+
+                    {data.map((item) => (
+                        <Card className="border border-deep-orange-300">
+                            <Typography className='bg-blue-gray-300 rounded-lg'>
+                                {item.label}
+                            </Typography>
+                        </Card>
+                    ))}
+                </CardBody>
+            </Card>
         </AuthenticatedLayout>
     );
 }

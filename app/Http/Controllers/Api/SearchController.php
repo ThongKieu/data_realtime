@@ -147,10 +147,27 @@ class SearchController extends Controller
             'street' => $item -> street,
             'district' => $item -> district,
             'kind_work' => $item -> kind_work,
-            // 'status_cus'=> $item -> status_cus,
+            'status_cus'=> $item -> status_cus,
             'image_work_path'=> $item -> image_work_path
             ]);
             $w ->save();
+            $id = Work::where('phone_number', '=', $item -> phone_number)->where('work_content' ,'=', $work_content)-> orderBy('id','desc')->value('id');
+            
+            if($id != null)
+            {   
+                $id_worker = Worker::where('worker_code','=',$request->worker_code)->value('id');
+                
+
+                $new = new WorksAssignment([
+                    'id_cus'=> $id,
+                    'id_worker'=>$id_worker,
+                    'status_work'=>'4',
+                ]);
+                $new -> save();
+
+                return 'Done !!!';
+            }
+            
         }
         return $request->all();
    } 

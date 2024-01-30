@@ -94,6 +94,7 @@ Route::prefix('web')->group(function () {
     });
     Route::prefix('noti')->group(function () {
         Route::post('/','App\Http\Controllers\Api\NoticationAllController@index');
+        Route::get('soket_noti','App\Http\Controllers\Api\NoticationAllController@soketNoti');
     });
 })->withoutMiddleware("throttle:api")
     ->middleware(

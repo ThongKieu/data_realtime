@@ -32,7 +32,7 @@ class WorksAssignmentController extends Controller
 
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->orderBy('workers.worker_code', 'asc')
             ->get(
                 [
@@ -70,7 +70,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 1)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -107,7 +107,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 2)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -143,7 +143,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 3)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -179,7 +179,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 4)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -215,7 +215,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 5)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -251,7 +251,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 6)
-            ->whereBetween('works_assignments.status_work', [0, 3])
+            ->whereBetween('works_assignments.status_work', [0, 4])
             ->get(
                 [
                     "works_assignments.id",
@@ -539,7 +539,6 @@ class WorksAssignmentController extends Controller
                                                 'warranty_info' => $a[$i]['warranty_info'],
                                                 'unit' => $a[$i]['unit'],
                                             ]);
-                                            $new->save();
                                             $new->save();
                                         }
                                     }

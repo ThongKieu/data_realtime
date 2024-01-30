@@ -69,24 +69,6 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
         <div className="w-full mt-0">
             {data.map((val) => (
                 <div key={val.id} className="flex justify-between gap-1 mb-2">
-                    <div>
-                        <Select
-                            value={val.unit}
-                            defaultValue={selectedValue}
-                            label="Bảo Hành"
-                            onChange={(selectedValue) =>
-                                handleSelectChange(selectedValue, val.id)
-                            }
-                            disabled={disabledAllowed}
-                        >
-                            {optionBH.map((option) => (
-                                <Option key={option.unit} value={option.unit}>
-                                    {option.label}
-                                </Option>
-                            ))}
-                        </Select>
-                    </div>
-
                     <div className="flex-none">
                         <Input
                             label="Thời Gian Bảo Hành"
@@ -101,6 +83,24 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
                             disabled={disabledAllowed || isAllowedBH}
                         />
                     </div>
+                    <div>
+                        <Select
+                            value={val.unit}
+                            defaultValue={selectedValue}
+                            label="Bảo Hành"
+                            onChange={(selectedValue) =>
+                                handleSelectChange(selectedValue, val.id)
+                            }
+                            disabled={disabledAllowed}
+                        >
+                            {optionBH.map((option) => (
+                                <Option key={option.unit} value={option.unit ||'Khác'}>
+                                    {option.label}
+                                </Option>
+                            ))}
+                        </Select>
+                    </div>
+
                     <div className="flex-1">
                         <Input
                             label="Nội Dung Bảo Hành"

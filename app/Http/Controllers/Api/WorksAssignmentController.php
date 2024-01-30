@@ -548,7 +548,6 @@ class WorksAssignmentController extends Controller
                                                 'unit' => $a[$i]['unit'],
                                             ]);
                                             $new->save();
-                                            $new->save();
                                         }
                                     }
                                 }

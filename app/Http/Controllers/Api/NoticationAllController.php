@@ -24,6 +24,7 @@ class NoticationAllController extends Controller
             'new_return_work_from_worker'=> $new_return_work_from_worker,
         ];
 
+        // return response()->json($data_return);
         return $data_return;
     }
     public function soketNoti (Request $request)
@@ -67,7 +68,7 @@ class NoticationAllController extends Controller
         $get_noti = NoticationAll::where('user_read','not like',$admin_name)->get();
 
         foreach($get_noti as $item)
-        {   
+        {
             $am = $item->user_read . ','. $request->code;
             NoticationAll::where('id','=',$item->id)->update(['user_read'=>$am]);
         }

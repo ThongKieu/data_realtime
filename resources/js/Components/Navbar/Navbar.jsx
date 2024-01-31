@@ -75,16 +75,10 @@ function ProfileMenu({ propauthprofile }) {
     const fetchNoti = async () => {
         try {
             let code = propauthprofile.code;
-            const response = await fetch(
-                host + `api/web/noti/soket_noti?code=${code}`
+            const response = await fetch( `api/web/noti/soket_noti?code=${code}`
             );
             const jsonData = await response.json();
-            // Xử lý dữ liệu lấy được từ API
             setNoti(jsonData);
-            // newSocket.emit("notication_Server");
-            // if (response.ok) {
-            //     // newSocket.emit("notication_Server");
-            // }
         } catch (error) {
             console.error("Error fetching data:", error);
         }

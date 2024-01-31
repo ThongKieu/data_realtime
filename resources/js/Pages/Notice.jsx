@@ -10,25 +10,25 @@ import {
     CardHeader,
     Typography,
 } from "@material-tailwind/react";
-const data = [
-    {
-        id: 1,
-        label: "Lịch Từ App Khách",
-        value: "New_order",
-    },
-    { id: 2, label: "Thông Tin Thợ Báo Lịch", value: "profile_worker" },
-    { id: 3, label: "Thợ Xin Lịch", value: "Empty" },
-    { id: 4, label: "Khách Phàn Nàn", value: "Feedback" },
-];
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 function Notice({ auth }) {
-    const [dataNoti, setNoti] = useState("");
+    const [dataNoti, setNoti] = useState({
+        new_work_from_app: [],
+        new_work_from_worker: [],
+        new_feeback: [],
+        new_return_work_from_worker: [],
+    });
     const [notificationData, setInfoNotification] = useState("");
     const fetchNotiUser = async () => {
         try {
-            const response = fetch("api/web/noti");
+            const response = await fetch("api/web/noti");
             const jsonData = await response.json();
-            setNoti(jsonData);
+            if (jsonData) {
+                // socketD.emit("ButtonDisable_To_Server", data);
+                setNoti(jsonData);
+                console.log(response);
+            }
         } catch (error) {
             console.log("push on Loi", error);
         }
@@ -50,7 +50,7 @@ function Notice({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    console.log("-------", notificationData,'+',dataNoti );
+    console.log("-------", notificationData, dataNoti);
 
     useEffect(() => {
         fetchNotiUser();
@@ -61,26 +61,197 @@ function Notice({ auth }) {
         height: window.innerHeight - 100,
     });
     var heightScreenTV = screenSize.height;
+    const data = [
+        { id: 1, label: "Lịch Từ App Khách" },
+        { id: 2, label: "Thông Tin Thợ Báo Lịch" },
+        { id: 3, label: "Thợ Xin Lịch" },
+        { id: 4, label: "Khách Phàn Nàn" },
+    ];
+    const classTable = "w-full text-left border border-orange-500 table-auto ";
+    const classHeadTable = "p-2 border-b border-orange-500 bg-blue-gray-50";
+    const classContentNoti =
+        "block font-sans text-md antialiased text-blue-gray-900 opacity-70";
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Có Lịch Mới" />
             <div
-                className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] pl-2  `}
+                className={` w-full overflow-scroll mt-1 gap-[2px] pl-2 `}
                 style={{ height: `${heightScreenTV}px` }}
             >
-                <Card className="w-full border border-green-500">
-                    <CardBody className="grid grid-cols-4 gap-1 p-2">
-                        {data.map((item, index) => (
-                            <Card key={index}>
-                                <Typography className="px-2 text-black border border-orange-500 rounded-sm">
-                                    {item.label}
-                                </Typography>
-                                <Typography className="px-2 mt-2 text-black border border-orange-500 rounded-sm">
-                                    {item.value}
-                                </Typography>
-                            </Card>
-                        ))}
-                    </CardBody>
+                <Card className="grid w-full grid-cols-4 gap-1 p-2 rounded-sm ">
+                    {data.map((item, index) => (
+                        <>
+                            <Typography
+                                key={index}
+                                className="flex flex-row items-center justify-between w-full p-2 text-black border border-orange-500"
+                            >
+                                <span>{item.label}</span>
+                                <button onClick={()=>{console.log('index');}}>
+                                    <CheckCircleIcon className="w-6 h-6" />
+                                </button>
+                            </Typography>
+                        </>
+                    ))}
+                    <table className={`${classTable}`}>
+                        <thead>
+                            <tr>
+                                <th className={`${classHeadTable} border-r`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Nội dung
+                                    </p>
+                                </th>
+                                <th className={`${classHeadTable}`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Người Xử lý
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {dataNoti.new_work_from_app.map((item, index) => {
+                                return (
+                                    <tr>
+                                        <td className="p-1 border-b border-r  border-orange-500 w-[150px]">
+                                            <p
+                                                className={`${classContentNoti}`}
+                                            >
+                                                {item.info_notication}
+                                            </p>
+                                        </td>
+                                        <td className="p-1 border-b border-orange-500 w-[50px]">
+                                            <p
+                                                className={`${classContentNoti}`}
+                                            >
+                                                {item.user_read}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                    <table className={`${classTable}`}>
+                        <thead>
+                            <tr>
+                                <th className={`${classHeadTable} border-r`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Nội dung
+                                    </p>
+                                </th>
+                                <th className={`${classHeadTable}`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Người Xử lý
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {dataNoti.new_work_from_worker.map(
+                                (item, index) => {
+                                    return (
+                                        <tr>
+                                            <td className="p-1 border-b border-r  border-orange-500 w-[150px]">
+                                                <p
+                                                    className={`${classContentNoti}`}
+                                                >
+                                                    {item.info_notication}
+                                                </p>
+                                            </td>
+                                            <td className="p-1 border-b border-orange-500 w-[50px]">
+                                                <p
+                                                    className={`${classContentNoti}`}
+                                                >
+                                                    {item.user_read}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    );
+                                }
+                            )}
+                        </tbody>
+                    </table>
+                    <table className={`${classTable}`}>
+                        <thead>
+                            <tr>
+                                <th className={`${classHeadTable} border-r`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Nội dung
+                                    </p>
+                                </th>
+                                <th className={`${classHeadTable}`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Người Xử lý
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {dataNoti.new_return_work_from_worker.map(
+                                (item, index) => {
+                                    return (
+                                        <tr>
+                                            <td className="p-1 border-b border-r  border-orange-500 w-[150px]">
+                                                <p
+                                                    className={`${classContentNoti}`}
+                                                >
+                                                    {item.info_notication}
+                                                </p>
+                                            </td>
+                                            <td className="p-1 border-b border-orange-500 w-[50px]">
+                                                <p
+                                                    className={`${classContentNoti}`}
+                                                >
+                                                    {item.user_read}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    );
+                                }
+                            )}
+                        </tbody>
+                    </table>
+                    <table className={`${classTable}`}>
+                        <thead>
+                            <tr>
+                                <th className={`${classHeadTable} border-r`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Nội dung
+                                    </p>
+                                </th>
+                                <th className={`${classHeadTable}`}>
+                                    <p className={`${classContentNoti}`}>
+                                        Người Xử lý
+                                    </p>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {dataNoti.new_feeback.map((item, index) => {
+                                return (
+                                    <tr>
+                                        <td className="p-1 border-b border-r  border-orange-500 w-[150px]">
+                                            <p
+                                                className={`${classContentNoti}`}
+                                            >
+                                                {item.info_notication}
+                                            </p>
+                                        </td>
+                                        <td className="p-1 border-b border-orange-500 w-[50px]">
+                                            <p
+                                                className={`${classContentNoti}`}
+                                            >
+                                                {item.user_read}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </Card>
             </div>
         </AuthenticatedLayout>

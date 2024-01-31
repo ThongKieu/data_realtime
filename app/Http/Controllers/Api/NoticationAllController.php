@@ -34,12 +34,12 @@ class NoticationAllController extends Controller
         return $c_all_noti;
     }
 
-    public static function create($from_table, $info_notication, $flag_noti)
+    public static function create($from_table,$info_notication,$user_read)
     {
         $new_noti = new NoticationAll([
-            'from_table' => $from_table,
-            'info_notication' => $info_notication,
-            'flag_noti' => $flag_noti,
+           'from_table'=> $from_table,
+           'info_notication' => $info_notication,
+           'user_read'=>$user_read,
         ]);
         $new_noti->save();
         if ($new_noti) {

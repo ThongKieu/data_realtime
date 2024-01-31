@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\NoticationAllController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
+use App\Models\WorksAssignment;
 use Carbon\Carbon;
 // use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -179,9 +180,7 @@ class WorksController extends Controller
 
         $id = Work::where('phone_number', '=', $request->phone_number)->where('work_content', '=', $request->work_content)->orderBy('id', 'asc')->limit(1)->value('id');
         $files = '';
-        if ($request->from_app) {
-            NoticationAllController::create('2', $request->content, '');
-        }
+       
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
@@ -191,9 +190,41 @@ class WorksController extends Controller
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);
             // Work::where('id','=',$id)->update(['image_work_path'=>"'".$serializedArr."'"]);
-            return 'true';
+            if($request->from_app)
+            {
+                NoticationAllController::create('2',$request->note,'');
+                
+            }
+
+            if($request->id_worker)
+            {
+                Work::where('id', '=', $id)->update(['status_cus'=>1]);
+                $workHas = new WorksAssignment([
+                    'id_cus' => $id,
+                    'id_worker' =>$request->id_worker,
+                ]);
+                $workHas->save();
+            }
+            return response()->json('Add image Done');
         }
-        return 'true';
+        else{
+
+            if($request->from_app)
+            {
+                NoticationAllController::create('2',$request->note,'');
+            }
+            if($request->id_worker)
+            {
+                Work::where('id', '=', $id)->update(['status_cus'=>1]);
+                $workHas = new WorksAssignment([
+                    'id_cus' => $id,
+                    'id_worker' =>$request->id_worker,
+                ]);
+                $workHas->save();
+            }
+            return response()->json('Create Work Done');
+
+        }
     }
 
     public function updateWork(Request $request)

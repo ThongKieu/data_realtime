@@ -351,6 +351,10 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+            if($request->from_app)
+            {
+                NoticationAllController::create('3',$note,'');
+            }
             return 1;
         }
 
@@ -363,6 +367,10 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note;
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
+            if($request->from_app)
+            {
+                NoticationAllController::create('3',$note,'');
+            }
             return 1;
         }
     }

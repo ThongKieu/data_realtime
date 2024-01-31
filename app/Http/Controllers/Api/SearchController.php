@@ -137,7 +137,14 @@ class SearchController extends Controller
         foreach ($data as $item)
         {
             $work_content = 'BH - '. $item -> work_content;
-            $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            if($item->work_note != null)
+            {
+                $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            }
+            else
+            {
+                $note =$item->date_book .'-' . $request->worker_full_name;
+            }
             $w = new Work([
             'work_content' => $work_content,
             'work_note' => $note,
@@ -162,6 +169,7 @@ class SearchController extends Controller
                     'id_cus'=> $id,
                     'id_worker'=>$id_worker,
                     'status_work'=>'4',
+                    'real_note'=>$note,
                 ]);
                 $new -> save();
 

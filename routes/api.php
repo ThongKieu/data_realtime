@@ -30,6 +30,7 @@ Route::prefix('web')->group(function () {
         Route::post('work-continue', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
         Route::post('work-assignment-cancle', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
+        Route::post('work-assignment-quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWorkFromAssignment');
         Route::post('work-assignment-warranties', 'App\Http\Controllers\Api\WarrantiesController@insertWarranties');
         Route::post('check-admin', 'App\Http\Controllers\Api\WorksAssignmentController@checkWorkByAdmin');
     });
@@ -131,6 +132,7 @@ Route::prefix('app')->group(function () {
         Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
         Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
+        Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
 
     });
     // Customer

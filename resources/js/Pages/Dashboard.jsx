@@ -1382,7 +1382,7 @@ function Dashboard({ auth }) {
                             auth_id: auth.user.id,
                         };
                         const response = await fetch(
-                            "api/web/update/work-assignment-cancle",
+                            "api/web/update/work-assignment-quote",
                             {
                                 method: "POST",
                                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON

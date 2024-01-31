@@ -353,6 +353,7 @@ class WorksAssignmentController extends Controller
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
             if($request->from_app)
             {
+                
                 NoticationAllController::create('3',$note,'');
             }
             return 1;
@@ -372,6 +373,31 @@ class WorksAssignmentController extends Controller
                 NoticationAllController::create('3',$note,'');
             }
             return 1;
+        }
+    }
+    // insertQuoteWorkFromAssignment
+    public function insertQuoteWorkFromAssignment(Request $request)
+    {
+        if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->auth_id == null) {
+            return -1;
+        } else {
+            $seri_imag = '';
+
+            if ($request->hasFile('image_work_path')) {
+                $images = $request->file('image_work_path');
+                // dd($images);
+                foreach ($images as $image) {
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                }
+            }
+            $update = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3, 'bill_imag' => $seri_imag]);
+            if ($update) {
+                return 'true';
+            } else {
+                return 'failed';
+            }
         }
     }
 

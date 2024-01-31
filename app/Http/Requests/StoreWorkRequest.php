@@ -36,6 +36,7 @@ class StoreWorkRequest extends FormRequest
             'work_note' => 'max:1000',
             'from_app' => 'required|numeric',
             'content' => 'max:500',
+            'id_worker' => 'required|numeric',
 
         ];
     }

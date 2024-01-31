@@ -83,7 +83,24 @@ function ProfileMenu({ propauthprofile }) {
             console.error("Error fetching data:", error);
         }
     };
-
+    const handleMakeReadAll = async () => {
+        let data = { code: propauthprofile.code };
+        console.log(data, "ssss");
+        try {
+            const response = await fetch(`api/web/noti/markReadAll`, {
+                method: "POST",
+                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                headers: {
+                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                },
+            });
+            if (response.status == 200) {
+                console.log(response);
+            }
+        } catch (error) {
+            console.error("Repair:", error);
+        }
+    };
     // fetchNoti();
     numberOnline();
     useEffect(() => {
@@ -105,7 +122,7 @@ function ProfileMenu({ propauthprofile }) {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="w-6 h-6 text-green-500"
+                    className="hidden w-6 h-6 text-green-500"
                 >
                     <path
                         strokeLinecap="round"
@@ -116,7 +133,7 @@ function ProfileMenu({ propauthprofile }) {
             </NavLink>
             <NavLink
                 href={route("chat")}
-                className="ml-2 cursor-pointer py-1.5 font-medium "
+                className="ml-2 cursor-pointer py-1.5 font-medium hidden"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -136,6 +153,7 @@ function ProfileMenu({ propauthprofile }) {
             <NavLink
                 href={route("notice")}
                 className="relative ml-2 font-medium cursor-pointer"
+
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -144,6 +162,7 @@ function ProfileMenu({ propauthprofile }) {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="w-6 h-6 text-yellow-500"
+                    onClick={handleMakeReadAll}
                 >
                     <path
                         strokeLinecap="round"

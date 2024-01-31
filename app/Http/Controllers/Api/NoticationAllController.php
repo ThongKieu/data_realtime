@@ -24,8 +24,7 @@ class NoticationAllController extends Controller
             'new_return_work_from_worker'=> $new_return_work_from_worker,
         ];
 
-        // return response()->json($data_return);
-        return $data_return;
+        return response()->json($data_return);
     }
     public function soketNoti (Request $request)
     {

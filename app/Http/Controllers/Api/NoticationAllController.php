@@ -28,7 +28,7 @@ class NoticationAllController extends Controller
     public function soketNoti(Request $request)
     {
         $admin_name = '%' . $request->code . '%';
-        dd($admin_name);
+
         $get_noti = NoticationAll::where('user_read', 'not like', $admin_name)->get();
         $c_all_noti = count($get_noti);
         return $c_all_noti;

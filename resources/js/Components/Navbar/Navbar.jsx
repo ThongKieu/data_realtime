@@ -75,9 +75,11 @@ function ProfileMenu({ propauthprofile }) {
     const fetchNoti = async () => {
         try {
             let code = propauthprofile.code;
-            const response = await fetch( `api/web/noti/soket_noti?code=${code}`
+            const response = await fetch(
+                `api/web/noti/soket_noti?code=${code}`
             );
             const jsonData = await response.json();
+            console.log(jsonData);
             setNoti(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);

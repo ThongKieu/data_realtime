@@ -22,27 +22,17 @@ const data = [
 ];
 
 function Notice({ auth }) {
-    // const [dataNoti, getNoti] = useState("");
+    const [dataNoti, setNoti] = useState("");
     const [notificationData, setInfoNotification] = useState("");
-    // const fetchNotiUser = async () => {
-    //     try {
-    //         let data = { code: auth.user.code };
-    //         const response = fetch("api/web/noti", {
-    //             headers: {
-    //                 "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-    //             },
-    //             method: "POST",
-    //             body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-    //         });
-    //         if (response.status == 200) {
-    //             // socketD.emit("ButtonDisable_To_Server", data);
-    //             getNoti(response);
-    //             console.log(response);
-    //         }
-    //     } catch (error) {
-    //         console.log("push on Loi", error);
-    //     }
-    // };
+    const fetchNotiUser = async () => {
+        try {
+            const response = fetch("api/web/noti");
+            const jsonData = await response.json();
+            setNoti(jsonData);
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
+    };
     const fetchNoti = async () => {
         try {
             let code = auth.user.code;
@@ -60,10 +50,10 @@ function Notice({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    console.log("-------", notificationData);
+    console.log("-------", notificationData,'+',dataNoti );
 
     useEffect(() => {
-        // fetchNotiUser();
+        fetchNotiUser();
         fetchNoti();
     }, []);
     const [screenSize, setScreenSize] = useState({

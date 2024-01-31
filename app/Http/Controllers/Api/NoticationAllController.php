@@ -12,7 +12,7 @@ class NoticationAllController extends Controller
     //
     public function index()
     {
-      
+
         $new_work_from_app = NoticationAll:: where('from_table', '=',1)->get();
         $new_work_from_worker = NoticationAll:: where('from_table', '=',2)->get();
         $new_return_work_from_worker = NoticationAll:: where('from_table', '=',3)->get();
@@ -33,7 +33,7 @@ class NoticationAllController extends Controller
         $c_all_noti = count($get_noti);
         return $c_all_noti;
     }
-    
+
     public static function create($from_table,$info_notication,$flag_noti)
     {
         $new_noti = new NoticationAll([
@@ -46,11 +46,11 @@ class NoticationAllController extends Controller
         {
             return 1;
         }
-        else 
+        else
             return 0;
     }
     // public function newWorkFromApp(){
-        
+
     // }
     // public function newWorkFromWorker(){
 
@@ -59,6 +59,6 @@ class NoticationAllController extends Controller
 
     }
     // public function returnWorkFromWorker(){
-        
+
     // }
 }

@@ -648,7 +648,7 @@ function Dashboard({ auth }) {
                     const originalData = params.row;
 
                     // Tạo bản sao của dữ liệu ban đầu và đặt ID thành null (hoặc một giá trị mới nếu cần)
-                    const duplicatedData = { ...originalData, id: null };
+                    const duplicatedData = { ...originalData, id: null, work_content: params.row.work_content+ ' ' + '(copy)' };
 
                     try {
                         const response = await fetch(host + url_API, {
@@ -666,61 +666,61 @@ function Dashboard({ auth }) {
                     }
                 };
                 return (
-                        <div className="flex flex-row justify-center">
-                            <Tooltip
-                                content="Phân Thợ"
-                                animate={{
-                                    mount: {
-                                        scale: 1,
-                                        y: 0,
-                                    },
-                                    unmount: {
-                                        scale: 0,
-                                        y: 25,
-                                    },
-                                }}
-                            >
-                                <UserPlusIcon
-                                    className="w-8 h-8 p-1 mr-1 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
-                                    onClick={handleOpenTho}
-                                />
-                            </Tooltip>
-                            <Tooltip
-                                content="Hủy Lịch"
-                                animate={{
-                                    mount: {
-                                        scale: 1,
-                                        y: 0,
-                                    },
-                                    unmount: {
-                                        scale: 0,
-                                        y: 25,
-                                    },
-                                }}
-                            >
-                                <TrashIcon
-                                    className="w-8 h-8 p-1 mr-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                    onClick={handleOpen}
-                                />
-                            </Tooltip>
-                            <Tooltip
-                                content="Nhân Đôi"
-                                animate={{
-                                    mount: {
-                                        scale: 1,
-                                        y: 0,
-                                    },
-                                    unmount: {
-                                        scale: 0,
-                                        y: 25,
-                                    },
-                                }}
-                            >
-                                <DocumentDuplicateIcon
-                                    className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
-                                    onClick={handleSentNhanDoi}
-                                />
-                            </Tooltip>
+                    <div className="flex flex-row justify-center">
+                        <Tooltip
+                            content="Phân Thợ"
+                            animate={{
+                                mount: {
+                                    scale: 1,
+                                    y: 0,
+                                },
+                                unmount: {
+                                    scale: 0,
+                                    y: 25,
+                                },
+                            }}
+                        >
+                            <UserPlusIcon
+                                className="w-8 h-8 p-1 mr-1 text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white"
+                                onClick={handleOpenTho}
+                            />
+                        </Tooltip>
+                        <Tooltip
+                            content="Hủy Lịch"
+                            animate={{
+                                mount: {
+                                    scale: 1,
+                                    y: 0,
+                                },
+                                unmount: {
+                                    scale: 0,
+                                    y: 25,
+                                },
+                            }}
+                        >
+                            <TrashIcon
+                                className="w-8 h-8 p-1 mr-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                onClick={handleOpen}
+                            />
+                        </Tooltip>
+                        <Tooltip
+                            content="Nhân Đôi"
+                            animate={{
+                                mount: {
+                                    scale: 1,
+                                    y: 0,
+                                },
+                                unmount: {
+                                    scale: 0,
+                                    y: 25,
+                                },
+                            }}
+                        >
+                            <DocumentDuplicateIcon
+                                className="w-8 h-8 p-1 mr-1 text-green-500 border border-green-500 rounded cursor-pointer hover:bg-green-500 hover:text-white"
+                                onClick={handleSentNhanDoi}
+                            />
+                        </Tooltip>
 
                         <ThoDialog
                             open={openTho}
@@ -737,7 +737,7 @@ function Dashboard({ auth }) {
                             setWorkNote={setWorkNote}
                             handleSentDelete={handleSentDelete}
                         />
-                         </div>
+                    </div>
                 );
             },
         },
@@ -776,6 +776,8 @@ function Dashboard({ auth }) {
                         }
                     }
                 };
+                const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
+
                 return (
                     <>
                         <IconButton
@@ -789,44 +791,114 @@ function Dashboard({ auth }) {
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
                         </IconButton>
-                        <Dialog open={open} handler={handleOpen} size="lg">
-                            <DialogHeader>Ghi Chú</DialogHeader>
+                        <Dialog open={open} handler={handleOpen} size="sm">
+                            <DialogHeader>Thông Tin Bảo Hành</DialogHeader>
                             <DialogBody divider>
                                 <div className="h-[50vh] overflow-y-auto">
-                                    {TTBH.map((item, index) => {
-                                        return (
-                                            <Card
-                                                className="p-2 my-2 border border-green-500"
-                                                key={index}
-                                            >
-                                                <span>
-                                                    Bảo Hành:
-                                                    {item.warranty_time === 0
-                                                        ? "kbh"
-                                                        : `${
-                                                              item.warranty_time
-                                                          } ${
-                                                              item.unit === "d"
-                                                                  ? "ngày"
-                                                                  : item.unit ===
-                                                                    "w"
-                                                                  ? "tuần"
-                                                                  : item.unit ===
-                                                                    "m"
-                                                                  ? "tháng"
-                                                                  : item.unit ===
-                                                                    "y"
-                                                                  ? "năm"
-                                                                  : ""
-                                                          }`}
-                                                </span>
-                                                <span>
-                                                    Nội Dung:
-                                                    {item.warranty_info}
-                                                </span>
-                                            </Card>
-                                        );
-                                    })}
+                                    <Card className="w-full h-full overflow-scroll">
+                                        <table className="w-full text-left table-auto min-w-max">
+                                            <thead>
+                                                <tr>
+                                                    {TABLE_HEAD.map((head) => (
+                                                        <th
+                                                            key={head}
+                                                            className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                                        >
+                                                            <Typography
+                                                                variant="small"
+                                                                color="blue-gray"
+                                                                className="font-normal leading-none opacity-70"
+                                                            >
+                                                                {head}
+                                                            </Typography>
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {TTBH.map(
+                                                    (
+                                                        {
+                                                            warranty_time,
+                                                            unit,
+                                                            warranty_info,
+                                                        },
+                                                        index
+                                                    ) => {
+                                                        const isLast =
+                                                            index ===
+                                                            TTBH.length - 1;
+                                                        const classes = isLast
+                                                            ? "p-4"
+                                                            : "p-4 border border-blue-gray-50";
+
+                                                        return (
+                                                            <tr key={index}>
+                                                                <td
+                                                                    className={
+                                                                        `${classes} w-[10px]`
+                                                                    }
+                                                                >
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {index}
+                                                                    </Typography>
+                                                                </td>
+                                                                <td
+                                                                    className={
+                                                                        `${classes} w-[70px]`
+                                                                    }
+                                                                >
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {warranty_time ===
+                                                                        0
+                                                                            ? "kbh"
+                                                                            : `${warranty_time} ${
+                                                                                  unit ===
+                                                                                  "d"
+                                                                                      ? "ngày"
+                                                                                      : unit ===
+                                                                                        "w"
+                                                                                      ? "tuần"
+                                                                                      : unit ===
+                                                                                        "m"
+                                                                                      ? "tháng"
+                                                                                      : unit ===
+                                                                                        "y"
+                                                                                      ? "năm"
+                                                                                      : ""
+                                                                              }`}
+                                                                    </Typography>
+                                                                </td>
+                                                                <td
+                                                                     className={
+                                                                        `${classes} w-[180px]`
+                                                                    }
+                                                                >
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {
+                                                                            warranty_info
+                                                                        }
+                                                                    </Typography>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    }
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </Card>
                                 </div>
                             </DialogBody>
                             <DialogFooter>
@@ -2069,7 +2141,6 @@ function Dashboard({ auth }) {
                                                             borderRight:
                                                                 "1px solid #e0e0e0",
                                                         },
-
                                                 }}
                                                 rows={result.rowsDataGrid}
                                                 columns={columns}
@@ -2157,7 +2228,6 @@ function Dashboard({ auth }) {
                                                             borderRight:
                                                                 "1px solid #e0e0e0",
                                                         },
-
                                                 }}
                                                 width={100}
                                                 autoHeight

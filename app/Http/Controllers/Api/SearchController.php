@@ -53,8 +53,8 @@ class SearchController extends Controller
     public function searchAjax(Request $request)
     {
         // dd($request->all());
-        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '' || $request->keySearch != [] ) 
-        { 
+        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '' || $request->keySearch != [] )
+        {
             $key= '%'.$request->keySearch.'%';
             $data = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
@@ -129,7 +129,7 @@ class SearchController extends Controller
        }
     }
 
-   public function createWarrantyFromSearch(Request $request ) 
+   public function createWarrantyFromSearch(Request $request )
    {
         $id_cus = $request->id_cus;
         $data = Work::where('id','=',$id_cus)->get();
@@ -137,7 +137,14 @@ class SearchController extends Controller
         foreach ($data as $item)
         {
             $work_content = 'BH - '. $item -> work_content;
-            $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            if($item->work_note != null)
+            {
+                $note =$item->date_book .'-' . $request->worker_full_name .' - '. $item -> work_note ;
+            }
+            else
+            {
+                $note =$item->date_book .'-' . $request->worker_full_name;
+            }
             $w = new Work([
             'work_content' => $work_content,
             'work_note' => $note,
@@ -152,25 +159,26 @@ class SearchController extends Controller
             ]);
             $w ->save();
             $id = Work::where('phone_number', '=', $item -> phone_number)->where('work_content' ,'=', $work_content)-> orderBy('id','desc')->value('id');
-            
+
             if($id != null)
-            {   
+            {
                 $id_worker = Worker::where('worker_code','=',$request->worker_code)->value('id');
-                
+
 
                 $new = new WorksAssignment([
                     'id_cus'=> $id,
                     'id_worker'=>$id_worker,
                     'status_work'=>'4',
+                    'real_note'=>$note,
                 ]);
                 $new -> save();
 
                 return 'Done !!!';
             }
-            
+
         }
         return $request->all();
-   } 
+   }
    public function getWarraties(Request $request) {
      if($request->id)
      {
@@ -180,7 +188,7 @@ class SearchController extends Controller
             return $warran;
 
         }
-        else 
+        else
         {
             return null;
         }

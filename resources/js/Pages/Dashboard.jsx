@@ -282,7 +282,6 @@ function Dashboard({ auth }) {
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
-
     const fetchInfoWorker = async (e) => {
         try {
             const response = await fetch(host + "api/web/workers");

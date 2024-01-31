@@ -132,6 +132,7 @@ Route::prefix('app')->group(function () {
         Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
         Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
+        Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
 
     });
     // Customer

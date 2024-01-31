@@ -61,4 +61,17 @@ class NoticationAllController extends Controller
     // public function returnWorkFromWorker(){
         
     // }
+    public function markReadAll(Request $request)
+    {
+        $admin_name = '%'.$request->code.'%';
+        $get_noti = NoticationAll::where('user_read','not like',$admin_name)->get();
+
+        foreach($get_noti as $item)
+        {   
+            $am = $item->user_read . ','. $request->code;
+            NoticationAll::where('id','=',$item->id)->update(['user_read'=>$am]);
+        }
+
+        return 200;
+    }
 }

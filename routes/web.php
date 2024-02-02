@@ -63,6 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/post-list ',function(){return Inertia::render('Admin/Posts/PostList');})->name('admin/post-list');
         Route::get('/create-post ',function(){return Inertia::render('Admin/Posts/CreatePost');})->name('admin/create-post');
         Route::get('/users',function(){return Inertia::render('Admin/Users/UsersAdmin');})->name('admin/users');
+        Route::get('/contact',function(){return Inertia::render('Admin/DataImport/Contacts');})->name('admin/contacts');
+
     });
 
     Route::prefix('workers')->group(function(){

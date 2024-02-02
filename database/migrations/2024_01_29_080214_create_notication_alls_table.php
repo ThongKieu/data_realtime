@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('notication_alls', function (Blueprint $table) {
             $table->id();
-            $table->string('from_table')->nullable()->comment('1: Bảng lịch; 2: Khách phàn nàn; 3: lịch app; 4: Thông báo thợ');
-            $table ->string('info_notication')->nullable();
+            $table->string('from_table')->nullable()->comment('1:Từ App thợ; 2: Từ app khách; 3: Thợ xin lịch, Thợ cần hỗ trợ; 4: Thông báo từ các nguồn khác');
+            $table->string('info_notication')->nullable();
             // $table -> tinyInteger('flag_noti')->default(0);
-            $table -> string('user_read')->nullable();
-
+            $table->string('user_read')->default('');
             $table->timestamps();
         });
     }

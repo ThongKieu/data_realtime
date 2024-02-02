@@ -382,16 +382,15 @@ function NavbarDefault({ propauth, check }) {
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
         fetchInfoWorker();
-        fetchDelete();
+        // fetchDelete();
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
             }
         });
-
-        return () => {
-            newSocket.disconnect();
-        };
+        // return () => {
+        //     newSocket.disconnect();
+        // };
     }, [check]);
     const [countDelete, setCountDelete] = useState(0);
 

@@ -1773,7 +1773,7 @@ function Dashboard({ auth }) {
                                     <Menu allowHover>
                                         <MenuHandler>
                                             <EllipsisVerticalIcon
-                                                className={`w-6 h-6 pt-2 cursor-pointer ${classButtonDaPhan} ${DK1} ${DK2}`}
+                                                className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}`}
                                             />
                                         </MenuHandler>
                                         <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">

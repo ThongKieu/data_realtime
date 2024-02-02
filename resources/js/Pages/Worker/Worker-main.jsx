@@ -100,7 +100,6 @@ function WorkersMain({ auth }) {
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
 
-
     // const processRowUpdate = (newRow) => {
     //   const updatedRow = { ...newRow, isNew: false };
     //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
@@ -112,7 +111,6 @@ function WorkersMain({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    console.log("data Rows", rows);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch("api/web/workers")
@@ -125,7 +123,7 @@ function WorkersMain({ auth }) {
             .then((data) => {
                 setData(data); // Lưu dữ liệu vào trạng thái React
                 setLoading(true); // Đã lấy xong dữ liệu
-                console.log('dddd',data);
+                console.log("dddd", data);
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
@@ -206,18 +204,17 @@ function WorkersMain({ auth }) {
                 const lastActive = params.row.last_active;
                 const a1 = lastActive.h;
                 if (lastActive.d >= 1 && lastActive.m === 0) {
-                        var a = `${lastActive.d} ngày`;
-                }else if (lastActive.d === 0 && lastActive.m >= 1) {
-                      var a = `${lastActive.m} tháng`;
-                } else if(lastActive.d >= 1 && lastActive.m >= 1){
-                       var a = `${lastActive.m} tháng ${lastActive.d} ngày`;
-                }else {
+                    var a = `${lastActive.d} ngày`;
+                } else if (lastActive.d === 0 && lastActive.m >= 1) {
+                    var a = `${lastActive.m} tháng`;
+                } else if (lastActive.d >= 1 && lastActive.m >= 1) {
+                    var a = `${lastActive.m} tháng ${lastActive.d} ngày`;
+                } else {
                     var a = `${lastActive.h} giờ `;
                 }
                 return <div>online {a} trước</div>;
             },
         },
-
         {
             field: "worker_phone_company",
             headerName: "Số Công ty",
@@ -264,21 +261,28 @@ function WorkersMain({ auth }) {
             width: 200,
             editable: false,
             renderCell: (params) => {
-                const handleChangeva = (event) => {
-                    // Xử lý sự thay đổi của lựa chọn ở đây
-                    const selectedValue = event.target.value;
-                    const data_set = {
-                        action: "status_change_worker",
-                        id: params.id,
-                        status: selectedValue,
-                    };
-                    fetchData(data_set);
-                    console.log("kiem tra", data_set);
+                const [selectedValue, setSelectedValue] = useState();
+                const handleSelectChange = (event) => {
+                    const newValue = event.target.value;
+                    if (
+                        newValue !== undefined &&
+                        newValue !== null &&
+                        newValue !== ""
+                    ) {
+                        setSelectedValue(newValue);
+                        const data_set = {
+                            action: "status_change_worker",
+                            id: params.id,
+                            status: newValue,
+                        };
+                        fetchData(data_set);
+                    }
                 };
                 return (
                     <select
-                        defaultValue={params.value}
-                        onChange={handleChangeva}
+                        defaultValue={params.row.worker_status}
+                        value={selectedValue}
+                        onChange={handleSelectChange}
                         style={{ minWidth: "120px" }}
                     >
                         <option value="0">Làm Bình Thường</option>
@@ -403,10 +407,13 @@ function WorkersMain({ auth }) {
                 if (params.field === "check_acc") {
                     switch (params.value) {
                         case 0:
-                            if(auth.user.permission === 1)
-                                {
-                                    return (<a href={"admin/account"}>{"Chưa có tạo Mới"}</a>);
-                                }
+                            if (auth.user.permission === 1) {
+                                return (
+                                    <a href={"admin/account"}>
+                                        {"Chưa có tạo Mới"}
+                                    </a>
+                                );
+                            }
                             return "Chưa có, vui lòng liên hệ Admin.";
                         case 1:
                             return "Đã có chưa kích hoạt";
@@ -416,7 +423,6 @@ function WorkersMain({ auth }) {
                 }
                 return <div>{params.value}</div>;
             },
-
         },
     ];
     return (

@@ -353,7 +353,7 @@ class WorksAssignmentController extends Controller
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
             if($request->from_app)
             {
-                
+
                 NoticationAllController::create('3',$note,'');
             }
             return 1;

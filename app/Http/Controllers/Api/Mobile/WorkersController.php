@@ -128,11 +128,10 @@ class WorkersController extends Controller
         switch ($action) {
             case 'status_change_worker':
                 // dd($re->id);
-                Worker::where('id', '=', $re->id)->update(['status_worker' => $re->status]);
+                Worker::where('id', '=', $re->id)->update(['worker_status' => $re->status]);
                 return response()->json(['data' => 'Change Status']);
             case 'avatar_change_worker':
                 if ($re->hasFile('avatar_new')) {
-
                     $file = $re->file('avatar_new');
                     $name = $re->sort_name . '-' . time() . '.' . $file->extension();
                     $file->move('assets/avatar/', $name);

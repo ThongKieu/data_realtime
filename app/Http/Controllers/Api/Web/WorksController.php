@@ -30,9 +30,9 @@ class WorksController extends Controller
         }
 
         $oldday2 = Carbon::now();
-        $dc1 = $oldday2->subDay(1)->isoFormat('YYYY-MM-D');
-        $dc2 = $oldday2->subDay(7)->isoFormat('YYYY-MM-D');
-        // dd($dc2);
+        $dc1 = $oldday2->subDay(1)->isoFormat('YYYY-MM-DD');
+        $dc2 = $oldday2->subDay(7)->isoFormat('YYYY-MM-DD');
+        // dd($dc1);
         $dien_nuoc = Work::where('date_book', '=', $today)
             ->where('kind_work', '=', 0)
             ->where('status_cus', '=', 0)

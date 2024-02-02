@@ -149,6 +149,7 @@ function FloatingButton() {
                     status_cus: 0,
                     from_cus: 0,
                     flag_status: 1,
+
                 });
             } else if (response.status === 422 ){
                 alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`)

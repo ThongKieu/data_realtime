@@ -34,9 +34,9 @@ class StoreWorkRequest extends FormRequest
             'street' => 'max:500',
             'name_cus' => 'max:500',
             'work_note' => 'max:1000',
-            'from_app' => 'required|numeric',
+            // 'from_app' => 'required|numeric',
             'content' => 'max:500',
-            'id_worker' => 'required|numeric',
+            // 'id_worker' => 'required|numeric',
 
         ];
     }

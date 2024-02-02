@@ -190,7 +190,7 @@ class WorksController extends Controller
             // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)->update(['works.image_work_path' => $files]);
             // Work::where('id','=',$id)->update(['image_work_path'=>"'".$serializedArr."'"]);
-            if ($request->from_app) {
+            if (isset($request->from_app)) {
                 NoticationAllController::create('2', $request->content, '');
 
             }
@@ -206,7 +206,7 @@ class WorksController extends Controller
             return 'true';
         } else {
 
-            if ($request->from_app) {
+            if (isset($request->from_app)) {
                 NoticationAllController::create('2', $request->content, '');
             }
             if ($request->id_worker) {

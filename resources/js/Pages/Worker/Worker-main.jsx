@@ -10,8 +10,6 @@ import {
     DialogBody,
     DialogFooter,
     Tooltip,
-    Select,
-    Option,
 } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
@@ -291,20 +289,6 @@ function WorkersMain({ auth }) {
                         <option value="1">Nghỉ Phép</option>
                         <option value="2">Đã Nghỉ</option>
                     </select>
-
-                    // <Select
-                    //     value={params.row.worker_status}
-                    //     defaultValue={selectedValue}
-                    //     onChange={(selectedValue) =>
-                    //         handleSelectChange(selectedValue)
-                    //     }
-                    //     // style={{ minWidth: "120px" }}
-                    //     label="Tình Trạng"
-                    // >
-                    //     <Option value="12312">Làm Bình Thường</Option>
-                    //     <Option value="1">Nghỉ Phép</Option>
-                    //     <Option value="2">Đã Nghỉ</Option>
-                    // </Select>
                 );
             },
         },

@@ -607,6 +607,7 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
+                console.log(params.row);
                 // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {

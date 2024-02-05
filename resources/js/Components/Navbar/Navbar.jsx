@@ -32,6 +32,7 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
+import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
 
@@ -415,7 +416,7 @@ function NavbarDefault({ propauth, check }) {
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label: item.worker_code + " " + item.worker_full_name,
+                label: "(" + item.worker_code + ')' + " " + getFirstName(item.worker_full_name),
                 workerCode: item.worker_code,
                 workerStatus: item.worker_status,
             }));

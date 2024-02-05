@@ -103,7 +103,7 @@ const sendDoiThoRequest = async (
 };
 const getFirstName = (fullName) => {
     const parts = fullName.split(" ");
-    return parts.length >= 2 ? parts.slice(1).join(" ") : "";
+    return parts.length >= 2 ? parts.slice(1).join(" ") : parts.length >= 3 ? parts.slice(2).join(" ") : parts.length >= 1 ? parts.slice(0).join(" "): "";
 };
 const getFormattedToday = () => {
     const today = new Date();

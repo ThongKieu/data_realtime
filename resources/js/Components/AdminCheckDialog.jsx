@@ -77,6 +77,7 @@ function AdminCheckDialog({
             warranty_time: 0,
             unit: "kbh",
             warranty_info: "Không Bảo Hành",
+            warranty_create: 0,
         },
     ]);
     const fetchDataBH = async (id) => {
@@ -127,6 +128,7 @@ function AdminCheckDialog({
             }
             return item;
         });
+        console.log('ddd',updatedData);
         setDataBH(updatedData);
     };
     const optionBH = [
@@ -151,7 +153,6 @@ function AdminCheckDialog({
         ]);
     };
     const [disabledButtons, setDisabledButtons] = useState([]);
-    console.log("sss:", disabledButtons);
     const [idToDelete, setIdToDelete] = useState([]);
     const handleDelete = async (id) => {
         try {
@@ -182,7 +183,7 @@ function AdminCheckDialog({
                         (item) => item.id !== idToDelete
                     );
                     setDataBH(updatedData);
-                    console.log("Đã xóa thành công", idToDelete);
+                    handleOpenBH();
                 } else {
                     console.error("Lỗi khi xóa dữ liệu:", res.statusText);
                 }
@@ -191,34 +192,39 @@ function AdminCheckDialog({
             }
         }
     };
+    console.log(dataBH);
     const handleValueBh = async () => {
         try {
+            console.log('ddd',dataBH);
             const data_info_warranty = dataBH.map((data) => ({
+                // ...data,
                 id_warranty: data.id,
                 warranty_time: data.warranty_time,
                 warranty_info: data.warranty_info,
                 unit: data.unit,
+                // warranty_create: 0
             }));
+            console.log('ssssfff',data_info_warranty);
             const dataBh = {
                 ac: 1,
                 auth_id: auth.user.id,
                 id_work_has: params.row.id,
                 info_warranties: data_info_warranty,
-                flag_warranty: 1,
             };
-            const res = await fetch("api/web/update/check-admin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dataBh),
-            });
-            if (res.ok) {
-                console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
-                handleOpenBH();
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
+            console.log(dataBh);
+            // const res = await fetch("api/web/update/check-admin", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify(dataBh),
+            // });
+            // if (res.ok) {
+            //     console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
+            //     handleOpenBH();
+            // } else {
+            //     console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            // }
         } catch (error) {
             console.error("Error fetching data lỗi rồi:", error);
         }
@@ -347,7 +353,6 @@ function AdminCheckDialog({
                                     mount: { scale: 1, y: 0 },
                                     unmount: { scale: 0.9, y: -100 },
                                 }}
-                                size="xl"
                             >
                                 <DialogHeader>
                                     Chỉnh Sửa Thông Tin Bảo Hành
@@ -367,7 +372,7 @@ function AdminCheckDialog({
                                                     type="number"
                                                     min="1"
                                                     max="30"
-                                                    defaultValue={
+                                                    value={
                                                         item.warranty_time
                                                     }
                                                     onChange={(e) =>
@@ -407,7 +412,7 @@ function AdminCheckDialog({
                                                     label="Nội Dung Bảo Hành"
                                                     id="warranty_info"
                                                     name="warranty_info"
-                                                    defaultValue={
+                                                    value={
                                                         item.warranty_info
                                                     }
                                                     onChange={(e) =>
@@ -435,7 +440,7 @@ function AdminCheckDialog({
                                         </div>
                                     ))}
                                     <Button
-                                        onClick={handleClick}
+                                        onClick={() => handleClick()}
                                         variant="outlined"
                                         color="green"
                                         className="px-1 py-1 mb-1"
@@ -464,10 +469,10 @@ function AdminCheckDialog({
                                         onClick={() => {
                                             if (disabledButtons != "") {
                                                 handleConfirmDelete();
-                                                console.log('cnbnjncss2322222');
+                                                setDisabledButtons('')
                                             } else {
                                                 handleValueBh();
-                                                console.log('cnbnjnc');
+
                                             }
                                         }}
                                     >

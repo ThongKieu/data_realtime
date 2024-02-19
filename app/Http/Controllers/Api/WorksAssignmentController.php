@@ -540,13 +540,24 @@ class WorksAssignmentController extends Controller
                             }
                             return 'Del warranties';
                         } else {
-                           if($request->flag_warranty == 1 )
-                           {
-                            // Thêm mới thông tin bảo hành
-                                $a = count($request->info_warranties);
 
-                                for($i = 0; $i<$a; $i++ )
+                            $a = $request->info_warranties;
+                            $num = Warranties::where('id_work_has', '=', $request->id_work_has)->get('id');
+                            if(count($num) == count($a))
+                            {   // Sửa thông tin lịch bảo hành
+                                for ($i = 0; $i < count($a); $i++)
+
+                                    {
+                                        Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                    }
+                            }
+                            else{
+                                $n = count($request->info_warranties);
+                                // dd(count($num));
+
+                                for($i = 0; $i<$n; $i++)
                                 {
+                                //    if ($request->info_warranties[$i]['warranty_create']==1) {
                                     $new = new Warranties([
                                         'id_work_has' => $request->id_work_has,
                                         'warranty_time' => $request->info_warranties[$i]['warranty_time'],
@@ -554,52 +565,12 @@ class WorksAssignmentController extends Controller
                                         'unit' => $request->info_warranties[$i]['unit'],
                                     ]);
                                     $new->save();
+                                //    }else {
+                                //     Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                //    }
                                 }
                             }
-                            // $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
-                            // $a = $request->info_warranties;
-                            // // dd( $a);
 
-                            // if (count($num) == 0) {
-                            //     for ($i = 0; $i < count($a); $i++)
-                            //     // them moi
-                            //     {
-                            //         $new = new Warranties([
-                            //             'id_work_has' => $request->id_work_has,
-                            //             'warranty_time' => $a[$i]['warranty_time'],
-                            //             'warranty_info' => $a[$i]['warranty_info'],
-                            //             'unit' => $a[$i]['unit'],
-                            //         ]);
-                            //         $new->save();
-                            //     }
-                            // } else {
-                            //     if (count($num) == count($a)) {
-                            //         for ($i = 0; $i < count($a); $i++)
-                            //         // them moi
-                            //         {
-                            //             Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
-
-                            //         }
-                            //     }
-                            //     if (count($num) < count($a)) {
-                            //         for ($i = 0; $i < count($a); $i++)
-                            //         // them moi
-                            //         {
-                            //             $c = Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
-                            //             if (!$c) {
-                            //                 $new = new Warranties([
-                            //                     'id_work_has' => $request->id_work_has,
-                            //                     'warranty_time' => $a[$i]['warranty_time'],
-                            //                     'warranty_info' => $a[$i]['warranty_info'],
-                            //                     'unit' => $a[$i]['unit'],
-                            //                 ]);
-                            //                 $new->save();
-                            //             }
-                            //         }
-                            //     }
-
-                            // }
-                        //    }
                         }
                         return 'Update warranties';
                     case 2:

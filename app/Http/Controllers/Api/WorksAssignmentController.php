@@ -536,7 +536,7 @@ class WorksAssignmentController extends Controller
                             $num = Warranties::where('id', '=', $request->id_del_warranty)->delete();
                             return 'Del warranties';
                         } else {
-                            $num = Warranties::where('id', '=', $request->id_work_has)->get('id');
+                            $num = Warranties::where('id_work_has', '=', $request->id_work_has)->get('id');
                             $a = $request->info_warranties;
                             // dd( $a);
 

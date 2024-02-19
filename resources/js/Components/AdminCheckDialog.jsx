@@ -74,6 +74,7 @@ function AdminCheckDialog({
     const [dataBH, setDataBH] = useState([
         {
             id: 0,
+            
             warranty_time: 0,
             unit: "kbh",
             warranty_info: "Không Bảo Hành",

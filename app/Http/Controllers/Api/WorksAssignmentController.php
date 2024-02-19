@@ -533,6 +533,7 @@ class WorksAssignmentController extends Controller
                         // thay đổi thông tin bảo hành
                         // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
                         if ($request->id_del_warranty) {
+                            // dd($request->id_del_warranty);
                             for($i = 0 ; $i<count($request->id_del_warranty);$i++)
                             {
                                 $num = Warranties::where('id', '=', $request->id_del_warranty[$i])->delete();
@@ -543,13 +544,14 @@ class WorksAssignmentController extends Controller
                            {
                             // Thêm mới thông tin bảo hành
                                 $a = count($request->info_warranties);
+
                                 for($i = 0; $i<$a; $i++ )
                                 {
                                     $new = new Warranties([
                                         'id_work_has' => $request->id_work_has,
-                                        'warranty_time' => $a[$i]['warranty_time'],
-                                        'warranty_info' => $a[$i]['warranty_info'],
-                                        'unit' => $a[$i]['unit'],
+                                        'warranty_time' => $request->info_warranties[$i]['warranty_time'],
+                                        'warranty_info' => $request->info_warranties[$i]['warranty_info'],
+                                        'unit' => $request->info_warranties[$i]['unit'],
                                     ]);
                                     $new->save();
                                 }

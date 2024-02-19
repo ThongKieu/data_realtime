@@ -74,7 +74,6 @@ function AdminCheckDialog({
     const [dataBH, setDataBH] = useState([
         {
             id: 0,
-            
             warranty_time: 0,
             unit: "kbh",
             warranty_info: "Không Bảo Hành",
@@ -152,11 +151,12 @@ function AdminCheckDialog({
         ]);
     };
     const [disabledButtons, setDisabledButtons] = useState([]);
-    const [idToDelete, setIdToDelete] = useState(null);
+    console.log("sss:", disabledButtons);
+    const [idToDelete, setIdToDelete] = useState([]);
     const handleDelete = async (id) => {
         try {
             setDisabledButtons((prev) => [...prev, id]);
-            setIdToDelete(id);
+            setIdToDelete((prev) => [...prev, id]);
         } catch (error) {
             console.error("Error during delete setup:", error);
         }
@@ -204,6 +204,7 @@ function AdminCheckDialog({
                 auth_id: auth.user.id,
                 id_work_has: params.row.id,
                 info_warranties: data_info_warranty,
+                flag_warranty: 1,
             };
             const res = await fetch("api/web/update/check-admin", {
                 method: "POST",
@@ -438,6 +439,11 @@ function AdminCheckDialog({
                                         variant="outlined"
                                         color="green"
                                         className="px-1 py-1 mb-1"
+                                        disabled={
+                                            disabledButtons != ""
+                                                ? "disabled"
+                                                : ""
+                                        }
                                     >
                                         <PlusCircleIcon className="w-5 h-5" />
                                     </Button>
@@ -455,10 +461,15 @@ function AdminCheckDialog({
                                     <Button
                                         variant="gradient"
                                         color="green"
-                                        onClick={() =>
-                                            handleValueBh() &&
-                                            handleConfirmDelete()
-                                        }
+                                        onClick={() => {
+                                            if (disabledButtons != "") {
+                                                handleConfirmDelete();
+                                                console.log('cnbnjncss2322222');
+                                            } else {
+                                                handleValueBh();
+                                                console.log('cnbnjnc');
+                                            }
+                                        }}
                                     >
                                         <span>Xác Nhận</span>
                                     </Button>

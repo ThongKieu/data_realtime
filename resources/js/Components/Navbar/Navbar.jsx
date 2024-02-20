@@ -80,7 +80,6 @@ function ProfileMenu({ propauthprofile }) {
                 `api/web/noti/soket_noti?code=${code}`
             );
             const jsonData = await response.json();
-            console.log(jsonData);
             setNoti(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);

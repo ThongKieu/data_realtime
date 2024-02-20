@@ -178,7 +178,6 @@ function Dashboard({ auth }) {
                 auth_id: auth.user.id,
                 id_work_ass: id,
             };
-            console.log("XIN CHAO DATA ACTIVE:", data, "id xin chao:", id);
             const response = fetch("api/web/work-assignment/setActive", {
                 method: "POST",
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
@@ -229,7 +228,6 @@ function Dashboard({ auth }) {
         if (url || url != undefined || url != null || url != "") {
             try {
                 const response = await fetch(url);
-                console.log("xin choa fetchDataDemo", url);
                 const jsonData = await response.json();
                 return jsonData;
             } catch (error) {
@@ -244,7 +242,6 @@ function Dashboard({ auth }) {
     const fetchDateCheck = async (dateCheck) => {
         const url = `api/web/works?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
-        console.log(jsonData);
         if (jsonData) {
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
@@ -607,7 +604,6 @@ function Dashboard({ auth }) {
                 const handleSelectChange = (selectedValue) => {
                     setSelectPhanTho(selectedValue); // Cập nhật giá trị được chọn trong state
                 };
-                console.log(params.row);
                 // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
@@ -648,7 +644,11 @@ function Dashboard({ auth }) {
                     const originalData = params.row;
 
                     // Tạo bản sao của dữ liệu ban đầu và đặt ID thành null (hoặc một giá trị mới nếu cần)
-                    const duplicatedData = { ...originalData, id: null, work_content: params.row.work_content+ ' ' + '(copy)' };
+                    const duplicatedData = {
+                        ...originalData,
+                        id: null,
+                        work_content: params.row.work_content + " " + "(copy)",
+                    };
 
                     try {
                         const response = await fetch(host + url_API, {
@@ -835,9 +835,7 @@ function Dashboard({ auth }) {
                                                         return (
                                                             <tr key={index}>
                                                                 <td
-                                                                    className={
-                                                                        `${classes} w-[10px]`
-                                                                    }
+                                                                    className={`${classes} w-[10px]`}
                                                                 >
                                                                     <Typography
                                                                         variant="small"
@@ -848,9 +846,7 @@ function Dashboard({ auth }) {
                                                                     </Typography>
                                                                 </td>
                                                                 <td
-                                                                    className={
-                                                                        `${classes} w-[70px]`
-                                                                    }
+                                                                    className={`${classes} w-[70px]`}
                                                                 >
                                                                     <Typography
                                                                         variant="small"
@@ -878,9 +874,7 @@ function Dashboard({ auth }) {
                                                                     </Typography>
                                                                 </td>
                                                                 <td
-                                                                     className={
-                                                                        `${classes} w-[180px]`
-                                                                    }
+                                                                    className={`${classes} w-[180px]`}
                                                                 >
                                                                     <Typography
                                                                         variant="small"
@@ -1521,6 +1515,9 @@ function Dashboard({ auth }) {
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
+                        id_cus: params.row.id_cus,
+                        id_worker: params.row.id_worker,
+                        id_phu: params.row.id_phu,
                     };
                     if (valueRadio === "0") {
                         const image_Pt =
@@ -1750,7 +1747,6 @@ function Dashboard({ auth }) {
                                             className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
                                         />
                                     </Tooltip>
-
                                     <Tooltip
                                         content="Admin Check"
                                         animate={{

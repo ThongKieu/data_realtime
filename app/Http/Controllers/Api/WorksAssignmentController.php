@@ -32,7 +32,7 @@ class WorksAssignmentController extends Controller
 
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 0)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->orderBy('workers.worker_code', 'asc')
             ->get(
                 [
@@ -70,7 +70,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 1)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -107,7 +107,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 2)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -143,7 +143,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 3)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -179,7 +179,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 4)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -215,7 +215,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 5)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -251,7 +251,7 @@ class WorksAssignmentController extends Controller
             ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
             ->where('works_assignments.created_at', 'like', $today . '%')
             ->where('works.kind_work', '=', 6)
-            ->whereBetween('works_assignments.status_work', [0, 4])
+            ->whereBetween('works_assignments.status_work', [0, 3])
             ->get(
                 [
                     "works_assignments.id",
@@ -446,6 +446,19 @@ class WorksAssignmentController extends Controller
                 $note = 'Đã làm ngày : ' . $sub;
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+
+            //id_work, id_worker, id_phu
+           $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
+
+            $n = new WorksAssignment([
+                'id_cus' => $request->id_cus,
+                'id_worker' => $request->id_worker,
+                'id_phu' => $request->id_phu,
+                'real_note' => $note,
+                'created_at'=>$created_at,
+            ]);
+
+            $n->save();
             return response()->json('Update continue work !!!');
         } else {
             $id_cus = $request->id_cus;
@@ -548,8 +561,9 @@ class WorksAssignmentController extends Controller
                                 for ($i = 0; $i < count($a); $i++)
 
                                     {
-                                        Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                        Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
                                     }
+                                    return 'Sua thanh cong';
                             }
                             else{
                                 $n = count($request->info_warranties);
@@ -557,7 +571,7 @@ class WorksAssignmentController extends Controller
 
                                 for($i = 0; $i<$n; $i++)
                                 {
-                                //    if ($request->info_warranties[$i]['warranty_create']==1) {
+                                   if ($request->info_warranties[$i]['warranty_create']==1) {
                                     $new = new Warranties([
                                         'id_work_has' => $request->id_work_has,
                                         'warranty_time' => $request->info_warranties[$i]['warranty_time'],
@@ -565,9 +579,9 @@ class WorksAssignmentController extends Controller
                                         'unit' => $request->info_warranties[$i]['unit'],
                                     ]);
                                     $new->save();
-                                //    }else {
-                                //     Warranties::where('id', '=', $a[$i]['id_warranty'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
-                                //    }
+                                   }else {
+                                    Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                   }
                                 }
                             }
 

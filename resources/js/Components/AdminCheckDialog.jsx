@@ -80,6 +80,7 @@ function AdminCheckDialog({
             warranty_create: 0,
         },
     ]);
+    const [oldDataBH, setOldDataBH] = useState([]);
     const fetchDataBH = async (id) => {
         if (id || id != "undefined") {
             try {
@@ -95,17 +96,13 @@ function AdminCheckDialog({
                         unit: item.unit,
                     }));
                     setDataBH(formatJson);
+                    setOldDataBH(formatJson);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         }
     };
-    // useEffect(() => {
-    //     if (params.row.id) {
-    //         fetchDataBH(params.row.id);
-    //     }
-    // }, []);
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
 
@@ -128,7 +125,6 @@ function AdminCheckDialog({
             }
             return item;
         });
-        console.log('ddd',updatedData);
         setDataBH(updatedData);
     };
     const optionBH = [
@@ -192,43 +188,47 @@ function AdminCheckDialog({
             }
         }
     };
-    console.log(dataBH);
     const handleValueBh = async () => {
         try {
-            console.log('ddd',dataBH);
-            const data_info_warranty = dataBH.map((data) => ({
-                // ...data,
-                id_warranty: data.id,
-                warranty_time: data.warranty_time,
-                warranty_info: data.warranty_info,
-                unit: data.unit,
-                // warranty_create: 0
-            }));
-            console.log('ssssfff',data_info_warranty);
-            const dataBh = {
-                ac: 1,
-                auth_id: auth.user.id,
-                id_work_has: params.row.id,
-                info_warranties: data_info_warranty,
-            };
-            console.log(dataBh);
-            // const res = await fetch("api/web/update/check-admin", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify(dataBh),
-            // });
-            // if (res.ok) {
-            //     console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
-            //     handleOpenBH();
-            // } else {
-            //     console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            // }
+            if (oldDataBH !== "") {
+                const modifiedData = dataBH.map(item => {
+                    const matchingItem = oldDataBH.find(oldItem => oldItem.id === item.id);
+                    return matchingItem
+                        ? !Object.entries(item).every(([key, value]) => matchingItem[key] === value)
+                            ? { ...matchingItem, ...item, warranty_create: 0 } // Sửa
+                            : null
+                        : { ...item, warranty_create: 1 }; // Thêm mới
+                }).filter(Boolean);
+
+                const dataBh = {
+                    ac: 1,
+                    auth_id: auth.user.id,
+                    id_work_has: params.row.id,
+                    info_warranties: modifiedData,
+                };
+
+                console.log('dataBh:', dataBh);
+                const res = await fetch("api/web/update/check-admin", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(dataBh),
+                });
+
+                if (res.ok) {
+                    console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
+                    handleOpenBH();
+                } else {
+                    console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+                }
+            }
         } catch (error) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+
+
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
         const check_admin = {
@@ -372,9 +372,7 @@ function AdminCheckDialog({
                                                     type="number"
                                                     min="1"
                                                     max="30"
-                                                    value={
-                                                        item.warranty_time
-                                                    }
+                                                    value={item.warranty_time}
                                                     onChange={(e) =>
                                                         handleChangeBH(
                                                             e,
@@ -412,9 +410,7 @@ function AdminCheckDialog({
                                                     label="Nội Dung Bảo Hành"
                                                     id="warranty_info"
                                                     name="warranty_info"
-                                                    value={
-                                                        item.warranty_info
-                                                    }
+                                                    value={item.warranty_info}
                                                     onChange={(e) =>
                                                         handleChangeBH(
                                                             e,
@@ -469,10 +465,9 @@ function AdminCheckDialog({
                                         onClick={() => {
                                             if (disabledButtons != "") {
                                                 handleConfirmDelete();
-                                                setDisabledButtons('')
+                                                setDisabledButtons("");
                                             } else {
                                                 handleValueBh();
-
                                             }
                                         }}
                                     >

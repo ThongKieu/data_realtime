@@ -272,5 +272,10 @@ class WorkersController extends Controller
             return 'failed';
         }
     }
+    public function getNameCodeWorker(Request $request)
+    {
+        $nameCodeWorker = DB::table('workers')->get(['worker_code', 'worker_full_name']);
+        return $nameCodeWorker;
+    }
 
 }

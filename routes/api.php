@@ -117,6 +117,7 @@ Route::prefix('maps')->group(function(){
     Route::get('/','App\Http\Controllers\Api\MapsWorkerController@index');
     Route::post('/','App\Http\Controllers\Api\MapsWorkerController@create');
     Route::post('/{id}','App\Http\Controllers\Api\MapsWorkerController@update');
+    Route::get('/?id={id}','App\Http\Controllers\Api\MapsWorkerController@update');
 });
 // --------------------------------------------------------------------------//
 // Application

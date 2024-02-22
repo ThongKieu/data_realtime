@@ -111,7 +111,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('smsBrand', 'App\Http\Controllers\Api\OTPController@PushOtp');
 Route::get('getSmsBrand', 'App\Http\Controllers\Api\OTPController@GetSms');
-
+// --------------------------------------------------------------------------//
+//Maps
+Route::prefix('maps')->group(function(){
+    Route::get('/','App\Http\Controllers\Api\MapsWorkerController@index');
+    Route::post('/','App\Http\Controllers\Api\MapsWorkerController@create');
+    Route::post('/{id}','App\Http\Controllers\Api\MapsWorkerController@update');
+});
 // --------------------------------------------------------------------------//
 // Application
 Route::prefix('app')->group(function () {

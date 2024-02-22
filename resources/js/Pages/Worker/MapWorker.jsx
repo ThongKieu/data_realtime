@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import GoogleMapReact from "google-map-react";
 import { Tooltip } from "@material-tailwind/react";
+import { host } from "@/Utils/UrlApi";
 
 function MapWorker({ auth }) {
     const defaultProps = {
@@ -18,7 +19,7 @@ function MapWorker({ auth }) {
             <Tooltip content={text}>
                 <img
                     src={icon}
-                    alt=""
+                    alt={text}
                     className="inline-block relative object-cover object-center w-9 h-9 rounded-md border border-blue-500 p-0.56 bg-white "
                 />
             </Tooltip>
@@ -79,7 +80,7 @@ function MapWorker({ auth }) {
                             lat={i.lat}
                             lng={i.lng}
                             text={i.text}
-                            icon={"http://192.168.0.231/" + i.icon}
+                            icon={host + i.icon}
                         />
                     ))}
                 </GoogleMapReact>

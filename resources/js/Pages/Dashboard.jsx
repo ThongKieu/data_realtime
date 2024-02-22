@@ -123,7 +123,6 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
     useEffect(() => {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
@@ -149,10 +148,12 @@ function Dashboard({ auth }) {
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
             if (isDisabled === true && id) {
                 fetchActive(id, 2);
-            } else {
+            } else if (isDisabled === false && id) {
+                fetchActive(id, 1);
+            } else if (isDisabled === false && id){
                 fetchActive(id, 1);
             }
-            console.log("id socket", id);
+            console.log("id socket", id,isDisabled);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
         });
@@ -163,7 +164,6 @@ function Dashboard({ auth }) {
             });
         };
         window.addEventListener("resize", handleResize);
-        //newSocket.connect();
         return () => {
             window.removeEventListener("resize", handleResize);
             newSocket.off("ButtonDisable_From_Server");
@@ -187,7 +187,6 @@ function Dashboard({ auth }) {
             });
             if (response.status == 200) {
                 socketD.emit("ButtonDisable_To_Server", data);
-                console.log(response);
             }
         } catch (error) {
             console.log("push on Loi", error);
@@ -1312,12 +1311,10 @@ function Dashboard({ auth }) {
                         "openHuy"
                     );
                 };
-
                 const handleOpenKSWithDisable = (rowId) => {
                     rowId = params.row.id;
                     handleButtonAction(rowId, openKS, handleOpenKS, "openKS");
                 };
-
                 const handleOpenThuHoiWithDisable = (rowId) => {
                     rowId = params.row.id;
                     handleButtonAction(
@@ -1327,7 +1324,6 @@ function Dashboard({ auth }) {
                         "openThuHoi"
                     );
                 };
-
                 const handleOpenAdminCheckWithDisable = (rowId) => {
                     rowId = params.row.id;
                     handleButtonAction(

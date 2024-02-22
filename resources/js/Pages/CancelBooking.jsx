@@ -16,6 +16,7 @@ import { UserPlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import newSocket from "@/Utils/Socket";
+import { getFormattedToday } from "@/Data/UrlAPI/UrlApi";
 const columns = [
     {
         field: "work_content",
@@ -156,17 +157,18 @@ const columns = [
 ];
 function CancelBooking({ auth }) {
     const [deleteBooking, setDeleteBooking] = useState([]);
-    console.log("deleteBooking", deleteBooking);
     const [socketDelete, setSocketDelete] = useState("");
+
     useEffect(() => {
-        setSocketDelete(newSocket, { secure: true });
+        fetchDelete();
+        console.log(deleteBooking);
         newSocket.on("sendAddWorkTo_Client", (data) => {
             fetchDelete(data);
         });
         // lắng nghe server
-        return () => {
-            newSocket.disconnect();
-        };
+        // return () => {
+        //     newSocket.disconnect();
+        // };
     }, []);
     const fetchDelete = async () => {
         try {
@@ -182,13 +184,30 @@ function CancelBooking({ auth }) {
         height: window.innerHeight - 180,
     });
     var heightScreenTV = screenSize.height;
+    // Sử dụng useState để lưu trữ giá trị của input date
+    const [todayBook, setTodayBook] = useState("");
+
+    // Hàm xử lý sự kiện khi giá trị của input thay đổi
+    const handleDateChange = (event) => {
+        setTodayBook(event.target.value);
+    };
     return (
-        <AuthenticatedLayout children={auth.user} user={auth.user}>
+        <AuthenticatedLayout
+            children={auth.user}
+            user={auth.user}
+            checkDate={todayBook}
+        >
             <Head title="Trang Chủ" />
             <Card className="grid w-full grid-flow-col pl-2 mt-1 overflow-scroll text-white rounded-none">
                 <div>
                     <Typography className="p-1 font-bold text-center bg-red-500 rounded-sm shadow-lg text-medium">
-                        Lịch Hủy
+                        <span>Lịch Hủy</span>
+                        <input
+                            type="date"
+                            className="hidden"
+                            value={todayBook}
+                            onChange={handleDateChange}
+                        />
                     </Typography>
                     {/* bang ben trai  */}
                     <Box sx={{ width: 1, height: heightScreenTV }}>

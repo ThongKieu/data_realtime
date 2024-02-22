@@ -1272,8 +1272,6 @@ function Dashboard({ auth }) {
                         id: rowId,
                         isDisabled,
                     });
-                    console.log("rowId:", rowId);
-                    console.log(isDisabled);
                     switch (actionType) {
                         case "openSpendingTotal":
                             handleOpenFunction(!isOpenState);
@@ -1313,13 +1311,11 @@ function Dashboard({ auth }) {
                         handleOpenHuy,
                         "openHuy"
                     );
-                    console.log("xin chao openHuy");
                 };
 
                 const handleOpenKSWithDisable = (rowId) => {
                     rowId = params.row.id;
                     handleButtonAction(rowId, openKS, handleOpenKS, "openKS");
-                    console.log("xin chao openKS");
                 };
 
                 const handleOpenThuHoiWithDisable = (rowId) => {
@@ -1330,7 +1326,6 @@ function Dashboard({ auth }) {
                         handleOpenThuHoi,
                         "openThuHoi"
                     );
-                    console.log("xin chao openThuHoi");
                 };
 
                 const handleOpenAdminCheckWithDisable = (rowId) => {
@@ -1341,7 +1336,6 @@ function Dashboard({ auth }) {
                         handleOpenAdminCheck,
                         "openAdminCheck"
                     );
-                    console.log("xin chao openAdminCheck");
                 };
                 const handleSentDeleteDone = async () => {
                     try {
@@ -1362,11 +1356,15 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            socketD.emit(
+                                "addWorkTo_Server",
+                                "Xóa lịch đã phân"
+                            );
                             handleOpen();
                         }
                     } catch (error) {}
                 };
+                const [selectedFilesKS, setSelectedFilesKS] = useState([]);
                 const handleSentKS = async () => {
                     try {
                         let data = {
@@ -1374,7 +1372,9 @@ function Dashboard({ auth }) {
                             id_cus: params.row.id_cus,
                             real_note: params.row.real_note,
                             auth_id: auth.user.id,
+                            image_work_path: selectedFilesKS,
                         };
+                        console.log("data khao sat:", data);
                         const response = await fetch(
                             "api/web/update/work-assignment-quote",
                             {
@@ -1386,8 +1386,9 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "xoalichDone");
+                            socketD.emit("addWorkTo_Server", "Khảo sát");
                             handleOpen();
+                            handleOpenKSWithDisable();
                         }
                     } catch (error) {}
                 };
@@ -1397,6 +1398,7 @@ function Dashboard({ auth }) {
                 // const [selectedFiles, setSelectedFiles] = useState([]);
                 const [selectedFilesPT, setSelectedFilesPT] = useState([]);
                 const [selectedFilesVT, setSelectedFilesVT] = useState([]);
+
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
                 const [previewImgKS, setPreviewImgKS] = useState([]);
@@ -1585,7 +1587,10 @@ function Dashboard({ auth }) {
                 const check_admin = params.row.status_admin_check == 1;
                 const spending = params.row.spending_total;
                 const income = params.row.income_total;
-                const DK1 = auth.user.permission != 1 ? "hidden" : "";
+                const DK1 =
+                    auth.user.permission != 1 && auth.user.permission != 0
+                        ? "hidden"
+                        : "";
                 const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
@@ -1711,7 +1716,19 @@ function Dashboard({ auth }) {
                                         />
                                     </Tooltip>
                                 </>
-                            ) : params.row.status_work != 1 ? (
+                            ) : params.row.status_work == 1 ? (
+                                <p
+                                    className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                >
+                                    Mai Làm Tiếp
+                                </p>
+                            ) : params.row.status_work == 3 ? (
+                                <p
+                                    className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                >
+                                    Khảo Sát
+                                </p>
+                            ) : (
                                 <>
                                     <Tooltip
                                         content="Nhập Thu Chi"
@@ -1821,6 +1838,16 @@ function Dashboard({ auth }) {
                                             <MenuItem className="p-0 w-fit">
                                                 <Tooltip
                                                     content="Khảo Sát"
+                                                    position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                    arrowSize={10} // Đặt kích thước mũi tên của Tooltip
+                                                    padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
+                                                    distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
+                                                    tagName="div" // Đặt loại thẻ sẽ được sử dụng cho Tooltip (mặc định là 'span')
+                                                    className="custom-tooltip" // Đặt class cho Tooltip để tùy chỉnh kiểu dáng
+                                                    contentStyle={{
+                                                        backgroundColor: "red",
+                                                        color: "white",
+                                                    }}
                                                     animate={{
                                                         mount: {
                                                             scale: 1,
@@ -1843,10 +1870,6 @@ function Dashboard({ auth }) {
                                         </MenuList>
                                     </Menu>
                                 </>
-                            ) : (
-                                <p className="p-1 text-blue-500 border border-blue-500 rounded-sm">
-                                    Mai Làm Tiếp
-                                </p>
                             )}
                         </div>
                         {/* ----------------ADMIN CHECK ------------ */}
@@ -1918,7 +1941,11 @@ function Dashboard({ auth }) {
                             vatCard={vatCard}
                             disabledAllowed={isAllowed}
                             handleFileChange={(e) =>
-                                handleFileChange(e, setPreviewImgKS)
+                                handleFileChange(
+                                    e,
+                                    setPreviewImgKS,
+                                    setSelectedFilesKS
+                                )
                             }
                             previewImages={previewImgKS}
                         />

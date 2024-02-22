@@ -15,11 +15,11 @@ return new class extends Migration
             $table->increments('id');
             $table ->integer('id_worker');
             $table ->string('lat')->nullable();
-            $table ->string('log')->nullable();
+            $table ->string('lng')->nullable();
             $table->string('last_active')->nullable();
-            $table->tinyInteger('is_online')->nullable();
+            $table->tinyInteger('is_online');
             $table->timestamps();
-        });
+        }); 
     }
 
     /**

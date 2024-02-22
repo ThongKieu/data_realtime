@@ -49,5 +49,20 @@ class MapsWorkerController extends Controller
             return 'Fail Update Local - 401';
         }
     }
-    
+    public function getOneWorker($id) {
+        
+        $da = MapsWorker::where('id_worker','=',$id)->get();
+
+        if($da)
+        {
+            
+             return response()->json($da);
+
+        }
+        else
+        {
+            return (' Không có thông');
+        }
+
+    }
 }

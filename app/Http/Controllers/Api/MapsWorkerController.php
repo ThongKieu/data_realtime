@@ -53,7 +53,7 @@ class MapsWorkerController extends Controller
         
         $da = MapsWorker::where('id_worker','=',$id)->get();
 
-        if($da)
+        if(count($da) == 1)
         {
             
              return response()->json($da);
@@ -61,7 +61,7 @@ class MapsWorkerController extends Controller
         }
         else
         {
-            return (' Không có thông');
+            return (' Không có thông tin !!!!!!');
         }
 
     }

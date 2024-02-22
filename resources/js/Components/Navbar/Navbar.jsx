@@ -77,7 +77,7 @@ function ProfileMenu({ propauthprofile }) {
         try {
             let code = propauthprofile.code;
             const response = await fetch(
-                `api/web/noti/soket_noti?code=${code}`
+                host+`api/web/noti/soket_noti?code=${code}`
             );
             const jsonData = await response.json();
             setNoti(jsonData);
@@ -375,31 +375,30 @@ function NavbarDefault({ propauth, check }) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     const [socketDelete, setSocketDelete] = useState();
+    const [countDelete, setCountDelete] = useState(0);
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
         window.addEventListener(
             "resize",
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
+        fetchDelete();
         fetchInfoWorker();
-        // fetchDelete();
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
             }
         });
-        // return () => {
-        //     newSocket.disconnect();
-        // };
     }, [check]);
-    const [countDelete, setCountDelete] = useState(0);
 
+    console.log(countDelete);
     const fetchDelete = async () => {
         try {
             const response = await fetch(
-                `api/web/cancle/works?dateCheck=${check}`
+                host+`api/web/cancle/works?dateCheck=${check}`
             );
             const jsonData = await response.json();
+            console.log('jsonData',jsonData.num_can, check);
             setCountDelete(jsonData.num_can);
             if (socketDelete) {
                 socketDelete.emit("addWorkTo_Server", jsonData.num_can);

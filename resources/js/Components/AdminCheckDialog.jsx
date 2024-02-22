@@ -191,14 +191,24 @@ function AdminCheckDialog({
     const handleValueBh = async () => {
         try {
             if (oldDataBH !== "") {
-                const modifiedData = dataBH.map(item => {
-                    const matchingItem = oldDataBH.find(oldItem => oldItem.id === item.id);
-                    return matchingItem
-                        ? !Object.entries(item).every(([key, value]) => matchingItem[key] === value)
-                            ? { ...matchingItem, ...item, warranty_create: 0 } // Sửa
-                            : null
-                        : { ...item, warranty_create: 1 }; // Thêm mới
-                }).filter(Boolean);
+                const modifiedData = dataBH
+                    .map((item) => {
+                        const matchingItem = oldDataBH.find(
+                            (oldItem) => oldItem.id === item.id
+                        );
+                        return matchingItem
+                            ? !Object.entries(item).every(
+                                  ([key, value]) => matchingItem[key] === value
+                              )
+                                ? {
+                                      ...matchingItem,
+                                      ...item,
+                                      warranty_create: 0,
+                                  } // Sửa
+                                : null
+                            : { ...item, warranty_create: 1 }; // Thêm mới
+                    })
+                    .filter(Boolean);
 
                 const dataBh = {
                     ac: 1,
@@ -207,7 +217,7 @@ function AdminCheckDialog({
                     info_warranties: modifiedData,
                 };
 
-                console.log('dataBh:', dataBh);
+                console.log("dataBh:", dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {
@@ -227,8 +237,6 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-
-
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
         const check_admin = {
@@ -750,25 +758,43 @@ function AdminCheckDialog({
                 </form>
             </DialogBody>
             {/* <Divider className="pt-2" /> */}
-            <div className="flex flex-row justify-center py-2">
-                <Typography className="font-medium text-red-700">
-                    (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác Nhận!!
-                </Typography>
-                <Button
-                    size="sm"
-                    className="px-3 py-2 mx-4 shadow-none"
-                    variant="outlined"
-                    onClick={handleUpdateStatusCheckAdmin}
-                    disabled={
-                        params.row.income_total !== 0 ||
-                        params.row.status_work === 6
-                            ? ""
-                            : "disabled"
-                    }
-                >
-                    Xác Nhận Thông Tin
-                </Button>
-            </div>
+            {auth.user.permission == 1 || auth.user.permission == 0 ? (
+                <div className="flex flex-row justify-center py-2">
+                    <Typography className="font-medium text-red-700">
+                        (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác
+                        Nhận!!
+                    </Typography>
+                    <Button
+                        size="sm"
+                        className="px-3 py-2 mx-4 shadow-none"
+                        variant="outlined"
+                        onClick={handleUpdateStatusCheckAdmin}
+                    >
+                        Xác Nhận Thông Tin
+                    </Button>
+                </div>
+            ) : (
+                <div className="flex flex-row justify-center py-2">
+                    <Typography className="font-medium text-red-700">
+                        (*_*)Vui Lòng Kiểm Tra Thông Tin Lại Trước Khi Xác
+                        Nhận!!
+                    </Typography>
+                    <Button
+                        size="sm"
+                        className="px-3 py-2 mx-4 shadow-none"
+                        variant="outlined"
+                        onClick={handleUpdateStatusCheckAdmin}
+                        disabled={
+                            params.row.income_total !== 0 ||
+                            params.row.status_work === 6
+                                ? ""
+                                : "disabled"
+                        }
+                    >
+                        Xác Nhận Thông Tin
+                    </Button>
+                </div>
+            )}
         </Dialog>
     );
 }

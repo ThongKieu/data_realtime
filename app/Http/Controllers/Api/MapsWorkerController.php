@@ -29,8 +29,8 @@ class MapsWorkerController extends Controller
             ]);
             $n -> save();
 
-            return 'Create Local Done'; 
-        }          
+            return 'Create Local Done';
+        }
         else
         {
             return 'Fail Create Local - 401';
@@ -41,23 +41,23 @@ class MapsWorkerController extends Controller
         if(isset($request->id_worker) || $request->id_worker != null )
         {
             MapsWorker::where('id_worker','=',$request->id_worker)->update([  'lat'=>$request->lat,'lng'=>$request->lng, 'last_active'=>$request->last_active,'is_online' => 1]);
-           
-            return 'Update Local Done'; 
-        }          
+
+            return 'Update Local Done';
+        }
         else
         {
             return 'Fail Update Local - 401';
         }
     }
-    public function getOneWorker($id) {
-        
-        $da = MapsWorker::where('id_worker','=',$id)->get();
+    public function getOneWorker(Request $request) {
+
+        $da = MapsWorker::where('id_worker','=',$request->id)->get();
 
         if(count($da) == 1)
         {
-            
-             return response()->json($da);
 
+            //  return response()->json($da);
+             return response()->json(['data'=>$da]);
         }
         else
         {

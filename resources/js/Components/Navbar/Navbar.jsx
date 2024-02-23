@@ -77,7 +77,7 @@ function ProfileMenu({ propauthprofile }) {
         try {
             let code = propauthprofile.code;
             const response = await fetch(
-                host+`api/web/noti/soket_noti?code=${code}`
+                host + `api/web/noti/soket_noti?code=${code}`
             );
             const jsonData = await response.json();
             setNoti(jsonData);
@@ -155,7 +155,6 @@ function ProfileMenu({ propauthprofile }) {
             <NavLink
                 href={route("notice")}
                 className="relative ml-2 font-medium cursor-pointer"
-
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -395,10 +394,10 @@ function NavbarDefault({ propauth, check }) {
     const fetchDelete = async () => {
         try {
             const response = await fetch(
-                host+`api/web/cancle/works?dateCheck=${check}`
+                host + `api/web/cancle/works?dateCheck=${check}`
             );
             const jsonData = await response.json();
-            console.log('jsonData',jsonData.num_can, check);
+            console.log("jsonData", jsonData.num_can, check);
             setCountDelete(jsonData.num_can);
             if (socketDelete) {
                 socketDelete.emit("addWorkTo_Server", jsonData.num_can);
@@ -414,7 +413,12 @@ function NavbarDefault({ propauth, check }) {
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label: "(" + item.worker_code + ')' + " " + getFirstName(item.worker_full_name),
+                label:
+                    "(" +
+                    item.worker_code +
+                    ")" +
+                    " " +
+                    getFirstName(item.worker_full_name),
                 workerCode: item.worker_code,
                 workerStatus: item.worker_status,
             }));
@@ -434,29 +438,32 @@ function NavbarDefault({ propauth, check }) {
         { code: "H", name: "Cơ Khí" },
         { code: "F", name: "Xây Dựng" },
     ];
-    const renderWorkerGroup = (prefix, status) => (
-        <div className="w-full p-1" key={`${prefix}-${status}`}>
-            <p className="border-b-[3px] border-b-blue-500 text-center w-full">
-                {
-                    jobCategories.find((category) => category.code === prefix)
-                        ?.name
-                }
-            </p>
+    const renderWorkerGroup = (prefix, status) => {
+        return (
+            <div className="w-full p-1" key={`${prefix}-${status}`}>
+                <p className="border-b-[3px] border-b-blue-500 text-center w-full">
+                    {
+                        jobCategories.find(
+                            (category) => category.code === prefix
+                        )?.name
+                    }
+                </p>
 
-            {infoWorker.map(
-                (item, index) =>
-                    item.workerCode.startsWith(prefix) &&
-                    item.workerStatus === status && (
-                        <div className="w-full pb-1" key={index}>
-                            <p className="p-1 text-sm border border-green-500">
-                                {item.label}
-                            </p>
-                        </div>
-                    )
-            )}
-        </div>
-    );
-    const [openWorker, setOpenWorker] = React.useState(false);
+                {infoWorker.map(
+                    (item, index) =>
+                        item.workerCode.startsWith(prefix) &&
+                        item.workerStatus === status && (
+                            <div className="w-full pb-1" key={index}>
+                                <p className="p-1 text-sm border border-green-500">
+                                    {item.label}
+                                </p>
+                            </div>
+                        )
+                )}
+            </div>
+        );
+    };
+    const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
     const [screenSize] = useState({
         width: window.innerWidth,

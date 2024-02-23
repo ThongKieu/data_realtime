@@ -129,3 +129,7 @@
 .MuiBox-root>div{
     border:none;
 }
+.customIMG img{
+    border: none !important;
+    background: none;
+}

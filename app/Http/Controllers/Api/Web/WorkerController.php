@@ -7,7 +7,8 @@ use App\Imports\WorkerImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Worker;
-
+use App\Models\AccountionWorker;
+use Carbon\Carbon;
 class WorkerController extends Controller
 {
     public function importDataWorker(Request $request)
@@ -22,8 +23,15 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $worker = Worker::all();
-        return response()->json(Worker::where('id','>',0)->where('worker_kind','!=',9) );
+        $workers = Worker::where('worker_kind', '!=', 9)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_family']);
+        $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
+        foreach ($workers as $worker) {
+            $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');
+            $startTime = Carbon::create($last_active);
+            $diff = $startTime->diff($now);
+            $worker->last_active = $diff;
+        }
+        return response()->json($workers);
     }
     public function getWorkerWithType()
     {

@@ -57,6 +57,7 @@ function MapWorker({ auth }) {
                 workerCode: item.worker_code,
                 onLeave: item.worker_status,
             }));
+            formatJson.sort((a, b) =>a.onLeave - b.onLeave );
             setInfoWorkerMaps(formatJson);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -72,16 +73,17 @@ function MapWorker({ auth }) {
         }
     };
     console.log("local worker", localWorker);
-    useEffect(() => {
-        localWorkerMaps();
-        fetchInfoWorker();
-        const handleResize = () => {
-            setScreenSize({
-                width: window.innerWidth,
-                height: window.innerHeight - 100,
-            });
-        };
-        window.addEventListener("resize", handleResize);
+    const handleSearchLocalWorker = async (id_worker) => {
+        try {
+            const response = await fetch(host + `api/worker?id=${id_worker}`);
+            const jsonData = await response.json();
+            setLocalWorker(jsonData.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const handleViewLocalWorker = (infoWorkerMaps, localWorker) => {
         const tempResultArray = [];
         // Tạo một đối tượng để nhanh chóng kiểm tra id_worker có tồn tại trong localWorker hay không
         const localWorkerIds = new Set(
@@ -110,6 +112,18 @@ function MapWorker({ auth }) {
         }
         // Cập nhật state với mảng kết quả
         setResultArrayMaps(tempResultArray);
+    };
+    useEffect(() => {
+        localWorkerMaps();
+        fetchInfoWorker();
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        window.addEventListener("resize", handleResize);
+        handleViewLocalWorker(infoWorkerMaps, localWorker);
         return () => {
             window.removeEventListener("resize", handleResize);
         };
@@ -131,7 +145,11 @@ function MapWorker({ auth }) {
                                 label="Tìm theo tên hoặc mã thợ"
                                 className="shadow-none focus:outline-none"
                             />
-                            <Button variant="outlined" color="green">
+                            <Button
+                                variant="outlined"
+                                color="green"
+                                onClick={() => handleSearchLocalWorker()}
+                            >
                                 Xem
                             </Button>
                         </Typography>
@@ -141,12 +159,13 @@ function MapWorker({ auth }) {
                         >
                             {/* Danh sach tho  */}
                             {infoWorkerMaps.map((item, index) => {
+                                console.log(item);
                                 return (
                                     <div
                                         key={index}
                                         className="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700"
                                     >
-                                        <Tooltip content={item.created_at}>
+                                        <Tooltip content={`test`}>
                                             {/* tài khoản đang đươc xem thì active bằng bg-gray-300 */}
                                             <div
                                                 role="button"
@@ -169,7 +188,17 @@ function MapWorker({ auth }) {
                             })}
                         </CardBody>
                         <CardFooter className="w-full p-0 mt-1">
-                            <Button className="w-full">Xem Tất Cả</Button>
+                            <Button
+                                className="w-full"
+                                onClick={() =>
+                                    handleViewLocalWorker(
+                                        infoWorkerMaps,
+                                        localWorker
+                                    )
+                                }
+                            >
+                                Xem Tất Cả
+                            </Button>
                         </CardFooter>
                     </Card>
                 </div>

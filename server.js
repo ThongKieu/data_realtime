@@ -44,16 +44,11 @@ io.on("connection", (socket) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
     socket.on("sentLocalToServer", async (data) => {
+        console.log(data);
         io.sockets.emit("getLocalFormServer", data);
     });
     // // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', (id) => {
-        // app.post('/api/web/disconnect', () => {
-        //     // Xử lý logic API ở đây
-        //     // res.json({ message: 'API response' });
-        //     console.log('đã run api!');
-        //   });
-
         console.log('User disconnected:',socket.id);
       });
     // socket.on("disconnect", () => {

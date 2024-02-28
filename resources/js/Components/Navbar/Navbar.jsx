@@ -104,6 +104,7 @@ function ProfileMenu({ propauthprofile }) {
         }
     };
     // fetchNoti();
+
     numberOnline();
     useEffect(() => {
         fetchNoti();

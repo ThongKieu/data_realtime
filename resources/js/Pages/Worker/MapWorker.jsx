@@ -34,8 +34,9 @@ function MapWorker({ auth }) {
             lng: 106.7122688,
         },
         icon: "assets/avatar/avata1.png",
-        zoom: 15,
+        zoom: 12,
     };
+
     const AnyReactComponent = ({ text, icon }) => (
         <>
             <Tooltip content={text}>
@@ -82,6 +83,37 @@ function MapWorker({ auth }) {
             filterLocalWorker(id);
         }
     };
+    const handleSearchLocalWorker = () => {
+        // Gọi hàm với một giá trị id cụ thể
+        const lat = 10.8197569;
+        const lng = 106.6712165;
+
+        const data = {
+            id: 60,
+            new_id_worker: 1,
+            lat: lat + 0.01,
+            lng: lng + 0.01,
+        };
+        newSocket.emit("sentLocalToServer", data);
+    };
+    const [localOne, setLocalOne] = useState([]);
+    useEffect(() => {
+        newSocket.on("getLocalFormServer", (data) => {
+            if (data || data != undefined) {
+                console.log(data.new_id_worker);
+                setLocalOne(data);
+                // const oneLocal = localWorkerMaps.find(
+                //     (localID) => localID.id_worker == data.new_id_worker
+                // );
+                // if (oneLocal) {
+                //     console.log("user:", oneLocal);
+                //     // Thực hiện thay đổi dữ liệu trong phần tử đã tìm thấy
+                //     setLocalOne(data);
+                // }
+            }
+        });
+    }, []);
+    console.log(localOne, localWorkerMaps);
     // useEffect cho handleResize
     useEffect(() => {
         const handleResize = () => {
@@ -118,13 +150,13 @@ function MapWorker({ auth }) {
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
-                            {/* <Button
+                            <Button
                                 variant="outlined"
                                 color="green"
                                 onClick={() => handleSearchLocalWorker()}
                             >
                                 Xem
-                            </Button> */}
+                            </Button>
                         </Typography>
                         <CardBody
                             className="relative flex flex-col w-full p-0 mt-1 overflow-scroll text-gray-700 bg-white border border-green-500 rounded-none shadow-md bg-clip-border"

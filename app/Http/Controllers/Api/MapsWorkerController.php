@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\MapsWorker;
 use Illuminate\Auth\Events\Validated;
 
@@ -12,7 +13,18 @@ class MapsWorkerController extends Controller
     //
     public function index()
     {
-        $da_maps = MapsWorker::all();
+        $da_maps = DB::table('maps_workers')->join('workers','maps_workers.id_worker','=','workers.id')->get(
+            [
+            "maps_workers.id",
+            "id_worker",
+            "lat",
+            "lng",
+            "last_active",
+            "is_online",
+            "worker_full_name",
+            "worker_code","worker_status","worker_phone_company"
+        ]
+    );
 
         return response()->json(['data'=>$da_maps]);
     }

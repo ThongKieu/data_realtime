@@ -43,6 +43,9 @@ io.on("connection", (socket) => {
     socket.on("returnWorkWebToServer", async (data) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
+    socket.on("sentLocalToServer", async (data) => {
+        io.sockets.emit("getLocalFormServer", data);
+    });
     // // Xử lý sự kiện khi máy khách ngắt kết nối
     socket.on('disconnect', (id) => {
         // app.post('/api/web/disconnect', () => {

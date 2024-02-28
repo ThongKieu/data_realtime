@@ -327,20 +327,20 @@ function NavList({ active = false }) {
                         Thông Tin Thợ
                     </Typography>
                 </MenuHandler>
-                <MenuList className="block">
-                    <NavLink
-                        href={route("locationWorker")}
+                <MenuList>
+                    <a
+                        href={`${host}workers/vi-tri-tho`}
                         className="font-normal"
                     >
                         <MenuItem className="gap-2 text-black lg:rounded-full">
                             Vị trí Thợ
                         </MenuItem>
-                    </NavLink>
-                    <NavLink href={route("WorkerMain")} className="font-normal">
+                    </a>
+                    <a  href={`${host}workers`} className="font-normal">
                         <MenuItem className="gap-2 text-black lg:rounded-full">
                             Thông Tin Thợ
                         </MenuItem>
-                    </NavLink>
+                    </a>
                 </MenuList>
             </Menu>
             <ListBulletIcon className="h-[18px] w-[18px] " />
@@ -389,15 +389,12 @@ function NavbarDefault({ propauth, check }) {
             }
         });
     }, [check]);
-
-    console.log(countDelete);
     const fetchDelete = async () => {
         try {
             const response = await fetch(
                 host + `api/web/cancle/works?dateCheck=${check}`
             );
             const jsonData = await response.json();
-            console.log("jsonData", jsonData.num_can, check);
             setCountDelete(jsonData.num_can);
             if (socketDelete) {
                 socketDelete.emit("addWorkTo_Server", jsonData.num_can);

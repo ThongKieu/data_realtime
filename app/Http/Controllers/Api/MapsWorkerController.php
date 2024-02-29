@@ -77,4 +77,9 @@ class MapsWorkerController extends Controller
         }
 
     }
+    public static function updateDismissal($id)
+    {
+        MapsWorker::where('id_worker','=',$id)->update(['is_online'=>2]);
+        return 1;
+    }
 }

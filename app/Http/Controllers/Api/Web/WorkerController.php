@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Web;
 
+use App\Http\Controllers\Api\MapsWorkerController;
 use App\Http\Controllers\Controller;
 use App\Imports\WorkerImport;
 use Illuminate\Http\Request;
@@ -54,4 +55,34 @@ class WorkerController extends Controller
     {
 
     }
+    public function updateWorker(Request $re)
+    {
+        $action = $re->action;
+        //    dd($re->all());
+        switch ($action) {
+            case 'status_change_worker':
+                // dd($re->id);
+                Worker::where('id', '=', $re->id)->update(['worker_status' => $re->status]);
+                if($re->status == 2)
+                {
+                    MapsWorkerController::updateDismissal($re->id);
+                }
+                return response()->json('Change Status');
+            case 'avatar_change_worker':
+                if ($re->hasFile('avatar_new')) {
+                    $file = $re->file('avatar_new');
+                    $name = $re->sort_name . '-' . time() . '.' . $file->extension();
+                    $file->move('assets/avatar/', $name);
+                    $path = 'assets/avatar/' . $name;
+                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avatar' => $path]);
+                }
+                return response()->json(['data' => 'Change Avatar']);
+            case 'phone_change_worker':
+                Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
+                return response()->json(['data' => 'Change Phone']);
+            default:
+                return response()->json(['data' => 'Lỗi cập nhật']);
+        }
+    }
+
 }

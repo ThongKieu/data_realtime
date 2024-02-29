@@ -12,16 +12,31 @@ import {
     Typography,
 } from "@material-tailwind/react";
 import { host } from "@/Utils/UrlApi";
+import newSocket from "@/Utils/Socket";
 
 function MapWorker({ auth }) {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [localOneWorkerMaps, setLocalOneWorkerMaps] = useState([]);
+    const [localWorkerMaps, setLocalWorkerMaps] = useState([]);
+    const [searchResults, setSearchResults] = useState(localWorkerMaps);
+    const fetchLocalWorkerMaps = async (e) => {
+        try {
+            const response = await fetch(host + "api/maps");
+            const jsonData = await response.json();
+            setLocalWorkerMaps(jsonData.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     const defaultProps = {
         center: {
             lat: 10.8199936,
             lng: 106.7122688,
         },
         icon: "assets/avatar/avata1.png",
-        zoom: 15,
+        zoom: 12,
     };
+
     const AnyReactComponent = ({ text, icon }) => (
         <>
             <Tooltip content={text}>
@@ -38,84 +53,69 @@ function MapWorker({ auth }) {
         width: window.innerWidth,
         height: window.innerHeight - 100,
     });
-    const [infoWorkerMaps, setInfoWorkerMaps] = useState([]);
-    const [localWorker, setLocalWorker] = useState([]);
-    const [resultArrayMaps, setResultArrayMaps] = useState([]);
+    const handleViewLocalWorker = async () => {
+        fetchLocalWorkerMaps();
+    };
+    const filterLocalWorker = (itemLocal) => {
+        if (itemLocal || itemLocal != undefined) {
+            const filteredResults = localWorkerMaps.filter(
+                (item) =>
+                    item.worker_full_name
+                        .toLowerCase()
+                        .includes(itemLocal.toLowerCase()) ||
+                    item.worker_code
+                        .toLowerCase()
+                        .includes(itemLocal.toLowerCase()) ||
+                    item.worker_phone_company.includes(itemLocal)
+            );
+            setSearchResults(filteredResults);
+        }
+    };
+    const handleSearch = (event) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+        // Lọc kết quả từ mảng ban đầu dựa trên giá trị nhập
+        filterLocalWorker(term);
+    };
+    const handleLocalOneWorker = (id) => {
+        // Gọi hàm với một giá trị id cụ thể
+        if (id || id != undefined || id != "" || id != null) {
+            filterLocalWorker(id);
+        }
+    };
+    const handleSearchLocalWorker = () => {
+        // Gọi hàm với một giá trị id cụ thể
+        const lat = 10.8197569;
+        const lng = 106.6712165;
 
-    const fetchInfoWorker = async (e) => {
-        try {
-            const response = await fetch(host + "api/web/workers");
-            const jsonData = await response.json();
-            const formatJson = jsonData.map((item) => ({
-                value: item.id,
-                label:
-                    "(" +
-                    item.worker_code +
-                    ")" +
-                    " - " +
-                    item.worker_full_name,
-                workerCode: item.worker_code,
-                onLeave: item.worker_status,
-            }));
-            formatJson.sort((a, b) =>a.onLeave - b.onLeave );
-            setInfoWorkerMaps(formatJson);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+        const data = {
+            id: 60,
+            new_id_worker: 1,
+            lat: lat + 0.01,
+            lng: lng + 0.01,
+        };
+        newSocket.emit("sentLocalToServer", data);
     };
-    const localWorkerMaps = async (e) => {
-        try {
-            const response = await fetch(host + "api/maps");
-            const jsonData = await response.json();
-            setLocalWorker(jsonData.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    console.log("local worker", localWorker);
-    const handleSearchLocalWorker = async (id_worker) => {
-        try {
-            const response = await fetch(host + `api/worker?id=${id_worker}`);
-            const jsonData = await response.json();
-            setLocalWorker(jsonData.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-    const handleViewLocalWorker = (infoWorkerMaps, localWorker) => {
-        const tempResultArray = [];
-        // Tạo một đối tượng để nhanh chóng kiểm tra id_worker có tồn tại trong localWorker hay không
-        const localWorkerIds = new Set(
-            localWorker.map((item) => item.id_worker)
-        );
-        // Duyệt qua từng phần tử của array1
-        for (const item1 of infoWorkerMaps) {
-            // Kiểm tra xem id_worker có tồn tại trong localWorker không
-            if (localWorkerIds.has(item1.value)) {
-                // Nếu có, tìm phần tử trong localWorker tương ứng với id_worker
-                const matchingItem = localWorker.find(
-                    (item2) => item2.id_worker === item1.value
-                );
-                console.log("matchingItem", matchingItem);
-                // Tạo đối tượng mới và thêm vào mảng kết quả
-                const resultItem = {
-                    id_worker_info: item1.value,
-                    label: item1.label,
-                    is_online: matchingItem.is_online,
-                    lat: matchingItem.lat,
-                    lng: matchingItem.lng,
-                };
-                console.log("matchingItem", resultItem);
-                tempResultArray.push(resultItem);
-            }
-        }
-        // Cập nhật state với mảng kết quả
-        setResultArrayMaps(tempResultArray);
-    };
+    const [localOne, setLocalOne] = useState([]);
     useEffect(() => {
-        localWorkerMaps();
-        fetchInfoWorker();
+        newSocket.on("getLocalFormServer", (data) => {
+            if (data || data != undefined) {
+                console.log(data.new_id_worker);
+                setLocalOne(data);
+                // const oneLocal = localWorkerMaps.find(
+                //     (localID) => localID.id_worker == data.new_id_worker
+                // );
+                // if (oneLocal) {
+                //     console.log("user:", oneLocal);
+                //     // Thực hiện thay đổi dữ liệu trong phần tử đã tìm thấy
+                //     setLocalOne(data);
+                // }
+            }
+        });
+    }, []);
+    console.log(localOne, localWorkerMaps);
+    // useEffect cho handleResize
+    useEffect(() => {
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
@@ -123,12 +123,15 @@ function MapWorker({ auth }) {
             });
         };
         window.addEventListener("resize", handleResize);
-        handleViewLocalWorker(infoWorkerMaps, localWorker);
+        fetchLocalWorkerMaps();
         return () => {
             window.removeEventListener("resize", handleResize);
+            newSocket.disconnect();
         };
     }, []);
-    console.log("resultArrayMaps", resultArrayMaps);
+    useEffect(() => {
+        setSearchResults(localWorkerMaps);
+    }, [localWorkerMaps]);
     var heightScreenTV = screenSize.height;
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
@@ -144,6 +147,8 @@ function MapWorker({ auth }) {
                             <Input
                                 label="Tìm theo tên hoặc mã thợ"
                                 className="shadow-none focus:outline-none"
+                                value={searchTerm}
+                                onChange={handleSearch}
                             />
                             <Button
                                 variant="outlined"
@@ -158,44 +163,91 @@ function MapWorker({ auth }) {
                             style={{ height: `${heightScreenTV}px` }}
                         >
                             {/* Danh sach tho  */}
-                            {infoWorkerMaps.map((item, index) => {
-                                console.log(item);
-                                return (
-                                    <div
-                                        key={index}
-                                        className="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700"
-                                    >
-                                        <Tooltip content={`test`}>
-                                            {/* tài khoản đang đươc xem thì active bằng bg-gray-300 */}
-                                            <div
-                                                role="button"
-                                                className="flex items-center w-full p-3 py-1 pl-4 pr-1 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
-                                            >
-                                                <p>{item.label}</p>
-                                                <div className="grid ml-auto place-items-center justify-self-end">
-                                                    <p
-                                                        className={`w-3 h-3 ${
-                                                            item.onLeave == 0
-                                                                ? "bg-green-500"
-                                                                : "bg-gray-500 "
-                                                        } rounded-full`}
-                                                    ></p>
-                                                </div>
-                                            </div>
-                                        </Tooltip>
-                                    </div>
-                                );
-                            })}
+                            {searchResults == null
+                                ? localWorkerMaps.map((item, index) => {
+                                      return (
+                                          <div
+                                              key={index}
+                                              className="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700"
+                                          >
+                                              <Tooltip
+                                                  content={item.last_active}
+                                              >
+                                                  <div
+                                                      role="button"
+                                                      className="flex items-center w-full p-3 py-1 pl-4 pr-1 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
+                                                      onClick={() =>
+                                                          handleLocalOneWorker(
+                                                              item.worker_code
+                                                          )
+                                                      }
+                                                  >
+                                                      <p>
+                                                          ({item.worker_code}) -{" "}
+                                                          {
+                                                              item.worker_full_name
+                                                          }
+                                                      </p>
+                                                      <div className="grid ml-auto place-items-center justify-self-end">
+                                                          <p
+                                                              className={`w-3 h-3 ${
+                                                                  item.is_online !==
+                                                                  0
+                                                                      ? "bg-green-500"
+                                                                      : "bg-gray-500 "
+                                                              } rounded-full`}
+                                                          ></p>
+                                                      </div>
+                                                  </div>
+                                              </Tooltip>
+                                          </div>
+                                      );
+                                  })
+                                : searchResults.map((item, index) => {
+                                      return (
+                                          <div
+                                              key={index}
+                                              className="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700"
+                                          >
+                                              <Tooltip
+                                                  content={item.last_active}
+                                              >
+                                                  {/* tài khoản đang đươc xem thì active bằng bg-gray-300 */}
+                                                  <div
+                                                      role="button"
+                                                      className="flex items-center w-full p-3 py-1 pl-4 pr-1 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
+                                                      onClick={() =>
+                                                          handleLocalOneWorker(
+                                                              item.worker_code
+                                                          )
+                                                      }
+                                                  >
+                                                      <p>
+                                                          ({item.worker_code}) -{" "}
+                                                          {
+                                                              item.worker_full_name
+                                                          }
+                                                      </p>
+                                                      <div className="grid ml-auto place-items-center justify-self-end">
+                                                          <p
+                                                              className={`w-3 h-3 ${
+                                                                  item.is_online !==
+                                                                  0
+                                                                      ? "bg-green-500"
+                                                                      : "bg-gray-500 "
+                                                              } rounded-full`}
+                                                          ></p>
+                                                      </div>
+                                                  </div>
+                                              </Tooltip>
+                                          </div>
+                                      );
+                                  })}
                         </CardBody>
                         <CardFooter className="w-full p-0 mt-1">
                             <Button
                                 className="w-full"
-                                onClick={() =>
-                                    handleViewLocalWorker(
-                                        infoWorkerMaps,
-                                        localWorker
-                                    )
-                                }
+                                onClick={() => handleViewLocalWorker()}
                             >
                                 Xem Tất Cả
                             </Button>
@@ -203,30 +255,70 @@ function MapWorker({ auth }) {
                     </Card>
                 </div>
                 <div className="col-span-5 ">
-                    <div
-                        style={{ height: `${heightScreenTV}px`, width: "100%" }}
-                        className="customIMG"
-                    >
-                        <GoogleMapReact
-                            bootstrapURLKeys={{
-                                // key: "AIzaSyBzAoR7KxrtAYO4WBp5z0YTpTjyKs-Ug8E",
-                                key: "AIzaSyC5iIi-ZChi0PZ12auf77C_ZO_ooTHtAjA",
+                    {searchResults == null ? (
+                        <div
+                            style={{
+                                height: `${heightScreenTV}px`,
+                                width: "100%",
                             }}
-                            defaultCenter={defaultProps.center}
-                            defaultZoom={defaultProps.zoom}
-                            defaultIcon={defaultProps.icon}
+                            className="customIMG"
                         >
-                            {resultArrayMaps.map((i, index) => (
-                                <AnyReactComponent
-                                    key={index}
-                                    lat={i.lat}
-                                    lng={i.lng}
-                                    text={i.label}
-                                    icon={host + "assets/tholocal.png"}
-                                />
-                            ))}
-                        </GoogleMapReact>
-                    </div>
+                            <GoogleMapReact
+                                bootstrapURLKeys={{
+                                    // key: "AIzaSyBzAoR7KxrtAYO4WBp5z0YTpTjyKs-Ug8E",
+                                    key: "AIzaSyC5iIi-ZChi0PZ12auf77C_ZO_ooTHtAjA",
+                                }}
+                                defaultCenter={defaultProps.center}
+                                defaultZoom={defaultProps.zoom}
+                                defaultIcon={defaultProps.icon}
+                            >
+                                {localWorkerMaps.map((i, index) => (
+                                    <AnyReactComponent
+                                        key={index}
+                                        lat={i.lat}
+                                        lng={i.lng}
+                                        text={
+                                            i.worker_full_name +
+                                            " " +
+                                            i.last_active
+                                        }
+                                        icon={host + "assets/tholocal.png"}
+                                    />
+                                ))}
+                            </GoogleMapReact>
+                        </div>
+                    ) : (
+                        <div
+                            style={{
+                                height: `${heightScreenTV}px`,
+                                width: "100%",
+                            }}
+                            className="customIMG"
+                        >
+                            <GoogleMapReact
+                                bootstrapURLKeys={{
+                                    key: "AIzaSyC5iIi-ZChi0PZ12auf77C_ZO_ooTHtAjA",
+                                }}
+                                defaultCenter={defaultProps.center}
+                                defaultZoom={defaultProps.zoom}
+                                defaultIcon={defaultProps.icon}
+                            >
+                                {searchResults.map((i, index) => (
+                                    <AnyReactComponent
+                                        key={index}
+                                        lat={i.lat}
+                                        lng={i.lng}
+                                        text={
+                                            i.worker_full_name +
+                                            " " +
+                                            i.last_active
+                                        }
+                                        icon={host + "assets/tholocal.png"}
+                                    />
+                                ))}
+                            </GoogleMapReact>
+                        </div>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

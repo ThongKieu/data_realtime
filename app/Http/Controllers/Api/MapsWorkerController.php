@@ -5,13 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\MapsWorker;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MapsWorkerController extends Controller
 {
     //
     public function index()
     {
-        $da_maps = MapsWorker::all();
+        $da_maps = DB::table('maps_workers')->join('workers', 'maps_workers.id_worker', '=', 'workers.id')->get(
+            [
+                "maps_workers.id",
+                "id_worker",
+                "lat",
+                "lng",
+                "last_active",
+                "is_online",
+                "worker_full_name",
+                "worker_code", "worker_status", "worker_phone_company",
+            ]
+        );
 
         return response()->json(['data' => $da_maps]);
     }
@@ -27,6 +39,7 @@ class MapsWorkerController extends Controller
                 'is_online' => 1,
             ]);
             $n->save();
+
             return 'Create Local Done';
         } else {
             return 'Fail Create Local - 401';
@@ -36,7 +49,6 @@ class MapsWorkerController extends Controller
     {
         if (isset($request->id_worker) || $request->id_worker != null) {
             MapsWorker::where('id_worker', '=', $request->id_worker)->update(['lat' => $request->lat, 'lng' => $request->lng, 'last_active' => $request->last_active, 'is_online' => 1]);
-
             return 'Update Local Done';
         } else {
             return 'Fail Update Local - 401';
@@ -52,7 +64,7 @@ class MapsWorkerController extends Controller
             //  return response()->json($da);
             return response()->json(['data' => $da]);
         } else {
-            return ('Không có thông tin !!!!!!');
+            return (' Không có thông tin !!!!!!');
         }
 
     }

@@ -84,36 +84,43 @@ function MapWorker({ auth }) {
         }
     };
     const handleSearchLocalWorker = () => {
-        // Gọi hàm với một giá trị id cụ thể
-        const lat = 10.8197569;
-        const lng = 106.6712165;
+        const lat = 10.8004953;
+        const lng = 106.6605923;
 
         const data = {
-            id: 60,
-            new_id_worker: 1,
-            lat: lat + 0.01,
-            lng: lng + 0.01,
+            new_id_worker: 2,
+            lat: `${lat}`,
+            lng: `${lng}`,
+            last_active: "dddd  Minh",
+            is_online: 1,
         };
         newSocket.emit("sentLocalToServer", data);
     };
-    const [localOne, setLocalOne] = useState([]);
+
     useEffect(() => {
         newSocket.on("getLocalFormServer", (data) => {
-            if (data || data != undefined) {
-                console.log(data.new_id_worker);
-                setLocalOne(data);
-                // const oneLocal = localWorkerMaps.find(
-                //     (localID) => localID.id_worker == data.new_id_worker
-                // );
-                // if (oneLocal) {
-                //     console.log("user:", oneLocal);
-                //     // Thực hiện thay đổi dữ liệu trong phần tử đã tìm thấy
-                //     setLocalOne(data);
-                // }
+            if (data && data.new_id_worker) {
+                // Kiểm tra xem id_worker đã tồn tại trong localWorkerMaps chưa
+                const idExistsIndex = localWorkerMaps.findIndex(
+                    (local) => local.id_worker === data.new_id_worker
+                );
+                if (idExistsIndex !==-1) {
+                    // Nếu tồn tại, cập nhật trường lat và lng
+                    setLocalWorkerMaps((prevData) => {
+                        const newData = [...prevData];
+                        newData[idExistsIndex] = {
+                            ...newData[idExistsIndex],
+                            lat: data.lat,
+                            lng: data.lng,
+                            last_active: data.last_active,
+                            is_online: data.is_online
+                        };
+                        return newData;
+                    });
+                }
             }
         });
-    }, []);
-    console.log(localOne, localWorkerMaps);
+    }, [localWorkerMaps]);
     // useEffect cho handleResize
     useEffect(() => {
         const handleResize = () => {

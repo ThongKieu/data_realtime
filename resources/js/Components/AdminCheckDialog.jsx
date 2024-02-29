@@ -228,6 +228,7 @@ function AdminCheckDialog({
 
                 if (res.ok) {
                     console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
+                    socketD?.emit('UpdateDateTable_To_Server');
                     handleOpenBH();
                 } else {
                     console.error("Lỗi khi gửi dữ liệu:", res.statusText);

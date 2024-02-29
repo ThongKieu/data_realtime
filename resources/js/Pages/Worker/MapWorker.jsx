@@ -96,16 +96,25 @@ function MapWorker({ auth }) {
         };
         newSocket.emit("sentLocalToServer", data);
     };
+    const [clickCount, setClickCount] = useState(0);
 
+    // Event handler for button click
+    const handleClick = () => {
+        // Increment the click count
+        setClickCount(clickCount + 1);
+    };
     useEffect(() => {
+
         newSocket.on("getLocalFormServer", (data) => {
             if (data && data.new_id_worker) {
                 // Kiểm tra xem id_worker đã tồn tại trong localWorkerMaps chưa
                 const idExistsIndex = localWorkerMaps.findIndex(
                     (local) => local.id_worker === data.new_id_worker
                 );
-                if (idExistsIndex !==-1) {
+                if (idExistsIndex !== -1) {
                     // Nếu tồn tại, cập nhật trường lat và lng
+                    const count = 0;
+                    console.log(`ddd test ${clickCount}`, idExistsIndex);
                     setLocalWorkerMaps((prevData) => {
                         const newData = [...prevData];
                         newData[idExistsIndex] = {
@@ -113,7 +122,7 @@ function MapWorker({ auth }) {
                             lat: data.lat,
                             lng: data.lng,
                             last_active: data.last_active,
-                            is_online: data.is_online
+                            is_online: data.is_online,
                         };
                         return newData;
                     });
@@ -160,7 +169,10 @@ function MapWorker({ auth }) {
                             <Button
                                 variant="outlined"
                                 color="green"
-                                onClick={() => handleSearchLocalWorker()}
+                                onClick={() => {
+                                    handleSearchLocalWorker();
+                                    handleClick();
+                                }}
                             >
                                 Xem
                             </Button>

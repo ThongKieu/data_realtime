@@ -337,7 +337,7 @@ function NavList({ active = false }) {
                             Vị trí Thợ
                         </MenuItem>
                     </a>
-                    <a  href={`${host}workers`} className="font-normal">
+                    <a href={`${host}workers`} className="font-normal">
                         <MenuItem className="gap-2 text-black lg:rounded-full">
                             Thông Tin Thợ
                         </MenuItem>
@@ -377,16 +377,19 @@ function NavbarDefault({ propauth, check }) {
     const [socketDelete, setSocketDelete] = useState();
     const [countDelete, setCountDelete] = useState(0);
     useEffect(() => {
+        fetchDelete();
+        fetchInfoWorker();
+    }, [check]);
+    useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
         window.addEventListener(
             "resize",
             () => window.innerWidth >= 960 && setIsNavOpen(false)
         );
-        fetchDelete();
-        fetchInfoWorker();
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
+                fetchInfoWorker();
             }
         });
     }, [check]);

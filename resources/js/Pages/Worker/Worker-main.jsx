@@ -11,22 +11,13 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import {
-    PlusCircleIcon,
-    TrashIcon,
-    PencilSquareIcon,
-    MapPinIcon,
-} from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
 
-import NavLink from "@/Components/NavLink";
-import {
-    GridRowModes,
-    DataGrid,
-    GridRowEditStopReasons,
-} from "@mui/x-data-grid";
-
+import { host } from "@/Utils/UrlApi";
+import newSocket from "@/Utils/Socket";
 function WorkersMain({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
@@ -39,9 +30,7 @@ function WorkersMain({ auth }) {
         worker_kind: "",
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-
     const handleOpen = () => setOpen(!open);
-
     const handleSelectChange = (e) => {
         setFormDataWorker({ ...info_worker, worker_kind: e.target.value });
         // Cập nhật trạng thái khi người dùng chọn tùy chọn
@@ -49,13 +38,10 @@ function WorkersMain({ auth }) {
     const handleFileChange = (event) => {
         setSelectedFiles({ avatar_new: event.target.files[0] });
     };
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormDataWorker({ ...info_worker, [name]: value });
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -96,39 +82,33 @@ function WorkersMain({ auth }) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
-    //lấy dữ liệu thợ
-    // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
-
-    // const processRowUpdate = (newRow) => {
-    //   const updatedRow = { ...newRow, isNew: false };
-    //   setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    //   return updatedRow;
-    // };
-
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        // Gọi API để lấy dữ liệu
-        fetch("api/web/workers")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setData(data); // Lưu dữ liệu vào trạng thái React
-                setLoading(true); // Đã lấy xong dữ liệu
-                console.log("dddd", data);
-            })
-            .catch((error) => {
-                console.error("Lỗi khi lấy dữ liệu từ API:", error);
-            });
-    }, []);
+
+    const infoFetchData = async (data) => {
+        try {
+            await fetch("api/web/workers")
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    setData(data); // Lưu dữ liệu vào trạng thái React
+                    setLoading(true); // Đã lấy xong dữ liệu
+                })
+                .catch((error) => {
+                    console.error("Lỗi khi lấy dữ liệu từ API:", error);
+                });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     // useEffect chỉ chạy một lần sau khi render đầu tiên
     const fetchData = async (data1) => {
         try {
@@ -142,6 +122,7 @@ function WorkersMain({ auth }) {
 
             if (res.ok) {
                 console.log("status_change_worker");
+                newSocket.emit("addWorkTo_Server", "status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -168,6 +149,11 @@ function WorkersMain({ auth }) {
             console.log(error);
         }
     };
+
+    useEffect(() => {
+        // Gọi API để lấy dữ liệu
+        infoFetchData();
+    }, []);
     // Hiển thị dữ liệu bảng
     const columns = [
         { field: "id", headerName: "ID", width: 30 },

@@ -150,10 +150,10 @@ function Dashboard({ auth }) {
                 fetchActive(id, 2);
             } else if (isDisabled === false && id) {
                 fetchActive(id, 1);
-            } else if (isDisabled === false && id){
+            } else if (isDisabled === false && id) {
                 fetchActive(id, 1);
             }
-            console.log("id socket", id,isDisabled);
+            console.log("id socket", id, isDisabled);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
         });
@@ -755,14 +755,23 @@ function Dashboard({ auth }) {
             width: 50,
             editable: false,
             type: "text",
-            renderCell: (params) => {
+            renderCell: (params, index) => {
                 const [TTBH, setDataBH] = useState([]);
                 const [open, setOpen] = useState(false);
+                useEffect(() => {
+                    getDataBh();
+                }, []);
+                useEffect(() => {
+                    newSocket.on("UpdateDateTable_To_Client", () => {
+                        getDataBh();
+                    });
+                }, []);
                 const handleOpen = () => {
                     setOpen(!open);
                     getDataBh();
                 };
                 const check_bh = params.row.income_total;
+                console.log("params:", params, "bh:", TTBH);
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -770,26 +779,43 @@ function Dashboard({ auth }) {
                             const response = await fetch(url);
                             const data = await response.json();
                             setDataBH(data);
+                            console.log(data);
                         } catch (error) {
                             console.error("Error fetching data:", error);
                         }
                     }
                 };
                 const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
-
                 return (
                     <>
-                        <IconButton
-                            className={`${
-                                check_bh === 0 ? "hidden" : ""
-                            } w-8 h-8 p-1`}
-                            variant="outlined"
-                            onClick={() => {
-                                handleOpen();
-                            }}
-                        >
-                            <ClipboardDocumentListIcon className="w-4 h-4" />
-                        </IconButton>
+                        {TTBH.map((item) => {
+                            return (
+                                <>
+                                    {item.id_work_has == params.row.id_cus ? (
+                                        <IconButton
+                                            className={`w-8 h-8 p-1`}
+                                            variant="outlined"
+                                            onClick={() => {
+                                                handleOpen();
+                                            }}
+                                        >
+                                            <ClipboardDocumentListIcon className="w-4 h-4" />
+                                        </IconButton>
+                                    ) : (
+                                        <IconButton
+                                            className={`hidden w-8 h-8 p-1`}
+                                            variant="outlined"
+                                            onClick={() => {
+                                                handleOpen();
+                                            }}
+                                        >
+                                            <ClipboardDocumentListIcon className="w-4 h-4" />
+                                        </IconButton>
+                                    )}
+                                </>
+                            );
+                        })}
+
                         <Dialog open={open} handler={handleOpen} size="sm">
                             <DialogHeader>Thông Tin Bảo Hành</DialogHeader>
                             <DialogBody divider>

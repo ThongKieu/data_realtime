@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
     socket.on("sentLocalToServer", async (data) => {
-        console.log(data);
+        console.log('xin chao data:',data);
         io.sockets.emit("getLocalFormServer", data);
     });
     // // Xử lý sự kiện khi máy khách ngắt kết nối

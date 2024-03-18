@@ -71,18 +71,29 @@ class WorkerController extends Controller
             case 'avatar_change_worker':
                 if ($re->hasFile('avatar_new')) {
                     $file = $re->file('avatar_new');
-                    $name = $re->sort_name . '-' . time() . '.' . $file->extension();
+                    $name = $re->worker_code . '-' . time() . '.' . $file->extension();
                     $file->move('assets/avatar/', $name);
                     $path = 'assets/avatar/' . $name;
-                    $up = Worker::where('sort_name', '=', $re->sort_name)->update(['avatar' => $path]);
+                    $up = Worker::where('worker_code', '=', $re->worker_code)->update(['worker_avatar' => $path]);
                 }
                 return response()->json(['data' => 'Change Avatar']);
             case 'phone_change_worker':
-                Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
+                Worker::where('id', '=', $re->id)->update(['worker_phone_company' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
             default:
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }
     }
+
+   public function addNewWorker(Request $request){
+    dd($request->all());
+    if ($request->hasFile('avatar_new')) {
+        $file = $request->file('avatar_new');
+        $name = $request->sort_name . '-' . time() . '.' . $file->extension();
+        $file->move('assets/avatar/', $name);
+        $path = 'assets/avatar/' . $name;
+        $up = Worker::where('sort_name', '=', $request->sort_name)->update(['avatar' => $path]);
+    }
+   } 
 
 }

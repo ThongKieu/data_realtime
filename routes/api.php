@@ -20,7 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('web')->group(function () {
     Route::apiResource('works', WorksController::class);
-    Route::get('workers', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+    Route::prefix('workers')->group(function(){
+        Route::get('/', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+        Route::post('/addNew', 'App\Http\Controllers\Api\Web\WorkerController@addNewWorker');
+
+    });
     Route::apiResource('district', DistrictController::class);
     Route::post('push-online', 'App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
     Route::get('list-online', 'App\Http\Controllers\Api\Web\PushOnlineController@listOnline');

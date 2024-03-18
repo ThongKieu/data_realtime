@@ -68,7 +68,7 @@ function WorkerList({ auth }) {
         formData.append("worker_kind", info_worker.worker_kind);
 
         try {
-            const response = await fetch(URL_API, {
+            const response = await fetch(URL_API+'/addNew', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -76,14 +76,14 @@ function WorkerList({ auth }) {
                 mode: "no-cors",
                 body: formData,
             });
-            console.log("formData", formData);
+            // console.log("formData", formData);
             if (response.ok) {
                 const responseData = await response.json();
-                console.log(
-                    "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
-                    responseData
-                );
-                console.log(responseData);
+                // console.log(
+                //     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+                //     responseData
+                // );
+                // console.log(responseData);
                 // window.location.reload();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
@@ -209,7 +209,7 @@ function WorkerList({ auth }) {
             valueGetter: (params) => `${params.row.worker_full_name} `,
         },
         {
-            field: "sort_name",
+            field: "worker_code",
             headerName: "Mã",
             width: 70,
             editable: false,
@@ -324,7 +324,6 @@ function WorkerList({ auth }) {
                     };
                     fetchData(data_set);
                 };
-                console.log(params);
                 return (
                     <select
                         defaultValue={params.row.worker_status}
@@ -342,7 +341,7 @@ function WorkerList({ auth }) {
             field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
-                console.log(params);
+                // console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [selectedImage, setSelectedImage] = useState(null);
@@ -362,7 +361,7 @@ function WorkerList({ auth }) {
                     e.preventDefault();
                     const formDataImage = new FormData();
                     formDataImage.append("id", params.id);
-                    formDataImage.append("sort_name", params.row.sort_name);
+                    formDataImage.append("worker_code", params.row.worker_code);
                     formDataImage.append("action", "avatar_change_worker");
                     formDataImage.append("avatar_new", selectedImage);
                     fetchDataImage(formDataImage);

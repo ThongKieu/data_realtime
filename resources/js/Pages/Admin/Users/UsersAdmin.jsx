@@ -127,7 +127,7 @@ function UsersAdmin({ auth }) {
                             <>
                                 {params.row.permission == 0 ? (
                                     <p className="text-center text-green-500">
-                                        Người dùng
+                                        Supper Admin
                                     </p>
                                 ) : params.row.permission == 1 ? (
                                     <p className="text-center text-blue-500">
@@ -135,7 +135,8 @@ function UsersAdmin({ auth }) {
                                     </p>
                                 ) : (
                                     <p className="text-center text-red-500">
-                                        Supper Admin
+                                        
+                                        Người dùng
                                     </p>
                                 )}
                             </>
@@ -228,8 +229,8 @@ function UsersAdmin({ auth }) {
                         {params.row.is_online != 1 ? (
                             <p className="text-center text-red-500">Offline</p>
                         ) : (
-                            <p className="text-center">
-                                {params.row.is_online}
+                            <p className="text-center text-green-500">
+                                Online
                             </p>
                         )}
                     </div>

@@ -121,7 +121,7 @@ function WorkerList({ auth }) {
     // useEffect chỉ chạy một lần sau khi render đầu tiên
     const fetchData = async (data1) => {
         try {
-            const res = await fetch("api/web/update/worker", {
+            const res = await fetch(host+"api/web/update/worker", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,7 +161,7 @@ function WorkerList({ auth }) {
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
-            const response = await fetch("api/web/update/worker", {
+            const response = await fetch(host+ "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -178,16 +178,16 @@ function WorkerList({ auth }) {
         }
     };
     // Hàm thay đổi sdt trong rendercell
-    const handleChangeva = (event, id) => {
-        // Xử lý sự thay đổi của lựa chọn ở đây
-        const selectedValue = event.target.value;
-        const updatePhoneCTy = {
-            action: "phone_change_worker",
-            id: id,
-            phone_ct: selectedValue,
-        };
-        fetchDataPhoneCTy(updatePhoneCTy);
-    };
+    // const handleChangeva = (event, id) => {
+    //     // Xử lý sự thay đổi của lựa chọn ở đây
+    //     const selectedValue = event.target.value;
+    //     const updatePhoneCTy = {
+    //         action: "phone_change_worker",
+    //         id: id,
+    //         phone_ct: selectedValue,
+    //     };
+    //     fetchDataPhoneCTy(updatePhoneCTy);
+    // };
 
     // Hiển thị dữ liệu bảng
     const columns = [
@@ -206,8 +206,7 @@ function WorkerList({ auth }) {
             sortable: true,
             width: 160,
             editable: false,
-            valueGetter: (params) =>
-                `${params.row.worker_full_name} `,
+            valueGetter: (params) => `${params.row.worker_full_name} `,
         },
         {
             field: "sort_name",
@@ -216,7 +215,9 @@ function WorkerList({ auth }) {
             editable: false,
             renderCell: (params) => {
                 return (
-                    <span className="text-center">{params.row.worker_code}</span>
+                    <span className="text-center">
+                        {params.row.worker_code}
+                    </span>
                 );
             },
         },
@@ -233,8 +234,8 @@ function WorkerList({ auth }) {
                 const i_active = params.row.last_active.i;
                 return y_active == 0 ? (
                     <span className="text-center">
-                        {m_active} Tháng {d_active} Ngày{" "}
-                        {h_active} Giờ {i_active} Giây trước{" "}
+                        {m_active} Tháng {d_active} Ngày {h_active} Giờ{" "}
+                        {i_active} Giây trước{" "}
                     </span>
                 ) : (
                     <span className="text-center">
@@ -320,9 +321,10 @@ function WorkerList({ auth }) {
                     };
                     fetchData(data_set);
                 };
+                console.log(params);
                 return (
                     <select
-                        defaultValue={params.value}
+                        defaultValue={params.row.worker_status}
                         onChange={handleChangeva}
                         style={{ minWidth: "120px" }}
                     >
@@ -337,6 +339,7 @@ function WorkerList({ auth }) {
             field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
+                console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [selectedImage, setSelectedImage] = useState(null);
@@ -379,7 +382,11 @@ function WorkerList({ auth }) {
                         <>
                             <Button onClick={handleOpen} className="bg-white">
                                 <img
-                                    src={host + params.formattedValue}
+                                    src={
+                                        params.row.worker_avatar !== null
+                                            ? host + params.row.worker_avatar
+                                            : `https://thoviet.com.vn/wp-content/uploads/2022/10/pngtree-top-quality-golden-shield-icon-flat-style-png-image_1807309-1.jpg`
+                                    }
                                     alt="Avatar"
                                     className="w-10"
                                 />
@@ -579,7 +586,7 @@ function WorkerList({ auth }) {
             </Dialog>
             {/* -Đổ dữ liệu thợ- */}
             <Card className={`w-[98%] h-[${heightScreenTV}px] m-auto mt-1`}>
-                <Box sx={{ height: heightScreenTV-72, width: 1 }}>
+                <Box sx={{ height: heightScreenTV - 72, width: 1 }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}

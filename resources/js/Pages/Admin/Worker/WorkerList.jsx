@@ -249,11 +249,14 @@ function WorkerList({ auth }) {
             headerName: "Vị Trí",
             width: 80,
             editable: false,
-            renderCell: () => {
+            renderCell: (params) => {
                 return (
-                    <NavLink href={route("dashboard")} className="text-center">
+                    <a
+                    href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
+                            className="font-normal"
+                        >
                         <MapPinIcon className="w-5 h-5 text-red-500" />
-                    </NavLink>
+                    </a>
                 );
             },
         },
@@ -464,6 +467,11 @@ function WorkerList({ auth }) {
         height: window.innerHeight,
     });
     const heightScreenTV = screenSize.height;
+    const [inputValue, setInputValue] = useState('');
+
+    const handleInputChange = (e) => {
+        setInputValue(e.target.value);
+    };
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
@@ -554,12 +562,19 @@ function WorkerList({ auth }) {
                                 <option value={5}>Tài Xế</option>
                                 <option value={6}>Cơ Khí</option>
                             </select>
+                            </div>
+                            <div>
                             <input
                                 id="avatar_new"
                                 type="file"
                                 onChange={handleFileChange}
                                 className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
                             />
+                        </div>
+                        <div className="m-1">
+                            <p> Tài Khoản:
+                                {}
+                            </p>
                         </div>
                     </DialogBody>
                     <DialogFooter>

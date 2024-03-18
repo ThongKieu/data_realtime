@@ -11,7 +11,11 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import { PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import {
+    PlusCircleIcon,
+    MapPinIcon,
+    UserPlusIcon,
+} from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
 
@@ -56,8 +60,8 @@ function WorkerList({ auth }) {
         e.preventDefault();
 
         const URL_API = "/api/web/workers";
-        // console.log(info_worker);
         // get info to form
+        console.log(info_worker.worker_full_name);
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_full_name", info_worker.worker_full_name);
@@ -68,26 +72,24 @@ function WorkerList({ auth }) {
         formData.append("worker_kind", info_worker.worker_kind);
 
         try {
-            const response = await fetch(URL_API+'/addNew', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                mode: "no-cors",
-                body: formData,
-            });
-            // console.log("formData", formData);
-            if (response.ok) {
-                const responseData = await response.json();
-                // console.log(
-                //     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
-                //     responseData
-                // );
-                // console.log(responseData);
-                // window.location.reload();
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", response.statusText);
-            }
+            // const response = await fetch(URL_API + "/addNew", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     mode: "no-cors",
+            //     body: formData,
+            // });
+            // // console.log("formData", formData);
+            // if (response.ok) {
+            //     const responseData = await response.json();
+            //     console.log(
+            //         "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+            //         responseData
+            //     );
+            // } else {
+            //     console.error("Lỗi khi gửi dữ liệu:", response.statusText);
+            // }
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
@@ -101,6 +103,7 @@ function WorkerList({ auth }) {
     };
     const [rows, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    console.log(rows);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
@@ -121,7 +124,7 @@ function WorkerList({ auth }) {
     // useEffect chỉ chạy một lần sau khi render đầu tiên
     const fetchData = async (data1) => {
         try {
-            const res = await fetch(host+"api/web/update/worker", {
+            const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,7 +164,7 @@ function WorkerList({ auth }) {
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
-            const response = await fetch(host+ "api/web/update/worker", {
+            const response = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -253,9 +256,9 @@ function WorkerList({ auth }) {
             renderCell: (params) => {
                 return (
                     <a
-                    href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
-                            className="font-normal"
-                        >
+                        href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
+                        className="font-normal"
+                    >
                         <MapPinIcon className="w-5 h-5 text-red-500" />
                     </a>
                 );
@@ -303,7 +306,7 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "worker_phone_personal",
+            field: "worker_phone_family",
             headerName: "Số cá nhân",
             width: 150,
             editable: false,
@@ -451,18 +454,26 @@ function WorkerList({ auth }) {
         {
             field: "worker_check_acc",
             headerName: "Tài Khoản",
+            align: "center",
             renderCell: (params) => {
+                console.log(params);
                 if (params.field === "worker_check_acc") {
                     switch (params.value) {
                         case 0:
-                            return "Chưa có, vui lòng liên hệ Admin.";
+                            return (
+                                <Button className="p-2 text-center" variant="outlined">
+                                    <UserPlusIcon className="w-5 h-5" />
+                                </Button>
+                            );
                         case 1:
                             return "Đã có chưa kích hoạt";
                         case 2:
-                            return "Đã có đã kích hoạt";
+                            return "Đã kích hoạt";
+                        case 3:
+                            return "Vô hiệu hóa";
                     }
                 }
-                return <div>{params.value}</div>;
+                return <p className="break-words">{params.value}</p>;
             },
             width: 150,
             editable: false,
@@ -473,8 +484,7 @@ function WorkerList({ auth }) {
         height: window.innerHeight,
     });
     const heightScreenTV = screenSize.height;
-    const [inputValue, setInputValue] = useState('');
-
+    const [inputValue, setInputValue] = useState("");
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
     };
@@ -568,8 +578,8 @@ function WorkerList({ auth }) {
                                 <option value={5}>Tài Xế</option>
                                 <option value={6}>Cơ Khí</option>
                             </select>
-                            </div>
-                            <div>
+                        </div>
+                        <div>
                             <input
                                 id="avatar_new"
                                 type="file"
@@ -578,7 +588,9 @@ function WorkerList({ auth }) {
                             />
                         </div>
                         <div className="m-1">
-                            <p> Tài Khoản:
+                            <p>
+                                {" "}
+                                Tài Khoản:
                                 {}
                             </p>
                         </div>

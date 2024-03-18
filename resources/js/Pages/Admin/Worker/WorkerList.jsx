@@ -52,7 +52,6 @@ function WorkerList({ auth }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormDataWorker({ ...info_worker, [name]: value });
     };
 
@@ -461,7 +460,10 @@ function WorkerList({ auth }) {
                     switch (params.value) {
                         case 0:
                             return (
-                                <Button className="p-2 text-center" variant="outlined">
+                                <Button
+                                    className="p-2 text-center"
+                                    variant="outlined"
+                                >
                                     <UserPlusIcon className="w-5 h-5" />
                                 </Button>
                             );
@@ -484,10 +486,7 @@ function WorkerList({ auth }) {
         height: window.innerHeight,
     });
     const heightScreenTV = screenSize.height;
-    const [inputValue, setInputValue] = useState("");
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
-    };
+
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
@@ -514,38 +513,27 @@ function WorkerList({ auth }) {
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
+                                id="worker_full_name"
                                 name="worker_full_name"
                                 value={info_worker.worker_full_name}
                                 onChange={handleChange}
-                                label="Họ"
+                                label="Họ Và Tên"
                             />
+
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
-                                name="worker_name"
-                                value={info_worker.worker_name}
-                                onChange={handleChange}
-                                label="Tên"
-                            />
-                            <Input
-                                type="text"
-                                className="shadow-none"
-                                id="name"
-                                name="worker_address"
+                                id="worker_address"
+                                name="add_worker"
                                 value={info_worker.add_worker}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
                             />
-                            <label className="shadow-none" size="lg">
-                                Tên tắt vd: A01,A02..
-                            </label>
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
-                                name="worker_phone_company"
+                                id="worker_phone_company"
+                                name="phone_cty"
                                 value={info_worker.phone_cty}
                                 onChange={handleChange}
                                 label="Số Công Ty"
@@ -553,8 +541,8 @@ function WorkerList({ auth }) {
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
-                                name="worker_phone_personal"
+                                id="worker_phone_personal"
+                                name="phone_cn"
                                 value={info_worker.phone_cn}
                                 onChange={handleChange}
                                 label="Số Cá Nhân"
@@ -588,11 +576,9 @@ function WorkerList({ auth }) {
                             />
                         </div>
                         <div className="m-1">
-                            <p>
-                                {" "}
-                                Tài Khoản:
-                                {}
-                            </p>
+                            <label className="shadow-none" size="lg">
+                                Tên tắt vd: A01,A02..
+                            </label>
                         </div>
                     </DialogBody>
                     <DialogFooter>

@@ -523,7 +523,7 @@ function WorkerList({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="add_worker"
+                                name="worker_address"
                                 value={info_worker.add_worker}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
@@ -535,7 +535,7 @@ function WorkerList({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="phone_cty"
+                                name="worker_phone_company"
                                 value={info_worker.phone_cty}
                                 onChange={handleChange}
                                 label="Số Công Ty"
@@ -544,7 +544,7 @@ function WorkerList({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="phone_cn"
+                                name="worker_phone_personal"
                                 value={info_worker.phone_cn}
                                 onChange={handleChange}
                                 label="Số Cá Nhân"

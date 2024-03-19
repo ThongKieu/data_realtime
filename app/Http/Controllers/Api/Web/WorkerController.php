@@ -165,8 +165,9 @@ class WorkerController extends Controller
         $all = WorkerController::createAcc($id_worker,$acc,'Thoviet58568',$path);
         // dd($all);
         if($all)
-        {   
-            $data = ['acc'=>$acc,'pass'=>'Thoviet58568'];
+        {  
+             $up = Worker::where('worker_code', '=', $next_worker_code)->update(['worker_check_acc' => 1]);
+             $data = ['acc'=>$acc,'pass'=>'Thoviet58568'];
             return response() ->json(['data'=>$data]);
         }
         else

@@ -17,15 +17,16 @@ import {
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
-import {
-    DataGrid,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 import useWindowSize from "@/Core/Resize";
 function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [openAccApp, setOpenAccApp] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [rows, setData] = useState([]);
+    const [rowModesModel, setRowModesModel] = useState({});
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
         worker_address: "",
@@ -33,23 +34,18 @@ function WorkerList({ auth }) {
         worker_phone_personal: "",
         worker_kind: 0,
     });
-    const [selectedFiles, setSelectedFiles] = useState([]);
-
+    const [accAPP, setAccApp] = useState(null);
+    const { width, height } = useWindowSize(65);
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
-    const handleSelectChange = (e) => {
-        setFormDataWorker({ ...info_worker, worker_kind: e.target.value });
-        // Cập nhật trạng thái khi người dùng chọn tùy chọn
-    };
+    const handleSelectChange = (e) => {};
     const handleFileChange = (event) => {
         setSelectedFiles({ avatar_new: event.target.files[0] });
     };
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormDataWorker({ ...info_worker, [name]: value });
     };
-    const [accAPP, setAccApp] = useState(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -95,13 +91,9 @@ function WorkerList({ auth }) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
-    //lấy dữ liệu thợ
-    // const [rows, setRows] = React.useState(initialRows);
-    const [rowModesModel, setRowModesModel] = useState({});
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
-    const [rows, setData] = useState([]);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
@@ -441,7 +433,17 @@ function WorkerList({ auth }) {
             headerName: "Tài Khoản",
             align: "center",
             renderCell: (params) => {
-                console.log(params);
+                const handleActiveAccApp = () => {
+                    const data = {
+                        id: params.row.id,
+                        acc:
+                            params.row.worker_code +
+                            params.row.worker_phone_company,
+                        pass: "Thoviet58568",
+                        avatar:params.row?.worker_avatar
+                    };
+                    console.log("test", data);
+                };
                 if (params.field === "worker_check_acc") {
                     switch (params.value) {
                         case 0:
@@ -449,6 +451,7 @@ function WorkerList({ auth }) {
                                 <Button
                                     className="p-2 text-center"
                                     variant="outlined"
+                                    onClick={() => handleActiveAccApp()}
                                 >
                                     <UserPlusIcon className="w-5 h-5" />
                                 </Button>
@@ -467,24 +470,42 @@ function WorkerList({ auth }) {
             editable: false,
         },
     ];
-    const { width, height } = useWindowSize(72);
-    console.log('xin height:',height);
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
-            <Card className="mt-2">
-                <div className="grid m-2 justify-items-stretch ">
-                    <div className="justify-self-end">
-                        <Tooltip content="Thêm Thợ Mới">
-                            <PlusCircleIcon
-                                className="w-10 h-10 pointer-events-auto"
-                                color="#0056ffeb"
-                                onClick={handleOpen}
-                            />
-                        </Tooltip>
+            <div className="p-1">
+                <Card className="m-1 mt-0">
+                    <div className="grid m-2 justify-items-stretch ">
+                        <div className="justify-self-end">
+                            <Tooltip content="Thêm Thợ Mới">
+                                <PlusCircleIcon
+                                    className="w-10 h-10 pointer-events-auto"
+                                    color="#0056ffeb"
+                                    onClick={handleOpen}
+                                />
+                            </Tooltip>
+                        </div>
                     </div>
-                </div>
-            </Card>
+                </Card>
+                <Card className={`w-[${width}px] m-1 mt-1`}>
+                    <Box sx={{ height: height, width: 1 }}>
+                        <DataGrid
+                            rows={rows}
+                            columns={columns}
+                            rowModesModel={rowModesModel}
+                            onRowModesModelChange={handleRowModesModelChange}
+                            // slots={{ toolbar: GridToolbar }}
+                            slotProps={{
+                                toolbar: {
+                                    showQuickFilter: true,
+                                },
+                            }}
+                            className="text-center "
+                        />
+                    </Box>
+                </Card>
+            </div>
+
             <Dialog open={open} handler={handleOpen}>
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
@@ -619,26 +640,7 @@ function WorkerList({ auth }) {
                     </Button>
                 </DialogFooter>
             </Dialog>
-            {/* -Đổ dữ liệu thợ- */}
-            <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
-                <Box sx={{ height: height, width: width }}>
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        rowModesModel={rowModesModel}
-                        onRowModesModelChange={handleRowModesModelChange}
-                        // slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                        className="text-center "
-                    />
-                </Box>
-            </Card>
         </AuthenticatedLayoutAdmin>
     );
 }
-
 export default WorkerList;

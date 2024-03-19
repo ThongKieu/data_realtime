@@ -18,10 +18,7 @@ import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
 const TABS = [
-    {
-        label: "Xây Dựng",
-        value: "XD",
-    },
+    
     {
         label: "Điện Nước",
         value: "DN",
@@ -31,10 +28,6 @@ const TABS = [
         value: "monitored",
     },
     {
-        label: "Cơ Khí",
-        value: "CK",
-    },
-    {
         label: "Đồ Gỗ",
         value: "DG",
     },
@@ -42,6 +35,20 @@ const TABS = [
         label: "NLMT",
         value: "NLMT",
     },
+    {
+        label: "Xây Dựng",
+        value: "XD",
+    },{
+        label: "Tài Xế",
+        value: "XD",
+    },
+    {
+        label: "Cơ Khí",
+        value: "CK",
+    },
+    
+    
+    
 ];
 
 const TABLE_HEAD = [
@@ -61,7 +68,7 @@ function WorkerAccount() {
         console.log(accountData);
     };
     useEffect(() => {
-        fetch(host + "api/web/worker-account")
+        fetch(host + "api/web/workers/account")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Error Status Network");
@@ -75,7 +82,7 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-
+    console.log(accountData);
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />
@@ -124,9 +131,7 @@ function WorkerAccount() {
                                             className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                                         >
                                             {head}{" "}
-                                            {/* {index !== TABLE_HEAD.length - 1 && (
-                        <ChevronUpDownIcon strokeWidth={2} className="w-4 h-4" />
-                      )} */}
+                                           
                                         </Typography>
                                     </th>
                                 ))}

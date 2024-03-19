@@ -36,12 +36,13 @@ class AccountionWorkerController extends Controller
     {
 
         // dd('1111111111111');
-        $all = AccountionWorker::all();
+        // $all = AccountionWorker::all();
+        $all = DB::table('accountion_workers')
+        ->leftJoin('workers','accountion_workers.id_worker','workers.id')
+        ->where('workers.worker_check_acc','>',0)
+        ->get();
 
-        foreach ($all as $item) {
-            $a = AccountionWorkerController::getNameWorkerAcctive($item->id_worker);
-            $item->id_worker = $a;
-        }
+       
 
         return $all;
     }
@@ -49,9 +50,9 @@ class AccountionWorkerController extends Controller
     public static function getNameWorkerAcctive($id)
     {
 
-        $nameWork = DB::table('workers')->where('id', '=', $id)->get(['worker_name', 'sort_name']);
+        $nameWork = DB::table('workers')->where('id', '=', $id)->get(['worker_full_name']);
         $a = '';
-        foreach ($nameWork as $item) {$a = $item->sort_name . " - " . $item->worker_name;}
+        foreach ($nameWork as $item) {$a = $item->worker_full_name;}
         if ($a != null) {
             return $a;
         } else {

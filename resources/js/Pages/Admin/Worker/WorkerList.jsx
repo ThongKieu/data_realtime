@@ -621,7 +621,7 @@ function WorkerList({ auth }) {
             </Dialog>
             {/* -Đổ dữ liệu thợ- */}
             <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
-                <Box sx={{ height: height, width: width }}>
+                <Box sx={{ height: height, width: 1 }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -633,6 +633,9 @@ function WorkerList({ auth }) {
                                 showQuickFilter: true,
                             },
                         }}
+                        pagination
+                        autoPageSize
+                        
                         className="text-center "
                     />
                 </Box>

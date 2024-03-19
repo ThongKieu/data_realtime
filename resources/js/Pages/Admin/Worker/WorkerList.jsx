@@ -48,10 +48,7 @@ function WorkerList({ auth }) {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const URL_API = "/api/web/workers";
-        // get info to form
-        console.log(info_worker.worker_full_name);
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_full_name", info_worker.worker_full_name);
@@ -65,7 +62,6 @@ function WorkerList({ auth }) {
             info_worker.worker_phone_personal
         );
         formData.append("worker_kind", info_worker.worker_kind);
-        console.log("test");
         try {
             const response = await fetch(URL_API + "/addNew", {
                 method: "POST",
@@ -88,6 +84,7 @@ function WorkerList({ auth }) {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
         } catch (error) {
+
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
@@ -170,6 +167,10 @@ function WorkerList({ auth }) {
             console.log(error);
         }
     };
+
+    const [openActiveApp, setOpenActiveApp] = useState(false);
+    const [activeAPP, setActiveApp] = useState(null);
+    const handleOpenActiveApp = () => setOpenActiveApp(!openActiveApp);
     // Hiển thị dữ liệu bảng
     const columns = [
         {
@@ -433,16 +434,41 @@ function WorkerList({ auth }) {
             headerName: "Tài Khoản",
             align: "center",
             renderCell: (params) => {
-                const handleActiveAccApp = () => {
+                const handleActiveAccApp = async () => {
+                    const URL_API = "/api/web/workers";
                     const data = {
-                        id: params.row.id,
-                        acc:
+                        id_worker: params.row.id,
+                        acc_worker:
                             params.row.worker_code +
                             params.row.worker_phone_company,
-                        pass: "Thoviet58568",
-                        avatar:params.row?.worker_avatar
-                    };
-                    console.log("test", data);
+                        pass_worker: "Thoviet58568",
+                        avatar: params.row?.worker_avatar,
+                    } ;
+                    try {
+                        const response = await fetch(URL_API + `/create_acc_from_tab`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                        });
+                        if (response.ok) {
+                            const responseData = await response.json();
+                            console.log(
+                                "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+                                responseData
+                            );
+                            setActiveApp(responseData);
+                            handleOpenActiveApp();
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi dữ liệu:",
+                                response.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi dữ liệu:", error);
+                    }
                 };
                 if (params.field === "worker_check_acc") {
                     switch (params.value) {
@@ -640,27 +666,38 @@ function WorkerList({ auth }) {
                     </Button>
                 </DialogFooter>
             </Dialog>
+            <Dialog open={openActiveApp} handler={handleOpenActiveApp}>
+                <DialogHeader>
+                    <div className="m-auto">Thông Tin Tài Khoản APP</div>
+                </DialogHeader>
+                <DialogBody divider>
+                    <div className="p-5 border border-green-500 rounded-lg">
+                        <p className="pb-2 font-bold">
+                            Tên Đăng Nhập:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                {activeAPP?.acc_worker}
+                            </span>
+                        </p>
+                        <p className="font-bold">
+                            Mật Khẩu:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                Thoviet58568
+                            </span>
+                        </p>
+                    </div>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="green"
+                        onClick={handleOpenActiveApp}
+                        className="mr-1"
+                    >
+                        <span>Đã Xem</span>
+                    </Button>
+                </DialogFooter>
+            </Dialog>
             {/* -Đổ dữ liệu thợ- */}
-            <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
-                <Box sx={{ height: height, width: 1 }}>
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        rowModesModel={rowModesModel}
-                        onRowModesModelChange={handleRowModesModelChange}
-                        // slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                        pagination
-                        autoPageSize
-
-                        className="text-center "
-                    />
-                </Box>
-            </Card>
         </AuthenticatedLayoutAdmin>
     );
 }

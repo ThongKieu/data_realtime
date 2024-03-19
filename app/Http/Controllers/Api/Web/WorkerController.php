@@ -187,4 +187,14 @@ class WorkerController extends Controller
         $n_acc->save();
         return $n_acc;
     }
+    public function createAccFromTab(Request $re)  {
+        // dd($re->all());
+        $n_acc = new AccountionWorker([
+            'id_worker'=>$re->id_worker,'acc_worker'=>$re->acc_worker,'pass_worker'=>Hash::make($re->pass_worker),'avatar'=>$re->avatar
+        ]);
+        $n_acc->save();
+
+        return $n_acc;
+
+    }
 }

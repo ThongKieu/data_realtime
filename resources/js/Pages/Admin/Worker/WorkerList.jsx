@@ -16,32 +16,27 @@ import {
     MapPinIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-
 import Box from "@mui/material/Box";
-
-import NavLink from "@/Components/NavLink";
 import {
-    GridRowModes,
     DataGrid,
-    GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-
+import useWindowSize from "@/Core/Resize";
 function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
+    const [openAccApp, setOpenAccApp] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
-        worker_name: "",
-        add_worker: "",
-        phone_cty: "",
-        phone_cn: "",
-        worker_kind: "",
+        worker_address: "",
+        worker_phone_company: "",
+        worker_phone_personal: "",
+        worker_kind: 0,
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     const handleOpen = () => setOpen(!open);
-
+    const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
     const handleSelectChange = (e) => {
         setFormDataWorker({ ...info_worker, worker_kind: e.target.value });
         // Cập nhật trạng thái khi người dùng chọn tùy chọn
@@ -54,7 +49,7 @@ function WorkerList({ auth }) {
         const { name, value } = e.target;
         setFormDataWorker({ ...info_worker, [name]: value });
     };
-
+    const [accAPP, setAccApp] = useState(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -64,31 +59,38 @@ function WorkerList({ auth }) {
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_full_name", info_worker.worker_full_name);
-        formData.append("worker_name", info_worker.worker_name);
-        formData.append("add_worker", info_worker.add_worker);
-        formData.append("phone_cty", info_worker.phone_cty);
-        formData.append("phone_cn", info_worker.phone_cn);
+        formData.append("worker_address", info_worker.worker_address);
+        formData.append(
+            "worker_phone_company",
+            info_worker.worker_phone_company
+        );
+        formData.append(
+            "worker_phone_personal",
+            info_worker.worker_phone_personal
+        );
         formData.append("worker_kind", info_worker.worker_kind);
-
+        console.log("test");
         try {
-            // const response = await fetch(URL_API + "/addNew", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     mode: "no-cors",
-            //     body: formData,
-            // });
-            // // console.log("formData", formData);
-            // if (response.ok) {
-            //     const responseData = await response.json();
-            //     console.log(
-            //         "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
-            //         responseData
-            //     );
-            // } else {
-            //     console.error("Lỗi khi gửi dữ liệu:", response.statusText);
-            // }
+            const response = await fetch(URL_API + "/addNew", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                mode: "no-cors",
+                body: formData,
+            });
+            // console.log("formData", formData);
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log(
+                    "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+                    responseData
+                );
+                setAccApp(responseData);
+                handleOpenAccApp();
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", response.statusText);
+            }
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
@@ -96,13 +98,10 @@ function WorkerList({ auth }) {
     //lấy dữ liệu thợ
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
-
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
     const [rows, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    console.log(rows);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
@@ -114,7 +113,6 @@ function WorkerList({ auth }) {
             })
             .then((data) => {
                 setData(data); // Lưu dữ liệu vào trạng thái React
-                setLoading(false); // Đã lấy xong dữ liệu
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
@@ -142,7 +140,7 @@ function WorkerList({ auth }) {
     // fetch data phone
     const fetchDataPhone = async (data) => {
         try {
-            const res = await fetch("api/web/update/worker", {
+            const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -174,23 +172,12 @@ function WorkerList({ auth }) {
             });
             if (response.status === 200) {
                 console.log("Gửi Hình Đi Thành Công");
+                window.location.reload();
             }
         } catch (error) {
             console.log(error);
         }
     };
-    // Hàm thay đổi sdt trong rendercell
-    // const handleChangeva = (event, id) => {
-    //     // Xử lý sự thay đổi của lựa chọn ở đây
-    //     const selectedValue = event.target.value;
-    //     const updatePhoneCTy = {
-    //         action: "phone_change_worker",
-    //         id: id,
-    //         phone_ct: selectedValue,
-    //     };
-    //     fetchDataPhoneCTy(updatePhoneCTy);
-    // };
-
     // Hiển thị dữ liệu bảng
     const columns = [
         {
@@ -269,7 +256,6 @@ function WorkerList({ auth }) {
             width: 180,
             editable: false,
         },
-
         {
             field: "worker_phone_company",
             headerName: "Số Công ty",
@@ -305,7 +291,7 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "worker_phone_family",
+            field: "worker_phone_personal",
             headerName: "Số cá nhân",
             width: 150,
             editable: false,
@@ -313,7 +299,7 @@ function WorkerList({ auth }) {
         {
             field: "status_worker",
             headerName: "Tinh trạng",
-            width: 200,
+            width: 300,
             editable: false,
             renderCell: (params) => {
                 const handleChangeva = (event) => {
@@ -481,12 +467,8 @@ function WorkerList({ auth }) {
             editable: false,
         },
     ];
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
-    const heightScreenTV = screenSize.height;
-
+    const { width, height } = useWindowSize(72);
+    console.log('xin height:',height);
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
@@ -518,34 +500,38 @@ function WorkerList({ auth }) {
                                 value={info_worker.worker_full_name}
                                 onChange={handleChange}
                                 label="Họ Và Tên"
+                                required
                             />
 
                             <Input
                                 type="text"
                                 className="shadow-none"
                                 id="worker_address"
-                                name="add_worker"
-                                value={info_worker.add_worker}
+                                name="worker_address"
+                                value={info_worker.worker_address}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
+                                required
                             />
                             <Input
                                 type="text"
                                 className="shadow-none"
                                 id="worker_phone_company"
-                                name="phone_cty"
-                                value={info_worker.phone_cty}
+                                name="worker_phone_company"
+                                value={info_worker.worker_phone_company}
                                 onChange={handleChange}
                                 label="Số Công Ty"
+                                required
                             />
                             <Input
                                 type="text"
                                 className="shadow-none"
                                 id="worker_phone_personal"
-                                name="phone_cn"
-                                value={info_worker.phone_cn}
+                                name="worker_phone_personal"
+                                value={info_worker.worker_phone_personal}
                                 onChange={handleChange}
                                 label="Số Cá Nhân"
+                                required
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-2 m-1 "></div>
@@ -556,8 +542,9 @@ function WorkerList({ auth }) {
                                 value={info_worker.worker_kind}
                                 onChange={handleSelectChange}
                                 className="w-full border rounded-lg"
+                                required
                             >
-                                <option value="">Vui lòng chọn loại thợ</option>
+                                {/* <option value="">Vui lòng chọn loại thợ</option> */}
                                 <option value={0}>Điện Nước</option>
                                 <option value={1}>Điện Lạnh</option>
                                 <option value={2}>Đồ Gỗ</option>
@@ -590,15 +577,51 @@ function WorkerList({ auth }) {
                         >
                             <span>Hủy</span>
                         </Button>
-                        <Button variant="gradient" color="green" type="submit">
+                        <Button
+                            variant="gradient"
+                            color="green"
+                            type="submit"
+                            // onClick={handleOpenAccApp}
+                        >
                             <span>Lưu</span>
                         </Button>
                     </DialogFooter>
                 </form>
             </Dialog>
+            <Dialog open={openAccApp} handler={handleOpenAccApp}>
+                <DialogHeader>
+                    <div className="m-auto">Thông Tin Tài Khoản APP</div>
+                </DialogHeader>
+                <DialogBody divider>
+                    <div className="p-5 border border-green-500 rounded-lg">
+                        <p className="pb-2 font-bold">
+                            Tên Đăng Nhập:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                {accAPP?.acc}
+                            </span>
+                        </p>
+                        <p className="font-bold">
+                            Mật Khẩu:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                {accAPP?.pass}
+                            </span>
+                        </p>
+                    </div>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="green"
+                        onClick={handleOpenAccApp}
+                        className="mr-1"
+                    >
+                        <span>Đã Xem</span>
+                    </Button>
+                </DialogFooter>
+            </Dialog>
             {/* -Đổ dữ liệu thợ- */}
-            <Card className={`w-[98%] h-[${heightScreenTV}px] m-auto mt-1`}>
-                <Box sx={{ height: heightScreenTV - 72, width: 1 }}>
+            <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
+                <Box sx={{ height: height, width: width }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}

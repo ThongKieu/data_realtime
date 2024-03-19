@@ -11,33 +11,32 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import { PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
-
-import Box from "@mui/material/Box";
-
-import NavLink from "@/Components/NavLink";
 import {
-    GridRowModes,
+    PlusCircleIcon,
+    MapPinIcon,
+    UserPlusIcon,
+} from "@heroicons/react/24/outline";
+import Box from "@mui/material/Box";
+import {
     DataGrid,
-    GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-
+import useWindowSize from "@/Core/Resize";
 function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
+    const [openAccApp, setOpenAccApp] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
-        worker_name: "",
-        add_worker: "",
-        phone_cty: "",
-        phone_cn: "",
-        worker_kind: "",
+        worker_address: "",
+        worker_phone_company: "",
+        worker_phone_personal: "",
+        worker_kind: 0,
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     const handleOpen = () => setOpen(!open);
-
+    const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
     const handleSelectChange = (e) => {
         setFormDataWorker({ ...info_worker, worker_kind: e.target.value });
         // Cập nhật trạng thái khi người dùng chọn tùy chọn
@@ -48,27 +47,31 @@ function WorkerList({ auth }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormDataWorker({ ...info_worker, [name]: value });
     };
-
+    const [accAPP, setAccApp] = useState(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const URL_API = "/api/web/workers";
-        // console.log(info_worker);
         // get info to form
+        console.log(info_worker.worker_full_name);
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_full_name", info_worker.worker_full_name);
-        formData.append("worker_name", info_worker.worker_name);
-        formData.append("add_worker", info_worker.add_worker);
-        formData.append("phone_cty", info_worker.phone_cty);
-        formData.append("phone_cn", info_worker.phone_cn);
+        formData.append("worker_address", info_worker.worker_address);
+        formData.append(
+            "worker_phone_company",
+            info_worker.worker_phone_company
+        );
+        formData.append(
+            "worker_phone_personal",
+            info_worker.worker_phone_personal
+        );
         formData.append("worker_kind", info_worker.worker_kind);
-
+        console.log("test");
         try {
-            const response = await fetch(URL_API+'/addNew', {
+            const response = await fetch(URL_API + "/addNew", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -79,12 +82,12 @@ function WorkerList({ auth }) {
             // console.log("formData", formData);
             if (response.ok) {
                 const responseData = await response.json();
-                // console.log(
-                //     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
-                //     responseData
-                // );
-                // console.log(responseData);
-                // window.location.reload();
+                console.log(
+                    "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+                    responseData
+                );
+                setAccApp(responseData);
+                handleOpenAccApp();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
@@ -95,12 +98,10 @@ function WorkerList({ auth }) {
     //lấy dữ liệu thợ
     // const [rows, setRows] = React.useState(initialRows);
     const [rowModesModel, setRowModesModel] = useState({});
-
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
     const [rows, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         fetch(host + "api/web/workers")
@@ -112,7 +113,6 @@ function WorkerList({ auth }) {
             })
             .then((data) => {
                 setData(data); // Lưu dữ liệu vào trạng thái React
-                setLoading(false); // Đã lấy xong dữ liệu
             })
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
@@ -121,7 +121,7 @@ function WorkerList({ auth }) {
     // useEffect chỉ chạy một lần sau khi render đầu tiên
     const fetchData = async (data1) => {
         try {
-            const res = await fetch(host+"api/web/update/worker", {
+            const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -140,7 +140,7 @@ function WorkerList({ auth }) {
     // fetch data phone
     const fetchDataPhone = async (data) => {
         try {
-            const res = await fetch("api/web/update/worker", {
+            const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,7 +161,7 @@ function WorkerList({ auth }) {
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
-            const response = await fetch(host+ "api/web/update/worker", {
+            const response = await fetch(host + "api/web/update/worker", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -172,23 +172,12 @@ function WorkerList({ auth }) {
             });
             if (response.status === 200) {
                 console.log("Gửi Hình Đi Thành Công");
+                window.location.reload();
             }
         } catch (error) {
             console.log(error);
         }
     };
-    // Hàm thay đổi sdt trong rendercell
-    // const handleChangeva = (event, id) => {
-    //     // Xử lý sự thay đổi của lựa chọn ở đây
-    //     const selectedValue = event.target.value;
-    //     const updatePhoneCTy = {
-    //         action: "phone_change_worker",
-    //         id: id,
-    //         phone_ct: selectedValue,
-    //     };
-    //     fetchDataPhoneCTy(updatePhoneCTy);
-    // };
-
     // Hiển thị dữ liệu bảng
     const columns = [
         {
@@ -253,9 +242,9 @@ function WorkerList({ auth }) {
             renderCell: (params) => {
                 return (
                     <a
-                    href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
-                            className="font-normal"
-                        >
+                        href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
+                        className="font-normal"
+                    >
                         <MapPinIcon className="w-5 h-5 text-red-500" />
                     </a>
                 );
@@ -267,7 +256,6 @@ function WorkerList({ auth }) {
             width: 180,
             editable: false,
         },
-
         {
             field: "worker_phone_company",
             headerName: "Số Công ty",
@@ -311,7 +299,7 @@ function WorkerList({ auth }) {
         {
             field: "status_worker",
             headerName: "Tinh trạng",
-            width: 200,
+            width: 300,
             editable: false,
             renderCell: (params) => {
                 const handleChangeva = (event) => {
@@ -451,33 +439,36 @@ function WorkerList({ auth }) {
         {
             field: "worker_check_acc",
             headerName: "Tài Khoản",
+            align: "center",
             renderCell: (params) => {
+                console.log(params);
                 if (params.field === "worker_check_acc") {
                     switch (params.value) {
                         case 0:
-                            return "Chưa có, vui lòng liên hệ Admin.";
+                            return (
+                                <Button
+                                    className="p-2 text-center"
+                                    variant="outlined"
+                                >
+                                    <UserPlusIcon className="w-5 h-5" />
+                                </Button>
+                            );
                         case 1:
                             return "Đã có chưa kích hoạt";
                         case 2:
-                            return "Đã có đã kích hoạt";
+                            return "Đã kích hoạt";
+                        case 3:
+                            return "Vô hiệu hóa";
                     }
                 }
-                return <div>{params.value}</div>;
+                return <p className="break-words">{params.value}</p>;
             },
             width: 150,
             editable: false,
         },
     ];
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
-    const heightScreenTV = screenSize.height;
-    const [inputValue, setInputValue] = useState('');
-
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
-    };
+    const { width, height } = useWindowSize(72);
+    console.log('xin height:',height);
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Danh sách thợ" />
@@ -504,50 +495,43 @@ function WorkerList({ auth }) {
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
+                                id="worker_full_name"
                                 name="worker_full_name"
                                 value={info_worker.worker_full_name}
                                 onChange={handleChange}
-                                label="Họ"
+                                label="Họ Và Tên"
+                                required
                             />
+
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
-                                name="worker_name"
-                                value={info_worker.worker_name}
-                                onChange={handleChange}
-                                label="Tên"
-                            />
-                            <Input
-                                type="text"
-                                className="shadow-none"
-                                id="name"
+                                id="worker_address"
                                 name="worker_address"
-                                value={info_worker.add_worker}
+                                value={info_worker.worker_address}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
+                                required
                             />
-                            <label className="shadow-none" size="lg">
-                                Tên tắt vd: A01,A02..
-                            </label>
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
+                                id="worker_phone_company"
                                 name="worker_phone_company"
-                                value={info_worker.phone_cty}
+                                value={info_worker.worker_phone_company}
                                 onChange={handleChange}
                                 label="Số Công Ty"
+                                required
                             />
                             <Input
                                 type="text"
                                 className="shadow-none"
-                                id="name"
+                                id="worker_phone_personal"
                                 name="worker_phone_personal"
-                                value={info_worker.phone_cn}
+                                value={info_worker.worker_phone_personal}
                                 onChange={handleChange}
                                 label="Số Cá Nhân"
+                                required
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-2 m-1 "></div>
@@ -558,8 +542,9 @@ function WorkerList({ auth }) {
                                 value={info_worker.worker_kind}
                                 onChange={handleSelectChange}
                                 className="w-full border rounded-lg"
+                                required
                             >
-                                <option value="">Vui lòng chọn loại thợ</option>
+                                {/* <option value="">Vui lòng chọn loại thợ</option> */}
                                 <option value={0}>Điện Nước</option>
                                 <option value={1}>Điện Lạnh</option>
                                 <option value={2}>Đồ Gỗ</option>
@@ -568,8 +553,8 @@ function WorkerList({ auth }) {
                                 <option value={5}>Tài Xế</option>
                                 <option value={6}>Cơ Khí</option>
                             </select>
-                            </div>
-                            <div>
+                        </div>
+                        <div>
                             <input
                                 id="avatar_new"
                                 type="file"
@@ -578,9 +563,9 @@ function WorkerList({ auth }) {
                             />
                         </div>
                         <div className="m-1">
-                            <p> Tài Khoản:
-                                {}
-                            </p>
+                            <label className="shadow-none" size="lg">
+                                Tên tắt vd: A01,A02..
+                            </label>
                         </div>
                     </DialogBody>
                     <DialogFooter>
@@ -592,15 +577,51 @@ function WorkerList({ auth }) {
                         >
                             <span>Hủy</span>
                         </Button>
-                        <Button variant="gradient" color="green" type="submit">
+                        <Button
+                            variant="gradient"
+                            color="green"
+                            type="submit"
+                            // onClick={handleOpenAccApp}
+                        >
                             <span>Lưu</span>
                         </Button>
                     </DialogFooter>
                 </form>
             </Dialog>
+            <Dialog open={openAccApp} handler={handleOpenAccApp}>
+                <DialogHeader>
+                    <div className="m-auto">Thông Tin Tài Khoản APP</div>
+                </DialogHeader>
+                <DialogBody divider>
+                    <div className="p-5 border border-green-500 rounded-lg">
+                        <p className="pb-2 font-bold">
+                            Tên Đăng Nhập:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                {accAPP?.acc}
+                            </span>
+                        </p>
+                        <p className="font-bold">
+                            Mật Khẩu:
+                            <span className="pl-2 italic tracking-wide text-red-500">
+                                {accAPP?.pass}
+                            </span>
+                        </p>
+                    </div>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="green"
+                        onClick={handleOpenAccApp}
+                        className="mr-1"
+                    >
+                        <span>Đã Xem</span>
+                    </Button>
+                </DialogFooter>
+            </Dialog>
             {/* -Đổ dữ liệu thợ- */}
-            <Card className={`w-[98%] h-[${heightScreenTV}px] m-auto mt-1`}>
-                <Box sx={{ height: heightScreenTV - 72, width: 1 }}>
+            <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
+                <Box sx={{ height: height, width: width }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}

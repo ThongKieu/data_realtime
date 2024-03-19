@@ -26,7 +26,7 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $workers = Worker::where('worker_kind', '!=', 9)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_family','worker_check_acc']);
+        $workers = Worker::where('worker_kind', '!=', 9)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
         $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
         foreach ($workers as $worker) {
             $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');
@@ -135,7 +135,7 @@ class WorkerController extends Controller
                     $next_worker_code = '121';
                     return $next_worker_code;
             }
-            
+
     $da = new Worker([
         "worker_full_name" => $request->worker_full_name,
         "worker_kind" => $request->worker_kind,
@@ -153,29 +153,29 @@ class WorkerController extends Controller
             $file->move('assets/avatar/', $name);
             $path = 'assets/avatar/' . $name;
             $up = Worker::where('worker_code', '=', $next_worker_code)->update(['worker_avatar' => $path]);
-            
+
         }
         else
         {
             $path = 'assets/avatar/avata1.png';
         }
         $id_worker = Worker::where('worker_code', '=', $next_worker_code)->value('id');
-        $acc = $next_worker_code.$request->phone_cty;
+        $acc = $next_worker_code.$request->worker_phone_company;
 
         $all = WorkerController::createAcc($id_worker,$acc,'Thoviet58568',$path);
         // dd($all);
         if($all)
-        {  
-             $up = Worker::where('worker_code', '=', $next_worker_code)->update(['worker_check_acc' => 1]);
-             $data = ['acc'=>$acc,'pass'=>'Thoviet58568'];
-            return response() ->json(['data'=>$data]);
+        {
+            $data = ['acc'=>$acc,'pass'=>'Thoviet58568'];
+            $up = Worker::where('worker_code', '=', $next_worker_code)->update(['worker_check_acc' => 1]);
+            return response() ->json($data);
         }
         else
         {
             return 'Error Check Again';
         }
 
-   } 
+   }
     public function findCodeWorker($worker_kind) {
         $r_last_num = Worker::where('worker_kind','=',$worker_kind)->orderBy('id','desc')->value('worker_code');
         return $r_last_num;

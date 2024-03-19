@@ -24,7 +24,6 @@ import { host } from "@/Utils/UrlApi";
 import { Divider } from "@mui/material";
 
 const TABS = [
-
     {
         label: "Điện Nước",
         value: "DN",
@@ -53,9 +52,6 @@ const TABS = [
         label: "Cơ Khí",
         value: "CK",
     },
-
-
-
 ];
 
 const TABLE_HEAD = [
@@ -77,29 +73,36 @@ function WorkerAccount() {
 
     const [openDialogIndex, setOpenDialogIndex] = useState(null); // State array to manage dialog open/close for each row
 
-    const handleClickOpenFix = (index) => { // Function to open dialog for a specific row
+    const handleClickOpenFix = (index) => {
+        // Function to open dialog for a specific row
         setOpenDialogIndex(index);
     };
 
     const [openDialogIndexDel, setOpenDialogIndexDel] = useState(null); // State array to manage dialog open/close for each row
 
-    const handleClickOpenDel = (index) => { // Function to open dialog for a specific row
+    const handleClickOpenDel = (index) => {
+        // Function to open dialog for a specific row
         setOpenDialogIndexDel(index);
     };
-    const [infoFix, setInfoFix] = useState({
-        id_worker: 1,
-        acc_worker:'',
-
-    });
+    const [infoFix, setInfoFix] = useState(accountData);
     const handleSentFix = () => {
         setOpenDialogIndex(null);
-
+    };
+    const handleSent = () => {
+        const data = {
+            id: infoFix.id_worker,
+            acc: infoFix.acc_worker,
+            pass: infoFix.pass_worker,
+        };
+        console.log(data);
     };
     const handleOnChange = (e) => {
         const { name, value } = e.target;
-        setInfoFix(...accountData,{ [name]: value });
-        console.log('accountData',accountData);
-    }
+        setInfoFix((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
     // console.log(infoFix);
     useEffect(() => {
         fetch(host + "api/web/workers/account")
@@ -116,7 +119,7 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-    // console.log(accountData);
+    console.log(accountData);
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />
@@ -165,7 +168,6 @@ function WorkerAccount() {
                                             className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                                         >
                                             {head}{" "}
-
                                         </Typography>
                                     </th>
                                 ))}
@@ -182,7 +184,9 @@ function WorkerAccount() {
                                         <td className={classes}>
                                             <div className="flex items-center gap-3">
                                                 <Avatar
-                                                    src={`${host + item.avatar}`}
+                                                    src={`${
+                                                        host + item.avatar
+                                                    }`}
                                                     alt={item.id_worker}
                                                     size="sm"
                                                 />
@@ -251,58 +255,144 @@ function WorkerAccount() {
                                             </div>
                                         </td>
                                         <td className={classes}>
-
-                                            <div className="w-max" onClick={() => handleClickOpenFix(index)}>
-                                                <Chip variant="ghost" size="sm" value="Sửa tài khoản" color="deep-purple" />
+                                            <div
+                                                className="w-max"
+                                                onClick={() =>
+                                                    handleClickOpenFix(index)
+                                                }
+                                            >
+                                                <Chip
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    value="Sửa tài khoản"
+                                                    color="deep-purple"
+                                                />
                                             </div>
-                                            <Dialog open={openDialogIndex === index} onClose={() => setOpenDialogIndex(null)}>
-                                                <DialogHeader>Thông tin tài khoản của {item.worker_full_name}</DialogHeader>
+                                            <Dialog
+                                                open={openDialogIndex === index}
+                                                onClose={() =>
+                                                    setOpenDialogIndex(null)
+                                                }
+                                            >
+                                                <DialogHeader>
+                                                    Thông tin tài khoản của{" "}
+                                                    {item.worker_full_name}
+                                                </DialogHeader>
                                                 <Divider></Divider>
                                                 <DialogBody>
                                                     <Input
-                                                        label="Tên Thợ"
-                                                        // value={infoFix.acc_worker}
+                                                        label="Tên Đăng Nhập"
                                                         name="acc_worker"
                                                         id="acc_worker"
-                                                        defaultValue={item.acc_worker}
+                                                        defaultValue={
+                                                            item.acc_worker
+                                                        }
                                                         className="shadow-none"
-                                                        onChange={handleOnChange}
+                                                        onChange={
+                                                            handleOnChange
+                                                        }
+                                                    />
+                                                    <Input
+                                                        label="Mật Khẩu"
+                                                        name="pass_worker"
+                                                        id="pass_worker"
+                                                        defaultValue={
+                                                            item.pass_worker
+                                                        }
+                                                        className="shadow-none"
+                                                        onChange={
+                                                            handleOnChange
+                                                        }
                                                     />
                                                     <input
                                                         // value={infoFix.id_worker}
                                                         name="id_worker"
                                                         id="id_worker"
-                                                        defaultValue={item.id_worker}
+                                                        defaultValue={
+                                                            item.id_worker
+                                                        }
                                                         className="hidden"
-                                                        onChange={handleOnChange}
-
+                                                        onChange={
+                                                            handleOnChange
+                                                        }
                                                     />
                                                 </DialogBody>
                                                 <Divider></Divider>
                                                 <DialogFooter>
-                                                    <Button variant="text" color="red" onClick={() => setOpenDialogIndex(null)}>Cancel</Button>
-                                                    <Button variant="gradient" color="green" onClick={() => handleSentFix()}>Confirm</Button>
+                                                    <Button
+                                                        variant="text"
+                                                        color="red"
+                                                        onClick={() =>
+                                                            setOpenDialogIndex(
+                                                                null
+                                                            )
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        variant="gradient"
+                                                        color="green"
+                                                        onClick={() =>
+                                                            handleSent() &&
+                                                            handleSentFix()
+                                                        }
+                                                    >
+                                                        Confirm
+                                                    </Button>
                                                 </DialogFooter>
                                             </Dialog>
                                         </td>
                                         <td className={classes}>
-                                            <div className="w-max" onClick={() => handleClickOpenDel(index)}>
+                                            <div
+                                                className="w-max"
+                                                onClick={() =>
+                                                    handleClickOpenDel(index)
+                                                }
+                                            >
                                                 <Chip
                                                     variant="ghost"
                                                     size="sm"
                                                     value="Xoá tài khoản"
                                                     color="red"
                                                 />
-
                                             </div>
-                                            <Dialog open={openDialogIndexDel === index} onClose={() => setOpenDialogIndexDel(null)}>
-                                                <DialogHeader>Xóa tài khoản của {item.worker_full_name}</DialogHeader>
-                                                <DialogBody>
-                                                    '1'
-                                                </DialogBody>
+                                            <Dialog
+                                                open={
+                                                    openDialogIndexDel === index
+                                                }
+                                                onClose={() =>
+                                                    setOpenDialogIndexDel(null)
+                                                }
+                                            >
+                                                <DialogHeader>
+                                                    Xóa tài khoản của
+                                                    {item.worker_full_name}
+                                                </DialogHeader>
+                                                <DialogBody>'1'</DialogBody>
                                                 <DialogFooter>
-                                                    <Button variant="text" color="red" onClick={() => setOpenDialogIndexDel(null)}>Cancel</Button>
-                                                    <Button variant="gradient" color="green" onClick={() => setOpenDialogIndexDel(null)}>Confirm</Button>
+                                                    <Button
+                                                        variant="text"
+                                                        color="red"
+                                                        onClick={() =>
+                                                            setOpenDialogIndexDel(
+                                                                null
+                                                            )
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        variant="gradient"
+                                                        color="green"
+                                                        onClick={() =>
+                                                            setOpenDialogIndexDel(
+                                                                null
+                                                            )
+                                                        }
+                                                    >
+                                                        Confirm
+                                                    </Button>
                                                 </DialogFooter>
                                             </Dialog>
                                         </td>

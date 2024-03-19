@@ -49,9 +49,10 @@ class AccountionWorkerController extends Controller
             'avatar',
             'active',
             'worker_code',
+            'id_worker'
         ]);
 
-       
+
 
         return $all;
     }

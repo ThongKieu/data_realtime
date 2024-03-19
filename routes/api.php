@@ -109,6 +109,12 @@ Route::prefix('web')->group(function () {
         Route::get('soket_noti', 'App\Http\Controllers\Api\NoticationAllController@soketNoti');
         Route::post('markReadAll', 'App\Http\Controllers\Api\NoticationAllController@markReadAll');
     });
+    Route::prefix('popup-discount')->group(function () {
+        Route::get('/', 'App\Http\Controllers\PopupDiscountController@index');
+        Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
+        Route::post('fix', 'App\Http\Controllers\PopupDiscountController@edit');
+    });
+    
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(

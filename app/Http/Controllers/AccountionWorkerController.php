@@ -262,7 +262,6 @@ class AccountionWorkerController extends Controller
         $id = $request->id;
         //    dd($ac);
         if ($ac == 0) {
-            $id = $request->id;
             $newPass = Hash::make($request->pass_worker);
             $u = DB::table('account_workers')->where('id', '=', $id)->update(['pass_worker' => $newPass]);
             return response()->json('Vui lòng đăng nhập lại');
@@ -272,7 +271,7 @@ class AccountionWorkerController extends Controller
                 $u = DB::table('account_workers')->where('id', '=', $id)->update(['acc_worker' => $newAcc]);
                 return response()->json($newAcc);
             } else {
-                $length = 10; // Độ dài chuỗi mong muốn
+                $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $randomString = substr(str_shuffle($characters), 0, $length);
                 $u = DB::table('account_workers')->where('id', '=', $id)->update(['pass_worker' => $randomString]);

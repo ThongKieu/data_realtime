@@ -640,6 +640,27 @@ function WorkerList({ auth }) {
                     </Button>
                 </DialogFooter>
             </Dialog>
+            {/* -Đổ dữ liệu thợ- */}
+            <Card className={`w-[${width}px] h-[${height}px] m-auto mt-1`}>
+                <Box sx={{ height: height, width: 1 }}>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        rowModesModel={rowModesModel}
+                        onRowModesModelChange={handleRowModesModelChange}
+                        // slots={{ toolbar: GridToolbar }}
+                        slotProps={{
+                            toolbar: {
+                                showQuickFilter: true,
+                            },
+                        }}
+                        pagination
+                        autoPageSize
+
+                        className="text-center "
+                    />
+                </Box>
+            </Card>
         </AuthenticatedLayoutAdmin>
     );
 }

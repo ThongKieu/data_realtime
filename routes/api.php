@@ -23,6 +23,8 @@ Route::prefix('web')->group(function () {
     Route::prefix('workers')->group(function(){
         Route::get('/', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
         Route::post('/addNew', 'App\Http\Controllers\Api\Web\WorkerController@addNewWorker');
+        Route::post('/create_acc', 'App\Http\Controllers\Api\Web\WorkerController@createAcc');
+        Route::get('/account', 'App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
 
     });
     Route::apiResource('district', DistrictController::class);
@@ -61,7 +63,7 @@ Route::prefix('web')->group(function () {
         Route::post('', 'App\Http\Controllers\Api\Web\QuoteFlowController@store');
         Route::post('/update', 'App\Http\Controllers\Api\Web\QuoteFlowController@update');
     });
-    Route::get('worker-account', 'App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
+    
     // Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer', 'App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');

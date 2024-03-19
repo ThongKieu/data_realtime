@@ -13,12 +13,18 @@ import {
     TabsHeader,
     Tab,
     Avatar,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
 } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
+import { Divider } from "@mui/material";
+
 const TABS = [
-    
+
     {
         label: "Điện Nước",
         value: "DN",
@@ -38,17 +44,18 @@ const TABS = [
     {
         label: "Xây Dựng",
         value: "XD",
-    },{
+    },
+    {
         label: "Tài Xế",
-        value: "XD",
+        value: "TD",
     },
     {
         label: "Cơ Khí",
         value: "CK",
     },
-    
-    
-    
+
+
+
 ];
 
 const TABLE_HEAD = [
@@ -67,6 +74,33 @@ function WorkerAccount() {
     const handleClick = () => {
         console.log(accountData);
     };
+
+    const [openDialogIndex, setOpenDialogIndex] = useState(null); // State array to manage dialog open/close for each row
+
+    const handleClickOpenFix = (index) => { // Function to open dialog for a specific row
+        setOpenDialogIndex(index);
+    };
+
+    const [openDialogIndexDel, setOpenDialogIndexDel] = useState(null); // State array to manage dialog open/close for each row
+
+    const handleClickOpenDel = (index) => { // Function to open dialog for a specific row
+        setOpenDialogIndexDel(index);
+    };
+    const [infoFix, setInfoFix] = useState({
+        id_worker: 1,
+        acc_worker:'',
+
+    });
+    const handleSentFix = () => {
+        setOpenDialogIndex(null);
+
+    };
+    const handleOnChange = (e) => {
+        const { name, value } = e.target;
+        setInfoFix(...accountData,{ [name]: value });
+        console.log('accountData',accountData);
+    }
+    // console.log(infoFix);
     useEffect(() => {
         fetch(host + "api/web/workers/account")
             .then((response) => {
@@ -82,7 +116,7 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-    console.log(accountData);
+    // console.log(accountData);
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />
@@ -131,7 +165,7 @@ function WorkerAccount() {
                                             className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                                         >
                                             {head}{" "}
-                                           
+
                                         </Typography>
                                     </th>
                                 ))}
@@ -144,11 +178,11 @@ function WorkerAccount() {
                                     ? "p-4"
                                     : "p-4 border-b border-blue-gray-50";
                                 return (
-                                    <tr key={item.id_worker}>
+                                    <tr key={index}>
                                         <td className={classes}>
                                             <div className="flex items-center gap-3">
                                                 <Avatar
-                                                    src="https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg"
+                                                    src={`${host + item.avatar}`}
                                                     alt={item.id_worker}
                                                     size="sm"
                                                 />
@@ -158,7 +192,7 @@ function WorkerAccount() {
                                                         color="blue-gray"
                                                         className="font-normal"
                                                     >
-                                                        Không tìm thấy tên thợ
+                                                        {item.worker_full_name}
                                                     </Typography>
                                                 </div>
                                             </div>
@@ -217,30 +251,60 @@ function WorkerAccount() {
                                             </div>
                                         </td>
                                         <td className={classes}>
-                                            <div
-                                                className="w-max"
-                                                onClick={handleClick}
-                                            >
-                                                <Chip
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    value="Sửa tài khoản"
-                                                    color="deep-purple"
-                                                />
+
+                                            <div className="w-max" onClick={() => handleClickOpenFix(index)}>
+                                                <Chip variant="ghost" size="sm" value="Sửa tài khoản" color="deep-purple" />
                                             </div>
+                                            <Dialog open={openDialogIndex === index} onClose={() => setOpenDialogIndex(null)}>
+                                                <DialogHeader>Thông tin tài khoản của {item.worker_full_name}</DialogHeader>
+                                                <Divider></Divider>
+                                                <DialogBody>
+                                                    <Input
+                                                        label="Tên Thợ"
+                                                        // value={infoFix.acc_worker}
+                                                        name="acc_worker"
+                                                        id="acc_worker"
+                                                        defaultValue={item.acc_worker}
+                                                        className="shadow-none"
+                                                        onChange={handleOnChange}
+                                                    />
+                                                    <input
+                                                        // value={infoFix.id_worker}
+                                                        name="id_worker"
+                                                        id="id_worker"
+                                                        defaultValue={item.id_worker}
+                                                        className="hidden"
+                                                        onChange={handleOnChange}
+
+                                                    />
+                                                </DialogBody>
+                                                <Divider></Divider>
+                                                <DialogFooter>
+                                                    <Button variant="text" color="red" onClick={() => setOpenDialogIndex(null)}>Cancel</Button>
+                                                    <Button variant="gradient" color="green" onClick={() => handleSentFix()}>Confirm</Button>
+                                                </DialogFooter>
+                                            </Dialog>
                                         </td>
                                         <td className={classes}>
-                                            <div
-                                                className="w-max"
-                                                onClick={handleClick}
-                                            >
+                                            <div className="w-max" onClick={() => handleClickOpenDel(index)}>
                                                 <Chip
                                                     variant="ghost"
                                                     size="sm"
                                                     value="Xoá tài khoản"
                                                     color="red"
                                                 />
+
                                             </div>
+                                            <Dialog open={openDialogIndexDel === index} onClose={() => setOpenDialogIndexDel(null)}>
+                                                <DialogHeader>Xóa tài khoản của {item.worker_full_name}</DialogHeader>
+                                                <DialogBody>
+                                                    '1'
+                                                </DialogBody>
+                                                <DialogFooter>
+                                                    <Button variant="text" color="red" onClick={() => setOpenDialogIndexDel(null)}>Cancel</Button>
+                                                    <Button variant="gradient" color="green" onClick={() => setOpenDialogIndexDel(null)}>Confirm</Button>
+                                                </DialogFooter>
+                                            </Dialog>
                                         </td>
                                     </tr>
                                 );

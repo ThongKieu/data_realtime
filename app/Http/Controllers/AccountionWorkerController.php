@@ -39,8 +39,17 @@ class AccountionWorkerController extends Controller
         // $all = AccountionWorker::all();
         $all = DB::table('accountion_workers')
         ->leftJoin('workers','accountion_workers.id_worker','workers.id')
-        ->where('workers.worker_check_acc','>',0)
-        ->get();
+        ->where('workers.worker_check_acc','!=',0)
+        ->get([
+            'worker_full_name',
+            'acc_worker',
+            'last_active',
+            'device_key',
+            'time_log',
+            'avatar',
+            'active',
+            'worker_code',
+        ]);
 
        
 

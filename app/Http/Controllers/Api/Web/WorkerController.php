@@ -197,6 +197,7 @@ class WorkerController extends Controller
                 'lat'=>10.816329,
                 'lng'=>106.7092466,
                 'id_worker'=>$id_worker,
+                'is_online'=>0,
             ]);
             $new_m ->save();
         }
@@ -210,7 +211,7 @@ class WorkerController extends Controller
             'pass_worker'=>Hash::make($re->pass_worker),
             'avatar'=>$re->avatar,
             'active'=>0,
-            
+
         ]);
         $n_acc->save();
         if($n_acc)
@@ -219,6 +220,7 @@ class WorkerController extends Controller
                 'lat'=>10.816329,
                 'lng'=>106.7092466,
                 'id_worker'=>$re->id_worker,
+                'is_online'=>0,
             ]);
             $new_m ->save();
         }

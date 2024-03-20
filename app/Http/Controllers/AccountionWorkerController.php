@@ -51,8 +51,6 @@ class AccountionWorkerController extends Controller
             'id_worker','accountion_workers.id'
         ]);
 
-
-
         return $all;
     }
     // trả về thông tin tên thợ
@@ -82,11 +80,11 @@ class AccountionWorkerController extends Controller
                 $device = $item->device_key;
                 // return $device;
                 switch ($active) {
-                        //chưa kích hoạt
+                    //chưa kích hoạt
                     case 0:
                         return 0;
                         break;
-                        //đã kích hoạt
+                    //đã kích hoạt
                     case 1:
                         if ($device == $req->device_key) {
                             return 1;
@@ -95,11 +93,11 @@ class AccountionWorkerController extends Controller
                             return 2;
                         }
                         break;
-                        //tạm giữ
+                    //tạm giữ
                     case 2:
                         return 2;
                         break;
-                        //Đã xóa tài khoản
+                    //Đã xóa tài khoản
                     case 3:
                         return 3;
                         break;
@@ -120,19 +118,19 @@ class AccountionWorkerController extends Controller
 
                 // return $device;
                 switch ($active) {
-                        //chưa kích hoạt
+                    //chưa kích hoạt
                     case 0:
                         return 0;
                         break;
-                        //đã kích hoạt
+                    //đã kích hoạt
                     case 1:
                         return 1;
                         break;
-                        //tạm giữ
+                    //tạm giữ
                     case 2:
                         return 2;
                         break;
-                        //Đã xóa tài khoản
+                    //Đã xóa tài khoản
                     case 3:
                         return 3;
                         break;
@@ -254,7 +252,6 @@ class AccountionWorkerController extends Controller
         $id = $request->id;
         //    dd($ac);
         if ($ac == 0) {
-            $id = $request->id;
             $newPass = Hash::make($request->pass_worker);
             $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => $newPass]);
             return response()->json('Vui lòng đăng nhập lại');
@@ -264,7 +261,7 @@ class AccountionWorkerController extends Controller
                 $u = AccountionWorker::where('id', '=', $id)->update(['acc_worker' => $newAcc]);
                 return response()->json($newAcc);
             } else {
-                $length = 10; // Độ dài chuỗi mong muốn
+                $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $randomString = substr(str_shuffle($characters), 0, $length);
                 $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => $randomString]);

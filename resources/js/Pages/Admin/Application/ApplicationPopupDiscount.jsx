@@ -7,13 +7,20 @@ import {
     CardBody,
     Chip,
     CardFooter,
+    Dialog,
+    DialogBody,
+    DialogFooter,
+    DialogHeader ,
+    Input,
 } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
+import { Divider } from "@mui/material";
 
 const TABLE_HEAD = [
     "STT",
+    "Tên",
     "Nội Dung",
     "% Khuyến Mãi",
     "Hình Ảnh",
@@ -23,8 +30,66 @@ const TABLE_HEAD = [
 ];
 
 function ApplicationPopupDiscount() {
-    const [popupData, setPopupData] = useState([]);
+    const [popupData, setPopupData] = useState([]);F
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(!open);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [info_popup, setFormDataPopup] = useState({
+        popup_title: "",
+        // popup_image: "",
+        popup_discount: "",
+        popup_description: "",
+        popup_date_begin: "",
+        popup_date_end: "",
+        popup_status: "",
+    });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormDataPopup({ ...info_popup, [name]: value });
+    };
+    const handleImageSelect = (event) => {
+        const file = event.target.files[0];
+        setSelectedFiles(file);
+    };
+    console.log(info_popup);
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const URL_API = "/api/web/popup-discount";
+        const formData = new FormData();
+        // formData.append("avatar_new", selectedFiles.avatar_new);
+        formData.append("popup_title", info_popup.popup_title);
+        formData.append("popup_discount", info_popup.popup_discount);
+        formData.append("popup_description", info_popup.popup_description);
+        formData.append("popup_date_begin", info_popup.popup_date_begin);
+        formData.append("popup_date_end", info_popup.popup_date_end);
+        formData.append("popup_status", info_popup.popup_status);
+        formData.append("popup_image", selectedFiles);
+        try {
+            const response = await fetch(URL_API + "/store", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                mode: "no-cors",
+                body: formData,
+            });
+            // console.log("formData", formData);
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log(
+                    "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
+                    responseData
+                );
+              
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", response.statusText);
+            }
+        } catch (error) {
 
+            console.error("Lỗi khi gửi dữ liệu:", error);
+        }
+    };
     useEffect(() => {
         fetch(`${host}api/web/popup-discount`)
             .then((response) => {
@@ -43,21 +108,116 @@ function ApplicationPopupDiscount() {
 
     return (
         <AuthenticatedLayoutAdmin>
-            <Head title="Tài khoản thợ" />
-            <div className={`h-screen gap-2 p-2`}>
+            <Head title="Thông tin Chương Trình Khuyến mãi" />
+            <div className={`h-screen gap-2 p-1`}>
                 <Card className="w-full h-full">
                     <CardHeader
                         floated={false}
                         shadow={false}
                         className="rounded-none"
                     >
-                        <Typography
-                            variant="h4"
-                            color="blue-gray"
-                            className="flex justify-center"
-                        >
-                            Danh Sách Popup Chương Trình Khuyến Mãi
-                        </Typography>
+                        <div className="grid grid-cols-5 gap-1">
+                            <Typography className="col-span-4 m-2 font-extraboldtext-center flex justify-center items-center text-lg">
+                                 Danh Sách Popup Chương Trình Khuyến Mãi
+                            </Typography>
+                            <Button
+                                onClick={handleOpen}
+                                variant="gradient"
+                                className="col-start-5 m-2"
+                            >
+                                Chương trình khuyến mãi mới
+                            </Button>
+                            <Dialog open={open} handler={handleOpen}>
+                                <div className="flex items-center justify-center">
+                                    <DialogHeader> Chương trình khuyến mãi mới</DialogHeader>
+                                </div>
+
+                                <Divider></Divider>
+                                <DialogBody className="grid grid-cols-2 gap-2">
+
+                                    <Input
+                                        className="shadow-none"
+                                        label="Tên Chương trình"
+                                        value={info_popup.popup_title}
+                                        name="popup_title"
+                                        required
+                                        onChange={handleChange}
+                                    />
+                                    <Input
+                                        className="shadow-none"
+                                        label="Khuyến mãi"
+                                        value={info_popup.popup_discount}
+                                        name="popup_discount"
+                                        required
+                                        onChange={handleChange}
+                                    />
+                                   <div className="col-span-2">
+                                   <Input
+                                        className="shadow-none"
+                                        label="Mô tả"
+                                        value={info_popup.popup_description}
+                                        name="popup_description"
+                                        required
+                                        onChange={handleChange}
+                                    />
+                                   </div>
+                                    
+                                     <Input 
+                                        type="date"
+                                        className="shadow-none"
+                                        label="Ngày bắt đầu"
+                                        value={info_popup.popup_date_begin}
+                                        name="popup_date_begin"
+                                        required
+                                        onChange={handleChange}
+                                    />
+                                     <Input
+                                        type="date"
+                                        className="shadow-none"
+                                        label="Ngày kết thúc"
+                                        value={info_popup.popup_date_end}
+                                        name="popup_date_end"
+                                        required
+                                        onChange={handleChange}
+                                    />
+                                    <div className="col-span-2">
+                                    <Input
+                                                type="file"
+                                                accept="image/*"
+                                                className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
+                                                labelProps={{
+                                                    className: "hidden",
+                                                }}
+                                                containerProps={{
+                                                    className: "h-28",
+                                                }}
+                                                onChange={handleImageSelect}
+                                            />
+                                   </div>
+                                    
+                                </DialogBody>
+                                <Divider></Divider>
+                                <DialogFooter>
+                                    <Button
+                                        variant="text"
+                                        color="red"
+                                        // onClick={handleOpen}
+                                        className="mr-1"
+                                    >
+                                        <span>Hủy</span>
+                                    </Button>
+                                    <Button
+                                        variant="gradient"
+                                        color="green"
+                                        onClick={handleSubmit}
+                                    >
+                                        <span>Lưu</span>
+                                    </Button>
+                                </DialogFooter>
+                            </Dialog>
+                        </div>
+
+
                     </CardHeader>
                     <CardBody className="px-0 overflow-scroll">
                         <table className="w-full text-left table-auto min-w-max">
@@ -107,7 +267,16 @@ function ApplicationPopupDiscount() {
                                                     color="blue-gray"
                                                     className="font-normal "
                                                 >
-                                                    {item.content_view_sale}
+                                                    {item.popup_title}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal "
+                                                >
+                                                    {item.popup_description}
                                                 </Typography>
                                             </td>
                                             <td className={classes}>
@@ -116,14 +285,14 @@ function ApplicationPopupDiscount() {
                                                     color="blue-gray"
                                                     className="font-normal"
                                                 >
-                                                    {item.sale_percent}
+                                                    {item.popup_discount}
                                                 </Typography>
                                             </td>
                                             <td className={classes}>
                                                 <img
-                                                    src={host + item.image_path}
+                                                    src={host + item.popup_image}
                                                     alt="Avatar"
-                                                    className="w-40 h-15"
+                                                    className="w-20 h-20"
                                                 />
                                             </td>
 
@@ -133,7 +302,7 @@ function ApplicationPopupDiscount() {
                                                     color="blue-gray"
                                                     className="font-normal "
                                                 >
-                                                    {item.time_begin}
+                                                    {item.popup_date_begin}
                                                 </Typography>
                                             </td>
                                             <td className={classes}>
@@ -142,7 +311,7 @@ function ApplicationPopupDiscount() {
                                                     color="blue-gray"
                                                     className="font-normal "
                                                 >
-                                                    {item.time_end}
+                                                    {item.popup_date_end}
                                                 </Typography>
                                             </td>
                                             <td className={classes}>

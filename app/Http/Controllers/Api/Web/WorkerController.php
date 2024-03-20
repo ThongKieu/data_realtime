@@ -189,11 +189,13 @@ class WorkerController extends Controller
             'avatar'=>$avatar,
             'active'=>0,
         ]);
-        // $up =  Worker::where('id','=',$id_worker)->update(['worker_check_status'])
+       
         $n_acc->save();
+        $up =  Worker::where('id','=',$id_worker)->update(['worker_check_status'=>1]);
+        $up ->save();
         if($n_acc)
         {
-            $check = MapsWorker::where('id','=',$id_worker)->value('id');
+            $check = MapsWorker::where('id','=',$id_worker)->get('id');
             if(count($check)==0)
            {
             $new_m = new MapsWorker([
@@ -217,9 +219,11 @@ class WorkerController extends Controller
             'active'=>0,
         ]);
         $n_acc->save();
+        $up =  Worker::where('id','=',$re->id_worker)->update(['worker_check_status'=>1]);
+        $up ->save();
         if($n_acc)
         {
-            $check = MapsWorker::where('id','=',$re->id_worker)->value('id');
+            $check = MapsWorker::where('id','=',$re->id_worker)->get('id');
             if(count($check)==0)
            {
             $new_m = new MapsWorker([

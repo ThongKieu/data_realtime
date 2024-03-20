@@ -20,7 +20,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('web')->group(function () {
     Route::apiResource('works', WorksController::class);
-    Route::get('workers', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+    Route::prefix('workers')->group(function(){
+        Route::get('/', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
+        Route::post('/addNew', 'App\Http\Controllers\Api\Web\WorkerController@addNewWorker');
+        Route::post('/create_acc', 'App\Http\Controllers\Api\Web\WorkerController@createAcc');
+        Route::post('/create_acc_from_tab', 'App\Http\Controllers\Api\Web\WorkerController@createAccFromTab');
+        Route::get('/account', 'App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
+        Route::post('/newAcc', 'App\Http\Controllers\AccountionWorkerController@newAccWorker');
+        // use for web and app
+        Route::post('/changePass', 'App\Http\Controllers\AccountionWorkerController@changePass');
+        // ------------------------------------------------------------------------------------------
+        Route::post('/updateActive', 'App\Http\Controllers\AccountionWorkerController@updateActive');
+    });
     Route::apiResource('district', DistrictController::class);
     Route::post('push-online', 'App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
     Route::get('list-online', 'App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
@@ -57,7 +68,7 @@ Route::prefix('web')->group(function () {
         Route::post('', 'App\Http\Controllers\Api\Web\QuoteFlowController@store');
         Route::post('/update', 'App\Http\Controllers\Api\Web\QuoteFlowController@update');
     });
-    Route::get('worker-account', 'App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
+
     // Route::get('popup-discount','App\Http\Controllers\ViewSaleController@getAllPopupDiscount');
     Route::prefix('import')->group(function () {
         Route::post('data-customer', 'App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');
@@ -98,6 +109,12 @@ Route::prefix('web')->group(function () {
         Route::get('soket_noti', 'App\Http\Controllers\Api\NoticationAllController@soketNoti');
         Route::post('markReadAll', 'App\Http\Controllers\Api\NoticationAllController@markReadAll');
     });
+    Route::prefix('popup-discount')->group(function () {
+        Route::get('/', 'App\Http\Controllers\PopupDiscountController@index');
+        Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
+        Route::post('fix', 'App\Http\Controllers\PopupDiscountController@edit');
+    });
+    
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(

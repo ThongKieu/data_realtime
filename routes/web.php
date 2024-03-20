@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/create-post ',function(){return Inertia::render('Admin/Posts/CreatePost');})->name('admin/create-post');
         Route::get('/users',function(){return Inertia::render('Admin/Users/UsersAdmin');})->name('admin/users');
         Route::get('/contact',function(){return Inertia::render('Admin/DataImport/Contacts');})->name('admin/contacts');
+        //popup
+        // Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
 
     });
 

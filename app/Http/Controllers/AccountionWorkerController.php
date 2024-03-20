@@ -30,18 +30,25 @@ class AccountionWorkerController extends Controller
         } else {
             return 'Không thành công';
         }
-
     }
     public static function getAllWorkersAcctive()
     {
 
         // dd('1111111111111');
-        $all = AccountionWorker::all();
-
-        foreach ($all as $item) {
-            $a = AccountionWorkerController::getNameWorkerAcctive($item->id_worker);
-            $item->id_worker = $a;
-        }
+        // $all = AccountionWorker::all();
+        $all = DB::table('accountion_workers')
+            ->leftJoin('workers', 'accountion_workers.id_worker', 'workers.id')
+            ->where('workers.worker_check_acc', '!=', 0)
+            ->get([
+                'worker_full_name',
+                'acc_worker',
+                'last_active',
+                'device_key',
+                'time_log',
+                'avatar',
+                'active',
+                'worker_code',
+            ]);
 
         return $all;
     }
@@ -49,15 +56,16 @@ class AccountionWorkerController extends Controller
     public static function getNameWorkerAcctive($id)
     {
 
-        $nameWork = DB::table('workers')->where('id', '=', $id)->get(['worker_name', 'sort_name']);
+        $nameWork = DB::table('workers')->where('id', '=', $id)->get(['worker_full_name']);
         $a = '';
-        foreach ($nameWork as $item) {$a = $item->sort_name . " - " . $item->worker_name;}
+        foreach ($nameWork as $item) {
+            $a = $item->worker_full_name;
+        }
         if ($a != null) {
             return $a;
         } else {
             return 'Không Tìm Đươc';
         }
-
     }
     public function checkAccWorker(Request $req, $id)
     {
@@ -97,7 +105,6 @@ class AccountionWorkerController extends Controller
         } else {
             return 0;
         }
-
     }
     public static function checkAccWorkerWeb($id)
     {
@@ -131,7 +138,6 @@ class AccountionWorkerController extends Controller
         } else {
             return 0;
         }
-
     }
     public function updateActive(Request $request)
     {
@@ -149,7 +155,7 @@ class AccountionWorkerController extends Controller
                 DB::update('update account_workers set active =' . $ac . ' where id = ?', [$id]);
                 break;
         }
-        return redirect()->action('Workers\WorkerController@indexAdmin');
+        return response()->json('Change Status Done!');
     }
 
     public function checkDeviceKey($key, $id)
@@ -165,7 +171,7 @@ class AccountionWorkerController extends Controller
         } else {
             return 3;
         }
-//Key null lần đầu đang nhập
+        //Key null lần đầu đang nhập
     }
     // check time login wrong
     public function checkWrongLogin($time)
@@ -224,7 +230,6 @@ class AccountionWorkerController extends Controller
 
                     return $c;
                 }
-
             }
         } else {
             // Tài khoản chưa được đăng ký hoặc chưa được kích hoạt vui lòng lòng liên hệ ADMIN
@@ -232,7 +237,6 @@ class AccountionWorkerController extends Controller
                 $d[0] = 3;
                 return $d;
             }
-
         }
     }
     //app update
@@ -244,32 +248,34 @@ class AccountionWorkerController extends Controller
             $pa = Hash::make($request->pass_worker);
             $u = DB::table('account_workers')->where('id_worker', '=', $id_worker)->update(['pass_worker' => $pa, 'last_active' => now()]);
             return 1;
-
         } else {
             return 0;
         }
     }
 
     //admin update
-    public function changeSetting(Request $request)
+    public function changePass(Request $request)
     {
         $ac = $request->ac;
+        $id = $request->id;
         //    dd($ac);
-        if ($ac == 1) {$id = $request->id;
+        if ($ac == 0) {
             $newPass = Hash::make($request->pass_worker);
-            $u = DB::table('account_workers')->where('id', '=', $id)->update(['pass_worker' => $newPass]);
-            return redirect()->action("Workers\AccountWorkersController@index")->with('status', 'Cập nhật mật khẩu thành công');
-        } else if ($ac == 2) {
-            $id = $request->id;
-            $newAcc = $request->acc_worker;
-            $u = DB::table('account_workers')->where('id', '=', $id)->update(['acc_worker' => $newAcc]);
-            if ($u) {
-                return redirect()->action("Workers\AccountWorkersController@index")->with('status', 'Cập nhật Tài Khoản thành công');
+            $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['pass_worker' => $newPass]);
+            return response()->json('Vui lòng đăng nhập lại');
+        } else if ($ac != 0) {
+            if ($ac == 1) {
+                $newAcc = $request->acc_worker;
+                $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['acc_worker' => $newAcc]);
+                return response()->json($newAcc);
             } else {
-                return redirect()->action("Workers\AccountWorkersController@index")->with('status', 'Lỗi');
+                $length = 8; // Độ dài chuỗi mong muốn
+                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $randomString = substr(str_shuffle($characters), 0, $length);
+                $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['pass_worker' => $randomString]);
+                if ($u) {return response()->json($randomString);} else {return response()->json('Fail!');}
             }
-
         }
-        return redirect()->action("Workers\AccountWorkersController@index")->with('status', 'Vui lòng cung cấp thông tin');
+        return response()->json('Vui lòng cung cấp thông tin');
     }
 }

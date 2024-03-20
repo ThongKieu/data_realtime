@@ -434,6 +434,7 @@ function WorkerList({ auth }) {
             headerName: "Tài Khoản",
             align: "center",
             renderCell: (params) => {
+                console.log(params);
                 const handleActiveAccApp = async () => {
                     const URL_API = "/api/web/workers";
                     const data = {

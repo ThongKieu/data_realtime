@@ -193,7 +193,7 @@ class WorkerController extends Controller
         $n_acc->save();
         if($n_acc)
         {
-            $check = MapsWorker::where('id','=',$id_worker)->value('id');
+            $check = MapsWorker::where('id','=',$id_worker)->get('id');
             if(count($check)==0)
            {
             $new_m = new MapsWorker([
@@ -219,7 +219,7 @@ class WorkerController extends Controller
         $n_acc->save();
         if($n_acc)
         {
-            $check = MapsWorker::where('id','=',$re->id_worker)->value('id');
+            $check = MapsWorker::where('id','=',$re->id_worker)->get('id');
             if(count($check)==0)
            {
             $new_m = new MapsWorker([
@@ -230,7 +230,7 @@ class WorkerController extends Controller
             ]);
             $new_m ->save();
            }
-           
+
         }
         return $n_acc;
 

@@ -193,12 +193,16 @@ class WorkerController extends Controller
         $n_acc->save();
         if($n_acc)
         {
+            $check = MapsWorker::where('id','=',$id_worker)->value('id');
+            if(count($check)==0)
+           {
             $new_m = new MapsWorker([
                 'lat'=>10.816329,
                 'lng'=>106.7092466,
                 'id_worker'=>$id_worker,
             ]);
             $new_m ->save();
+           }
         }
         return $n_acc;
     }
@@ -210,17 +214,21 @@ class WorkerController extends Controller
             'pass_worker'=>Hash::make($re->pass_worker),
             'avatar'=>$re->avatar,
             'active'=>0,
-            
         ]);
         $n_acc->save();
         if($n_acc)
         {
+            $check = MapsWorker::where('id','=',$re->id_worker)->value('id');
+            if(count($check)==0)
+           {
             $new_m = new MapsWorker([
                 'lat'=>10.816329,
                 'lng'=>106.7092466,
                 'id_worker'=>$re->id_worker,
             ]);
             $new_m ->save();
+           }
+           
         }
         return $n_acc;
 

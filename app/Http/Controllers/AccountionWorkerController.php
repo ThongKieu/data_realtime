@@ -264,7 +264,7 @@ class AccountionWorkerController extends Controller
                 $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $randomString = substr(str_shuffle($characters), 0, $length);
-                $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => $randomString]);
+                $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' =>  Hash::make($randomString)]);
                 if($u){return response()->json($randomString);}
                 else{return response()->json('Fail!');}
             }

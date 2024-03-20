@@ -37,18 +37,19 @@ class AccountionWorkerController extends Controller
         // dd('1111111111111');
         // $all = AccountionWorker::all();
         $all = DB::table('accountion_workers')
-            ->leftJoin('workers', 'accountion_workers.id_worker', 'workers.id')
-            ->where('workers.worker_check_acc', '!=', 0)
-            ->get([
-                'worker_full_name',
-                'acc_worker',
-                'last_active',
-                'device_key',
-                'time_log',
-                'avatar',
-                'active',
-                'worker_code',
-            ]);
+        ->leftJoin('workers','accountion_workers.id_worker','workers.id')
+        ->where('workers.worker_check_acc','!=',0)
+        ->get([
+            'worker_full_name',
+            'acc_worker',
+            'last_active',
+            'device_key',
+            'time_log',
+            'avatar',
+            'active',
+            'worker_code',
+            'id_worker','accountion_workers.id'
+        ]);
 
         return $all;
     }
@@ -142,19 +143,10 @@ class AccountionWorkerController extends Controller
     public function updateActive(Request $request)
     {
         $id = $request->id;
-        $ac = $request->action;
+        $ac = $request->ac;
         //  dd($id);
-        switch ($ac) {
-            case 1:
-                DB::update('update account_workers set active =' . $ac . ' where id = ?', [$id]);
-                break;
-            case 2:
-                DB::update('update account_workers set active =' . $ac . ' where id = ?', [$id]);
-                break;
-            case 3:
-                DB::update('update account_workers set active =' . $ac . ' where id = ?', [$id]);
-                break;
-        }
+        AccountionWorker::where('id', '=', $id)->update(['active' => $ac]);
+        // DB::update('update account_workers set active =' .$ac. ' where id = ?', [$id]);
         return response()->json('Change Status Done!');
     }
 
@@ -246,7 +238,7 @@ class AccountionWorkerController extends Controller
 
         if ($id_worker != null) {
             $pa = Hash::make($request->pass_worker);
-            $u = DB::table('account_workers')->where('id_worker', '=', $id_worker)->update(['pass_worker' => $pa, 'last_active' => now()]);
+            $u = AccountionWorker::where('id_worker', '=', $id_worker)->update(['pass_worker' => $pa, 'last_active' => now()]);
             return 1;
         } else {
             return 0;
@@ -261,19 +253,20 @@ class AccountionWorkerController extends Controller
         //    dd($ac);
         if ($ac == 0) {
             $newPass = Hash::make($request->pass_worker);
-            $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['pass_worker' => $newPass]);
+            $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => $newPass]);
             return response()->json('Vui lòng đăng nhập lại');
         } else if ($ac != 0) {
             if ($ac == 1) {
                 $newAcc = $request->acc_worker;
-                $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['acc_worker' => $newAcc]);
+                $u = AccountionWorker::where('id', '=', $id)->update(['acc_worker' => $newAcc]);
                 return response()->json($newAcc);
             } else {
                 $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $randomString = substr(str_shuffle($characters), 0, $length);
-                $u = DB::table('accountion_workers')->where('id', '=', $id)->update(['pass_worker' => $randomString]);
-                if ($u) {return response()->json($randomString);} else {return response()->json('Fail!');}
+                $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => $randomString]);
+                if($u){return response()->json($randomString);}
+                else{return response()->json('Fail!');}
             }
         }
         return response()->json('Vui lòng cung cấp thông tin');

@@ -26,7 +26,6 @@ Route::prefix('web')->group(function () {
         Route::post('/create_acc', 'App\Http\Controllers\Api\Web\WorkerController@createAcc');
         Route::post('/create_acc_from_tab', 'App\Http\Controllers\Api\Web\WorkerController@createAccFromTab');
         Route::get('/account', 'App\Http\Controllers\AccountionWorkerController@getAllWorkersAcctive');
-        Route::post('/newAcc', 'App\Http\Controllers\AccountionWorkerController@newAccWorker');
         // use for web and app
         Route::post('/changePass', 'App\Http\Controllers\AccountionWorkerController@changePass');
         // ------------------------------------------------------------------------------------------

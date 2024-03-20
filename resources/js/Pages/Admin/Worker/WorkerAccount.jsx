@@ -17,12 +17,17 @@ import {
     DialogHeader,
     DialogBody,
     DialogFooter,
+    Tooltip,
 } from "@material-tailwind/react";
+import Box from "@mui/material/Box";
+
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-import { Divider } from "@mui/material";
 
+import useWindowSize from "@/Core/Resize";
+import { Divider } from "@mui/material";
 const TABS = [
     {
         label: "Điện Nước",
@@ -54,56 +59,17 @@ const TABS = [
     },
 ];
 
-const TABLE_HEAD = [
-    "Tên Thợ",
-    "Tài Khoản",
-    "Đăng Nhập Lần Cuối",
-    "ID Điện Thoại",
-    "Đăng Nhập Sai",
-    "Trạng Thái",
-    "Sửa Tài Khoản",
-    "Đổi Mật Khẩu",
-];
-
 function WorkerAccount() {
     const [accountData, setAccountData] = useState([]);
-    const handleClick = () => {
-        console.log(accountData);
+    const { width, height } = useWindowSize(65);
+    const calculateColumnWidth = (data, field) => {
+        // Tìm chiều dài lớn nhất của dữ liệu trong cột
+        const maxLength = Math.max(
+            ...data.map((row) => row[field].toString().length)
+        );
+        // Tính toán độ rộng dựa trên số ký tự tối đa và một số hằng số điều chỉnh
+        return maxLength * 8 + 30; // Điều chỉnh 8 và 30 tùy thuộc vào font-size và padding của cột
     };
-
-    const [openDialogIndex, setOpenDialogIndex] = useState(null); // State array to manage dialog open/close for each row
-
-    const handleClickOpenFix = (index) => {
-        // Function to open dialog for a specific row
-        setOpenDialogIndex(index);
-    };
-
-    const [openDialogIndexDel, setOpenDialogIndexDel] = useState(null); // State array to manage dialog open/close for each row
-
-    const handleClickOpenDel = (index) => {
-        // Function to open dialog for a specific row
-        setOpenDialogIndexDel(index);
-    };
-    const [infoFix, setInfoFix] = useState(accountData);
-    const handleSentFix = () => {
-        setOpenDialogIndex(null);
-    };
-    const handleSent = () => {
-        const data = {
-            id: infoFix.id_worker,
-            acc: infoFix.acc_worker,
-            pass: infoFix.pass_worker,
-        };
-        console.log(data);
-    };
-    const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setInfoFix((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-    // console.log(infoFix);
     useEffect(() => {
         fetch(host + "api/web/workers/account")
             .then((response) => {
@@ -119,17 +85,297 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-    console.log(accountData);
+    const updateStatus = async (id, status, uri, context) => {
+        if (id != undefined || status != undefined || uri != undefined) {
+            const data = {
+                id: id,
+                ac: status,
+            };
+            console.log(data);
+            try {
+                const res = await fetch(uri, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+                if (res.ok) {
+                    const resData = await res.json();
+                    if(data.ac==2){
+                        console.log('sasdas',resData);
+                    }else{
+                        window.location.reload();
+                    }
+                } else {
+                    console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+    };
+    const StatusDialog = ({
+        open,
+        handleOpen,
+        children,
+        handleEvent,
+        contextHeader,
+    }) => {
+        return (
+            <Dialog open={open} handler={handleOpen} size="xs">
+                <DialogHeader>{contextHeader}</DialogHeader>
+                <Divider />
+                <DialogBody>
+                    <main>{children}</main>
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        onClick={handleOpen}
+                        className="mr-1"
+                    >
+                        <span>Hủy</span>
+                    </Button>
+                    <Button
+                        variant="gradient"
+                        color="green"
+                        onClick={handleEvent}
+                    >
+                        <span>Cập Nhật</span>
+                    </Button>
+                </DialogFooter>
+            </Dialog>
+        );
+    };
+    const columns = [
+        {
+            field: "id_worker",
+            headerName: "ID",
+            width: calculateColumnWidth(accountData, "id_worker"),
+            align: "center",
+            disableColumnMenu: true,
+        },
+        {
+            field: "worker_full_name",
+            headerName: "Tên Thợ",
+            sortable: false,
+            width: calculateColumnWidth(accountData, "worker_full_name"),
+            editable: false,
+        },
+        {
+            field: "acc_worker",
+            headerName: "Tài Khoản",
+            width: calculateColumnWidth(accountData, "acc_worker"),
+            editable: false,
+        },
+        {
+            field: "last_active",
+            headerName: "Đăng Nhập Lần Cuối",
+            width: 200,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <p>
+                        {params.row.last_active != null
+                            ? params.row.last_active
+                            : "Chưa đăng nhập"}
+                    </p>
+                );
+            },
+        },
+        {
+            field: "device_key",
+            headerName: "ID Điện Thoại",
+            align: "center",
+            width: 200,
+            editable: false,
+            renderCell: (params) => {
+                return (
+                    <p>
+                        {params.row.device_key != null
+                            ? params.row.device_key
+                            : "Chưa đăng nhập"}
+                    </p>
+                );
+            },
+        },
+        {
+            field: "time_log",
+            headerName: "Đăng Nhập Sai",
+            align: "center",
+            width: 180,
+            editable: false,
+        },
+        {
+            field: "active",
+            headerName: "Trạng Thái",
+            align: "center",
+            width: 180,
+            editable: false,
+            renderCell: (params) => {
+                console.log(params);
+                const [open, setOpen] = useState(false);
+                const handleOpen = () => setOpen(!open);
+                const [select, setSelect] = useState(params.row.active);
+                const handleUpdateActive = async () => {
+                    const id = params.row.id;
+                    const status = select;
+                    const uri = "/api/web/workers/updateActive";
+                    const context = "Đã thay đổi thông tin tình trạng";
+                    console.log(id, status, uri, context);
+                    updateStatus(id, status, uri, context);
+                };
+                return (
+                    <div className="p-2 outline-none">
+                        <Button
+                            onClick={handleOpen}
+                            variant="outlined"
+                            color={
+                                params.row.active == 0
+                                    ? "blue"
+                                    : params.row.active == 1
+                                    ? "green"
+                                    : "red"
+                            }
+                        >
+                            {params.row.active == 0
+                                ? "Tạm Khóa"
+                                : params.row.active == 1
+                                ? "Mở"
+                                : "Khóa Vĩnh Viễn"}
+                        </Button>
+                        <StatusDialog open={open} handleOpen={handleOpen} handleEvent={handleUpdateActive} contextHeader='Chỉnh Sửa Trạng Thái'>
+                            <select
+                                value={select}
+                                className="w-full p-2 rounded-md text-bold"
+                                onChange={(e) => setSelect(e.target.value)}
+                            >
+                                <option value={0}>Tạm Khóa</option>
+                                <option value={1}>Mở</option>
+                                <option value={2}>Khóa Vĩnh Viễn</option>
+                            </select>
+                        </StatusDialog>
+{/*
+                        <Dialog open={open} handler={handleOpen} size="xs">
+                            <DialogHeader>Chỉnh Sửa Trạng Thái </DialogHeader>
+                            <Divider />
+                            <DialogBody>
+                                <select
+                                    value={select}
+                                    className="w-full p-2 rounded-md text-bold"
+                                    onChange={(e) => setSelect(e.target.value)}
+                                >
+                                    <option value={0}>Tạm Khóa</option>
+                                    <option value={1}>Mở</option>
+                                    <option value={2}>Khóa Vĩnh Viễn</option>
+                                </select>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpen}
+                                    className="mr-1"
+                                >
+                                    <span>Hủy</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleUpdateActive}
+                                >
+                                    <span>Cập Nhật</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog> */}
+                    </div>
+                );
+            },
+        },
+        {
+            field: "actions",
+            type: "actions",
+            headerName: "Chức Năng",
+            width: 400,
+            editable: false,
+            renderCell: (params) => {
+                const [openUpdatePass, setOpenUpdatePass] = useState(false);
+                const handleOpenUpdate = () =>
+                    setOpenUpdatePass(!openUpdatePass);
+                const handleUpdatePass = async () => {
+                    const id = params.row.id;
+                    const status = 2;
+                    const uri = "/api/web/workers/changePass";
+                    const context = "Đã thay đổi mật khẩu";
+                    console.log(id, status, uri, context);
+                    updateStatus(id, status, uri, context);
+                };
+                return (
+                    <>
+                        <div className="p-2 outline-none">
+                            <Button
+                                className="mx-2"
+                                variant="outlined"
+                                color="orange"
+                                onClick={handleOpenUpdate}
+                            >
+                                Đổi Mật Khẩu
+                            </Button>
+                            <Button variant="outlined" color="red">
+                                Reset Mật Khẩu
+                            </Button>
+                        </div>
+                        <StatusDialog open={openUpdatePass} handleOpen={handleOpenUpdate} handleEvent={handleUpdatePass} contextHeader='Chỉnh Sửa Trạng Thái'>
+                            <span>Xác nhận thay đổi mật khẩu tài khoản: {params.row.worker_full_name} </span>
+                        </StatusDialog>
+                        <Dialog
+                            open={openUpdatePass}
+                            handler={handleOpenUpdate}
+                            size="xs"
+                        >
+                            <DialogHeader>Đổi Mật Khẩu</DialogHeader>
+                            <Divider />
+                            <DialogBody>test</DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpenUpdate}
+                                    className="mr-1"
+                                >
+                                    <span>Hủy</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpenUpdate}
+                                >
+                                    <span>Cập Nhật</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </>
+                );
+            },
+        },
+    ];
+    const handleOnChange = (e) => {
+        const { name, value } = e.target;
+        setInfoFix((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />
-            <Card className="w-full h-screen">
-                <CardHeader
-                    floated={false}
-                    shadow={false}
-                    className="rounded-none"
-                >
-                    <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="p-1">
+                <Card className="m-1 mt-0">
+                    <div className="flex flex-row justify-between m-2">
                         <Tabs value="all" className="w-full md:w-max">
                             <TabsHeader>
                                 {TABS.map(({ label, value }) => (
@@ -138,7 +384,7 @@ function WorkerAccount() {
                                         value={value}
                                         className="w-fit"
                                     >
-                                        &nbsp;&nbsp;{label}&nbsp;&nbsp;
+                                        <span className="px-2">{label}</span>
                                     </Tab>
                                 ))}
                             </TabsHeader>
@@ -152,274 +398,18 @@ function WorkerAccount() {
                             />
                         </div>
                     </div>
-                </CardHeader>
-                <CardBody className="px-0 overflow-scroll">
-                    <table className="w-full text-left table-auto min-w-max">
-                        <thead>
-                            <tr>
-                                {TABLE_HEAD.map((head, index) => (
-                                    <th
-                                        key={head}
-                                        className="p-4 transition-colors cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50"
-                                    >
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                                        >
-                                            {head}{" "}
-                                        </Typography>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {accountData.map((item, index) => {
-                                const isLast = index === accountData.length - 1;
-                                const classes = isLast
-                                    ? "p-4"
-                                    : "p-4 border-b border-blue-gray-50";
-                                return (
-                                    <tr key={index}>
-                                        <td className={classes}>
-                                            <div className="flex items-center gap-3">
-                                                <Avatar
-                                                    src={`${
-                                                        host + item.avatar
-                                                    }`}
-                                                    alt={item.id_worker}
-                                                    size="sm"
-                                                />
-                                                <div className="flex flex-col">
-                                                    <Typography
-                                                        variant="small"
-                                                        color="blue-gray"
-                                                        className="font-normal"
-                                                    >
-                                                        {item.worker_full_name}
-                                                    </Typography>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal "
-                                            >
-                                                {item.acc_worker}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {item.last_active != null
-                                                    ? item.last_active
-                                                    : "Chưa đăng nhập"}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {item.device_key != null
-                                                    ? item.device_key
-                                                    : "Chưa đăng nhập"}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal "
-                                            >
-                                                {item.time_log}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <div
-                                                className="w-max"
-                                                onClick={handleClick}
-                                            >
-                                                <Chip
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    value="Trạng thái"
-                                                    color="green"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className={classes}>
-                                            <div
-                                                className="w-max"
-                                                onClick={() =>
-                                                    handleClickOpenFix(index)
-                                                }
-                                            >
-                                                <Chip
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    value="Sửa tài khoản"
-                                                    color="deep-purple"
-                                                />
-                                            </div>
-                                            <Dialog
-                                                open={openDialogIndex === index}
-                                                onClose={() =>
-                                                    setOpenDialogIndex(null)
-                                                }
-                                            >
-                                                <DialogHeader>
-                                                    Thông tin tài khoản của{" "}
-                                                    {item.worker_full_name}
-                                                </DialogHeader>
-                                                <Divider></Divider>
-                                                <DialogBody>
-                                                    <Input
-                                                        label="Tên Đăng Nhập"
-                                                        name="acc_worker"
-                                                        id="acc_worker"
-                                                        defaultValue={
-                                                            item.acc_worker
-                                                        }
-                                                        className="shadow-none"
-                                                        onChange={
-                                                            handleOnChange
-                                                        }
-                                                    />
-                                                    <Input
-                                                        label="Mật Khẩu"
-                                                        name="pass_worker"
-                                                        id="pass_worker"
-                                                        defaultValue={
-                                                            item.pass_worker
-                                                        }
-                                                        className="shadow-none"
-                                                        onChange={
-                                                            handleOnChange
-                                                        }
-                                                    />
-                                                    <input
-                                                        // value={infoFix.id_worker}
-                                                        name="id_worker"
-                                                        id="id_worker"
-                                                        defaultValue={
-                                                            item.id_worker
-                                                        }
-                                                        className="hidden"
-                                                        onChange={
-                                                            handleOnChange
-                                                        }
-                                                    />
-                                                </DialogBody>
-                                                <Divider></Divider>
-                                                <DialogFooter>
-                                                    <Button
-                                                        variant="text"
-                                                        color="red"
-                                                        onClick={() =>
-                                                            setOpenDialogIndex(
-                                                                null
-                                                            )
-                                                        }
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                    <Button
-                                                        variant="gradient"
-                                                        color="green"
-                                                        onClick={() =>
-                                                            handleSent() &&
-                                                            handleSentFix()
-                                                        }
-                                                    >
-                                                        Confirm
-                                                    </Button>
-                                                </DialogFooter>
-                                            </Dialog>
-                                        </td>
-                                        <td className={classes}>
-                                            <div
-                                                className="w-max"
-                                                onClick={() =>
-                                                    handleClickOpenDel(index)
-                                                }
-                                            >
-                                                <Chip
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    value="Xoá tài khoản"
-                                                    color="red"
-                                                />
-                                            </div>
-                                            <Dialog
-                                                open={
-                                                    openDialogIndexDel === index
-                                                }
-                                                onClose={() =>
-                                                    setOpenDialogIndexDel(null)
-                                                }
-                                            >
-                                                <DialogHeader>
-                                                    Xóa tài khoản của
-                                                    {item.worker_full_name}
-                                                </DialogHeader>
-                                                <DialogBody>'1'</DialogBody>
-                                                <DialogFooter>
-                                                    <Button
-                                                        variant="text"
-                                                        color="red"
-                                                        onClick={() =>
-                                                            setOpenDialogIndexDel(
-                                                                null
-                                                            )
-                                                        }
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                    <Button
-                                                        variant="gradient"
-                                                        color="green"
-                                                        onClick={() =>
-                                                            setOpenDialogIndexDel(
-                                                                null
-                                                            )
-                                                        }
-                                                    >
-                                                        Confirm
-                                                    </Button>
-                                                </DialogFooter>
-                                            </Dialog>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </CardBody>
-                <CardFooter className="flex items-center justify-between p-4 border-t border-blue-gray-50">
-                    <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                    >
-                        Page 1 of 10
-                    </Typography>
-                    <div className="flex gap-2">
-                        <Button variant="outlined" size="sm">
-                            Previous
-                        </Button>
-                        <Button variant="outlined" size="sm">
-                            Next
-                        </Button>
-                    </div>
-                </CardFooter>
-            </Card>
+                </Card>
+                <Card className={`w-[${width}px] m-1 mt-1`}>
+                    <Box sx={{ height: height, width: 1 }}>
+                        <DataGrid
+                            rows={accountData}
+                            columns={columns}
+                            getRowId={(accountData) => accountData.id_worker}
+                            className="text-center"
+                        />
+                    </Box>
+                </Card>
+            </div>
         </AuthenticatedLayoutAdmin>
     );
 }

@@ -123,11 +123,24 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [idUserFix,setIdUserFix] = useState(0);
     useEffect(() => {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
         pushOn();
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [selectedDate]);
+    useEffect(() => {
         if (socketD) {
             socketD.emit("pushOnline", message);
             pushOn();
@@ -145,53 +158,16 @@ function Dashboard({ auth }) {
                 fetchDateDoneCheck(data, selectedDate);
             }
         });
-        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled }) => {
-            if (isDisabled === true && id) {
-                fetchActive(id, 2);
-            } else if (isDisabled === false && id) {
-                fetchActive(id, 1);
-            } else if (isDisabled === false && id) {
-                fetchActive(id, 1);
-            }
-            console.log("id socket", id, isDisabled);
+        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userID }) => {
+            console.log('ButtonDisable_To_Client', userID);
+            setIdUserFix(userID);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
         });
-        const handleResize = () => {
-            setScreenSize({
-                width: window.innerWidth,
-                height: window.innerHeight - 100,
-            });
-        };
-        window.addEventListener("resize", handleResize);
         return () => {
-            window.removeEventListener("resize", handleResize);
-            newSocket.off("ButtonDisable_From_Server");
             newSocket.disconnect();
         };
     }, [selectedDate]);
-    // ---------- Day disable button---------------------------
-    const fetchActive = (id, ac_at) => {
-        try {
-            let data = {
-                ac: ac_at,
-                auth_id: auth.user.id,
-                id_work_ass: id,
-            };
-            const response = fetch("api/web/work-assignment/setActive", {
-                method: "POST",
-                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                headers: {
-                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                },
-            });
-            if (response.status == 200) {
-                socketD.emit("ButtonDisable_To_Server", data);
-            }
-        } catch (error) {
-            console.log("push on Loi", error);
-        }
-    };
     var heightScreenTV = screenSize.height;
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
@@ -771,7 +747,6 @@ function Dashboard({ auth }) {
                     getDataBh();
                 };
                 const check_bh = params.row.income_total;
-                console.log("params:", params, "bh:", TTBH);
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -1261,10 +1236,6 @@ function Dashboard({ auth }) {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
                         setOpen(!open);
-                        socketD.emit("ButtonDisable_To_Server", {
-                            id: params.row.id,
-                            isDisabled: !open,
-                        });
                     };
                     return [open, handleOpen];
                 };
@@ -1296,6 +1267,7 @@ function Dashboard({ auth }) {
                     socketD.emit("ButtonDisable_To_Server", {
                         id: rowId,
                         isDisabled,
+                        userFix: auth.user.id
                     });
                     switch (actionType) {
                         case "openSpendingTotal":
@@ -1719,12 +1691,10 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {params.row.flag_check === 1 ? (
-                            <p className="w-full text-center">Đang Sửa</p>
+                        {isButtonDisabled == true ? (
+                            <p className="w-full text-center">{idUserFix}Đang Sửa</p>
                         ) : (
-                            <p className="hidden w-full">''</p>
-                        )}
-                        <div className="flex flex-row justify-center">
+                            <div className="flex flex-row justify-center">
                             {check_admin ||
                             (check_admin && selectedDate != formattedToday) ? (
                                 <>
@@ -1894,6 +1864,8 @@ function Dashboard({ auth }) {
                                 </>
                             )}
                         </div>
+                        )}
+
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
                             imageVt1={imageVt1}

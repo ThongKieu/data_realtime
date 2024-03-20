@@ -114,7 +114,7 @@ function MapWorker({ auth }) {
                 if (idExistsIndex !== -1) {
                     // Nếu tồn tại, cập nhật trường lat và lng
                     const count = 0;
-                    console.log(`ddd test ${clickCount}`, idExistsIndex);
+                    console.log(`ddd test ${clickCount}:`, idExistsIndex);
                     setLocalWorkerMaps((prevData) => {
                         const newData = [...prevData];
                         newData[idExistsIndex] = {
@@ -158,7 +158,7 @@ function MapWorker({ auth }) {
                         className="p-3 "
                         style={{ height: `${heightScreenTV}px` }}
                     >
-                        <Typography className="flex justify-between gap-1">
+                        <div className="flex flex-row justify-between gap-1">
                             {/* //Bấm xem sẽ load lại maps */}
                             <Input
                                 label="Tìm theo tên hoặc mã thợ"
@@ -169,6 +169,7 @@ function MapWorker({ auth }) {
                             <Button
                                 variant="outlined"
                                 color="green"
+                                className="w-full active:outline-none"
                                 onClick={() => {
                                     handleSearchLocalWorker();
                                     handleClick();
@@ -176,7 +177,7 @@ function MapWorker({ auth }) {
                             >
                                 Xem
                             </Button>
-                        </Typography>
+                        </div>
                         <CardBody
                             className="relative flex flex-col w-full p-0 mt-1 overflow-scroll text-gray-700 bg-white border border-green-500 rounded-none shadow-md bg-clip-border"
                             style={{ height: `${heightScreenTV}px` }}

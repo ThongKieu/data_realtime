@@ -30,7 +30,7 @@ const TABLE_HEAD = [
 ];
 
 function ApplicationPopupDiscount() {
-    const [popupData, setPopupData] = useState([]);F
+    const [popupData, setPopupData] = useState([]);
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -219,6 +219,7 @@ function ApplicationPopupDiscount() {
 
 
                     </CardHeader>
+                    {/* Chạy bảng */}
                     <CardBody className="px-0 overflow-scroll">
                         <table className="w-full text-left table-auto min-w-max">
                             <thead>

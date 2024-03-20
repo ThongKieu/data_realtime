@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Worker;
 use App\Models\AccountionWorker;
+use App\Models\MapsWorker;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -182,18 +183,45 @@ class WorkerController extends Controller
     }
     public function createAcc($id_worker,$acc_worker,$pass_worker,$avatar)  {
         $n_acc = new AccountionWorker([
-            'id_worker'=>$id_worker,'acc_worker'=>$acc_worker,'pass_worker'=>Hash::make($pass_worker),'avatar'=>$avatar
+            'id_worker'=>$id_worker,
+            'acc_worker'=>$acc_worker,
+            'pass_worker'=>Hash::make($pass_worker),
+            'avatar'=>$avatar,
+            'active'=>0,
         ]);
+        // $up =  Worker::where('id','=',$id_worker)->update(['worker_check_status'])
         $n_acc->save();
+        if($n_acc)
+        {
+            $new_m = new MapsWorker([
+                'lat'=>10.816329,
+                'lng'=>106.7092466,
+                'id_worker'=>$id_worker,
+            ]);
+            $new_m ->save();
+        }
         return $n_acc;
     }
     public function createAccFromTab(Request $re)  {
         // dd($re->all());
         $n_acc = new AccountionWorker([
-            'id_worker'=>$re->id_worker,'acc_worker'=>$re->acc_worker,'pass_worker'=>Hash::make($re->pass_worker),'avatar'=>$re->avatar
+            'id_worker'=>$re->id_worker,
+            'acc_worker'=>$re->acc_worker,
+            'pass_worker'=>Hash::make($re->pass_worker),
+            'avatar'=>$re->avatar,
+            'active'=>0,
+            
         ]);
         $n_acc->save();
-
+        if($n_acc)
+        {
+            $new_m = new MapsWorker([
+                'lat'=>10.816329,
+                'lng'=>106.7092466,
+                'id_worker'=>$re->id_worker,
+            ]);
+            $new_m ->save();
+        }
         return $n_acc;
 
     }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PopupDiscount;
 use Illuminate\Http\Request;
+// use Intervention\Image\ImageManager;
+// use Intervention\Image\Drivers\Imagick\Driver;
 
 class PopupDiscountController extends Controller
 {
@@ -33,12 +35,18 @@ class PopupDiscountController extends Controller
     public function store(Request $request)
     {
         //
+
         if($request->hasFile('popup_image'))
         {
             $file = $request->file('popup_image');
             $name = $request->popup_title . '-' . time() . '.' . $file->extension();
             $file->move('assets/popup/', $name);
+            
             $path = 'assets/popup/' . $name;
+
+           
+            // $image = ImageManager::imagick()->read($path);
+            // $image->resizeDown(400, 200);
             $new_pop = new PopupDiscount([
                 'popup_title'=>$request->popup_title,
                 'popup_image'=>$path,

@@ -86,7 +86,14 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-    const updateStatus = async (id, status, uri, handlePopup2, context) => {
+    const updateStatus = async (
+        id,
+        status,
+        uri,
+        handlePopup2,
+        phone_change,
+        context
+    ) => {
         if (id != undefined || status != undefined || uri != undefined) {
             const data = {
                 id: id,
@@ -294,13 +301,33 @@ function WorkerAccount() {
                     updateStatus(id, status, uri, handleOpenChangPass, context);
                 };
                 const handleChangeAcc = async () => {
-                    const id = params.row.id_worker;
-                    const status = 1;
-                    const phoneChange = changDataAcc;
                     const uri = "/api/web/workers/changePass";
-                    const context = "Đã Reset mật khẩu";
-                    // updateStatus(id, status, uri, handleOpenChangeAcc, context);
-                    console.log(id, status, uri, context,phoneChange);
+                    const data_changACC = {
+                        id_worker: params.row.id_worker,
+                        ac: 1,
+                        worker_phone_company: changDataAcc,
+                    };
+                    console.log(data_changACC);
+                    try {
+                        const res = await fetch(uri, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data_changACC),
+                        });
+                        if (res.ok) {
+                            const resData = await res.json();
+                            window.location.reload();
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi dữ liệu:",
+                                res.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
                 };
                 return (
                     <>
@@ -380,7 +407,7 @@ function WorkerAccount() {
                                     <Input
                                         label="Id_worker & Tên NV"
                                         type="text"
-                                        value={`(${params.row.id_worker}) - ${params.row.worker_full_name}` }
+                                        value={`(${params.row.id_worker}) - ${params.row.worker_full_name}`}
                                         disabled
                                     />
                                 </div>

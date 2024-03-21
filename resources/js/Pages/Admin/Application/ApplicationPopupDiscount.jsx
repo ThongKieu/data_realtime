@@ -52,7 +52,7 @@ function ApplicationPopupDiscount() {
         setSelectedFiles(file);
     };
     console.log(info_popup);
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const URL_API = "/api/web/popup-discount";
@@ -81,7 +81,7 @@ function ApplicationPopupDiscount() {
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
-              
+
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
@@ -161,8 +161,8 @@ function ApplicationPopupDiscount() {
                                         onChange={handleChange}
                                     />
                                    </div>
-                                    
-                                     <Input 
+
+                                     <Input
                                         type="date"
                                         className="shadow-none"
                                         label="Ngày bắt đầu"
@@ -194,7 +194,7 @@ function ApplicationPopupDiscount() {
                                                 onChange={handleImageSelect}
                                             />
                                    </div>
-                                    
+
                                 </DialogBody>
                                 <Divider></Divider>
                                 <DialogFooter>

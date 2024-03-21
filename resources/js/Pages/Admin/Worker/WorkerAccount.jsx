@@ -61,6 +61,7 @@ const TABS = [
 
 function WorkerAccount() {
     const [accountData, setAccountData] = useState([]);
+    const [changPassAcc, setChangPassAcc] = useState([]);
     const { width, height } = useWindowSize(65);
     const calculateColumnWidth = (data, field) => {
         // Tìm chiều dài lớn nhất của dữ liệu trong cột
@@ -85,7 +86,7 @@ function WorkerAccount() {
                 console.error("Error API:", error);
             });
     }, []);
-    const updateStatus = async (id, status, uri, context) => {
+    const updateStatus = async (id, status, uri, handlePopup2, context) => {
         if (id != undefined || status != undefined || uri != undefined) {
             const data = {
                 id: id,
@@ -102,9 +103,11 @@ function WorkerAccount() {
                 });
                 if (res.ok) {
                     const resData = await res.json();
-                    if(data.ac==2){
-                        console.log('sasdas',resData);
-                    }else{
+                    if (data.ac == 2) {
+                        setChangPassAcc(resData);
+                        handlePopup2();
+                        console.log(context);
+                    } else {
                         window.location.reload();
                     }
                 } else {
@@ -121,6 +124,7 @@ function WorkerAccount() {
         children,
         handleEvent,
         contextHeader,
+        // handleEvent2,
     }) => {
         return (
             <Dialog open={open} handler={handleOpen} size="xs">
@@ -216,7 +220,6 @@ function WorkerAccount() {
             width: 180,
             editable: false,
             renderCell: (params) => {
-                console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [select, setSelect] = useState(params.row.active);
@@ -225,7 +228,6 @@ function WorkerAccount() {
                     const status = select;
                     const uri = "/api/web/workers/updateActive";
                     const context = "Đã thay đổi thông tin tình trạng";
-                    console.log(id, status, uri, context);
                     updateStatus(id, status, uri, context);
                 };
                 return (
@@ -247,7 +249,12 @@ function WorkerAccount() {
                                 ? "Mở"
                                 : "Khóa Vĩnh Viễn"}
                         </Button>
-                        <StatusDialog open={open} handleOpen={handleOpen} handleEvent={handleUpdateActive} contextHeader='Chỉnh Sửa Trạng Thái'>
+                        <StatusDialog
+                            open={open}
+                            handleOpen={handleOpen}
+                            handleEvent={handleUpdateActive}
+                            contextHeader="Chỉnh Sửa Trạng Thái"
+                        >
                             <select
                                 value={select}
                                 className="w-full p-2 rounded-md text-bold"
@@ -258,39 +265,6 @@ function WorkerAccount() {
                                 <option value={2}>Khóa Vĩnh Viễn</option>
                             </select>
                         </StatusDialog>
-{/*
-                        <Dialog open={open} handler={handleOpen} size="xs">
-                            <DialogHeader>Chỉnh Sửa Trạng Thái </DialogHeader>
-                            <Divider />
-                            <DialogBody>
-                                <select
-                                    value={select}
-                                    className="w-full p-2 rounded-md text-bold"
-                                    onChange={(e) => setSelect(e.target.value)}
-                                >
-                                    <option value={0}>Tạm Khóa</option>
-                                    <option value={1}>Mở</option>
-                                    <option value={2}>Khóa Vĩnh Viễn</option>
-                                </select>
-                            </DialogBody>
-                            <DialogFooter>
-                                <Button
-                                    variant="text"
-                                    color="red"
-                                    onClick={handleOpen}
-                                    className="mr-1"
-                                >
-                                    <span>Hủy</span>
-                                </Button>
-                                <Button
-                                    variant="gradient"
-                                    color="green"
-                                    onClick={handleUpdateActive}
-                                >
-                                    <span>Cập Nhật</span>
-                                </Button>
-                            </DialogFooter>
-                        </Dialog> */}
                     </div>
                 );
             },
@@ -303,15 +277,30 @@ function WorkerAccount() {
             editable: false,
             renderCell: (params) => {
                 const [openUpdatePass, setOpenUpdatePass] = useState(false);
+                const [openChangPass, setOpenChangPass] = useState(false);
+                const [openChangeAcc, setOpenChangeAcc] = useState(false);
+                const [changDataAcc, setChangDataAcc] = useState();
                 const handleOpenUpdate = () =>
                     setOpenUpdatePass(!openUpdatePass);
+                const handleOpenChangPass = () =>
+                    setOpenChangPass(!openChangPass);
+                const handleOpenChangeAcc = () =>
+                    setOpenChangeAcc(!openChangeAcc);
                 const handleUpdatePass = async () => {
                     const id = params.row.id;
                     const status = 2;
                     const uri = "/api/web/workers/changePass";
-                    const context = "Đã thay đổi mật khẩu";
-                    console.log(id, status, uri, context);
-                    updateStatus(id, status, uri, context);
+                    const context = "Đã Reset mật khẩu";
+                    updateStatus(id, status, uri, handleOpenChangPass, context);
+                };
+                const handleChangeAcc = async () => {
+                    const id = params.row.id_worker;
+                    const status = 1;
+                    const phoneChange = changDataAcc;
+                    const uri = "/api/web/workers/changePass";
+                    const context = "Đã Reset mật khẩu";
+                    // updateStatus(id, status, uri, handleOpenChangeAcc, context);
+                    console.log(id, status, uri, context,phoneChange);
                 };
                 return (
                     <>
@@ -320,56 +309,106 @@ function WorkerAccount() {
                                 className="mx-2"
                                 variant="outlined"
                                 color="orange"
+                                onClick={handleOpenChangeAcc}
+                            >
+                                Đổi tài khoản
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="red"
                                 onClick={handleOpenUpdate}
                             >
-                                Đổi Mật Khẩu
-                            </Button>
-                            <Button variant="outlined" color="red">
                                 Reset Mật Khẩu
                             </Button>
                         </div>
-                        <StatusDialog open={openUpdatePass} handleOpen={handleOpenUpdate} handleEvent={handleUpdatePass} contextHeader='Chỉnh Sửa Trạng Thái'>
-                            <span>Xác nhận thay đổi mật khẩu tài khoản: {params.row.worker_full_name} </span>
-                        </StatusDialog>
-                        <Dialog
+                        <StatusDialog
                             open={openUpdatePass}
-                            handler={handleOpenUpdate}
-                            size="xs"
+                            handleOpen={handleOpenUpdate}
+                            handleEvent={handleUpdatePass}
+                            contextHeader="Reset Mật Khẩu"
                         >
-                            <DialogHeader>Đổi Mật Khẩu</DialogHeader>
-                            <Divider />
-                            <DialogBody>test</DialogBody>
-                            <DialogFooter>
-                                <Button
-                                    variant="text"
-                                    color="red"
-                                    onClick={handleOpenUpdate}
-                                    className="mr-1"
-                                >
-                                    <span>Hủy</span>
-                                </Button>
-                                <Button
-                                    variant="gradient"
-                                    color="green"
-                                    onClick={handleOpenUpdate}
-                                >
-                                    <span>Cập Nhật</span>
-                                </Button>
-                            </DialogFooter>
-                        </Dialog>
+                            <span>
+                                Xác nhận Reset mật khẩu tài khoản:
+                                {params.row.worker_full_name}
+                            </span>
+                            <Dialog
+                                open={openChangPass}
+                                handler={handleOpenChangPass}
+                            >
+                                <DialogHeader>
+                                    <div className="m-auto">
+                                        Reset Mật Khẩu Khoản APP
+                                    </div>
+                                </DialogHeader>
+                                <DialogBody divider>
+                                    <div className="p-5 border border-green-500 rounded-lg">
+                                        <p className="font-bold">
+                                            Mật Khẩu:
+                                            <span className="pl-2 italic tracking-wide text-red-500">
+                                                {changPassAcc}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </DialogBody>
+                                <DialogFooter>
+                                    <Button
+                                        variant="text"
+                                        color="green"
+                                        onClick={() => {
+                                            handleOpenChangPass();
+                                            handleOpenUpdate();
+                                            window.location.reload();
+                                        }}
+                                        className="mr-1"
+                                    >
+                                        <span>Đã Xem</span>
+                                    </Button>
+                                </DialogFooter>
+                            </Dialog>
+                        </StatusDialog>
+                        <StatusDialog
+                            open={openChangeAcc}
+                            handleOpen={handleOpenChangeAcc}
+                            handleEvent={handleChangeAcc}
+                            contextHeader="Đổi Tài Khoản"
+                        >
+                            <div className="grid grid-cols-2 gap-2 mb-2">
+                                <div>
+                                    <p className="italic underline">
+                                        ID_Worker & Tên NV:
+                                    </p>
+                                    <Input
+                                        label="Id_worker & Tên NV"
+                                        type="text"
+                                        value={`(${params.row.id_worker}) - ${params.row.worker_full_name}` }
+                                        disabled
+                                    />
+                                </div>
+                                <div>
+                                    <p className="italic underline">
+                                        Tên Tài Khoản:
+                                    </p>
+                                    <Input
+                                        label="Id_worker"
+                                        type="text"
+                                        value={params.row.acc_worker}
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <Input
+                                label="Số điện thoại"
+                                className="shadow-none "
+                                onChange={(e) =>
+                                    setChangDataAcc(e.target.value)
+                                }
+                            />
+                        </StatusDialog>
                     </>
                 );
             },
         },
     ];
-    const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setInfoFix((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />

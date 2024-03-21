@@ -89,6 +89,7 @@ function AdminSidebar({ children }) {
                 {
                     title: "Banner",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/application-banner"),
                 },
                 {
                     title: "Bảng Giá",

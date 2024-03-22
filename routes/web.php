@@ -58,6 +58,10 @@ Route::middleware('auth')->group(function () {
         // Application
         Route::get('/application-popup',function(){return Inertia::render('Admin/Application/ApplicationPopupDiscount');})->name('admin/application-popup');
         Route::get('/application-banner',function(){return Inertia::render('Admin/Application/ApplicationBanner');})->name('admin/application-banner');
+        Route::get('/application-qrcode',function(){return Inertia::render('Admin/Application/ApplicationQRCode');})->name('admin/application-qrcode');
+        Route::get('/application-work-list',function(){return Inertia::render('Admin/Application/ApplicationWorkList');})->name('admin/application-work-list');
+
+
 
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');

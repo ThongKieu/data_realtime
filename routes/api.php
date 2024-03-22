@@ -73,6 +73,7 @@ Route::prefix('web')->group(function () {
         Route::post('data-customer', 'App\Http\Controllers\Api\Web\OldCustomersController@importDataCustomer');
         Route::post('data-worker', 'App\Http\Controllers\Api\Web\WorkerController@importDataWorker');
         Route::post('data-check-call-worker', 'App\Http\Controllers\Api\Web\CheckCallWorkerController@importDataCheckCallWorker');
+        Route::post('data-work-list', 'App\Http\Controllers\Api\WorkListController@importWork');
     });
     Route::prefix('users')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\UsersAdminController@index');
@@ -112,6 +113,11 @@ Route::prefix('web')->group(function () {
         Route::get('/', 'App\Http\Controllers\PopupDiscountController@index');
         Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
         Route::post('fix', 'App\Http\Controllers\PopupDiscountController@edit');
+    });
+    Route::prefix('work-list')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\WorkListController@index');
+        // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
+        Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
     
 })->withoutMiddleware("throttle:api")

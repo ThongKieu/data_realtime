@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-import-price',function(){return Inertia::render('Admin/DataImport/DataPriceImport');})->name('admin/data-import-price');
         // Application
         Route::get('/application-popup',function(){return Inertia::render('Admin/Application/ApplicationPopupDiscount');})->name('admin/application-popup');
+        Route::get('/application-banner',function(){return Inertia::render('Admin/Application/ApplicationBanner');})->name('admin/application-banner');
+
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');
         Route::get('/zalo-zns-quotes',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSQuotes');})->name('admin/zalo-zns-quotes');
@@ -66,6 +68,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/contact',function(){return Inertia::render('Admin/DataImport/Contacts');})->name('admin/contacts');
         //popup
         // Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
+        //banner
+        Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
 
     });
 

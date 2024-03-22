@@ -257,9 +257,18 @@ class AccountionWorkerController extends Controller
             return response()->json('Vui lòng đăng nhập lại');
         } else if ($ac != 0) {
             if ($ac == 1) {
-                $newAcc = $request->acc_worker;
-                $u = AccountionWorker::where('id', '=', $id)->update(['acc_worker' => $newAcc]);
-                return response()->json($newAcc);
+                $id_worker = $request->id_worker;
+                $f_code = Worker::where ('id','=',$id_worker)->value(['worker_code']);
+                $newAcc = $f_code.$request->worker_phone_company;
+                $check_acc = AccountionWorker::where('account','=',$newAcc)->get('id');
+                if(count($check_acc) == 0)
+                {   
+                    $u_phone = Worker::where('id','=',$id_worker)->update(['worker_phone_company'=>$request->worker_phone_company]);
+                    $u = AccountionWorker::where('id', '=', $id)->update(['acc_worker' => $newAcc]);
+                    return response()->json($newAcc);
+                }
+                else return response()->json('Vui lòng chọn số khác');
+                
             } else {
                 $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

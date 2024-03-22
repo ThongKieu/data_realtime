@@ -9,6 +9,7 @@ import {
     ChevronDoubleRightIcon,
     ChevronDownIcon,
     ChevronLeftIcon,
+    FolderIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "@inertiajs/react";
 function AdminSidebar({ children }) {
@@ -192,6 +193,22 @@ function AdminSidebar({ children }) {
                                 } origin-left duration-200p pl-2`}
                             >
                                 Admin
+                            </span>
+                        </li>
+                    </Link>
+                    <Link className="" href={route("admin/media-manager")}>
+                        <li
+                            className={`flex rounded-md p-2 ${
+                                open ? "mt-2" : "md:p-1 xl:p-2 mt-0"
+                            } cursor-pointer hover:bg-blue-gray-500 hover:text-white text-sm items-center text-black `}
+                        >
+                            <FolderIcon className="w-6" />
+                            <span
+                                className={`${
+                                    !open && "hidden"
+                                } origin-left duration-200p pl-2`}
+                            >
+                                Quản Lý Hình Ảnh
                             </span>
                         </li>
                     </Link>

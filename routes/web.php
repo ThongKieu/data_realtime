@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
+        Route::get('/media-manager',function(){return Inertia::render('Admin/Media/ManagerMedia');})->name('admin/media-manager');
         // Worker
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
@@ -84,7 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
 });
 Route::get('/test-page',function(){return view('welcome');});
 require __DIR__.'/auth.php';

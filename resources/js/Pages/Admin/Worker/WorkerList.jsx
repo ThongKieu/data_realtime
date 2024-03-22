@@ -36,6 +36,7 @@ function WorkerList({ auth }) {
     });
     const [accAPP, setAccApp] = useState(null);
     const { width, height } = useWindowSize(65);
+    
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
     const handleSelectChange = (e) => {};

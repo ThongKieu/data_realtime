@@ -84,7 +84,6 @@ function WorkerList({ auth }) {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
         } catch (error) {
-
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
@@ -444,15 +443,18 @@ function WorkerList({ auth }) {
                             params.row.worker_phone_company,
                         pass_worker: "Thoviet58568",
                         avatar: params.row?.worker_avatar,
-                    } ;
+                    };
                     try {
-                        const response = await fetch(URL_API + `/create_acc_from_tab`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(data),
-                        });
+                        const response = await fetch(
+                            URL_API + `/create_acc_from_tab`,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(data),
+                            }
+                        );
                         if (response.ok) {
                             const responseData = await response.json();
                             console.log(
@@ -691,7 +693,12 @@ function WorkerList({ auth }) {
                     <Button
                         variant="text"
                         color="green"
-                        onClick={handleOpenActiveApp}
+                        onClick={() => {
+                            return (
+                                handleOpenActiveApp() &&
+                                window.location.reload()
+                            );
+                        }}
                         className="mr-1"
                     >
                         <span>Đã Xem</span>

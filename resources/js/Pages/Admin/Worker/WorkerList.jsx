@@ -26,7 +26,6 @@ function WorkerList({ auth }) {
     const [openAccApp, setOpenAccApp] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [rows, setData] = useState([]);
-    const [rowModesModel, setRowModesModel] = useState({});
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
         worker_address: "",
@@ -36,7 +35,7 @@ function WorkerList({ auth }) {
     });
     const [accAPP, setAccApp] = useState(null);
     const { width, height } = useWindowSize(65);
-    
+
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
     const handleSelectChange = (e) => {};
@@ -87,9 +86,6 @@ function WorkerList({ auth }) {
         } catch (error) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
-    };
-    const handleRowModesModelChange = (newRowModesModel) => {
-        setRowModesModel(newRowModesModel);
     };
     useEffect(() => {
         // Gọi API để lấy dữ liệu
@@ -522,12 +518,9 @@ function WorkerList({ auth }) {
                         <DataGrid
                             rows={rows}
                             columns={columns}
-                            rowModesModel={rowModesModel}
-                            onRowModesModelChange={handleRowModesModelChange}
-                            // slots={{ toolbar: GridToolbar }}
                             slotProps={{
                                 toolbar: {
-                                    showQuickFilter: true,
+                                    showQuickFilter: false,
                                 },
                             }}
                             className="text-center "

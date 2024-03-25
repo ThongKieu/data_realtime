@@ -1,21 +1,27 @@
-import Authenticated from '@/Layouts/Admin/AuthenticatedLayoutAdmin'
-import { Head } from '@inertiajs/react'
-import { Button, Card, CardHeader, Input, Spinner, Typography } from '@material-tailwind/react'
-import {React,useState,useEffect} from 'react'
+import Authenticated from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
+import { Head } from "@inertiajs/react";
+import {
+    Button,
+    Card,
+    CardHeader,
+    Input,
+    Spinner,
+    Typography,
+} from "@material-tailwind/react";
+import { React, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
-import { host } from '@/Utils/UrlApi';
-import { Box, Divider } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { host } from "@/Utils/UrlApi";
+import { Box, Divider } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import useWindowSize from "@/Core/Resize";
-
 
 function ApplicationWorkList() {
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState(null);
     const [showAlertFailed, setShowAlertFailed] = useState(false);
-    const { width, height } = useWindowSize(65);
+    const { width, height } = useWindowSize(98);
 
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
@@ -99,7 +105,7 @@ function ApplicationWorkList() {
             editable: false,
             align: "left",
             headerAlign: "left",
-        }, 
+        },
         {
             field: "work_content",
             headerName: "Nội dung",
@@ -115,13 +121,15 @@ function ApplicationWorkList() {
             type: "text",
             width: 220,
             editable: false,
-        }, {
+        },
+        {
             field: "work_name_cus",
             headerName: "Tên Khách",
             type: "text",
             width: 220,
             editable: false,
-        }, {
+        },
+        {
             field: "work_phone",
             headerName: "Số liên hệ",
             type: "text",
@@ -129,76 +137,76 @@ function ApplicationWorkList() {
             editable: false,
         },
     ];
-    
+
     return (
-        <Authenticated >
+        <Authenticated>
             <Head title="Tạo QR Code" />
-            <div className={`h-screen gap-2 p-1`}>
-                <Card className="w-full h-full">
-                    <CardHeader
-                        floated={false}
-                        shadow={false}
-                        className="bg-cyan-400 border border-deep-orange-300 rounded-lg p-2 text-center grid grid-cols-5">
-                        <Typography
-                            className="text-lg font-extrabold text-white col-span-4"
-                        >
-                            Danh sách khách hàng hiển thị web
-                        </Typography>
-                        {showAlertFailed && (
-                            <AlertIcon
+
+            <div className="p-1">
+                <Card className="grid items-center grid-cols-5 p-2 mb-2 text-center border rounded-lg border-deep-orange-300">
+                    <Typography className="col-span-4 text-lg font-extrabold text-blue-500">
+                        Danh sách khách hàng hiển thị web
+                    </Typography>
+                    {showAlertFailed ? (
+                            <div className="edit-alert">
+                                <AlertIcon
                                 setShowAlertFailed={setShowAlertFailed}
                                 contentAlert={
                                     "Vui lòng chọn file cần thêm dữ liệu !!"
                                 }
-                            />
-                        )}
-                        <form className='border border-white p-1 rounded-md' >
-                            <Input
-                                labelProps={{ className: "hidden" }}
-                                type="file"
-                                accept=".xlsx, .xls"
-                                className="pl-0 border-none" // Sử dụng lớp CSS 'border-none' của Material Tailwind
-                                onChange={handleFileUpload}
-                            />
-                            <Button
-                                fullWidth
-                                color="green"
-                                onClick={() => {
-                                    if (file != null) {
-                                        uploadFile();
-                                    } else {
-                                        setShowAlertFailed(true);
-                                    }
-                                }}
-                            >
-                                Thêm Dữ Liệu
-                            </Button>
-                        </form>
-                        
-                    </CardHeader>
-                    <Divider className="w-full"  />
-                        {isLoading ? (
-                            <div className="flex justify-center p-2 align-middle ">
-                                <Spinner className="w-6 h-6" color="amber" />
-                                <p className="pl-2 text-center text-black">
-                                    Loading...
-                                </p>
-                            </div>
-                        ) : (
-                            <Box sx={{ height: height, width: 1 }}>
-                                <DataGrid
-                                    {...getData}
-                                    rows={getData}
-                                    columns={column}
-                                    
-                                />
-                            </Box>
-                        )}
-                </Card>
 
+                            />
+                            </div>
+                    ) : (
+                        <form className="flex flex-row items-center justify-between p-1 border border-green-500 rounded-md">
+                            <div>
+                                <input
+                                    type="file"
+                                    accept=".xlsx, .xls"
+                                    className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                    onChange={handleFileUpload}
+                                />
+                            </div>
+
+                            <div>
+                                <Button
+                                    className="w-full"
+                                    color="green"
+                                    onClick={() => {
+                                        if (file != null) {
+                                            uploadFile();
+                                        } else {
+                                            setShowAlertFailed(true);
+                                        }
+                                    }}
+                                >
+                                    Thêm Dữ Liệu
+                                </Button>
+                            </div>
+                        </form>
+                    )}
+                </Card>
+                <Card>
+                    {isLoading ? (
+                        <div className="flex justify-center p-2 align-middle ">
+                            <Spinner className="w-6 h-6" color="amber" />
+                            <p className="pl-2 text-center text-black">
+                                Loading...
+                            </p>
+                        </div>
+                    ) : (
+                        <Box sx={{ height: height, width: 1 }}>
+                            <DataGrid
+                                // {...getData}
+                                rows={getData}
+                                columns={column}
+                            />
+                        </Box>
+                    )}
+                </Card>
             </div>
         </Authenticated>
-    )
+    );
 }
 
-export default ApplicationWorkList
+export default ApplicationWorkList;

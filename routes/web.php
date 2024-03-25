@@ -29,7 +29,7 @@ use Inertia\Inertia;
 
 
 
-
+// Route::get('/path-name tren url',function(){return Inertia::render('localFile');})->name('router href');
 Route::middleware('auth')->group(function () {
     // Route::get('/welcome', function () {return Inertia::render('Welcome');})->name('welcome');
     Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/Home/Home');})->name('admin');
+        Route::get('/media-manager',function(){return Inertia::render('Admin/Media/ManagerMedia');})->name('admin/media-manager');
         // Worker
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
@@ -60,7 +61,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/application-qrcode',function(){return Inertia::render('Admin/Application/ApplicationQRCode');})->name('admin/application-qrcode');
         Route::get('/application-work-list',function(){return Inertia::render('Admin/Application/ApplicationWorkList');})->name('admin/application-work-list');
 
-
+        Route::get('/price',function(){return Inertia::render('Admin/Price/PriceList');})->name('admin/price-list');
 
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');
@@ -88,7 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
 });
 Route::get('/test-page',function(){return view('welcome');});
 require __DIR__.'/auth.php';

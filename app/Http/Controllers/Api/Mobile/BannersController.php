@@ -39,19 +39,9 @@ class BannersController extends Controller
     }
    public function create_new(Request $request)
     {
-        $request->local_use;
-        if($request->local_use == 1)
-          {  $local = 1;}
-        else
-        {
-            if($request->local_use == 2)
-            {  $local = 2;}
-            else
-                $local = 3;
-        }
         
             $save = new Banners();
-            $save->local_use = $local;
+            $save->local_use = $request->local_use;
             $save->save();
 
             return back()->with('status', 'Tạo Thành Công');

@@ -104,7 +104,6 @@ function MapWorker({ auth }) {
         setClickCount(clickCount + 1);
     };
     useEffect(() => {
-
         newSocket.on("getLocalFormServer", (data) => {
             if (data && data.new_id_worker) {
                 // Kiểm tra xem id_worker đã tồn tại trong localWorkerMaps chưa

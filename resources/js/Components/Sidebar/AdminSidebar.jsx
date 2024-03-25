@@ -85,6 +85,7 @@ function AdminSidebar({ children }) {
                 {
                     title: "QR Code",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/application-qrcode"),
                 },
                 {
                     title: "Banner",
@@ -103,6 +104,7 @@ function AdminSidebar({ children }) {
                 {
                     title: "Danh Sách Công Việc",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/application-work-list"),
                 },
             ],
         },

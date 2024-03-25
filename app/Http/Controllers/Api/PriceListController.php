@@ -18,6 +18,10 @@ class PriceListController extends Controller
             $image = $request->file('image');
             $storedPath = $image->move('assets/prices', $image->getClientOriginalName());
         }
+        else
+        {
+            $storedPath = '';
+        }
 
         $priceList = new PriceList([
             'ID_price_list' => $request->ID_price_list,
@@ -28,19 +32,22 @@ class PriceListController extends Controller
             'note_price' => $request->note_price,
         ]);
         $priceList->save();
+        return response()->json('Done');
     }
 
     public function update(Request $request, PriceList $priceList)
     {
 
-        // $name_price_list = $request->name_price_list;
-        // $price = $request->price;
-        // $info_price = $request->info_price;
-        // $image_price =  $request->image_price;
-        // $note_price = $request->note_price;
-        $image = $request->file('image');
-        // dd($image);
-        $storedPath = $image->move('assets/prices', $image->getClientOriginalName());
+        
+        if ($request->hasFile('image')) {
+           
+            $image = $request->file('image');
+            $storedPath = $image->move('assets/prices', $image->getClientOriginalName());
+        }
+        else
+        {
+            $storedPath = $request->storedPath;
+        }
 
         $id  = $request->id;
         $priceList = PriceList::find($id);

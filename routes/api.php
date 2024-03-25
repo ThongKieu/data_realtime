@@ -96,8 +96,9 @@ Route::prefix('web')->group(function () {
     // Price list
     Route::prefix('price-list')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\PriceListController@index');
-        Route::post('/', 'App\Http\Controllers\Api\ProductsController@create');
-        Route::get('getone', 'App\Http\Controllers\Api\ProductsController@getOne');
+        Route::post('/', 'App\Http\Controllers\Api\PriceListController@create');
+        Route::post('/update', 'App\Http\Controllers\Api\PriceListController@update');
+       
     });
     Route::get('worker-with-type', 'App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
     Route::prefix('search')->group(function () {

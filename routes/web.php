@@ -29,7 +29,7 @@ use Inertia\Inertia;
 
 
 
-
+// Route::get('/path-name tren url',function(){return Inertia::render('localFile');})->name('router href');
 Route::middleware('auth')->group(function () {
     // Route::get('/welcome', function () {return Inertia::render('Welcome');})->name('welcome');
     Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/application-qrcode',function(){return Inertia::render('Admin/Application/ApplicationQRCode');})->name('admin/application-qrcode');
         Route::get('/application-work-list',function(){return Inertia::render('Admin/Application/ApplicationWorkList');})->name('admin/application-work-list');
 
-
+        Route::get('/price',function(){return Inertia::render('Admin/Price/PriceList');})->name('admin/price-list');
 
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');

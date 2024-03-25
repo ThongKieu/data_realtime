@@ -133,3 +133,6 @@
     border: none !important;
     background: none;
 }
+.edit-alert > div{
+    margin-bottom: 0;
+}

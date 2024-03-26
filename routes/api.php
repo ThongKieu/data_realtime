@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('web')->group(function () {
     Route::apiResource('works', WorksController::class);
-    Route::prefix('workers')->group(function(){
+    Route::prefix('workers')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
         Route::post('/addNew', 'App\Http\Controllers\Api\Web\WorkerController@addNewWorker');
         Route::post('/create_acc', 'App\Http\Controllers\Api\Web\WorkerController@createAcc');
@@ -59,7 +59,6 @@ Route::prefix('web')->group(function () {
         Route::post('/quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
         Route::post('/returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWork');
         Route::post('/setActive', 'App\Http\Controllers\Api\WorksAssignmentController@setActive');
-
     });
     Route::prefix('quote')->group(function () {
         Route::get('', 'App\Http\Controllers\Api\Web\QuoteFlowController@index');
@@ -90,20 +89,25 @@ Route::prefix('web')->group(function () {
     });
     //products
     Route::prefix('product')->group(function () {
-        Route::get('/', 'App\Http\Controllers\Api\ProductsController@index');
+        Route::get('/', 'App\Http\Controllers\Api\ProductsController@getPriceList');
         Route::post('/', 'App\Http\Controllers\Api\ProductsController@create');
         Route::get('getone', 'App\Http\Controllers\Api\ProductsController@getOne');
-
     });
-
+    // Price list
+    Route::prefix('price-list')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\PriceListController@index');
+        Route::post('/', 'App\Http\Controllers\Api\PriceListController@create');
+        Route::post('/update', 'App\Http\Controllers\Api\PriceListController@update');
+       
+    });
     Route::get('worker-with-type', 'App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
     Route::prefix('search')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\SearchController@index');
         Route::post('/', 'App\Http\Controllers\Api\SearchController@searchAjax');
         Route::post('/warranty', 'App\Http\Controllers\Api\SearchController@createWarrantyFromSearch');
         Route::get('/warranty', 'App\Http\Controllers\Api\SearchController@getWarraties');
-
     });
+
     Route::prefix('noti')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\NoticationAllController@index');
         Route::get('soket_noti', 'App\Http\Controllers\Api\NoticationAllController@soketNoti');
@@ -119,7 +123,6 @@ Route::prefix('web')->group(function () {
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
         Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
-    
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(
@@ -135,11 +138,11 @@ Route::get('smsBrand', 'App\Http\Controllers\Api\OTPController@PushOtp');
 Route::get('getSmsBrand', 'App\Http\Controllers\Api\OTPController@GetSms');
 // --------------------------------------------------------------------------//
 //Maps
-Route::prefix('maps')->group(function(){
-    Route::get('/','App\Http\Controllers\Api\MapsWorkerController@index');
-    Route::post('/','App\Http\Controllers\Api\MapsWorkerController@create');
-    Route::post('/{id}','App\Http\Controllers\Api\MapsWorkerController@update');
-    Route::get('worker','App\Http\Controllers\Api\MapsWorkerController@getOneWorker');
+Route::prefix('maps')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Api\MapsWorkerController@index');
+    Route::post('/', 'App\Http\Controllers\Api\MapsWorkerController@create');
+    Route::post('/{id}', 'App\Http\Controllers\Api\MapsWorkerController@update');
+    Route::get('worker', 'App\Http\Controllers\Api\MapsWorkerController@getOneWorker');
 });
 // --------------------------------------------------------------------------//
 // Application
@@ -162,11 +165,9 @@ Route::prefix('app')->group(function () {
         Route::post('doneWork', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
         Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
-
     });
     // Customer
     Route::prefix('customer')->group(function () {
         Route::post('getNameCodeWorker', 'App\Http\Controllers\Api\Mobile\WorkersController@getNameCodeWorker');
     });
-
 });

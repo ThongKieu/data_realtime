@@ -1,35 +1,30 @@
 import { React, useState, useEffect } from "react";
 import {
     Card,
-    CardHeader,
-    Typography,
     Button,
-    CardBody,
-    Chip,
-    CardFooter,
     Dialog,
     DialogBody,
     DialogFooter,
-    DialogHeader ,
+    DialogHeader,
     Input,
+    Tooltip,
+    Typography,
 } from "@material-tailwind/react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
+import {
+    PlusCircleIcon,
+    MapPinIcon,
+    UserPlusIcon,
+} from "@heroicons/react/24/outline";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
 import { Divider } from "@mui/material";
+import useWindowSize from "@/Core/Resize";
 
-const TABLE_HEAD = [
-    "STT",
-    "Tên",
-    "Nội Dung",
-    "% Khuyến Mãi",
-    "Hình Ảnh",
-    "Bắt Đầu",
-    "Kết Thúc",
-    "Sửa",
-];
-
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
 function ApplicationBanner() {
+    const { width, height } = useWindowSize(65);
     const [popupData, setPopupData] = useState([]);
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
@@ -51,8 +46,6 @@ function ApplicationBanner() {
         const file = event.target.files[0];
         setSelectedFiles(file);
     };
-    console.log(info_popup);
-    
     const handleSubmit = async (e) => {
         e.preventDefault();
         const URL_API = "/api/web/popup-discount";
@@ -81,12 +74,10 @@ function ApplicationBanner() {
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
-              
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", response.statusText);
             }
         } catch (error) {
-
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
@@ -105,253 +96,466 @@ function ApplicationBanner() {
                 console.error("Error API:", error);
             });
     }, []);
-
+    const columnVideo = [
+        {
+            field: "No",
+            headerName: "No",
+            width: 80,
+            editable: false,
+            align: "center",
+        },
+        {
+            field: "local",
+            headerName: "Vị Trí",
+            type: "text",
+            editable: false,
+            width: 300,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Input type="text" value={"params"} disabled />
+                    </>
+                );
+            },
+        },
+        {
+            field: "ImgPreview",
+            headerName: "Hình",
+            type: "text",
+            width: 80,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <img
+                        className="w-10 h-10"
+                        src="https://i.pinimg.com/474x/61/8a/74/618a7401f69608d55b14c46e15efbc4b.jpg"
+                        alt=""
+                    />
+                );
+            },
+        },
+        {
+            field: "Edit",
+            headerName: "Sửa",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                const [openLinkVideo, setOpenLinkVideo] = useState(false);
+                const [changeLinkVideo, setChangeLinkVideo] = useState();
+                const handleOpenLinkVideo = () =>
+                    setOpenLinkVideo(!openLinkVideo);
+                return (
+                    <>
+                        <Button
+                            className=""
+                            variant="outlined"
+                            color="blue"
+                            onClick={handleOpenLinkVideo}
+                        >
+                            Chọn
+                        </Button>
+                        <Dialog
+                            open={openLinkVideo}
+                            handler={handleOpenLinkVideo}
+                        >
+                            <DialogHeader>Đường Dẫn Media</DialogHeader>
+                            <Divider />
+                            <DialogBody>
+                                <Input
+                                    label="Đường Link"
+                                    className="shadow-none "
+                                    value={changeLinkVideo}
+                                    onChange={(e) =>
+                                        setChangeLinkVideo(e.target.value)
+                                    }
+                                />
+                            </DialogBody>
+                            <Divider />
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpenLinkVideo}
+                                    className="mr-1"
+                                >
+                                    <span>Hủy</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpenLinkVideo}
+                                >
+                                    <span>Lưu</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </>
+                );
+            },
+        },
+        {
+            field: "update",
+            headerName: "Cập Nhật",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Button className="" variant="outlined" color="green">
+                            Cập Nhật Banner
+                        </Button>
+                    </>
+                );
+            },
+        },
+    ];
+    const columnBannerTop = [
+        {
+            field: "No",
+            headerName: "No",
+            width: 80,
+            editable: false,
+            align: "center",
+        },
+        {
+            field: "local",
+            headerName: "Vị Trí",
+            type: "text",
+            editable: false,
+            width: 300,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Input type="text" value={"params"} disabled />
+                    </>
+                );
+            },
+        },
+        {
+            field: "ImgPreview",
+            headerName: "Hình",
+            type: "text",
+            width: 80,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <img
+                        className="w-10 h-10"
+                        src="https://thoviet.com.vn/wp-content/uploads/2023/01/VSML-adsZalo-2-1536x960.jpg"
+                        alt=""
+                    />
+                );
+            },
+        },
+        {
+            field: "Edit",
+            headerName: "Sửa",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Button className="" variant="outlined" color="blue">
+                            Sửa
+                        </Button>
+                    </>
+                );
+            },
+        },
+        {
+            field: "update",
+            headerName: "Cập Nhật",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Button className="" variant="outlined" color="green">
+                            Cập Nhật Banner
+                        </Button>
+                    </>
+                );
+            },
+        },
+    ];
+    const columnBannerBot = [
+        {
+            field: "No",
+            headerName: "No",
+            width: 80,
+            editable: false,
+            align: "center",
+        },
+        {
+            field: "local",
+            headerName: "Vị Trí",
+            type: "text",
+            editable: false,
+            width: 300,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Input type="text" value={"params"} disabled />
+                    </>
+                );
+            },
+        },
+        {
+            field: "ImgPreview",
+            headerName: "Hình",
+            type: "text",
+            width: 80,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <img
+                        className="w-10 h-10"
+                        src="https://thoviet.com.vn/wp-content/uploads/2023/01/VSML-adsZalo-2-1536x960.jpg"
+                        alt=""
+                    />
+                );
+            },
+        },
+        {
+            field: "Edit",
+            headerName: "Sửa",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Button className="" variant="outlined" color="blue">
+                            Sửa
+                        </Button>
+                    </>
+                );
+            },
+        },
+        {
+            field: "update",
+            headerName: "Cập Nhật",
+            type: "text",
+            width: 220,
+            editable: false,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        <Button className="" variant="outlined" color="green">
+                            Cập Nhật Banner
+                        </Button>
+                    </>
+                );
+            },
+        },
+    ];
+    const rows = [
+        {
+            id: 1,
+            No: 1,
+            local: 1,
+            ImgPreview: 1,
+            Edit: 25,
+            update: 11,
+        },
+        {
+            id: 2,
+            No: 2,
+            local: 1,
+            ImgPreview: 1,
+            Edit: 25,
+            update: 11,
+        },
+    ];
+    const result1 = Math.floor(height / 2);
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Danh Sách Banner Hiển thị Trên App" />
-            <div className={`h-screen gap-2 p-1`}>
-                <Card className="w-full h-full">
-                    <CardHeader
-                        floated={false}
-                        shadow={false}
-                        className="rounded-none"
-                    >
-                        <div className="grid grid-cols-5 gap-1">
-                            <Typography className="col-span-4 m-2 font-extraboldtext-center flex justify-center items-center text-lg">
-                                 Danh Sách BANNER
-                            </Typography>
-                            <Button
-                                onClick={handleOpen}
-                                variant="gradient"
-                                className="col-start-5 m-2"
-                            >
-                               Thêm Banner
-                            </Button>
-                            <Dialog open={open} handler={handleOpen}>
-                                <div className="flex items-center justify-center">
-                                    <DialogHeader> Chọn Banner Mới và Vị trí Hiển thị   </DialogHeader>
-                                </div>
-
-                                <Divider></Divider>
-                                <DialogBody className="grid grid-cols-2 gap-2">
-
-                                    <Input
-                                        className="shadow-none"
-                                        label="Tên Chương trình"
-                                        value={info_popup.popup_title}
-                                        name="popup_title"
-                                        required
-                                        onChange={handleChange}
-                                    />
-                                    <Input
-                                        className="shadow-none"
-                                        label="Khuyến mãi"
-                                        value={info_popup.popup_discount}
-                                        name="popup_discount"
-                                        required
-                                        onChange={handleChange}
-                                    />
-                                   <div className="col-span-2">
-                                   <Input
-                                        className="shadow-none"
-                                        label="Mô tả"
-                                        value={info_popup.popup_description}
-                                        name="popup_description"
-                                        required
-                                        onChange={handleChange}
-                                    />
-                                   </div>
-                                    
-                                     <Input 
-                                        type="date"
-                                        className="shadow-none"
-                                        label="Ngày bắt đầu"
-                                        value={info_popup.popup_date_begin}
-                                        name="popup_date_begin"
-                                        required
-                                        onChange={handleChange}
-                                    />
-                                     <Input
-                                        type="date"
-                                        className="shadow-none"
-                                        label="Ngày kết thúc"
-                                        value={info_popup.popup_date_end}
-                                        name="popup_date_end"
-                                        required
-                                        onChange={handleChange}
-                                    />
-                                    <div className="col-span-2">
-                                    <Input
-                                                type="file"
-                                                accept="image/*"
-                                                className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
-                                                labelProps={{
-                                                    className: "hidden",
-                                                }}
-                                                containerProps={{
-                                                    className: "h-28",
-                                                }}
-                                                onChange={handleImageSelect}
-                                            />
-                                   </div>
-                                    
-                                </DialogBody>
-                                <Divider></Divider>
-                                <DialogFooter>
-                                    <Button
-                                        variant="text"
-                                        color="red"
-                                        // onClick={handleOpen}
-                                        className="mr-1"
-                                    >
-                                        <span>Hủy</span>
-                                    </Button>
-                                    <Button
-                                        variant="gradient"
-                                        color="green"
-                                        onClick={handleSubmit}
-                                    >
-                                        <span>Lưu</span>
-                                    </Button>
-                                </DialogFooter>
-                            </Dialog>
-                        </div>
-
-
-                    </CardHeader>
-                    {/* Chạy bảng */}
-                    <CardBody className="px-0 overflow-scroll">
-                        <table className="w-full text-left table-auto min-w-max">
-                            <thead>
-                                <tr>
-                                    {TABLE_HEAD.map((head, index) => (
-                                        <th
-                                            key={head}
-                                            className="p-4 transition-colors cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 hover:bg-blue-gray-50"
-                                        >
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                                            >
-                                                {head}{" "}
-                                                {/* {index !== TABLE_HEAD.length - 1 && (
-                        <ChevronUpDownIcon strokeWidth={2} className="w-4 h-4" />
-                      )} */}
-                                            </Typography>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {popupData.map((item, index) => {
-                                    const isLast =
-                                        index === popupData.length - 1;
-                                    const classes = isLast
-                                        ? "p-4"
-                                        : "p-4 border-b border-blue-gray-50";
-
-                                    return (
-                                        <tr key={item.id}>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal "
-                                                >
-                                                    {item.id}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal "
-                                                >
-                                                    {item.popup_title}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal "
-                                                >
-                                                    {item.popup_description}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal"
-                                                >
-                                                    {item.popup_discount}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <img
-                                                    src={host + item.popup_image}
-                                                    alt="Avatar"
-                                                    className="w-20 h-20"
-                                                />
-                                            </td>
-
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal "
-                                                >
-                                                    {item.popup_date_begin}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <Typography
-                                                    variant="small"
-                                                    color="blue-gray"
-                                                    className="font-normal "
-                                                >
-                                                    {item.popup_date_end}
-                                                </Typography>
-                                            </td>
-                                            <td className={classes}>
-                                                <div className="w-max">
-                                                    <Chip
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        value="Sửa Popup"
-                                                        color="deep-purple"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </CardBody>
-                    <CardFooter className="flex items-center justify-between p-4 border-t border-blue-gray-50">
-                        <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                        >
-                            Page 1 of 10
-                        </Typography>
-                        <div className="flex gap-2">
-                            <Button variant="outlined" size="sm">
-                                Previous
-                            </Button>
-                            <Button variant="outlined" size="sm">
-                                Next
-                            </Button>
-                        </div>
-                    </CardFooter>
+            <div className={`p-1 h-[${height}]px`}>
+                <Card className="text-center bg-green-400 rounded shadow-md">
+                    <h2 className="w-full p-2 text-2xl font-bold text-white ">
+                        Thêm Banner Ứng Dụng
+                    </h2>
                 </Card>
+                <Box sx={{ height: { height }, width: 1 }}>
+                    <Box sx={{ height: { result1 } }}>
+                        <div className="p-2">
+                            <Card>
+                                <h2 className="w-full p-2 text-2xl font-bold">
+                                    Thêm Video
+                                </h2>
+                            </Card>
+                            <Card className={`w-[${width}px]  mt-1`}>
+                                <Box sx={{ height: "w-fit", width: 1 }}>
+                                    <DataGrid
+                                        rows={rows}
+                                        columns={columnVideo}
+                                        className="text-center "
+                                    />
+                                </Box>
+                            </Card>
+                        </div>
+                    </Box>
+                    <Box sx={{ height: { result1 }, width: 1 }}>
+                        <div className="grid grid-cols-2 gap-2 ">
+                            <div className="p-2 pt-0 pr-0">
+                                <Card className="flex flex-row items-center">
+                                    <h2 className="w-full p-2 text-2xl font-bold">
+                                        Thêm Banner Trên
+                                    </h2>
+                                    <Tooltip content="Thêm Thợ Mới">
+                                        <PlusCircleIcon
+                                            className="w-10 h-10 pointer-events-auto"
+                                            color="#0056ffeb"
+                                            onClick={handleOpen}
+                                        />
+                                    </Tooltip>
+                                </Card>
+
+                                <Card className={`w-[${width}px]  mt-1`}>
+                                    <Box sx={{ height: "w-fit", width: 1 }}>
+                                        <DataGrid
+                                            rows={rows}
+                                            columns={columnBannerTop}
+                                            className="text-center "
+                                        />
+                                    </Box>
+                                </Card>
+                            </div>
+                            <div className="p-2 pt-0 pl-0">
+                                <Card className="flex flex-row items-center">
+                                    <h2 className="w-full p-2 text-2xl font-bold ">
+                                        Thêm Banner Dưới
+                                    </h2>
+                                    <Tooltip content="Thêm Thợ Mới">
+                                        <PlusCircleIcon
+                                            className="w-10 h-10 pointer-events-auto"
+                                            color="#0056ffeb"
+                                            onClick={handleOpen}
+                                        />
+                                    </Tooltip>
+                                </Card>
+
+                                <Card className={`w-[${width}px]  mt-1`}>
+                                    <Box sx={{ height: "w-fit", width: 1 }}>
+                                        <DataGrid
+                                            rows={rows}
+                                            columns={columnBannerBot}
+                                            className="text-center "
+                                        />
+                                    </Box>
+                                </Card>
+                            </div>
+                        </div>
+                    </Box>
+                </Box>
             </div>
+            <Dialog open={open} handler={handleOpen}>
+                <div className="flex items-center justify-center">
+                    <DialogHeader>
+                        {" "}
+                        Chọn Banner Mới và Vị trí Hiển thị{" "}
+                    </DialogHeader>
+                </div>
+                <Divider></Divider>
+                <DialogBody className="grid grid-cols-2 gap-2">
+                    <Input
+                        className="shadow-none"
+                        label="Tên Chương trình"
+                        value={info_popup.popup_title}
+                        name="popup_title"
+                        required
+                        onChange={handleChange}
+                    />
+                    <Input
+                        className="shadow-none"
+                        label="Khuyến mãi"
+                        value={info_popup.popup_discount}
+                        name="popup_discount"
+                        required
+                        onChange={handleChange}
+                    />
+                    <div className="col-span-2">
+                        <Input
+                            className="shadow-none"
+                            label="Mô tả"
+                            value={info_popup.popup_description}
+                            name="popup_description"
+                            required
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <Input
+                        type="date"
+                        className="shadow-none"
+                        label="Ngày bắt đầu"
+                        value={info_popup.popup_date_begin}
+                        name="popup_date_begin"
+                        required
+                        onChange={handleChange}
+                    />
+                    <Input
+                        type="date"
+                        className="shadow-none"
+                        label="Ngày kết thúc"
+                        value={info_popup.popup_date_end}
+                        name="popup_date_end"
+                        required
+                        onChange={handleChange}
+                    />
+                    <div className="col-span-2">
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
+                            labelProps={{
+                                className: "hidden",
+                            }}
+                            containerProps={{
+                                className: "h-28",
+                            }}
+                            onChange={handleImageSelect}
+                        />
+                    </div>
+                </DialogBody>
+                <Divider></Divider>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        // onClick={handleOpen}
+                        className="mr-1"
+                    >
+                        <span>Hủy</span>
+                    </Button>
+                    <Button
+                        variant="gradient"
+                        color="green"
+                        onClick={handleSubmit}
+                    >
+                        <span>Lưu</span>
+                    </Button>
+                </DialogFooter>
+            </Dialog>
         </AuthenticatedLayoutAdmin>
     );
 }
 
-export default ApplicationBanner
+export default ApplicationBanner;

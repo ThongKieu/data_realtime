@@ -319,7 +319,7 @@ function WorkerList({ auth }) {
             field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
-                // console.log(params);
+                console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [selectedImage, setSelectedImage] = useState(null);

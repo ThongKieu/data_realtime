@@ -10,6 +10,7 @@ import {
     Button,
     Textarea,
 } from "@material-tailwind/react";
+import Box from "@mui/material/Box";
 import {
     UsersIcon,
     BellAlertIcon,
@@ -31,16 +32,13 @@ function CreatePost(auth) {
         des: "1",
     });
     const editorRef = useRef(null);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPost((prevData) => ({
             ...prevData,
             [name]: value,
         }));
-
     };
-    console.log(post.title);
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedFiles(files);
@@ -76,10 +74,11 @@ function CreatePost(auth) {
         }
     };
 
+    const { width, height } = useWindowSize(65);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create Post App - Công ty Thợ Việt" />
-            <div className={`h-screen gap-2 p-2`}>
+            <div className={`p-1 h-[${height}]px`}>
                 <Card
                     className={`flex flex-row items-center justify-between m-2 px-2 text-center rounded-xl`}
                 >
@@ -87,103 +86,104 @@ function CreatePost(auth) {
                         Tạo Bài Viết Mới
                     </Typography>
                 </Card>
-                <Card
-                    className={`h-[${heightBoxPost}px] rounded-xl m-2 text-center grid grid-cols-4`}
-                >
-                    <Card
-                        className={`h-[${heightBoxPost}px] rounded-xl m-2 text-center col-span-3`}
+                <Box sx={{ height: { height }, width: 1 }}>
+                    <div
+                        className={`h-[${height}px] rounded-xl my-2 text-center grid grid-cols-4`}
                     >
-                        <Editor
-                            onInit={(evt, editor) =>
-                                (editorRef.current = editor)
-                            }
-                            apiKey="tpgm94lyliuvm1rcrh8auttn458kh1pnwq9qwbz5wru7jbz4"
-                            initialValue={textPost}
-                            onChange={(e) => setTextPost(e.target.value)}
-                            className={{ height: `${heightBoxPost}px` }}
-                            init={{
-                                plugins:
-                                    "ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss",
-                                toolbar:
-                                    "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
-                                tinycomments_mode: "embedded",
-                                tinycomments_author: "Author name",
-                                menubar: "none",
-                                ai_request: (request, respondWith) =>
-                                    respondWith.string(() =>
-                                        Promise.reject(
-                                            "See docs to implement AI Assistant"
-                                        )
-                                    ),
-                            }}
-                        />
-                        <Button
-                            variant="outlined"
-                            className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
-                            color="green"
-                            onClick={handleSave}
+                        <Card
+                            className={`h-[${height}px] rounded-xl m-2 text-center col-span-3`}
                         >
-                            Lưu
-                        </Button>
-                    </Card>
-                    <Card className={`h-[${heightBoxPost}px] rounded-xl m-2`}>
-                        <div className="p-2">
-                            <Input
-                                label="Tiêu Đề"
-                                id="title"
-                                name="title"
-                                className="shadow-none"
-                                value={post.title}
-                                onChange={handleChange}
+                            <Editor
+                                onInit={(evt, editor) =>
+                                    (editorRef.current = editor)
+                                }
+                                apiKey="tpgm94lyliuvm1rcrh8auttn458kh1pnwq9qwbz5wru7jbz4"
+                                initialValue={textPost}
+                                onChange={(e) => setTextPost(e.target.value)}
+                                className={{ height: `${height}px` }}
+                                init={{
+                                    plugins:
+                                        "ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss",
+                                    toolbar:
+                                        "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                                    tinycomments_mode: "embedded",
+                                    tinycomments_author: "Author name",
+                                    menubar: "none",
+                                    ai_request: (request, respondWith) =>
+                                        respondWith.string(() =>
+                                            Promise.reject(
+                                                "See docs to implement AI Assistant"
+                                            )
+                                        ),
+                                }}
                             />
-                        </div>
-                        <div className="p-2">
-                            <Input
-                                label="Mô Tả"
-                                className="shadow-none"
-                                id="des"
-                                name="des"
-                                value={post.des}
-                                onChange={handleChange}
-
-                            />
-                        </div>
-                        <div className="gap-1 p-2">
-                            <div className="text-left">
-                                <span className="mb-4 underline">
-                                    Chọn hình ảnh thực tế
-                                </span>
-                                <input
-                                    id="imgPost"
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                            <Button
+                                variant="outlined"
+                                className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
+                                color="green"
+                                onClick={handleSave}
+                            >
+                                Lưu
+                            </Button>
+                        </Card>
+                        <Card className={`h-[${height}px] rounded-xl m-2`}>
+                            <div className="p-2">
+                                <Input
+                                    label="Tiêu Đề"
+                                    id="title"
+                                    name="title"
+                                    className="shadow-none"
+                                    value={post.title}
+                                    onChange={handleChange}
                                 />
                             </div>
-                            <div className="h-full mt-2 border border-green-500">
-                                {previewImages === "undefined" ||
-                                !previewImages ? (
-                                    <p className="text-blue-500 ">
-                                        Chưa thêm hình ảnh
-                                    </p>
-                                ) : (
-                                    previewImages.map((preview, index) => (
-                                        <img
-                                            key={index}
-                                            src={preview}
-                                            alt={`Preview ${index}`}
-                                            style={{
-                                                width: "200px",
-                                                height: "auto",
-                                                margin: "5px",
-                                            }}
-                                        />
-                                    ))
-                                )}
+                            <div className="p-2">
+                                <Input
+                                    label="Mô Tả"
+                                    className="shadow-none"
+                                    id="des"
+                                    name="des"
+                                    value={post.des}
+                                    onChange={handleChange}
+                                />
                             </div>
-                        </div>
-                    </Card>
-                </Card>
+                            <div className="gap-1 p-2">
+                                <div className="text-left">
+                                    <span className="mb-4 underline">
+                                        Chọn hình ảnh thực tế
+                                    </span>
+                                    <input
+                                        id="imgPost"
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                    />
+                                </div>
+                                <div className="h-full mt-2 border border-green-500">
+                                    {previewImages === "undefined" ||
+                                    !previewImages ? (
+                                        <p className="text-blue-500 ">
+                                            Chưa thêm hình ảnh
+                                        </p>
+                                    ) : (
+                                        previewImages.map((preview, index) => (
+                                            <img
+                                                key={index}
+                                                src={preview}
+                                                alt={`Preview ${index}`}
+                                                style={{
+                                                    width: "200px",
+                                                    height: "auto",
+                                                    margin: "5px",
+                                                }}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </Box>
             </div>
         </AuthenticatedLayout>
     );

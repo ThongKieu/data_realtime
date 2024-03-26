@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('price_lists', function (Blueprint $table) {
             $table->increments('id');
             $table->string('ID_price_list');
-            $table->longText('namr_price_list');
+            $table->longText('name_price_list');
             $table-> longText('info_price');
             $table -> string('price');
             $table -> string('image_price')->nullable();

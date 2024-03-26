@@ -78,6 +78,7 @@ function WorkerList({ auth }) {
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
+                window.location.reload();
                 setAccApp(responseData);
                 handleOpenAccApp();
             } else {

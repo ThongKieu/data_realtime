@@ -98,7 +98,7 @@ Route::prefix('web')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\PriceListController@getPriceList');
         Route::post('/', 'App\Http\Controllers\Api\PriceListController@create');
         Route::post('/update', 'App\Http\Controllers\Api\PriceListController@update');
-       
+
     });
     Route::get('worker-with-type', 'App\Http\Controllers\Api\Web\WorkerController@getWorkerWithType');
     Route::prefix('search')->group(function () {

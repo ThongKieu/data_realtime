@@ -21,6 +21,8 @@ import { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import FileInput from "@/Components/FileInputImage";
 import { host, apiPost } from "@/Utils/UrlApi";
+import newSocket from "@/Utils/Socket";
+import parse from 'html-react-parser';
 function CreatePost(auth) {
     const hResize = useWindowSize();
     const heightBoxPost = hResize.height - 30;
@@ -31,6 +33,12 @@ function CreatePost(auth) {
         title: "1",
         des: "1",
     });
+    useEffect(() => {
+
+        return () => {
+            newSocket.disconnect();
+        };
+    }, []);
     const editorRef = useRef(null);
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -63,8 +71,9 @@ function CreatePost(auth) {
                     mode: "no-cors",
                     body: formData,
                 });
+                setTextPost(newTextPost);
                 if (response.status === 200) {
-                    socketFTB.emit("addWorkTo_Server", formData);
+                    newSocket.emit("addWorkTo_Server", formData);
                     // handleOpen();
                     console.log(formData);
                 }
@@ -73,7 +82,7 @@ function CreatePost(auth) {
             }
         }
     };
-
+    console.log(textPost);
     const { width, height } = useWindowSize(65);
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -159,6 +168,7 @@ function CreatePost(auth) {
                                         className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
                                     />
                                 </div>
+                                <>{parse(`${textPost}`) }</>
                                 <div className="h-full mt-2 border border-green-500">
                                     {previewImages === "undefined" ||
                                     !previewImages ? (

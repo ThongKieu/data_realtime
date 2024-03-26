@@ -136,3 +136,6 @@
 .edit-alert > div{
     margin-bottom: 0;
 }
+.tox-notifications-container{
+    display: none !important;
+}

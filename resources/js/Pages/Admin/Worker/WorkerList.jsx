@@ -105,6 +105,7 @@ function WorkerList({ auth }) {
             });
     }, []);
     // useEffect chỉ chạy một lần sau khi render đầu tiên
+
     const fetchData = async (data1) => {
         try {
             const res = await fetch(host + "api/web/update/worker", {
@@ -179,13 +180,12 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "fullName",
+            field: "worker_full_name",
             headerName: "Họ Tên",
             description: "This column has a value getter and is not sortable.",
             sortable: true,
             width: 160,
             editable: false,
-            valueGetter: (params) => `${params.row.worker_full_name} `,
         },
         {
             field: "worker_code",

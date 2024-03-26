@@ -89,13 +89,13 @@ Route::prefix('web')->group(function () {
     });
     //products
     Route::prefix('product')->group(function () {
-        Route::get('/', 'App\Http\Controllers\Api\ProductsController@getPriceList');
+        Route::get('/', 'App\Http\Controllers\Api\ProductsController@index');
         Route::post('/', 'App\Http\Controllers\Api\ProductsController@create');
         Route::get('getone', 'App\Http\Controllers\Api\ProductsController@getOne');
     });
     // Price list
     Route::prefix('price-list')->group(function () {
-        Route::get('/', 'App\Http\Controllers\Api\PriceListController@index');
+        Route::get('/', 'App\Http\Controllers\Api\PriceListController@getPriceList');
         Route::post('/', 'App\Http\Controllers\Api\PriceListController@create');
         Route::post('/update', 'App\Http\Controllers\Api\PriceListController@update');
        

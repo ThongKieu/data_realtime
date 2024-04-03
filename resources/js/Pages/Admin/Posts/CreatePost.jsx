@@ -22,19 +22,16 @@ import { Editor } from "@tinymce/tinymce-react";
 import FileInput from "@/Components/FileInputImage";
 import { host, apiPost } from "@/Utils/UrlApi";
 import newSocket from "@/Utils/Socket";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 function CreatePost(auth) {
-    const hResize = useWindowSize();
-    const heightBoxPost = hResize.height - 30;
     const [textPost, setTextPost] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [post, setPost] = useState({
-        title: "1",
-        des: "1",
+        title: "",
+        des: "",
     });
     useEffect(() => {
-
         return () => {
             newSocket.disconnect();
         };
@@ -82,7 +79,12 @@ function CreatePost(auth) {
             }
         }
     };
-    console.log(textPost);
+    const handleBanNhap = async () => {
+        if (editorRef.current) {
+            const newTextPost = editorRef.current.getContent();
+            setTextPost(newTextPost);
+        }
+    };
     const { width, height } = useWindowSize(65);
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -95,7 +97,7 @@ function CreatePost(auth) {
                         Tạo Bài Viết Mới
                     </Typography>
                 </Card>
-                <Box sx={{ height: { height }, width: 1 }}>
+                <Box sx={{ height: height, width: 1 }}>
                     <div
                         className={`h-[${height}px] rounded-xl my-2 text-center grid grid-cols-4`}
                     >
@@ -112,9 +114,9 @@ function CreatePost(auth) {
                                 className={{ height: `${height}px` }}
                                 init={{
                                     plugins:
-                                        "ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss",
+                                        "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker",
                                     toolbar:
-                                        "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                                        "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat",
                                     tinycomments_mode: "embedded",
                                     tinycomments_author: "Author name",
                                     menubar: "none",
@@ -126,14 +128,24 @@ function CreatePost(auth) {
                                         ),
                                 }}
                             />
-                            <Button
-                                variant="outlined"
-                                className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
-                                color="green"
-                                onClick={handleSave}
-                            >
-                                Lưu
-                            </Button>
+                            <div className="grid grid-cols-2">
+                                <Button
+                                    variant="outlined"
+                                    className="py-2 m-2 text-center hover:bg-blue-500 hover:text-white"
+                                    color="blue"
+                                    onClick={handleBanNhap}
+                                >
+                                    Bản Nháp
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
+                                    color="green"
+                                    onClick={handleSave}
+                                >
+                                    Lưu
+                                </Button>
+                            </div>
                         </Card>
                         <Card className={`h-[${height}px] rounded-xl m-2`}>
                             <div className="p-2">
@@ -168,28 +180,58 @@ function CreatePost(auth) {
                                         className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
                                     />
                                 </div>
-                                <>{parse(`${textPost}`) }</>
-                                <div className="h-full mt-2 border border-green-500">
-                                    {previewImages === "undefined" ||
-                                    !previewImages ? (
-                                        <p className="text-blue-500 ">
-                                            Chưa thêm hình ảnh
-                                        </p>
-                                    ) : (
-                                        previewImages.map((preview, index) => (
-                                            <img
-                                                key={index}
-                                                src={preview}
-                                                alt={`Preview ${index}`}
-                                                style={{
-                                                    width: "200px",
-                                                    height: "auto",
-                                                    margin: "5px",
-                                                }}
-                                            />
-                                        ))
-                                    )}
-                                </div>
+                                <Card className="mt-2 border border-green-500 rounded-md">
+                                    <Typography
+                                        variant="h4"
+                                        className="italic underline"
+                                    >
+                                        Bản Nháp
+                                    </Typography>
+                                    <div className="grid items-center justify-between grid-cols-4 m-3 border border-green-500">
+                                        <div className="col-span-3 pl-2 text-left">
+                                            <p>
+                                                <span className="pr-2 italic underline">
+                                                    Tiêu Đề:
+                                                </span>
+                                                {post.title == ""
+                                                    ? "Chưa nhập"
+                                                    : post.title}
+                                            </p>
+                                            <p>
+                                                <span className="pr-2 italic underline">
+                                                    Mô Tả:
+                                                </span>
+                                                {post.des == ""
+                                                    ? "Chưa nhập"
+                                                    : post.des}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            {previewImages === "undefined" ||
+                                            !previewImages ? (
+                                                <p className="text-blue-500 ">
+                                                    Chưa thêm hình ảnh
+                                                </p>
+                                            ) : (
+                                                previewImages.map(
+                                                    (preview, index) => (
+                                                        <img
+                                                            className="w-32 h-32 p-3"
+                                                            key={index}
+                                                            src={preview}
+                                                            alt={`Preview ${index}`}
+                                                        />
+                                                    )
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                    <p>{`${
+                                        textPost == "undefined"
+                                            ? "Chưa có dữ liệu"
+                                            : textPost
+                                    }`}</p>
+                                </Card>
                             </div>
                         </Card>
                     </div>

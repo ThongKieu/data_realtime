@@ -53,7 +53,7 @@ function WorkerCheckCall() {
 
     const this_year = currentDate.getFullYear(); 
     useEffect(() => {
-        fetch(host + "api/web/worker/all-workers")
+        fetch(host + "api/web/workers")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Error Status Network");
@@ -61,12 +61,19 @@ function WorkerCheckCall() {
                 return response.json();
             })
             .then((data) => {
-                setListWorkers([data]);
+                setListWorkers(data);
+                console.log(data);
             })
             .catch((error) => {
                 console.error("Error API:", error);
             });
-        fetch(host + "api/web/worker/all-check-call-workers?this_month=" + this_month + "&this_year=" + this_year)
+        fetch(
+            host +
+                "api/web/worker/all-check-call-workers?this_month=" +
+                this_month +
+                "&this_year=" +
+                this_year
+        )
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Error Status Network");
@@ -93,18 +100,18 @@ function WorkerCheckCall() {
     ];
 
     const listMonths = [
-        { month: '01', label: "Tháng 01" },
-        { month: '02', label: "Tháng 02" },
-        { month: '03', label: "Tháng 03" },
-        { month: '04', label: "Tháng 04" },
-        { month: '05', label: "Tháng 05" },
-        { month: '06', label: "Tháng 06" },
-        { month: '07', label: "Tháng 07" },
-        { month: '08', label: "Tháng 08" },
-        { month: '09', label: "Tháng 09" },
-        { month: '10', label: "Tháng 10" },
-        { month: '11', label: "Tháng 11" },
-        { month: '12', label: "Tháng 12" },
+        { month: "01", label: "Tháng 01" },
+        { month: "02", label: "Tháng 02" },
+        { month: "03", label: "Tháng 03" },
+        { month: "04", label: "Tháng 04" },
+        { month: "05", label: "Tháng 05" },
+        { month: "06", label: "Tháng 06" },
+        { month: "07", label: "Tháng 07" },
+        { month: "08", label: "Tháng 08" },
+        { month: "09", label: "Tháng 09" },
+        { month: "10", label: "Tháng 10" },
+        { month: "11", label: "Tháng 11" },
+        { month: "12", label: "Tháng 12" },
     ];
 
     const handleFileUpload = async (event) => {
@@ -178,19 +185,27 @@ function WorkerCheckCall() {
         console.log("Selected Month:", selectedMonth);
 
         // Thêm logic gửi API request ở đây
-        fetch(host + "api/web/worker/all-check-call-workers?this_month=" + selectedMonth + "&this_year=" + this_year+"&phone="+selectedWorker)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("Error Status Network");
-            }
-            return response.json();
-        })
-        .then((data) => {
-            setListCheckCallWorkers(data);
-        })
-        .catch((error) => {
-            console.error("Error API:", error);
-        });
+        fetch(
+            host +
+                "api/web/worker/all-check-call-workers?this_month=" +
+                selectedMonth +
+                "&this_year=" +
+                this_year +
+                "&phone=" +
+                selectedWorker
+        )
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error Status Network");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setListCheckCallWorkers(data);
+            })
+            .catch((error) => {
+                console.error("Error API:", error);
+            });
     };
 
     return (
@@ -246,13 +261,14 @@ function WorkerCheckCall() {
                         <div className="flex items-center">
                             <p className="mr-2">Chọn Thợ Cần Xem:</p>
                             <div className="w-[70%]">
-                                <Select label="Chọn Thợ"  className="w-full">
-                                    {listWorkers.map((data, index) => (<Option
-                                            key={index}
+                                <Select label="Chọn Thợ" className="w-full" value=''>
+                                    {listWorkers?.map((data) => (
+                                        <Option
+                                            key={data.id}
                                             value={data.worker_phone_company}
                                             className="text-green-500"
                                         >
-                                            {data.worker_name}
+                                            ({data.worker_code})-{data.worker_full_name}
                                         </Option>
                                     ))}
                                 </Select>
@@ -261,15 +277,21 @@ function WorkerCheckCall() {
                         <div className="flex items-center justify-between ">
                             <p className="mr-2">Chọn Tháng Cần Xem:</p>
                             <span className="mr-2">
-                                <Select label="Chọn Tháng"
+                                <Select
+                                    label="Chọn Tháng"
                                     value={selectedMonth}
-                                    onChange={(value) => setSelectedMonth(value)}>
+                                    onChange={(value) =>
+                                        setSelectedMonth(value)
+                                    }
+                                >
                                     {listMonths.map((data, index) => (
                                         <Option
                                             key={index}
                                             value={data.month}
                                             className="text-green-500"
-                                        >{data.label}</Option>
+                                        >
+                                            {data.label}
+                                        </Option>
                                     ))}
                                 </Select>
                             </span>
@@ -284,7 +306,6 @@ function WorkerCheckCall() {
                         </div>
                     </Card>
                     <Card className="mt-2 border border-gray-300">
-
                         <Tabs value={activeTab}>
                             <TabsHeader
                                 className="w-1/2 p-0 bg-transparent border-b rounded-none border-blue-gray-50"
@@ -301,10 +322,11 @@ function WorkerCheckCall() {
                                     >
                                         <Typography
                                             color="green"
-                                            className={`${activeTab === value
+                                            className={`${
+                                                activeTab === value
                                                     ? "font-bold"
                                                     : "font-normal"
-                                                }`}
+                                            }`}
                                         >
                                             {label}
                                         </Typography>
@@ -376,7 +398,7 @@ function WorkerCheckCall() {
                                                             const isLast =
                                                                 index ===
                                                                 listCheckCallWorkers.length -
-                                                                1;
+                                                                    1;
                                                             const classes =
                                                                 isLast
                                                                     ? "p-4"
@@ -477,7 +499,7 @@ function WorkerCheckCall() {
                                                                         }
                                                                     >
                                                                         {data.worker_call_check ==
-                                                                            0 ? (
+                                                                        0 ? (
                                                                             <Typography
                                                                                 variant="small"
                                                                                 color="green"
@@ -487,7 +509,7 @@ function WorkerCheckCall() {
                                                                                 Khách
                                                                             </Typography>
                                                                         ) : data.worker_call_check ==
-                                                                            1 ? (
+                                                                          1 ? (
                                                                             <Typography
                                                                                 variant="small"
                                                                                 color="blue"

@@ -17,7 +17,7 @@ function ApplicationQRCode() {
         // Sử dụng dữ liệu từ input để cập nhật trạng thái của component
         setQrData(inputData);
     };
-  
+
     return (
         <Authenticated>
             <Head title="Tạo QR Code" />
@@ -26,7 +26,7 @@ function ApplicationQRCode() {
                     <CardHeader
                         floated={false}
                         shadow={false}
-                        className="bg-cyan-400 border border-deep-orange-300 rounded-lg p-2 text-center">
+                        className="p-2 text-center border rounded-lg bg-cyan-400 border-deep-orange-300">
                         <Typography
                             className="text-lg font-extrabold text-white"
                         >
@@ -34,7 +34,7 @@ function ApplicationQRCode() {
                         </Typography>
                     </CardHeader>
                     <div className='grid grid-cols-3 gap-1'>
-                        <Card className='border rounded-xl border-cyan-300 m-2'>
+                        <Card className='m-2 border rounded-xl border-cyan-300'>
                             <CardHeader
                                 floated={false}
                                 shadow={false}
@@ -49,12 +49,12 @@ function ApplicationQRCode() {
                                     <Button className='m-1' onClick={handleGenerateQRCode}>Tạo</Button>
                                 </div>
                             </CardHeader>
-                           
+
                         </Card>
-                        <Card className='col-span-2 border rounded-xl border-cyan-300 m-2'>
+                        <Card className='col-span-2 m-2 border rounded-xl border-cyan-300'>
                             {qrData && (
                                 <Card>
-                                  
+
                                     <div className='h-[500]px p-2 flex justify-center'>
                                         <QRCode
                                             value={qrData}
@@ -67,7 +67,6 @@ function ApplicationQRCode() {
                                 </Card>
                             )}
                         </Card>
-
                     </div>
                 </Card>
             </div>

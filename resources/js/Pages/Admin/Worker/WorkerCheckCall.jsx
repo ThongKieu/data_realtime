@@ -1,6 +1,7 @@
 import { React, useState, useEffect, useMemo } from "react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
+import * as XLSX from "xlsx";
 import {
     Input,
     Button,
@@ -13,24 +14,16 @@ import {
     Tab,
     TabPanel,
     Card,
-    CardHeader,
     Typography,
-    CardBody,
-    Chip,
-    CardFooter,
-    Avatar,
-    IconButton,
-    Tooltip,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
-import * as XLSX from "xlsx";
 import { host } from "@/Utils/UrlApi";
 import { toast } from "react-toastify";
 import useWindowSize from "@/Core/Resize";
 import Box from "@mui/material/Box";
+import { formatTime } from "@/Data/UrlAPI/UrlApi";
 function WorkerCheckCall() {
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState(null);
@@ -42,40 +35,42 @@ function WorkerCheckCall() {
     const this_month = (currentDate.getMonth() - 1).toString().padStart(2, "0");
     const this_year = currentDate.getFullYear();
     const { width, height } = useWindowSize(200);
-    useEffect(() => {
-        fetch(host + "api/web/workers")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Error Status Network");
-                }
-                return response.json();
-            })
-            .then((data) => {
+    async function fetchWorkers() {
+        try {
+            const response = await fetch(host + "api/web/workers");
+            if (!response.ok) {
+                throw new Error("Error Status Network");
+            } else {
+                const data = await response.json();
                 setListWorkers(data);
-                console.log(data);
-            })
-            .catch((error) => {
-                console.error("Error API:", error);
-            });
-        fetch(
-            host +
-                "api/web/all-check-call-workers?this_month=" +
-                this_month +
-                "&this_year=" +
-                this_year
-        )
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Error Status Network");
-                }
-                return response.json();
-            })
-            .then((data) => {
+            }
+        } catch (error) {
+            console.error("Error API:", error);
+        }
+    }
+
+    async function fetchCheckCallWorkers(this_month, this_year) {
+        try {
+            const response = await fetch(
+                host +
+                    "api/web/all-check-call-workers?this_month=" +
+                    this_month +
+                    "&this_year=" +
+                    this_year
+            );
+            if (!response.ok) {
+                throw new Error("Error Status Network");
+            } else {
+                const data = await response.json();
                 setListCheckCallWorkers(data);
-            })
-            .catch((error) => {
-                console.error("Error API:", error);
-            });
+            }
+        } catch (error) {
+            console.error("Error API:", error);
+        }
+    }
+    useEffect(() => {
+        fetchWorkers();
+        fetchCheckCallWorkers(this_month, this_year);
     }, []);
     const dataTabs = [
         {
@@ -233,7 +228,7 @@ function WorkerCheckCall() {
             width: 300,
             align: "center",
             renderCell: (params) => {
-                return <p>{params.row.worker_call_time} s</p>;
+                return <p>{formatTime(params.row.worker_call_time)}</p>;
             },
         },
 
@@ -249,7 +244,7 @@ function WorkerCheckCall() {
                             <Typography
                                 variant="small"
                                 color="green"
-                                className="font-bold"
+                                className="p-2 font-bold border border-green-500 rounded-md"
                             >
                                 Gọi Khách
                             </Typography>
@@ -257,7 +252,7 @@ function WorkerCheckCall() {
                             <Typography
                                 variant="small"
                                 color="blue"
-                                className="font-bold"
+                                className="p-2 font-bold border border-blue-500 rounded-md"
                             >
                                 Gọi Công Ty
                             </Typography>
@@ -265,7 +260,7 @@ function WorkerCheckCall() {
                             <Typography
                                 variant="small"
                                 color="red"
-                                className="font-bold"
+                                className="p-2 font-bold border border-red-500 rounded-md"
                             >
                                 Gọi Số Ngoài
                             </Typography>

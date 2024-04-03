@@ -24,7 +24,7 @@ import { host, apiPost } from "@/Utils/UrlApi";
 import newSocket from "@/Utils/Socket";
 import parse from "html-react-parser";
 function CreatePost(auth) {
-    const [textPost, setTextPost] = useState("");
+    const [textPost, setTextPost] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [post, setPost] = useState({
@@ -226,11 +226,11 @@ function CreatePost(auth) {
                                             )}
                                         </div>
                                     </div>
-                                    <p>{`${
+                                    <>{`${
                                         textPost == "undefined"
                                             ? "Chưa có dữ liệu"
                                             : textPost
-                                    }`}</p>
+                                    }`}</>
                                 </Card>
                             </div>
                         </Card>

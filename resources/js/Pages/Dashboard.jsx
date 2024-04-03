@@ -123,7 +123,8 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [idUserFix,setIdUserFix] = useState(0);
+    const [idUserFix,setIdUserFix] = useState();
+    const [rowIdData,setRowIdData] = useState();
     useEffect(() => {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
@@ -159,7 +160,8 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userID }) => {
-            console.log('ButtonDisable_To_Client', userID);
+            console.log('ButtonDisable_To_Client',id);
+            setRowIdData(id);
             setIdUserFix(userID);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
@@ -1691,7 +1693,8 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled == true ? (
+                        {isButtonDisabled == true && params.row.id == rowIdData ? (
+
                             <p className="w-full text-center">{idUserFix}Đang Sửa</p>
                         ) : (
                             <div className="flex flex-row justify-center">

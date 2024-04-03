@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect,useMemo } from "react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import {
@@ -203,7 +203,10 @@ function WorkerCheckCall() {
                 console.error("Error API:", error);
             });
     };
-
+    // const columns = useMemo(
+    //     () => listCheckCallWorkers.columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
+    //     [listCheckCallWorkers.columns],
+    //   );
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Kiểm tra thợ gọi" />
@@ -242,7 +245,6 @@ function WorkerCheckCall() {
                             </span>
                         </div>
                     </Card>
-
                     {showAlertFailed && (
                         <AlertIcon
                             setShowAlertFailed={setShowAlertFailed}
@@ -251,23 +253,30 @@ function WorkerCheckCall() {
                             }
                         />
                     )}
-
-                    {/* done here */}
                     <Card className="grid grid-cols-2 gap-2 p-2 mt-2 border border-gray-300">
                         <div className="flex items-center">
                             <p className="mr-2">Chọn Thợ Cần Xem:</p>
                             <div className="w-[70%]">
-                                <Select label="Chọn Thợ" className="w-full" value=''>
+                                <select
+                                    label="Chọn Thợ"
+                                    className="w-full rounded-md"
+                                    value={selectedWorker}
+                                    onChange={(e) =>
+                                        setSelectedWorker(e.target.value)
+                                    }
+                                >
                                     {listWorkers?.map((data) => (
-                                        <Option
+                                        <option
                                             key={data.id}
                                             value={data.worker_phone_company}
                                             className="text-green-500"
                                         >
-                                            ({data.worker_code})-{data.worker_full_name}
-                                        </Option>
+                                            ({data.worker_code})-
+                                            {data.worker_full_name} -
+                                            {data.worker_phone_company}
+                                        </option>
                                     ))}
-                                </Select>
+                                </select>
                             </div>
                         </div>
                         <div className="flex items-center justify-between ">
@@ -297,7 +306,7 @@ function WorkerCheckCall() {
                                 color="green"
                                 onClick={handleSearch}
                             >
-                                Tìm Thông tin{" "}
+                                Tìm Thông tin
                             </Button>
                         </div>
                     </Card>
@@ -367,7 +376,20 @@ function WorkerCheckCall() {
                                             </div>
                                         </CardHeader>
                                         <CardBody className="px-0 overflow-scroll">
-                                            <table className="w-full text-left table-auto min-w-max">
+                                            {/* <DataGrid
+                                                {...listCheckCallWorkers}
+                                                disableColumnFilter
+                                                disableColumnSelector
+                                                disableDensitySelector
+                                                columns={columns}
+                                                slots={{ toolbar: GridToolbar }}
+                                                slotProps={{
+                                                    toolbar: {
+                                                        showQuickFilter: true,
+                                                    },
+                                                }}
+                                            /> */}
+                                            {/* <table className="w-full text-left table-auto min-w-max">
                                                 <thead>
                                                     <tr>
                                                         {TABLE_HEAD.map(
@@ -532,78 +554,13 @@ function WorkerCheckCall() {
                                                         }
                                                     )}
                                                 </tbody>
-                                            </table>
+                                            </table> */}
                                         </CardBody>
-                                        <CardFooter className="flex items-center justify-between p-4 border-t border-blue-gray-50">
-                                            <Button
-                                                variant="outlined"
-                                                size="sm"
-                                                color="green"
-                                            >
-                                                Quay Lại
-                                            </Button>
-                                            <div className="flex items-center gap-2">
-                                                <IconButton
-                                                    variant="outlined"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    1
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    2
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    3
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    ...
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    8
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    9
-                                                </IconButton>
-                                                <IconButton
-                                                    variant="text"
-                                                    size="sm"
-                                                    color="green"
-                                                >
-                                                    10
-                                                </IconButton>
-                                            </div>
-                                            <Button
-                                                variant="outlined"
-                                                size="sm"
-                                                color="green"
-                                            >
-                                                Tiếp Theo
-                                            </Button>
-                                        </CardFooter>
                                     </Card>
                                 </TabPanel>
-                                <TabPanel key="cty" value="cty"></TabPanel>
+                                <TabPanel key="cty" value="cty">
+                                    1
+                                </TabPanel>
                             </TabsBody>
                         </Tabs>
                     </Card>

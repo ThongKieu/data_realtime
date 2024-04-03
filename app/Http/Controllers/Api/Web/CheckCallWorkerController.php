@@ -23,6 +23,7 @@ class CheckCallWorkerController extends Controller
     }
     public function getAllCheckCallWorkers(Request $request)
     {
+        // $month = $request->this_month;
         
         if($request->this_year && $request->this_month && $request->phone == null)
         {
@@ -32,7 +33,7 @@ class CheckCallWorkerController extends Controller
         }
         else
         {
-            $date_get = '%'.$request->this_month.'/'.$request->this_year;
+            $date_get = $request->this_year.'-'.$request->this_month.'%';
             // dd($date_get);
             $soKyTu = strlen($request->phone);
             if($soKyTu == 11)
@@ -45,7 +46,7 @@ class CheckCallWorkerController extends Controller
                 $rturn_call = CheckCallWorker::where('worker_phone','=',$phone)->where('worker_call_date','like',$date_get)->limit(100)->get();
             }
             else
-            {
+            { 
                 $chuoiSauXoaKyTuDauTien = substr($request->phone, 1);
                 $phone = '84'.$chuoiSauXoaKyTuDauTien;
                 $rturn_call = CheckCallWorker::where('worker_phone','=',$phone)->where('worker_call_date','like',$date_get)->limit(100)->get();

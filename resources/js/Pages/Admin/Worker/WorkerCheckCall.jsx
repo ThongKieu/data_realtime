@@ -1,4 +1,4 @@
-import { React, useState, useEffect,useMemo } from "react";
+import { React, useState, useEffect, useMemo } from "react";
 import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import {
@@ -24,11 +24,13 @@ import {
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import * as XLSX from "xlsx";
 import { host } from "@/Utils/UrlApi";
 import { toast } from "react-toastify";
-
+import useWindowSize from "@/Core/Resize";
+import Box from "@mui/material/Box";
 function WorkerCheckCall() {
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState(null);
@@ -36,22 +38,10 @@ function WorkerCheckCall() {
     const [listWorkers, setListWorkers] = useState([]);
     const [listCheckCallWorkers, setListCheckCallWorkers] = useState([]);
     const [activeTab, setActiveTab] = useState("sim");
-
-    const TABLE_HEAD = [
-        "STT",
-        "Số Thợ",
-        "Số Gọi",
-        "Ngày Gọi",
-        "Thời Gian Gọi",
-        "Trang Thái",
-    ];
     var currentDate = new Date();
-    const this_month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-//     const currentDate = new Date();
-// const monthWithLeadingZero = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-// console.log(monthWithLeadingZero); // Example output: "03" for March
-
+    const this_month = (currentDate.getMonth() - 1).toString().padStart(2, "0");
     const this_year = currentDate.getFullYear();
+    const { width, height } = useWindowSize(200);
     useEffect(() => {
         fetch(host + "api/web/workers")
             .then((response) => {
@@ -69,7 +59,7 @@ function WorkerCheckCall() {
             });
         fetch(
             host +
-                "api/web/worker/all-check-call-workers?this_month=" +
+                "api/web/all-check-call-workers?this_month=" +
                 this_month +
                 "&this_year=" +
                 this_year
@@ -87,7 +77,6 @@ function WorkerCheckCall() {
                 console.error("Error API:", error);
             });
     }, []);
-
     const dataTabs = [
         {
             label: "Kiểm Tra Toàn Bộ Cuộc Gọi",
@@ -98,7 +87,6 @@ function WorkerCheckCall() {
             value: "cty",
         },
     ];
-
     const listMonths = [
         { month: "01", label: "Tháng 01" },
         { month: "02", label: "Tháng 02" },
@@ -175,16 +163,12 @@ function WorkerCheckCall() {
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const heightScreenTV = screenSize.height;
     const [selectedWorker, setSelectedWorker] = useState("");
     const [selectedMonth, setSelectedMonth] = useState("");
 
     const handleSearch = () => {
-        // Gửi API request với thông tin từ hai Select
-        console.log("Selected Worker:", selectedWorker);
-        console.log("Selected Month:", selectedMonth);
-
-        // Thêm logic gửi API request ở đây
+        console.log(selectedWorker);
+        console.log(selectedMonth);
         fetch(
             host +
                 "api/web/worker/all-check-call-workers?this_month=" +
@@ -201,16 +185,96 @@ function WorkerCheckCall() {
                 return response.json();
             })
             .then((data) => {
+                console.log("data", data);
                 setListCheckCallWorkers(data);
             })
             .catch((error) => {
                 console.error("Error API:", error);
             });
     };
-    // const columns = useMemo(
-    //     () => listCheckCallWorkers.columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
-    //     [listCheckCallWorkers.columns],
-    //   );
+    console.log("listCheckCallWorkers", listCheckCallWorkers);
+    const columns = [
+        {
+            field: "id",
+            headerName: "STT",
+            width: 50,
+            align: "center",
+            renderCell: (params) => {
+                return <p>{params.row.id}</p>;
+            },
+        },
+        {
+            field: "worker_phone",
+            headerName: "Số Thợ",
+            width: 100,
+            align: "center",
+        },
+        {
+            field: "worker_phone_called",
+            headerName: "Số Gọi",
+            width: 200,
+            align: "center",
+        },
+        {
+            field: "worker_call_date",
+            headerName: "Ngày Gọi",
+            width: 400,
+            align: "center",
+        },
+        {
+            field: "worker_call_start_time",
+            headerName: "Thời Gian Bắt Đầu",
+            width: 200,
+            align: "center",
+        },
+        {
+            field: "worker_call_time",
+            headerName: "Thời Gian Gọi",
+            width: 300,
+            align: "center",
+            renderCell: (params) => {
+                return <p>{params.row.worker_call_time} s</p>;
+            },
+        },
+
+        {
+            field: "worker_call_check",
+            headerName: "Trình Trạng",
+            width: 400,
+            align: "center",
+            renderCell: (params) => {
+                return (
+                    <>
+                        {params.row.worker_call_check == 0 ? (
+                            <Typography
+                                variant="small"
+                                color="green"
+                                className="font-bold"
+                            >
+                                Gọi Khách
+                            </Typography>
+                        ) : params.row.worker_call_check == 1 ? (
+                            <Typography
+                                variant="small"
+                                color="blue"
+                                className="font-bold"
+                            >
+                                Gọi Công Ty
+                            </Typography>
+                        ) : (
+                            <Typography
+                                variant="small"
+                                color="red"
+                                className="font-bold"
+                            >
+                                Gọi Số Ngoài
+                            </Typography>
+                        )}
+                    </>
+                );
+            },
+        },
+    ];
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Kiểm tra thợ gọi" />
@@ -346,45 +410,14 @@ function WorkerCheckCall() {
                             <TabsBody>
                                 <TabPanel key="sim" value="sim">
                                     <Card className="w-full h-full">
-                                        <CardHeader
-                                            floated={false}
-                                            shadow={false}
-                                            className="rounded-none"
+                                        <Box
+                                            sx={{
+                                                height: { height },
+                                                width: 1,
+                                            }}
                                         >
-                                            <div className="flex flex-col justify-between gap-8 mb-4 md:flex-row md:items-center">
-                                                <div>
-                                                    <Typography
-                                                        variant="h5"
-                                                        color="blue-gray"
-                                                    >
-                                                        Kiểm Tra Cuộc Gọi
-                                                    </Typography>
-                                                    <Typography
-                                                        color="gray"
-                                                        className="mt-1 font-normal"
-                                                    >
-                                                        Tất cả các cuộc gọi của
-                                                        thợ bằng sim công ty
-                                                    </Typography>
-                                                </div>
-                                                <div className="flex w-full gap-2 shrink-0 md:w-max">
-                                                    <div className="w-full md:w-72">
-                                                        <Input
-                                                            label="Tìm Kiếm"
-                                                            icon={
-                                                                <MagnifyingGlassIcon className="w-5 h-5" />
-                                                            }
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-                                        <CardBody className="px-0 overflow-scroll">
-                                            {/* <DataGrid
-                                                {...listCheckCallWorkers}
-                                                disableColumnFilter
-                                                disableColumnSelector
-                                                disableDensitySelector
+                                            <DataGrid
+                                                rows={listCheckCallWorkers}
                                                 columns={columns}
                                                 slots={{ toolbar: GridToolbar }}
                                                 slotProps={{
@@ -392,178 +425,30 @@ function WorkerCheckCall() {
                                                         showQuickFilter: true,
                                                     },
                                                 }}
-                                            /> */}
-                                            {/* <table className="w-full text-left table-auto min-w-max">
-                                                <thead>
-                                                    <tr>
-                                                        {TABLE_HEAD.map(
-                                                            (head) => (
-                                                                <th
-                                                                    key={head}
-                                                                    className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50"
-                                                                >
-                                                                    <Typography
-                                                                        variant="small"
-                                                                        color="blue-gray"
-                                                                        className="font-normal leading-none opacity-70"
-                                                                    >
-                                                                        {head}
-                                                                    </Typography>
-                                                                </th>
-                                                            )
-                                                        )}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {listCheckCallWorkers.map(
-                                                        (data, index) => {
-                                                            const isLast =
-                                                                index ===
-                                                                listCheckCallWorkers.length -
-                                                                    1;
-                                                            const classes =
-                                                                isLast
-                                                                    ? "p-4"
-                                                                    : "p-4 border-b border-blue-gray-50";
-
-                                                            return (
-                                                                <tr
-                                                                    key={
-                                                                        data.id
-                                                                    }
-                                                                >
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        <div className="flex items-center gap-3">
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-bold"
-                                                                            >
-                                                                                {
-                                                                                    data.id
-                                                                                }
-                                                                            </Typography>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        <Typography
-                                                                            variant="small"
-                                                                            color="blue-gray"
-                                                                            className="font-normal"
-                                                                        >
-                                                                            {
-                                                                                data.worker_phone
-                                                                            }
-                                                                        </Typography>
-                                                                    </td>
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        <Typography
-                                                                            variant="small"
-                                                                            color="blue-gray"
-                                                                            className="font-normal"
-                                                                        >
-                                                                            {
-                                                                                data.worker_phone_called
-                                                                            }
-                                                                        </Typography>
-                                                                    </td>
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        <Typography
-                                                                            variant="small"
-                                                                            color="blue-gray"
-                                                                            className="font-normal"
-                                                                        >
-                                                                            {
-                                                                                data.worker_call_date
-                                                                            }
-                                                                        </Typography>
-                                                                    </td>
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        <Typography
-                                                                            variant="small"
-                                                                            color="blue-gray"
-                                                                            className="font-normal"
-                                                                        >
-                                                                            {
-                                                                                data.worker_call_start_time
-                                                                            }
-                                                                            ,{" "}
-                                                                            {
-                                                                                data.worker_call_time
-                                                                            }
-                                                                            s
-                                                                        </Typography>
-                                                                    </td>
-
-                                                                    <td
-                                                                        className={
-                                                                            classes
-                                                                        }
-                                                                    >
-                                                                        {data.worker_call_check ==
-                                                                        0 ? (
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="green"
-                                                                                className="font-bold"
-                                                                            >
-                                                                                Gọi
-                                                                                Khách
-                                                                            </Typography>
-                                                                        ) : data.worker_call_check ==
-                                                                          1 ? (
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue"
-                                                                                className="font-bold"
-                                                                            >
-                                                                                Gọi
-                                                                                Công
-                                                                                Ty
-                                                                            </Typography>
-                                                                        ) : (
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="red"
-                                                                                className="font-bold"
-                                                                            >
-                                                                                Gọi
-                                                                                Số
-                                                                                Ngoài
-                                                                            </Typography>
-                                                                        )}
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        }
-                                                    )}
-                                                </tbody>
-                                            </table> */}
-                                        </CardBody>
+                                            />
+                                        </Box>
                                     </Card>
                                 </TabPanel>
                                 <TabPanel key="cty" value="cty">
-                                    1
+                                    <Card className="w-full h-full">
+                                        <Box
+                                            sx={{
+                                                height: { height },
+                                                width: 1,
+                                            }}
+                                        >
+                                            <DataGrid
+                                                rows={listCheckCallWorkers}
+                                                columns={columns}
+                                                slots={{ toolbar: GridToolbar }}
+                                                slotProps={{
+                                                    toolbar: {
+                                                        showQuickFilter: true,
+                                                    },
+                                                }}
+                                            />
+                                        </Box>
+                                    </Card>
                                 </TabPanel>
                             </TabsBody>
                         </Tabs>

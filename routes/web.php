@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/application-qrcode',function(){return Inertia::render('Admin/Application/ApplicationQRCode');})->name('admin/application-qrcode');
         Route::get('/application-work-list',function(){return Inertia::render('Admin/Application/ApplicationWorkList');})->name('admin/application-work-list');
 
-        Route::get('/price',function(){return Inertia::render('Admin/Price/PriceList');})->name('admin/price-list');
+        Route::get('/application-price',function(){return Inertia::render('Admin/Application/ApplicationPrice');})->name('admin/application-price');
 
         // Zalo
         Route::get('/zalo-zns-thanks',function(){return Inertia::render('Admin/Zalo/ZaloSendZNSThanks');})->name('admin/zalo-zns-thanks');

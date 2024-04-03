@@ -11,7 +11,7 @@ import {
     DialogFooter,
     Tooltip,
 } from "@material-tailwind/react";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -23,10 +23,9 @@ function WorkersMain({ auth }) {
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
-        worker_name: "",
-        add_worker: "",
-        phone_cty: "",
-        phone_cn: "",
+        worker_address: "",
+        worker_phone_company: "",
+        worker_phone_personal: "",
         worker_kind: "",
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -46,19 +45,22 @@ function WorkersMain({ auth }) {
         e.preventDefault();
 
         const URL_API = "/api/web/workers";
-        // console.log(info_worker);
-        // get info to form
         const formData = new FormData();
         formData.append("avatar_new", selectedFiles.avatar_new);
         formData.append("worker_full_name", info_worker.worker_full_name);
-        formData.append("worker_name", info_worker.worker_name);
-        formData.append("add_worker", info_worker.add_worker);
-        formData.append("phone_cty", info_worker.phone_cty);
-        formData.append("phone_cn", info_worker.phone_cn);
+        formData.append("worker_address", info_worker.worker_address);
+        formData.append(
+            "worker_phone_company",
+            info_worker.worker_phone_company
+        );
+        formData.append(
+            "worker_phone_personal",
+            info_worker.worker_phone_personal
+        );
         formData.append("worker_kind", info_worker.worker_kind);
 
         try {
-            const response = await fetch(URL_API, {
+            const response = await fetch(URL_API + "/addNew", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -109,6 +111,7 @@ function WorkersMain({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
+    console.log(rows);
     // useEffect chỉ chạy một lần sau khi render đầu tiên
     const fetchData = async (data1) => {
         try {
@@ -156,35 +159,57 @@ function WorkersMain({ auth }) {
     }, []);
     // Hiển thị dữ liệu bảng
     const columns = [
-        { field: "id", headerName: "ID", width: 30 },
         {
-            field: "fullName",
+            field: "id",
+            headerName: "ID",
+            width: 30,
+            renderCell: (params) => {
+                return <span className="text-center">{params.id}</span>;
+            },
+        },
+        {
+            field: "worker_full_name",
             headerName: "Họ Tên",
             description: "This column has a value getter and is not sortable.",
-            sortable: true,
-            width: 160,
+            sortable: false,
+            width: 180,
             editable: false,
-            valueGetter: (params) =>
-                `${params.row.worker_full_name || ""} ${
-                    params.row.worker_name || ""
-                }`,
+            valueGetter: (params) => `${params.row.worker_full_name} `,
         },
         {
             field: "worker_code",
             headerName: "Mã",
-            width: 80,
+            width: 120,
             editable: false,
         },
         {
             field: "worker_address",
             headerName: "Địa Chỉ",
+            width: 200,
+            editable: false,
+        },
+        {
+            field: "null",
+            headerName: "Vị trí",
             width: 180,
             editable: false,
+            renderCell: (params) => {
+                return (
+                    <div className="flex flex-row justify-center w-full">
+                        <a
+                            href={`${host}workers/vi-tri-tho?id_worker=${params.row.id}`}
+                            className="font-normal"
+                        >
+                            <MapPinIcon className="w-5 h-5 text-red-500" />
+                        </a>
+                    </div>
+                );
+            },
         },
         {
             field: "last_active",
             headerName: "Last Active",
-            width: 180,
+            width: 200,
             editable: false,
             renderCell: (params) => {
                 const lastActive = params.row.last_active;
@@ -204,7 +229,7 @@ function WorkersMain({ auth }) {
         {
             field: "worker_phone_company",
             headerName: "Số Công ty",
-            width: 120,
+            width: 140,
             editable: false,
             renderCell: (params) => {
                 const inputRef = createRef();
@@ -236,13 +261,13 @@ function WorkersMain({ auth }) {
             },
         },
         {
-            field: "worker_phone_family",
+            field: "worker_phone_personal",
             headerName: "Số cá nhân",
-            width: 120,
+            width: 140,
             editable: false,
         },
         {
-            field: "status_worker",
+            field: "worker_status",
             headerName: "Tinh trạng",
             width: 200,
             editable: false,
@@ -283,131 +308,40 @@ function WorkersMain({ auth }) {
             headerName: "Ảnh",
             width: 100,
             renderCell: (params) => {
-                const [open, setOpen] = useState(false);
-                const handleOpen = () => setOpen(!open);
-                const [selectedImage, setSelectedImage] = useState(null);
-                const [imagePreview, setImagePreview] = useState(null);
-                // Hàm xử lý khi người dùng chọn hình ảnh
-                const handleImageSelect = (event) => {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const url = URL.createObjectURL(file);
-
-                        setImagePreview(url);
-                    }
-                    setSelectedImage(file);
-                };
-                const isImage = selectedImage ? "d-none" : "d-block";
-                const handleSubmitImageUpdate = async (e) => {
-                    e.preventDefault();
-                    const formDataImage = new FormData();
-                    formDataImage.append("id", params.id);
-                    formDataImage.append("sort_name", params.row.sort_name);
-                    formDataImage.append("action", "avatar_change_worker");
-                    formDataImage.append("avatar_new", selectedImage);
-                    fetchDataImage(formDataImage);
-                    handleOpen();
-                };
-
-                if (params.field === "avatar") {
-                    const imagePreview1 = selectedImage ? (
+                return (
+                    <div >
                         <img
-                            src={imagePreview}
+                            src={
+                                params.row.worker_avatar !== null
+                                    ? host + params.row.worker_avatar
+                                    : `https://thoviet.com.vn/wp-content/uploads/2022/10/pngtree-top-quality-golden-shield-icon-flat-style-png-image_1807309-1.jpg`
+                            }
                             alt="Avatar"
-                            className="w-full h-full"
+                            className="w-14 h-14"
                         />
-                    ) : (
-                        <div className="text-white ">
-                            <span>Chưa có hình ảnh</span>
-                        </div>
-                    );
-                    return (
-                        <>
-                            <Button onClick={handleOpen} className="bg-white">
-                                <img
-                                    src={params.formattedValue}
-                                    alt="Avatar"
-                                    className="w-10"
-                                />
-                            </Button>
-                            <Dialog
-                                open={open}
-                                handler={handleOpen}
-                                animate={{
-                                    mount: { scale: 1, y: 0 },
-                                    unmount: { scale: 0.9, y: -100 },
-                                }}
-                            >
-                                <DialogHeader>Cập Nhật Avatar</DialogHeader>
-                                <DialogBody divider>
-                                    <div className="grid grid-cols-6 text-center align-middle">
-                                        <div className="flex items-center justify-center w-full col-span-4 rounded-l-lg bg-blue-gray-400">
-                                            {imagePreview1}
-                                        </div>
-                                        <div className="w-full col-span-2 h-28">
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                className="!border !border-gray-300 bg-white text-gray-900 shadow-none h-28 rounded-l-none  "
-                                                labelProps={{
-                                                    className: "hidden",
-                                                }}
-                                                containerProps={{
-                                                    className: "h-28",
-                                                }}
-                                                onChange={handleImageSelect}
-                                            />
-                                        </div>
-                                    </div>
-                                </DialogBody>
-                                <DialogFooter>
-                                    <Button
-                                        variant="text"
-                                        color="red"
-                                        onClick={handleOpen}
-                                        className="mr-1"
-                                    >
-                                        <span>Cancel</span>
-                                    </Button>
-                                    <Button
-                                        variant="gradient"
-                                        color="green"
-                                        onClick={handleSubmitImageUpdate}
-                                    >
-                                        <span>Cập Nhật</span>
-                                    </Button>
-                                </DialogFooter>
-                            </Dialog>
-                        </>
-                    );
-                }
+                    </div>
+                );
             },
-            // editable: true,
         },
         {
-            field: "check_acc",
+            field: "worker_check_acc",
             headerName: "Tài Khoản",
             width: 250,
             editable: false,
             renderCell: (params) => {
-                if (params.field === "check_acc") {
+                if (params.field === "worker_check_acc") {
                     switch (params.value) {
                         case 0:
-                            if (auth.user.permission === 1) {
-                                return (
-                                    <a href={"admin/account"}>
-                                        {"Chưa có tạo Mới"}
-                                    </a>
-                                );
-                            }
                             return "Chưa có, vui lòng liên hệ Admin.";
                         case 1:
                             return "Đã có chưa kích hoạt";
                         case 2:
-                            return "Đã có đã kích hoạt";
+                            return "Đã kích hoạt";
+                        case 3:
+                            return "Vô hiệu hóa";
                     }
                 }
-                return <div>{params.value}</div>;
+                return <p className="break-words">{params.value}</p>;
             },
         },
     ];
@@ -444,33 +378,23 @@ function WorkersMain({ auth }) {
                                 onChange={handleChange}
                                 label="Họ"
                             />
+
                             <Input
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="worker_name"
-                                value={info_worker.worker_name}
-                                onChange={handleChange}
-                                label="Tên"
-                            />
-                            <Input
-                                type="text"
-                                className="shadow-none"
-                                id="name"
-                                name="add_worker"
-                                value={info_worker.add_worker}
+                                name="worker_address"
+                                value={info_worker.worker_address}
                                 onChange={handleChange}
                                 label="Địa Chỉ"
                             />
-                            <label className="shadow-none" size="lg">
-                                Tên tắt vd: A01,A02..
-                            </label>
+
                             <Input
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="phone_cty"
-                                value={info_worker.phone_cty}
+                                name="worker_phone_company"
+                                value={info_worker.worker_phone_company}
                                 onChange={handleChange}
                                 label="Số Công Ty"
                             />
@@ -478,8 +402,8 @@ function WorkersMain({ auth }) {
                                 type="text"
                                 className="shadow-none"
                                 id="name"
-                                name="phone_cn"
-                                value={info_worker.phone_cn}
+                                name="worker_phone_personal"
+                                value={info_worker.worker_phone_personal}
                                 onChange={handleChange}
                                 label="Số Cá Nhân"
                             />
@@ -506,7 +430,7 @@ function WorkersMain({ auth }) {
                                 id="avatar_new"
                                 type="file"
                                 onChange={handleFileChange}
-                                className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                className="w-full mt-2 text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
                             />
                         </div>
                     </DialogBody>

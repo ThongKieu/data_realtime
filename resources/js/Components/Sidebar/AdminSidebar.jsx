@@ -96,7 +96,7 @@ function AdminSidebar({ children }) {
                 {
                     title: "Bảng Giá",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
-                    href: route("admin/price-list"),
+                    href: route("admin/application-price"),
                 },
                 {
                     title: "Bài Viết",

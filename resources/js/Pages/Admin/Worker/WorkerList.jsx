@@ -78,6 +78,7 @@ function WorkerList({ auth }) {
                     "Dữ liệu đã được gửi và phản hồi từ máy chủ:",
                     responseData
                 );
+                window.location.reload();
                 setAccApp(responseData);
                 handleOpenAccApp();
             } else {
@@ -104,6 +105,7 @@ function WorkerList({ auth }) {
             });
     }, []);
     // useEffect chỉ chạy một lần sau khi render đầu tiên
+
     const fetchData = async (data1) => {
         try {
             const res = await fetch(host + "api/web/update/worker", {
@@ -178,13 +180,12 @@ function WorkerList({ auth }) {
             },
         },
         {
-            field: "fullName",
+            field: "worker_full_name",
             headerName: "Họ Tên",
             description: "This column has a value getter and is not sortable.",
             sortable: true,
             width: 160,
             editable: false,
-            valueGetter: (params) => `${params.row.worker_full_name} `,
         },
         {
             field: "worker_code",
@@ -318,7 +319,7 @@ function WorkerList({ auth }) {
             field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
-                // console.log(params);
+                console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [selectedImage, setSelectedImage] = useState(null);

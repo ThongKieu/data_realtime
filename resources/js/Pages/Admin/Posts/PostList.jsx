@@ -150,9 +150,9 @@ function PostList(auth) {
                         Danh Sách Bài Viết
                     </Typography>
                     <Tooltip content="Thêm Bài Viết">
-                        <Link href={route("admin/create-post")}>
+                        <a href={route("admin/create-post")} target="_blank">
                             <PlusCircleIcon className="w-8 h-8 cursor-pointer" />
-                        </Link>
+                        </a>
                     </Tooltip>
                 </Card>
                 <Card className={` m-2 px-2 text-center rounded-xl`}>

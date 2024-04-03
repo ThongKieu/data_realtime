@@ -20,6 +20,9 @@ export default defineConfig({
         hmr: {host: ["192.168.0.231"],},
         // host: ["192.168.0.142"],
         // port: 5173,
+        // hmr: {host: ["192.168.0.231"],},
+        // host: ["192.168.0.142"],
+        // port: 5173,
         // hmr: {host: ["192.168.0.142"],},
     },
     build:{

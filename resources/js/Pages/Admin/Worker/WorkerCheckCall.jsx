@@ -46,7 +46,11 @@ function WorkerCheckCall() {
         "Trang Thái",
     ];
     var currentDate = new Date();
-    const this_month = currentDate.getMonth() + 1;
+    const this_month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+//     const currentDate = new Date();
+// const monthWithLeadingZero = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+// console.log(monthWithLeadingZero); // Example output: "03" for March
+
     const this_year = currentDate.getFullYear();
     useEffect(() => {
         fetch(host + "api/web/workers")

@@ -1695,7 +1695,7 @@ function Dashboard({ auth }) {
                     <div className="text-center">
                         {isButtonDisabled == true && params.row.id == rowIdData ? (
 
-                            <p className="w-full text-center">{idUserFix}Đang Sửa</p>
+                            <p className="w-full text-center">{idUserFix} Đang Sửa</p>
                         ) : (
                             <div className="flex flex-row justify-center">
                             {check_admin ||

@@ -88,9 +88,8 @@ function UsersAdmin({ auth }) {
             width: 250,
             editable: false,
             renderCell: (params) => {
-                console.log(auth);
-                const [openPer, setOpenPer] = React.useState(false);
-                const [permission, setPermission] = React.useState(false);
+                const [openPer, setOpenPer] = useState(false);
+                const [permission, setPermission] = useState(false);
                 const handleOpenPer = () => setOpenPer(!openPer);
                 // console.log(params);
                 const handleRessetPermission = async (id) => {
@@ -135,7 +134,7 @@ function UsersAdmin({ auth }) {
                                     </p>
                                 ) : (
                                     <p className="text-center text-red-500">
-                                        
+
                                         Người dùng
                                     </p>
                                 )}
@@ -315,7 +314,7 @@ function UsersAdmin({ auth }) {
     useEffect(() => {
         fetchData();
     }, []);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const [getData, usersData] = useState([]);
     const [formDataPer, usersDataPer] = useState({

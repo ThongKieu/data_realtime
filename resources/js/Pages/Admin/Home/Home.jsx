@@ -24,6 +24,7 @@ import {
 } from "chart.js";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import CardOrderSource from "./CardOrderSource";
+import useWindowSize from "@/Core/Resize";
 const TABLE_HEAD = [
     "ID",
     "Tên nhân viên",
@@ -136,6 +137,7 @@ export const dataOrderSource = {
 //___________SMS Brand Count_____________
 // ________End Nguồn nhận lịch_________________
 function Home({ auth }) {
+const { width, height } = useWindowSize(65);
     useEffect(() => {
         fetchData();
     }, []);
@@ -222,16 +224,12 @@ function Home({ auth }) {
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
     ];
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
-    const heightScreenTV = screenSize.height;
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Trang chủ Admin" />
             <Card
-                className={`h-[${heightScreenTV}px] rounded-none bg-blue-gray-500`}
+                className={`h-[${height}px] rounded-none bg-blue-gray-500`}
             >
                 <Card className="flex flex-row items-center justify-between h-10 m-2 text-center rounded-xl">
                     {/* <div className="h-8 px-0 py-0 w-72 "> */}

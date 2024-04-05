@@ -159,10 +159,10 @@ function Dashboard({ auth }) {
                 fetchDateDoneCheck(data, selectedDate);
             }
         });
-        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userID }) => {
-            console.log('ButtonDisable_To_Client',id);
+        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userFix }) => {
+            console.log('ButtonDisable_To_Client',id,userFix);
             setRowIdData(id);
-            setIdUserFix(userID);
+            setIdUserFix(userFix);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
         });
@@ -1269,7 +1269,7 @@ function Dashboard({ auth }) {
                     socketD.emit("ButtonDisable_To_Server", {
                         id: rowId,
                         isDisabled,
-                        userFix: auth.user.id
+                        userFix: auth.user.name
                     });
                     switch (actionType) {
                         case "openSpendingTotal":
@@ -1695,7 +1695,7 @@ function Dashboard({ auth }) {
                     <div className="text-center">
                         {isButtonDisabled == true && params.row.id == rowIdData ? (
 
-                            <p className="w-full text-center">{idUserFix} Đang Sửa</p>
+                            <p className="w-full text-center">{idUserFix}</p>
                         ) : (
                             <div className="flex flex-row justify-center">
                             {check_admin ||

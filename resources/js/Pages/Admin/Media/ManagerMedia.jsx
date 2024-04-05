@@ -188,18 +188,23 @@ function ManagerMedia({ auth }) {
         document.body.removeChild(input);
         setClipBoard(true);
     };
-    const handleSaved =()=>{
+    const handleSaved = () => {
         console.log(saved);
         setSaved(true);
-    }
+    };
+
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
             <Head title="Quản Lý Hình Ảnh" />
             <div className={`p-1 h-[${height}]px`}>
                 <Card className="mb-2 rounded-md shadow-md bg-blue-gray-200">
-                    <Typography variant="h4" className="w-full p-2 font-bold text-white ">
-                    Media Library
+                    <Typography
+                        variant="h4"
+                        className="w-full p-2 font-bold text-white "
+                    >
+                        Media Library
                     </Typography>
+
                 </Card>
                 <Box sx={{ height: { height }, width: 1 }}>
                     <Card
@@ -310,7 +315,11 @@ function ManagerMedia({ auth }) {
                                                     value={
                                                         selectedImage.FileURL
                                                     }
-                                                    className={`w-[80%] rounded-md ${clipBoard == false ? 'border-none': 'border border-blue-500' } bg-blue-gray-50 cursor-text`}
+                                                    className={`w-[80%] rounded-md ${
+                                                        clipBoard == false
+                                                            ? "border-none"
+                                                            : "border border-blue-500"
+                                                    } bg-blue-gray-50 cursor-text`}
                                                     disabled
                                                 />
                                             </div>
@@ -324,7 +333,9 @@ function ManagerMedia({ auth }) {
                                                         )
                                                     }
                                                 >
-                                                {clipBoard == false ? 'Copy URL to Clipboard': 'Copied'}
+                                                    {clipBoard == false
+                                                        ? "Copy URL to Clipboard"
+                                                        : "Copied"}
                                                 </Button>
                                                 <Button
                                                     color="green"
@@ -334,7 +345,9 @@ function ManagerMedia({ auth }) {
                                                         handleSaved()
                                                     }
                                                 >
-                                                     {saved == false ? 'Save': 'Saved'}
+                                                    {saved == false
+                                                        ? "Save"
+                                                        : "Saved"}
                                                 </Button>
                                             </div>
                                         </Card>

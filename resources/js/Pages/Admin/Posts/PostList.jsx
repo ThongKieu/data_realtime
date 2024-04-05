@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Head } from "@inertiajs/react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -8,6 +8,11 @@ import {
     Avatar,
     Tooltip,
     Button,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
+    Input,
 } from "@material-tailwind/react";
 import {
     UsersIcon,
@@ -19,89 +24,11 @@ import { Box } from "@mui/material";
 import useWindowSize from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
+import { Editor } from "@tinymce/tinymce-react";
 
-const columns = [
-    { field: "id", headerName: "STT", width: 80, editable: false },
-    {
-        field: "title",
-        headerName: "Tên Bài Viết",
-        width: 450,
-        align: "left",
-        headerAlign: "left",
-        editable: false,
-    },
-    {
-        field: "description",
-        headerName: "Mô Tả",
-        width: 300,
-        align: "left",
-        headerAlign: "left",
-        editable: false,
-    },
-    {
-        field: "content",
-        headerName: "Nội Dung",
-        width: 400,
-        align: "left",
-        headerAlign: "left",
-        editable: false,
-    },
-    {
-        field: "image_post",
-        headerName: "Hình Ảnh",
-        width: 200,
-        align: "left",
-        headerAlign: "center",
-        editable: false,
-        renderCell: (params) => {
-            return (
-                <>
-                    {params.row.image_post == "" ||
-                    params.row.image_post == null ? (
-                        <p className="italic text-red-500 ">
-                            Vui lòng thêm hình bài viết
-                        </p>
-                    ) : (
-                        <p>{params.row.image_post}</p>
-                    )}
-                </>
-            );
-        },
-    },
-    {
-        field: "name_author",
-        headerName: "Tác Giả",
-        width: 200,
-        align: "left",
-        headerAlign: "left",
-        editable: false,
-    },
-    {
-        field: "action",
-        headerName: "Chức Năng",
-        width: 180,
-        editable: false,
-        renderCell: (params) => {
-            return (
-                <div className="gap-1 p-2">
-                    <Button
-                        className="py-2 mr-1"
-                        color="green"
-                        variant="outlined"
-                    >
-                        Sửa
-                    </Button>
-                    <Button className="py-2" color="red" variant="outlined">
-                        Xóa
-                    </Button>
-                </div>
-            );
-        },
-    },
-];
-
-function PostList(auth) {
+function PostList({ auth }) {
     const [rows, rowsData] = useState([]);
+    const { width, height } = useWindowSize(110);
     const fetchDataDemo = async () => {
         try {
             const response = await fetch(host + "api/posts");
@@ -116,8 +43,334 @@ function PostList(auth) {
     useEffect(() => {
         fetchDataDemo();
     }, []);
+    const [isSpinning, setIsSpinning] = useState(false);
 
-    const { width, height } = useWindowSize(65);
+    const handleReload = () => {
+        setIsSpinning(true);
+        setTimeout(() => {
+            setIsSpinning(false);
+            window.location.reload();
+        }, 500);
+    };
+    const columns = [
+        { field: "id", headerName: "STT", width: 70, editable: false },
+        {
+            field: "title",
+            headerName: "Tên Bài Viết",
+            width: 450,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
+        },
+        {
+            field: "description",
+            headerName: "Mô Tả",
+            width: 300,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
+        },
+        {
+            field: "content",
+            headerName: "Nội Dung",
+            width: 400,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
+        },
+        {
+            field: "image_post",
+            headerName: "Hình Ảnh",
+            width: 200,
+            align: "left",
+            headerAlign: "center",
+            editable: false,
+            renderCell: (params) => {
+                return (
+                    <>
+                        {params.row.image_post == "" ||
+                        params.row.image_post == null ? (
+                            <p className="italic text-red-500 ">
+                                Vui lòng thêm hình bài viết
+                            </p>
+                        ) : (
+                            <p>{params.row.image_post}</p>
+                        )}
+                    </>
+                );
+            },
+        },
+        {
+            field: "name_author",
+            headerName: "Tác Giả",
+            width: 200,
+            align: "left",
+            headerAlign: "left",
+            editable: false,
+        },
+        {
+            field: "action",
+            headerName: "Chức Năng",
+            width: 180,
+            editable: false,
+            renderCell: (params) => {
+                const [editTextPost, setEditTextPost] = useState(
+                    params.row.content
+                );
+                const [editPost, setEditPost] = useState(params.row);
+                const [selectedFiles, setSelectedFiles] = useState([]);
+                const [previewImages, setPreviewImages] = useState([]);
+                const handleChange = (e) => {
+                    const { name, value } = e.target;
+                    setEditPost((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                };
+                const handleFileChange = (e) => {
+                    const files = Array.from(e.target.files);
+                    setSelectedFiles(files);
+                    const previews = files.map((file) =>
+                        URL.createObjectURL(file)
+                    );
+                    setPreviewImages(previews);
+                };
+                const editorRef = useRef(null);
+                const [openEditPost, setOpenEditPost] = useState(false);
+                const handleOpenEdit = () => setOpenEditPost(!openEditPost);
+                const handleBanNhap = async () => {
+                    if (editorRef.current) {
+                        const newTextPost = editorRef.current.getContent();
+                        setEditTextPost(newTextPost);
+                    }
+                };
+                const handleSave = async () => {
+                    if (editorRef.current) {
+                        const newTextPost = editorRef.current.getContent();
+                        const formData = new FormData();
+                        formData.append("title", editPost.title);
+                        formData.append("description", editPost.description);
+                        formData.append("image_path", selectedFiles);
+                        formData.append("content", newTextPost);
+                        formData.append("author", auth.user.name);
+                        try {
+                            const response = await fetch(host + apiPost, {
+                                method: "POST",
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                },
+                                mode: "no-cors",
+                                body: formData,
+                            });
+                            setEditTextPost(newTextPost);
+                            if (response.status === 200) {
+                                newSocket.emit("addWorkTo_Server", formData);
+                                // handleOpen();
+                                console.log(formData);
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+                };
+                return (
+                    <>
+                        <div className="gap-1 p-2">
+                            <Button
+                                className="py-2 mr-1"
+                                color="green"
+                                variant="outlined"
+                                onClick={handleOpenEdit}
+                            >
+                                Sửa
+                            </Button>
+                            <Button
+                                className="py-2"
+                                color="red"
+                                variant="outlined"
+                            >
+                                Xóa
+                            </Button>
+                        </div>
+                        <Dialog
+                            open={openEditPost}
+                            handler={handleOpenEdit}
+                            size="xl"
+                        >
+                            <DialogHeader id="EditPostDialog">Chỉnh Sửa Bài Viết</DialogHeader>
+                            <DialogBody divider className="grid grid-cols-4">
+                                <div
+                                    className={`h-[${height}px] rounded-xl m-2 text-center col-span-3`}
+                                >
+
+                                    <Editor
+                                        onInit={(evt, editor) =>
+                                            (editorRef.current = editor)
+                                        }
+                                        apiKey="tpgm94lyliuvm1rcrh8auttn458kh1pnwq9qwbz5wru7jbz4"
+                                        initialValue={editTextPost}
+                                        onChange={(e) =>
+                                            setEditTextPost(e.target.value)
+                                        }
+                                        className={{ height: "400px" }}
+                                        height={150}
+                                        init={{
+                                            plugins:
+                                                "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker",
+                                            toolbar:
+                                                "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat",
+                                            tinycomments_mode: "embedded",
+                                            tinycomments_author: "Author name",
+                                            menubar: "none",
+                                            ai_request: (
+                                                request,
+                                                respondWith
+                                            ) =>
+                                                respondWith.string(() =>
+                                                    Promise.reject(
+                                                        "See docs to implement AI Assistant"
+                                                    )
+                                                ),
+                                        }}
+                                    />
+                                </div>
+                                <Card className={` rounded-xl m-2`}>
+                                    <div className="p-2">
+                                        <Input
+                                            label="Tiêu Đề"
+                                            id="title"
+                                            name="title"
+                                            className="shadow-none"
+                                            value={editPost.title}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="p-2">
+                                        <Input
+                                            label="Mô Tả"
+                                            className="shadow-none"
+                                            id="description"
+                                            name="description"
+                                            value={editPost.description}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="gap-1 p-2">
+                                        <img
+                                            src={host + editPost.image_post}
+                                            alt=""
+                                        />
+                                        <div className="text-left">
+                                            <span className="mb-4 underline">
+                                                Chọn hình ảnh thực tế
+                                            </span>
+                                            <input
+                                                id="imgPost"
+                                                type="file"
+                                                onChange={handleFileChange}
+                                                className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                            />
+                                        </div>
+                                    </div>
+                                    <Card
+                                        className={`!h-[500px] mt-2 border border-green-500 rounded-md `}
+                                    >
+                                        <Typography
+                                            variant="h4"
+                                            className="italic underline"
+                                        >
+                                            Bản Nháp
+                                        </Typography>
+                                        <div className="grid items-center justify-between grid-cols-4 m-3 border border-green-500">
+                                            <div className="col-span-3 pl-2 text-left">
+                                                <p>
+                                                    <span className="pr-2 italic underline">
+                                                        Tiêu Đề:
+                                                    </span>
+                                                    {editPost.title == ""
+                                                        ? "Chưa nhập"
+                                                        : editPost.title}
+                                                </p>
+                                                <p>
+                                                    <span className="pr-2 italic underline">
+                                                        Mô Tả:
+                                                    </span>
+                                                    {editPost.des == ""
+                                                        ? "Chưa nhập"
+                                                        : editPost.description}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                {previewImages ===
+                                                    "undefined" ||
+                                                !previewImages ? (
+                                                    <p className="text-blue-500 ">
+                                                        Chưa thêm hình ảnh
+                                                    </p>
+                                                ) : (
+                                                    previewImages.map(
+                                                        (preview, index) => (
+                                                            <img
+                                                                className="w-32 h-32 p-3"
+                                                                key={index}
+                                                                src={preview}
+                                                                alt={`Preview ${index}`}
+                                                            />
+                                                        )
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className={`overflow-scroll `}>{`${
+                                            editTextPost == "undefined"
+                                                ? "Chưa có dữ liệu"
+                                                : editTextPost
+                                        }`}</div>
+                                        <div className="grid grid-cols-2">
+                                            <Button
+                                                variant="outlined"
+                                                className="py-2 m-2 text-center hover:bg-blue-500 hover:text-white"
+                                                color="blue"
+                                                onClick={handleBanNhap}
+                                            >
+                                                Bản Nháp
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
+                                                color="green"
+                                                onClick={handleSave}
+                                            >
+                                                Lưu
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                </Card>
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpenEdit}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpenEdit}
+                                >
+                                    <span>Cập Nhật</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </>
+                );
+            },
+        },
+    ];
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Post App - Công ty Thợ Việt" />
@@ -151,10 +404,10 @@ function PostList(auth) {
                     <div className="flex flex-row justify-between">
                         <Tooltip content="Tải Lại Trang">
                             <ArrowPathIcon
-                                className="w-8 h-8 mr-3 text-green-500 cursor-pointer"
-                                onClick={() => {
-                                    window.location.reload();
-                                }}
+                                className={`w-8 h-8 mr-3 text-green-500 cursor-pointer ${
+                                    isSpinning ? "spin" : ""
+                                }`}
+                                onClick={handleReload}
                             />
                         </Tooltip>
 
@@ -168,7 +421,7 @@ function PostList(auth) {
                         </Tooltip>
                     </div>
                 </Card>
-                <Card className={` m-2 px-2 text-center rounded-xl`}>
+                <Card className={`m-2 px-2 text-center rounded-xl`}>
                     <Box
                         sx={{
                             height: height,

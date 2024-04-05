@@ -26,14 +26,14 @@ import parse from "html-react-parser";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-function CreatePost({auth}) {
+function CreatePost({ auth }) {
+    const { width, height } = useWindowSize(65);
     const [textPost, setTextPost] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
-    const [post, setPost] = useState({
-        title: "",
-        des: "",
-    });
+    const [post, setPost] = useState({title: "",des: "",});
+    const [isSavePost, setIsSavePost] = useState(false);
+    const handleIsSavePost = () => setIsSavePost(!isSavePost);
     useEffect(() => {
         return () => {
             newSocket.disconnect();
@@ -73,10 +73,11 @@ function CreatePost({auth}) {
                     mode: "no-cors",
                     body: formData,
                 });
-                setTextPost(newTextPost);
                 if (response.status === 200) {
                     newSocket.emit("addWorkTo_Server", formData);
                     // handleOpen();
+                    handleIsSavePost();
+                    setTextPost(newTextPost);
                     console.log(formData);
                 }
             } catch (error) {
@@ -90,8 +91,6 @@ function CreatePost({auth}) {
             setTextPost(newTextPost);
         }
     };
-    const { width, height } = useWindowSize(65);
-
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -106,7 +105,7 @@ function CreatePost({auth}) {
                 </Card>
                 <Box sx={{ height: height, width: 1 }}>
                     <div
-                        className={`h-[${height}px] rounded-xl my-2 text-center grid grid-cols-4`}
+                        className={`h-full rounded-xl my-2 text-center grid grid-cols-4`}
                     >
                         <Card
                             className={`h-[${height}px] rounded-xl m-2 text-center col-span-3`}
@@ -123,10 +122,11 @@ function CreatePost({auth}) {
                                 onInit={(evt, editor) =>
                                     (editorRef.current = editor)
                                 }
+                                onObjectResizeStart={false}
                                 apiKey="tpgm94lyliuvm1rcrh8auttn458kh1pnwq9qwbz5wru7jbz4"
                                 initialValue={textPost}
                                 onChange={(e) => setTextPost(e.target.value)}
-                                className={{ height: `${height}px` }}
+                                className={{ height: "400px" }}
                                 init={{
                                     plugins:
                                         "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker",
@@ -143,26 +143,8 @@ function CreatePost({auth}) {
                                         ),
                                 }}
                             />
-                            <div className="grid grid-cols-2">
-                                <Button
-                                    variant="outlined"
-                                    className="py-2 m-2 text-center hover:bg-blue-500 hover:text-white"
-                                    color="blue"
-                                    onClick={handleBanNhap}
-                                >
-                                    Bản Nháp
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
-                                    color="green"
-                                    onClick={handleSave}
-                                >
-                                    Lưu
-                                </Button>
-                            </div>
                         </Card>
-                        <Card className={`h-[${height}px] rounded-xl m-2`}>
+                        <Card className={` rounded-xl m-2`}>
                             <div className="p-2">
                                 <Input
                                     label="Tiêu Đề"
@@ -184,18 +166,33 @@ function CreatePost({auth}) {
                                 />
                             </div>
                             <div className="gap-1 p-2">
-                                <div className="text-left">
-                                    <span className="mb-4 underline">
-                                        Chọn hình ảnh thực tế
-                                    </span>
-                                    <input
-                                        id="imgPost"
-                                        type="file"
-                                        onChange={handleFileChange}
-                                        className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
-                                    />
+                                <div className="flex flex-row items-center text-left">
+                                    <div className="pr-2">
+                                        <span className="mb-4 underline">
+                                            Chọn hình ảnh thực tế
+                                        </span>
+                                        <input
+                                            id="imgPost"
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+                                        />
+                                    </div>
+                                    <div>
+                                        <span className="underline">
+                                            Tác Giả:
+                                        </span>
+                                        <Input
+                                            label="Tác Giả:"
+                                            value={auth.user.name}
+                                            className="shadow-none w- "
+                                            disabled
+                                        />
+                                    </div>
                                 </div>
-                                <Card className="mt-2 border border-green-500 rounded-md">
+                                <Card
+                                    className={`!h-[500px] mt-2 border border-green-500 rounded-md `}
+                                >
                                     <Typography
                                         variant="h4"
                                         className="italic underline"
@@ -241,12 +238,30 @@ function CreatePost({auth}) {
                                             )}
                                         </div>
                                     </div>
-                                    <>{`${
+                                    <div className={`overflow-scroll`}>{`${
                                         textPost == "undefined"
                                             ? "Chưa có dữ liệu"
                                             : textPost
-                                    }`}</>
+                                    }`}</div>
                                 </Card>
+                                <div className="grid grid-cols-2">
+                                    <Button
+                                        variant="outlined"
+                                        className="py-2 m-2 text-center hover:bg-blue-500 hover:text-white"
+                                        color="blue"
+                                        onClick={handleBanNhap}
+                                    >
+                                        Bản Nháp
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        className="py-2 m-2 text-center hover:bg-green-500 hover:text-white"
+                                        color="green"
+                                        onClick={handleSave}
+                                    >
+                                        {isSavePost == true ? "Đã Lưu" : "Lưu"}
+                                    </Button>
+                                </div>
                             </div>
                         </Card>
                     </div>

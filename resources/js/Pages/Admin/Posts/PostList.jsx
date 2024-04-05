@@ -13,6 +13,7 @@ import {
     UsersIcon,
     BellAlertIcon,
     PlusCircleIcon,
+    ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { Box } from "@mui/material";
 import useWindowSize from "@/Core/Resize";
@@ -114,11 +115,9 @@ function PostList(auth) {
     };
     useEffect(() => {
         fetchDataDemo();
-
     }, []);
-    const hResize = useWindowSize();
-    const heightBoxPost = hResize.height - 30;
-    const widthBoxPost = hResize.width - 30;
+
+    const { width, height } = useWindowSize(65);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Post App - Công ty Thợ Việt" />
@@ -149,16 +148,30 @@ function PostList(auth) {
                     <Typography className="p-2 font-bold uppercase">
                         Danh Sách Bài Viết
                     </Typography>
-                    <Tooltip content="Thêm Bài Viết">
-                        <a href={route("admin/create-post")} target="_blank">
-                            <PlusCircleIcon className="w-8 h-8 cursor-pointer" />
-                        </a>
-                    </Tooltip>
+                    <div className="flex flex-row justify-between">
+                        <Tooltip content="Tải Lại Trang">
+                            <ArrowPathIcon
+                                className="w-8 h-8 mr-3 text-green-500 cursor-pointer"
+                                onClick={() => {
+                                    window.location.reload();
+                                }}
+                            />
+                        </Tooltip>
+
+                        <Tooltip content="Thêm Bài Viết">
+                            <a
+                                href={route("admin/create-post")}
+                                target="_blank"
+                            >
+                                <PlusCircleIcon className="w-8 h-8 cursor-pointer" />
+                            </a>
+                        </Tooltip>
+                    </div>
                 </Card>
                 <Card className={` m-2 px-2 text-center rounded-xl`}>
                     <Box
                         sx={{
-                            height: heightBoxPost,
+                            height: height,
                         }}
                     >
                         <DataGrid

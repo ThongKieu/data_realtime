@@ -23,8 +23,11 @@ import FileInput from "@/Components/FileInputImage";
 import { host, apiPost } from "@/Utils/UrlApi";
 import newSocket from "@/Utils/Socket";
 import parse from "html-react-parser";
-function CreatePost(auth) {
-    const [textPost, setTextPost] = useState('');
+
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+function CreatePost({auth}) {
+    const [textPost, setTextPost] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [post, setPost] = useState({
@@ -37,6 +40,7 @@ function CreatePost(auth) {
         };
     }, []);
     const editorRef = useRef(null);
+    console.log(auth);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPost((prevData) => ({
@@ -56,8 +60,9 @@ function CreatePost(auth) {
             const formData = new FormData();
             formData.append("title", post.title);
             formData.append("description", post.des);
-            formData.append("image_post", selectedFiles);
+            formData.append("image_path", selectedFiles);
             formData.append("content", newTextPost);
+            formData.append("author", auth.user.name);
             try {
                 const response = await fetch(host + apiPost, {
                     method: "POST",
@@ -86,6 +91,8 @@ function CreatePost(auth) {
         }
     };
     const { width, height } = useWindowSize(65);
+
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create Post App - Công ty Thợ Việt" />
@@ -104,6 +111,14 @@ function CreatePost(auth) {
                         <Card
                             className={`h-[${height}px] rounded-xl m-2 text-center col-span-3`}
                         >
+                            {/* <CKEditor
+                                editor={ClassicEditor}
+                                data={textPost}
+                                onChange={(e, editor) => {
+                                    const data = editor.getData();
+                                    setTextPost(data);
+                                }}
+                            /> */}
                             <Editor
                                 onInit={(evt, editor) =>
                                     (editorRef.current = editor)

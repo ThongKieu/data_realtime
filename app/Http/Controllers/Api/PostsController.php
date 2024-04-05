@@ -25,7 +25,8 @@ class PostsController extends Controller
         $description = $request->description;
         $content = $request ->content;
         $imge_post = $request->image_path;
-        $author = Auth::user()->name;
+        // $author = Auth::user()->name;
+        $author = $request->author;
 
         $post = new Posts ;
         $post->title = $title;

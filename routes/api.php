@@ -121,7 +121,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('work-list')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\WorkListController@index');
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
-        Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
+        // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
 })->withoutMiddleware("throttle:api")
     ->middleware(

@@ -90,8 +90,12 @@ class PostsController extends Controller
     }
     public function delete(Request $request)
     {
-        Posts::deleted('id','=',$request->id_post);
+        $de = Posts::deleted('id','=',$request->id_post);
+        if($de)
+       {
         return 'Done';
+       }
+       return 'Fail';
     }
 
 

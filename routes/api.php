@@ -131,6 +131,9 @@ Route::prefix('web')->group(function () {
         )
     );
 Route::apiResource('posts', PostsController::class);
+// Route::prefix('posts')->group(function () {
+//     Route::post('update', 'App\Http\Controllers\Api\PostsController@update');});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

@@ -23,7 +23,7 @@ import {
 import { Box } from "@mui/material";
 import useWindowSize from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
-import { host } from "@/Utils/UrlApi";
+import { apiPost, host } from "@/Utils/UrlApi";
 import { Editor } from "@tinymce/tinymce-react";
 
 function PostList({ auth }) {
@@ -94,7 +94,16 @@ function PostList({ auth }) {
                                 Vui lòng thêm hình bài viết
                             </p>
                         ) : (
-                            <p>{params.row.image_post}</p>
+                            <Button
+                                className="flex flex-row w-32 h-32 p-1 m-1 bg-white border border-green-500"
+                                // onClick={() => handleDetailImg(item)}
+                            >
+                                <img
+                                    className="w-32 h-32"
+                                    src={host + params.row.image_post}
+                                    alt={params.row.title}
+                                />
+                            </Button>
                         )}
                     </>
                 );
@@ -129,6 +138,7 @@ function PostList({ auth }) {
                 };
                 const handleFileChange = (e) => {
                     const files = Array.from(e.target.files);
+                    console.log(files);
                     setSelectedFiles(files);
                     const previews = files.map((file) =>
                         URL.createObjectURL(file)
@@ -147,33 +157,68 @@ function PostList({ auth }) {
                 const handleSave = async () => {
                     if (editorRef.current) {
                         const newTextPost = editorRef.current.getContent();
-                        const formData = new FormData();
-                        formData.append("title", editPost.title);
-                        formData.append("description", editPost.description);
-                        formData.append("image_path", selectedFiles);
-                        formData.append("content", newTextPost);
-                        formData.append("author", auth.user.name);
-                        try {
-                            const response = await fetch(host + apiPost, {
-                                method: "POST",
-                                headers: {
-                                    Accept: "application/json",
-                                    "Content-Type": "application/json",
-                                },
-                                mode: "no-cors",
-                                body: formData,
-                            });
-                            setEditTextPost(newTextPost);
-                            if (response.status === 200) {
-                                newSocket.emit("addWorkTo_Server", formData);
-                                // handleOpen();
-                                console.log(formData);
-                            }
-                        } catch (error) {
-                            console.log(error);
-                        }
+                        // const formData = new FormData();
+                        // formData.append("id_post", editPost.id);
+                        // formData.append("title", editPost.title);
+                        // formData.append("description", editPost.description);
+                        // formData.append("image_post", selectedFiles);
+                        // formData.append("content", newTextPost);
+                        // formData.append("author", auth.user.name);
+                        // try {
+                        //     const response = await fetch(
+                        //         `${host}${apiPost}/${editPost.id}`,
+                        //         {
+                        //             method: "PUT",
+                        //             headers: {
+                        //                 Accept: "application/json",
+                        //                 "Content-Type": "application/json",
+                        //             },
+                        //             mode: "no-cors",
+                        //             body: formData,
+                        //         }
+                        //     );
+                        //     if (response.status === 200) {
+                        //         // newSocket.emit("addWorkTo_Server", formData);
+                        //         // handleOpen();
+                        //         setEditTextPost(newTextPost);
+                        //         console.log(formData);
+                        //     }
+                        // } catch (error) {
+                        //     console.log(error);
+                        // }
+                        const myHeaders = new Headers();
+                        myHeaders.append(
+                            "Content-Type",
+                            "application/x-www-form-urlencoded"
+                        );
+
+                        const urlencoded = new URLSearchParams();
+                        urlencoded.append("id_post", editPost.id);
+                        urlencoded.append("title", editPost.title);
+                        urlencoded.append("description", editPost.description);
+                        urlencoded.append("image_post", selectedFiles[0]);
+                        selectedFiles.forEach((file, index) => {
+                            urlencoded.append(`image_post`, file);
+                        });
+                        urlencoded.append("content", newTextPost);
+                        urlencoded.append("author", auth.user.name);
+                        const requestOptions = {
+                            method: "PUT",
+                            headers: myHeaders,
+                            body: urlencoded,
+                            redirect: "follow",
+                        };
+
+                        fetch(
+                            `${host}${apiPost}/${editPost.id}`,
+                            requestOptions
+                        )
+                            .then((response) => response.text())
+                            .then((result) => console.log(result))
+                            .catch((error) => console.error(error));
                     }
                 };
+
                 return (
                     <>
                         <div className="gap-1 p-2">
@@ -198,12 +243,13 @@ function PostList({ auth }) {
                             handler={handleOpenEdit}
                             size="xl"
                         >
-                            <DialogHeader id="EditPostDialog">Chỉnh Sửa Bài Viết</DialogHeader>
+                            <DialogHeader id="EditPostDialog">
+                                Chỉnh Sửa Bài Viết
+                            </DialogHeader>
                             <DialogBody divider className="grid grid-cols-4">
                                 <div
                                     className={`h-[${height}px] rounded-xl m-2 text-center col-span-3`}
                                 >
-
                                     <Editor
                                         onInit={(evt, editor) =>
                                             (editorRef.current = editor)
@@ -258,6 +304,7 @@ function PostList({ auth }) {
                                     </div>
                                     <div className="gap-1 p-2">
                                         <img
+                                            className="w-16"
                                             src={host + editPost.image_post}
                                             alt=""
                                         />
@@ -274,15 +321,15 @@ function PostList({ auth }) {
                                         </div>
                                     </div>
                                     <Card
-                                        className={`!h-[500px] mt-2 border border-green-500 rounded-md `}
+                                        className={`h-full mt-2 border border-green-500 rounded-md `}
                                     >
                                         <Typography
-                                            variant="h4"
+                                            variant="h5"
                                             className="italic underline"
                                         >
                                             Bản Nháp
                                         </Typography>
-                                        <div className="grid items-center justify-between grid-cols-4 m-3 border border-green-500">
+                                        <div className="grid items-center justify-between grid-cols-4 m-3 border border-green-500 ">
                                             <div className="col-span-3 pl-2 text-left">
                                                 <p>
                                                     <span className="pr-2 italic underline">
@@ -322,7 +369,9 @@ function PostList({ auth }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className={`overflow-scroll `}>{`${
+                                        <div
+                                            className={`overflow-scroll h-[200px] `}
+                                        >{`${
                                             editTextPost == "undefined"
                                                 ? "Chưa có dữ liệu"
                                                 : editTextPost

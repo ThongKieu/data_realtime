@@ -750,9 +750,7 @@ function Dashboard({ auth }) {
                 }, []);
                 const handleOpen = () => {
                     setOpen(!open);
-                    getDataBh();
                 };
-
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
@@ -764,7 +762,6 @@ function Dashboard({ auth }) {
                             } else {
                                 setCheckBtnBH(1);
                             }
-                            console.log(data);
                         } catch (error) {
                             console.error("Error fetching data:", error);
                         }
@@ -780,6 +777,7 @@ function Dashboard({ auth }) {
                             variant="outlined"
                             onClick={() => {
                                 handleOpen();
+                                getDataBh();
                             }}
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
@@ -1463,7 +1461,6 @@ function Dashboard({ auth }) {
                         member_read: auth.user.id,
                         warranty: jsonArray,
                     };
-
                     const data_1 = {
                         ac: valueRadio,
                         id: params.row.id,
@@ -1471,7 +1468,6 @@ function Dashboard({ auth }) {
                         id_worker: params.row.id_worker,
                         id_phu: params.row.id_phu,
                     };
-                    console.log(data_0);
                     if (valueRadio === "0") {
                         const image_Pt =
                             document.getElementById("image_Pt")?.files;

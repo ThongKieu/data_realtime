@@ -49,7 +49,7 @@ function CreatePost({ auth }) {
         }));
     };
     const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
+        const files = [e.target.files[0]];
         setSelectedFiles(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
@@ -60,7 +60,7 @@ function CreatePost({ auth }) {
             const formData = new FormData();
             formData.append("title", post.title);
             formData.append("description", post.des);
-            formData.append("image_path", selectedFiles);
+            formData.append("image_post", selectedFiles[0]);
             formData.append("content", newTextPost);
             formData.append("author", auth.user.name);
             try {

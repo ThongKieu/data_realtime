@@ -19,16 +19,18 @@ class PostsController extends Controller
     public function store(Request $request)
     {
 
-        
-        if ($request->hasFile('image_path')) {
-           
-            $image = $request->file('image');
+        // dd($request->all());
+        if ($request->hasFile('image_post')) {
+
+            $image = $request->file('image_post');
+            // dd($image->getClientOriginalExtension());
             $name = time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-            $imge_post = $image->move('assets/post', $name);
+
+            $image_post = $image->move('assets/post', $name);
         }
         else
         {
-            $imge_post = '';
+            $image_post = '';
         }
         //
         $title = $request->title;
@@ -44,8 +46,9 @@ class PostsController extends Controller
         $post->slug = $slug;
         $post->description = $description;
         $post->content = $content;
-        $post ->image_post = $imge_post;
+        $post ->image_post = $image_post;
         $post->name_author = $author;
+        $post->flag = 0;
         $post-> save();
 
         if($post)
@@ -58,16 +61,16 @@ class PostsController extends Controller
     }
     public function update(Request $request)
     {
+        // dd($request->all());
+        if ($request->hasFile('image_post')) {
 
-        if ($request->hasFile('image_path')) {
-           
-            $image = $request->file('image'); 
+            $image = $request->file('image_post');
             $name = time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-            $imge_post = $image->move('assets/post', $name);
+            $image_post = $image->move('assets/post', $name);
         }
         else
         {
-            $imge_post = '';
+            $image_post = '';
         }
         //
         $title = $request->title;
@@ -78,13 +81,17 @@ class PostsController extends Controller
         // $author = Auth::user()->name;
         $author = $request->author;
 
-        $u = Posts::where('id','=', $request->id_post)->update(['title'=>$title,'slug'=>$slug,'description'=>$description,'imge_post'=>$imge_post,'author'=>$author]);
-        return 'Done';
+        $u = Posts::where('id','=', $request->id_post)->update(['title'=>$title,'slug'=>$slug,'description'=>$description,'content'=>$content,'image_post'=>$image_post,'name_author'=>$author]);
+
+        if($u){
+            return 'Done';
+        }
+        return 'Fail';
 
     }
     public function delete(Request $request)
     {
-        $de = Posts::deleted('id','=',$request->id_post);
+        $de = Posts::deleted('id','=',$request->id_post,'admin_del','=',$request->admin_del);
         if($de)
        {
         return 'Done';
@@ -92,6 +99,6 @@ class PostsController extends Controller
        return 'Fail';
     }
 
-    
+
 
 }

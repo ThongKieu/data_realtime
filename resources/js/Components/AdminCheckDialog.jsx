@@ -217,7 +217,6 @@ function AdminCheckDialog({
                     info_warranties: modifiedData,
                 };
 
-                console.log("dataBh:", dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {

@@ -289,7 +289,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($dien_lanh)>0)
@@ -298,7 +298,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($do_go)>0)
@@ -307,7 +307,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($nlmt)>0)
@@ -316,7 +316,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($xay_dung)>0)
@@ -325,7 +325,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($tai_xe)>0)
@@ -334,7 +334,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
         if(count($co_khi)>0)
@@ -343,7 +343,7 @@ class WorksAssignmentController extends Controller
            {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
-                $item->waranty = $warranty;
+                $item->warranty = $warranty;
             }
         }
             
@@ -365,7 +365,7 @@ class WorksAssignmentController extends Controller
     {
         $warranty = Warranties::where('id_work_has','=',$id)->get(['id_work_has','warranty_time','warranty_info','unit']);
 
-        if($warranty)
+        if(count($warranty)>0)
         {
             return json_decode($warranty);
         }

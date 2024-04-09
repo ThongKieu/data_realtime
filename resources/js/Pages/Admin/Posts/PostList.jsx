@@ -148,7 +148,13 @@ function PostList({ auth }) {
                 const editorRef = useRef(null);
                 const [openEditPost, setOpenEditPost] = useState(false);
                 const handleOpenEdit = () => setOpenEditPost(!openEditPost);
+                const [openDeletePost, setOpenDeletePost] = useState(
+                    params.row
+                );
+                const handleOpenDelete = () =>
+                    setOpenDeletePost(!openDeletePost);
                 const handleBanNhap = async () => {
+                    const handleOpenEdit = () => setOpenEditPost(!openEditPost);
                     if (editorRef.current) {
                         const newTextPost = editorRef.current.getContent();
                         setEditTextPost(newTextPost);
@@ -157,65 +163,35 @@ function PostList({ auth }) {
                 const handleSave = async () => {
                     if (editorRef.current) {
                         const newTextPost = editorRef.current.getContent();
-                        // const formData = new FormData();
-                        // formData.append("id_post", editPost.id);
-                        // formData.append("title", editPost.title);
-                        // formData.append("description", editPost.description);
-                        // formData.append("image_post", selectedFiles);
-                        // formData.append("content", newTextPost);
-                        // formData.append("author", auth.user.name);
-                        // try {
-                        //     const response = await fetch(
-                        //         `${host}${apiPost}/${editPost.id}`,
-                        //         {
-                        //             method: "PUT",
-                        //             headers: {
-                        //                 Accept: "application/json",
-                        //                 "Content-Type": "application/json",
-                        //             },
-                        //             mode: "no-cors",
-                        //             body: formData,
-                        //         }
-                        //     );
-                        //     if (response.status === 200) {
-                        //         // newSocket.emit("addWorkTo_Server", formData);
-                        //         // handleOpen();
-                        //         setEditTextPost(newTextPost);
-                        //         console.log(formData);
-                        //     }
-                        // } catch (error) {
-                        //     console.log(error);
-                        // }
-                        const myHeaders = new Headers();
-                        myHeaders.append(
-                            "Content-Type",
-                            "application/x-www-form-urlencoded"
-                        );
-
-                        const urlencoded = new URLSearchParams();
-                        urlencoded.append("id_post", editPost.id);
-                        urlencoded.append("title", editPost.title);
-                        urlencoded.append("description", editPost.description);
-                        urlencoded.append("image_post", selectedFiles[0]);
-                        selectedFiles.forEach((file, index) => {
-                            urlencoded.append(`image_post`, file);
-                        });
-                        urlencoded.append("content", newTextPost);
-                        urlencoded.append("author", auth.user.name);
-                        const requestOptions = {
-                            method: "PUT",
-                            headers: myHeaders,
-                            body: urlencoded,
-                            redirect: "follow",
-                        };
-
-                        fetch(
-                            `${host}${apiPost}/${editPost.id}`,
-                            requestOptions
-                        )
-                            .then((response) => response.text())
-                            .then((result) => console.log(result))
-                            .catch((error) => console.error(error));
+                        const formData = new FormData();
+                        formData.append("id_post", editPost.id);
+                        formData.append("title", editPost.title);
+                        formData.append("description", editPost.description);
+                        formData.append("image_post", selectedFiles[0]);
+                        formData.append("content", newTextPost);
+                        formData.append("author", auth.user.name);
+                        try {
+                            const response = await fetch(
+                                `${host}${apiPost}/${editPost.id}`,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        Accept: "application/json",
+                                        "Content-Type": "application/json",
+                                    },
+                                    mode: "no-cors",
+                                    body: formData,
+                                }
+                            );
+                            if (response.status === 200) {
+                                // newSocket.emit("addWorkTo_Server", formData);
+                                // handleOpen();
+                                setEditTextPost(newTextPost);
+                                console.log(formData);
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                 };
 
@@ -234,6 +210,7 @@ function PostList({ auth }) {
                                 className="py-2"
                                 color="red"
                                 variant="outlined"
+                                onClick={handleOpenDelete}
                             >
                                 Xóa
                             </Button>
@@ -410,6 +387,48 @@ function PostList({ auth }) {
                                     variant="gradient"
                                     color="green"
                                     onClick={handleOpenEdit}
+                                >
+                                    <span>Cập Nhật</span>
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                        <Dialog
+                            open={openDeletePost}
+                            handler={handleOpenDelete}
+                            size="sm"
+                        >
+                            <DialogHeader id="EditPostDialog">
+                                Xóa Bài Viết
+                            </DialogHeader>
+                            <DialogBody divider>
+                                <Typography
+                                    variant="span"
+                                    className="pb-2 italic underline"
+                                >
+                                    ID Bài Viết:
+                                </Typography>
+                                <Input disabled value={params.row.id} />
+                                <Typography
+                                    variant="span"
+                                    className="pb-2 italic underline "
+                                >
+                                    Người Xóa Bài Viết:
+                                </Typography>
+                                <Input disabled value={auth.user.name} />
+                            </DialogBody>
+                            <DialogFooter>
+                                <Button
+                                    variant="text"
+                                    color="red"
+                                    onClick={handleOpenDelete}
+                                    className="mr-1"
+                                >
+                                    <span>Thoát</span>
+                                </Button>
+                                <Button
+                                    variant="gradient"
+                                    color="green"
+                                    onClick={handleOpenDelete}
                                 >
                                     <span>Cập Nhật</span>
                                 </Button>

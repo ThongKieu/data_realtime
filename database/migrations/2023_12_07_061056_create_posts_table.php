@@ -19,6 +19,8 @@ return new class extends Migration
             $table -> longText('content');
             $table -> string('image_post')->nullable();
             $table -> string('name_author');
+            $table -> string('admin_del')->default('0');
+            $table -> string('flag');
             $table->timestamps();
         });
     }

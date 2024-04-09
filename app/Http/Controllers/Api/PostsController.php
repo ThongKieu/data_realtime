@@ -48,6 +48,7 @@ class PostsController extends Controller
         $post->content = $content;
         $post ->image_post = $image_post;
         $post->name_author = $author;
+        $post->flag = 0;
         $post-> save();
 
         if($post)
@@ -60,7 +61,7 @@ class PostsController extends Controller
     }
     public function update(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         if ($request->hasFile('image_post')) {
 
             $image = $request->file('image_post');
@@ -90,7 +91,7 @@ class PostsController extends Controller
     }
     public function delete(Request $request)
     {
-        $de = Posts::deleted('id','=',$request->id_post);
+        $de = Posts::deleted('id','=',$request->id_post,'admin_del','=',$request->admin_del);
         if($de)
        {
         return 'Done';

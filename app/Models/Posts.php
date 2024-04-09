@@ -11,5 +11,5 @@ class Posts extends Model
 
     protected $guarded = [];
 
-    protected $fillabbel =['title','slug','description','content','image_post','id_author'];
+    protected $fillabbel =['title','slug','description','content','image_post','id_author','flag','admin_del'];
 }

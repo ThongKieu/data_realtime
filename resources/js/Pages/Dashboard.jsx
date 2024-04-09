@@ -123,8 +123,8 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [idUserFix,setIdUserFix] = useState();
-    const [rowIdData,setRowIdData] = useState();
+    const [idUserFix, setIdUserFix] = useState();
+    const [rowIdData, setRowIdData] = useState();
     useEffect(() => {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
@@ -159,13 +159,15 @@ function Dashboard({ auth }) {
                 fetchDateDoneCheck(data, selectedDate);
             }
         });
-        newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userFix }) => {
-            console.log('ButtonDisable_To_Client',id,userFix);
-            setRowIdData(id);
-            setIdUserFix(userFix);
-            setIsButtonDisabled(isDisabled);
-            fetchDateDoneCheck(selectedDate);
-        });
+        newSocket.on(
+            "ButtonDisable_To_Client",
+            ({ id, isDisabled, userFix }) => {
+                setRowIdData(id);
+                setIdUserFix(userFix);
+                setIsButtonDisabled(isDisabled);
+                fetchDateDoneCheck(selectedDate);
+            }
+        );
         return () => {
             newSocket.disconnect();
         };
@@ -340,6 +342,7 @@ function Dashboard({ auth }) {
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
                 socketD.emit("UpdateDateTable_To_Server", formData);
+                socketD.emit("ButtonDisable_To_Server", formData);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -736,6 +739,7 @@ function Dashboard({ auth }) {
             renderCell: (params, index) => {
                 const [TTBH, setDataBH] = useState([]);
                 const [open, setOpen] = useState(false);
+                const [checkBtnBh, setCheckBtnBH] = useState(0);
                 useEffect(() => {
                     getDataBh();
                 }, []);
@@ -748,14 +752,18 @@ function Dashboard({ auth }) {
                     setOpen(!open);
                     getDataBh();
                 };
-                const check_bh = params.row.income_total;
+
                 const getDataBh = async () => {
                     if (params.row.id != "undefined") {
                         try {
                             const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
                             const response = await fetch(url);
                             const data = await response.json();
-                            setDataBH(data);
+                            if (data != "") {
+                                setDataBH(data);
+                            } else {
+                                setCheckBtnBH(1);
+                            }
                             console.log(data);
                         } catch (error) {
                             console.error("Error fetching data:", error);
@@ -765,33 +773,17 @@ function Dashboard({ auth }) {
                 const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
                 return (
                     <>
-                        {TTBH.map((item) => {
-                            return (
-                                <>
-                                    {item.id_work_has == params.row.id_cus ? (
-                                        <IconButton
-                                            className={`w-8 h-8 p-1`}
-                                            variant="outlined"
-                                            onClick={() => {
-                                                handleOpen();
-                                            }}
-                                        >
-                                            <ClipboardDocumentListIcon className="w-4 h-4" />
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton
-                                            className={`hidden w-8 h-8 p-1`}
-                                            variant="outlined"
-                                            onClick={() => {
-                                                handleOpen();
-                                            }}
-                                        >
-                                            <ClipboardDocumentListIcon className="w-4 h-4" />
-                                        </IconButton>
-                                    )}
-                                </>
-                            );
-                        })}
+                        <IconButton
+                            className={`${
+                                checkBtnBh == 0 ? "" : "hidden"
+                            } w-8 h-8 p-1`}
+                            variant="outlined"
+                            onClick={() => {
+                                handleOpen();
+                            }}
+                        >
+                            <ClipboardDocumentListIcon className="w-4 h-4" />
+                        </IconButton>
 
                         <Dialog open={open} handler={handleOpen} size="sm">
                             <DialogHeader>Thông Tin Bảo Hành</DialogHeader>
@@ -818,7 +810,7 @@ function Dashboard({ auth }) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {TTBH.map(
+                                                {TTBH?.map(
                                                     (
                                                         {
                                                             warranty_time,
@@ -1263,13 +1255,11 @@ function Dashboard({ auth }) {
                     actionType
                 ) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-                    const isDisabled = !isOpenState;
-                    setIsButtonDisabled(!isDisabled);
-                    rowId = params.row.id;
+
                     socketD.emit("ButtonDisable_To_Server", {
                         id: rowId,
-                        isDisabled,
-                        userFix: auth.user.name
+                        isDisabled: !isOpenState,
+                        userFix: auth.user.name,
                     });
                     switch (actionType) {
                         case "openSpendingTotal":
@@ -1463,51 +1453,53 @@ function Dashboard({ auth }) {
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
                 // Các phần khác của component
-                const handleValueBh = async () => {
-                    try {
-                        const promises = isDataChanged.map(async (data) => {
-                            const dataBh = {
-                                id_work_has: params.id,
-                                warranty_time: data.warranty_time,
-                                warranty_info: data.warranty_info,
-                                unit: data.unit,
-                                income_total: cardExpires.income_total,
-                            };
-                            const res = await fetch(
-                                "api/web/update/work-assignment-warranties",
-                                {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(dataBh),
-                                }
-                            );
-                            if (res.ok) {
-                                socketD?.emit(
-                                    "UpdateDateTable_To_Server",
-                                    "TTBH"
-                                );
-                            } else {
-                                console.error(
-                                    "Lỗi khi gửi dữ liệu:",
-                                    res.statusText
-                                );
-                            }
-                        });
-                        await Promise.all(promises);
-                    } catch (error) {
-                        console.error("Error fetching data lỗi rồi:", error);
-                    }
-                };
+                // const handleValueBh = async () => {
+                //     try {
+                //         const promises = isDataChanged.map(async (data) => {
+                //             const dataBh = {
+                //                 id_work_has: params.id,
+                //                 warranty_time: data.warranty_time,
+                //                 warranty_info: data.warranty_info,
+                //                 unit: data.unit,
+                //                 income_total: cardExpires.income_total,
+                //             };
+                //             const res = await fetch(
+                //                 "api/web/update/work-assignment-warranties",
+                //                 {
+                //                     method: "POST",
+                //                     headers: {
+                //                         "Content-Type": "application/json",
+                //                     },
+                //                     body: JSON.stringify(dataBh),
+                //                 }
+                //             );
+                //             if (res.ok) {
+                //                 socketD?.emit(
+                //                     "UpdateDateTable_To_Server",
+                //                     "TTBH"
+                //                 );
+                //             } else {
+                //                 console.error(
+                //                     "Lỗi khi gửi dữ liệu:",
+                //                     res.statusText
+                //                 );
+                //             }
+                //         });
+                //         await Promise.all(promises);
+                //     } catch (error) {
+                //         console.error("Error fetching data lỗi rồi:", error);
+                //     }
+                // };
                 const handleUpdateThuChi = async (e) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
+                    const jsonArray = JSON.stringify(isDataChanged);
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
+                        warranty: jsonArray,
                     };
 
                     const data_1 = {
@@ -1517,22 +1509,23 @@ function Dashboard({ auth }) {
                         id_worker: params.row.id_worker,
                         id_phu: params.row.id_phu,
                     };
-                    if (valueRadio === "0") {
-                        const image_Pt =
-                            document.getElementById("image_Pt")?.files;
-                        const image_Vt =
-                            document.getElementById("image_Vt")?.files;
-                        fetchDataUpdateThuchi(
-                            data_0,
-                            UrlApi,
-                            image_Pt,
-                            image_Vt
-                        );
-                        handleValueBh();
-                    } else if (valueRadio === "1") {
-                        fetchDataUpdateThuchi(data_1, UrlApi);
-                    }
-                    handleOpenSpending_total();
+                    console.log(data_0);
+                    // if (valueRadio === "0") {
+                    //     const image_Pt =
+                    //         document.getElementById("image_Pt")?.files;
+                    //     const image_Vt =
+                    //         document.getElementById("image_Vt")?.files;
+                    //     fetchDataUpdateThuchi(
+                    //         data_0,
+                    //         UrlApi,
+                    //         image_Pt,
+                    //         image_Vt
+                    //     );
+                    //     // handleValueBh();
+                    // } else if (valueRadio === "1") {
+                    //     fetchDataUpdateThuchi(data_1, UrlApi);
+                    // }
+                    // handleOpenSpending_total();
                 };
                 const handleThuHoi = async (e) => {
                     let data = {
@@ -1693,180 +1686,182 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled == true && params.row.id == rowIdData ? (
-
+                        {isButtonDisabled == true &&
+                        params.row.id == rowIdData ? (
                             <p className="w-full text-center">{idUserFix}</p>
                         ) : (
                             <div className="flex flex-row justify-center">
-                            {check_admin ||
-                            (check_admin && selectedDate != formattedToday) ? (
-                                <>
-                                    <Tooltip content="Admin đã xác nhận">
-                                        <CheckCircleIcon
-                                            className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
-                                                params.row.flag_check === 1
-                                                    ? "hidden"
-                                                    : ""
-                                            }`}
-                                        />
-                                    </Tooltip>
-                                </>
-                            ) : params.row.status_work == 1 ? (
-                                <p
-                                    className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
-                                >
-                                    Mai Làm Tiếp
-                                </p>
-                            ) : params.row.status_work == 3 ? (
-                                <p
-                                    className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
-                                >
-                                    Khảo Sát
-                                </p>
-                            ) : (
-                                <>
-                                    <Tooltip
-                                        content="Nhập Thu Chi"
-                                        animate={{
-                                            mount: { scale: 1, y: 0 },
-                                            unmount: {
-                                                scale: 0,
-                                                y: 25,
-                                            },
-                                        }}
-                                    >
-                                        <Button
-                                            color="white"
-                                            className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
-                                            onClick={
-                                                handleOpenSpendingTotalWithDisable
-                                            }
-                                        >
-                                            <ArrowUpTrayIcon />
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip
-                                        content="Sửa liên hệ admin"
-                                        animate={{
-                                            mount: { scale: 1, y: 0 },
-                                            unmount: {
-                                                scale: 0,
-                                                y: 25,
-                                            },
-                                        }}
-                                    >
-                                        <BookmarkSquareIcon
-                                            className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip
-                                        content="Admin Check"
-                                        animate={{
-                                            mount: { scale: 1, y: 0 },
-                                            unmount: {
-                                                scale: 0,
-                                                y: 25,
-                                            },
-                                        }}
-                                    >
-                                        <Button
-                                            className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                            onClick={() => {
-                                                handleOpenAdminCheckWithDisable();
-                                            }}
-                                            variant="outlined"
-                                        >
-                                            <EyeIcon />
-                                        </Button>
-                                    </Tooltip>
-                                    <Menu allowHover>
-                                        <MenuHandler>
-                                            <EllipsisVerticalIcon
-                                                className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}`}
+                                {check_admin ||
+                                (check_admin &&
+                                    selectedDate != formattedToday) ? (
+                                    <>
+                                        <Tooltip content="Admin đã xác nhận">
+                                            <CheckCircleIcon
+                                                className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
+                                                    params.row.flag_check === 1
+                                                        ? "hidden"
+                                                        : ""
+                                                }`}
                                             />
-                                        </MenuHandler>
-                                        <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
-                                            <MenuItem className="p-0 w-fit">
-                                                <Tooltip
-                                                    content="Thu Hồi Lịch"
-                                                    animate={{
-                                                        mount: {
-                                                            scale: 1,
-                                                            y: 0,
-                                                        },
-                                                        unmount: {
-                                                            scale: 0,
-                                                            y: 25,
-                                                        },
-                                                    }}
-                                                >
-                                                    <ArrowPathIcon
-                                                        className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                        onClick={
-                                                            handleOpenThuHoiWithDisable
-                                                        }
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                            <MenuItem className="p-0 w-fit">
-                                                <Tooltip
-                                                    content="Báo hủy"
-                                                    animate={{
-                                                        mount: {
-                                                            scale: 1,
-                                                            y: 0,
-                                                        },
-                                                        unmount: {
-                                                            scale: 0,
-                                                            y: 25,
-                                                        },
-                                                    }}
-                                                >
-                                                    <TrashIcon
-                                                        className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                        onClick={
-                                                            handleOpenHuyWithDisable
-                                                        }
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                            <MenuItem className="p-0 w-fit">
-                                                <Tooltip
-                                                    content="Khảo Sát"
-                                                    position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
-                                                    arrowSize={10} // Đặt kích thước mũi tên của Tooltip
-                                                    padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
-                                                    distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
-                                                    tagName="div" // Đặt loại thẻ sẽ được sử dụng cho Tooltip (mặc định là 'span')
-                                                    className="custom-tooltip" // Đặt class cho Tooltip để tùy chỉnh kiểu dáng
-                                                    contentStyle={{
-                                                        backgroundColor: "red",
-                                                        color: "white",
-                                                    }}
-                                                    animate={{
-                                                        mount: {
-                                                            scale: 1,
-                                                            y: 0,
-                                                        },
-                                                        unmount: {
-                                                            scale: 0,
-                                                            y: 25,
-                                                        },
-                                                    }}
-                                                >
-                                                    <TicketIcon
-                                                        className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                        onClick={
-                                                            handleOpenKSWithDisable
-                                                        }
-                                                    />
-                                                </Tooltip>
-                                            </MenuItem>
-                                        </MenuList>
-                                    </Menu>
-                                </>
-                            )}
-                        </div>
+                                        </Tooltip>
+                                    </>
+                                ) : params.row.status_work == 1 ? (
+                                    <p
+                                        className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                    >
+                                        Mai Làm Tiếp
+                                    </p>
+                                ) : params.row.status_work == 3 ? (
+                                    <p
+                                        className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                    >
+                                        Khảo Sát
+                                    </p>
+                                ) : (
+                                    <>
+                                        <Tooltip
+                                            content="Nhập Thu Chi"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <Button
+                                                color="white"
+                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
+                                                onClick={
+                                                    handleOpenSpendingTotalWithDisable
+                                                }
+                                            >
+                                                <ArrowUpTrayIcon />
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip
+                                            content="Sửa liên hệ admin"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <BookmarkSquareIcon
+                                                className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip
+                                            content="Admin Check"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <Button
+                                                className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
+                                                onClick={() => {
+                                                    handleOpenAdminCheckWithDisable();
+                                                }}
+                                                variant="outlined"
+                                            >
+                                                <EyeIcon />
+                                            </Button>
+                                        </Tooltip>
+                                        <Menu allowHover>
+                                            <MenuHandler>
+                                                <EllipsisVerticalIcon
+                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}`}
+                                                />
+                                            </MenuHandler>
+                                            <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
+                                                <MenuItem className="p-0 w-fit">
+                                                    <Tooltip
+                                                        content="Thu Hồi Lịch"
+                                                        animate={{
+                                                            mount: {
+                                                                scale: 1,
+                                                                y: 0,
+                                                            },
+                                                            unmount: {
+                                                                scale: 0,
+                                                                y: 25,
+                                                            },
+                                                        }}
+                                                    >
+                                                        <ArrowPathIcon
+                                                            className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
+                                                            onClick={
+                                                                handleOpenThuHoiWithDisable
+                                                            }
+                                                        />
+                                                    </Tooltip>
+                                                </MenuItem>
+                                                <MenuItem className="p-0 w-fit">
+                                                    <Tooltip
+                                                        content="Báo hủy"
+                                                        animate={{
+                                                            mount: {
+                                                                scale: 1,
+                                                                y: 0,
+                                                            },
+                                                            unmount: {
+                                                                scale: 0,
+                                                                y: 25,
+                                                            },
+                                                        }}
+                                                    >
+                                                        <TrashIcon
+                                                            className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
+                                                            onClick={
+                                                                handleOpenHuyWithDisable
+                                                            }
+                                                        />
+                                                    </Tooltip>
+                                                </MenuItem>
+                                                <MenuItem className="p-0 w-fit">
+                                                    <Tooltip
+                                                        content="Khảo Sát"
+                                                        position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                        arrowSize={10} // Đặt kích thước mũi tên của Tooltip
+                                                        padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
+                                                        distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
+                                                        tagName="div" // Đặt loại thẻ sẽ được sử dụng cho Tooltip (mặc định là 'span')
+                                                        className="custom-tooltip" // Đặt class cho Tooltip để tùy chỉnh kiểu dáng
+                                                        contentStyle={{
+                                                            backgroundColor:
+                                                                "red",
+                                                            color: "white",
+                                                        }}
+                                                        animate={{
+                                                            mount: {
+                                                                scale: 1,
+                                                                y: 0,
+                                                            },
+                                                            unmount: {
+                                                                scale: 0,
+                                                                y: 25,
+                                                            },
+                                                        }}
+                                                    >
+                                                        <TicketIcon
+                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                            onClick={
+                                                                handleOpenKSWithDisable
+                                                            }
+                                                        />
+                                                    </Tooltip>
+                                                </MenuItem>
+                                            </MenuList>
+                                        </Menu>
+                                    </>
+                                )}
+                            </div>
                         )}
 
                         {/* ----------------ADMIN CHECK ------------ */}

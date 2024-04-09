@@ -123,7 +123,8 @@ function Dashboard({ auth }) {
         height: window.innerHeight - 100,
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [idUserFix,setIdUserFix] = useState(0);
+    const [idUserFix,setIdUserFix] = useState();
+    const [rowIdData,setRowIdData] = useState();
     useEffect(() => {
         fetchInfoWorker();
         fetchDateCheck(selectedDate);
@@ -159,7 +160,8 @@ function Dashboard({ auth }) {
             }
         });
         newSocket.on("ButtonDisable_To_Client", ({ id, isDisabled, userID }) => {
-            console.log('ButtonDisable_To_Client', userID);
+            console.log('ButtonDisable_To_Client',id);
+            setRowIdData(id);
             setIdUserFix(userID);
             setIsButtonDisabled(isDisabled);
             fetchDateDoneCheck(selectedDate);
@@ -1461,51 +1463,54 @@ function Dashboard({ auth }) {
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
                 // Các phần khác của component
-                const handleValueBh = async () => {
-                    try {
-                        const promises = isDataChanged.map(async (data) => {
-                            const dataBh = {
-                                id_work_has: params.id,
-                                warranty_time: data.warranty_time,
-                                warranty_info: data.warranty_info,
-                                unit: data.unit,
-                                income_total: cardExpires.income_total,
-                            };
-                            const res = await fetch(
-                                "api/web/update/work-assignment-warranties",
-                                {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(dataBh),
-                                }
-                            );
-                            if (res.ok) {
-                                socketD?.emit(
-                                    "UpdateDateTable_To_Server",
-                                    "TTBH"
-                                );
-                            } else {
-                                console.error(
-                                    "Lỗi khi gửi dữ liệu:",
-                                    res.statusText
-                                );
-                            }
-                        });
-                        await Promise.all(promises);
-                    } catch (error) {
-                        console.error("Error fetching data lỗi rồi:", error);
-                    }
-                };
+                // const handleValueBh = async () => {
+                //     try {
+                //         const promises = isDataChanged.map(async (data) => {
+                //             const dataBh = {
+                //                 id_work_has: params.id,
+                //                 warranty_time: data.warranty_time,
+                //                 warranty_info: data.warranty_info,
+                //                 unit: data.unit,
+                //                 income_total: cardExpires.income_total,
+                //             };
+                //             const res = await fetch(
+                //                 "api/web/update/work-assignment-warranties",
+                //                 {
+                //                     method: "POST",
+                //                     headers: {
+                //                         "Content-Type": "application/json",
+                //                     },
+                //                     body: JSON.stringify(dataBh),
+                //                 }
+                //             );
+                //             if (res.ok) {
+                //                 socketD?.emit(
+                //                     "UpdateDateTable_To_Server",
+                //                     "TTBH"
+                //                 );
+                //             } else {
+                //                 console.error(
+                //                     "Lỗi khi gửi dữ liệu:",
+                //                     res.statusText
+                //                 );
+                //             }
+                //         });
+                //         await Promise.all(promises);
+                //     } catch (error) {
+                //         console.error("Error fetching data lỗi rồi:", error);
+                //     }
+                // };
                 const handleUpdateThuChi = async (e) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
+                    const jsonArray = JSON.stringify(isDataChanged)
+                    // const obj = JSON.parse(jsonArray);
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
+                        warranty:jsonArray
                     };
 
                     const data_1 = {
@@ -1515,6 +1520,7 @@ function Dashboard({ auth }) {
                         id_worker: params.row.id_worker,
                         id_phu: params.row.id_phu,
                     };
+                    console.log(data_0);
                     if (valueRadio === "0") {
                         const image_Pt =
                             document.getElementById("image_Pt")?.files;
@@ -1526,12 +1532,46 @@ function Dashboard({ auth }) {
                             image_Pt,
                             image_Vt
                         );
-                        handleValueBh();
+                        // handleValueBh();
                     } else if (valueRadio === "1") {
                         fetchDataUpdateThuchi(data_1, UrlApi);
                     }
                     handleOpenSpending_total();
                 };
+                // const handleUpdateThuChi = async (e) => {
+                //     e.preventDefault();
+                //     const UrlApi = `api/web/update/work-continue`;
+                //     const data_0 = {
+                //         ...cardExpires,
+                //         ac: valueRadio,
+                //         id: params.row.id,
+                //         member_read: auth.user.id,
+                //     };
+
+                //     const data_1 = {
+                //         ac: valueRadio,
+                //         id: params.row.id,
+                //         id_cus: params.row.id_cus,
+                //         id_worker: params.row.id_worker,
+                //         id_phu: params.row.id_phu,
+                //     };
+                //     if (valueRadio === "0") {
+                //         const image_Pt =
+                //             document.getElementById("image_Pt")?.files;
+                //         const image_Vt =
+                //             document.getElementById("image_Vt")?.files;
+                //         fetchDataUpdateThuchi(
+                //             data_0,
+                //             UrlApi,
+                //             image_Pt,
+                //             image_Vt
+                //         );
+                //         handleValueBh();
+                //     } else if (valueRadio === "1") {
+                //         fetchDataUpdateThuchi(data_1, UrlApi);
+                //     }
+                //     handleOpenSpending_total();
+                // };
                 const handleThuHoi = async (e) => {
                     let data = {
                         id: params.id,
@@ -1691,8 +1731,9 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled == true ? (
-                            <p className="w-full text-center">{idUserFix}Đang Sửa</p>
+                        {isButtonDisabled == true && params.row.id == rowIdData ? (
+
+                            <p className="w-full text-center">{idUserFix} Đang Sửa</p>
                         ) : (
                             <div className="flex flex-row justify-center">
                             {check_admin ||

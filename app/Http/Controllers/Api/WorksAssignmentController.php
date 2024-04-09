@@ -434,6 +434,7 @@ class WorksAssignmentController extends Controller
     }
     public function continueWorkAss(Request $request)
     {
+       
         if ($request->ac == 1) {
             // update bảng đã phân
             // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
@@ -465,6 +466,20 @@ class WorksAssignmentController extends Controller
             }
         } else {
             $id_cus = $request->id_cus;
+            // dd($request->all());
+            if(count( (json_decode($request->warranty)))> 0)
+            {
+                $warranty = json_decode($request->warranty);
+                foreach($warranty as $item)
+                {   
+                    if($item->warranty_time != 0)
+                    {
+                       WarrantiesController::insertWarrantiesFix($request->id,$item->warranty_time,$item->warranty_info,$item->unit);
+                    }
+                    
+                }
+                
+            }
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,
                 'date_book' => $request->date_book,
@@ -474,6 +489,7 @@ class WorksAssignmentController extends Controller
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
+            
             if ($request->hasFile('seri_imag')) {
                 $file_na = '';
                 foreach ($request->file('seri_imag') as $files_seri) {

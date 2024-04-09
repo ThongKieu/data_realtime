@@ -23,12 +23,14 @@ class CheckCallWorkerController extends Controller
     }
     public function getAllCheckCallWorkers(Request $request)
     {
-        
+        // $month = $request->this_month;
+
         if($request->this_year && $request->this_month && $request->phone == null)
         {
             $date_get = '%'.$request->this_month.'/'.$request->this_year;
             // dd($date_get);
             $rturn_call = CheckCallWorker::where('worker_call_date','like',$date_get)->limit(100)->get();
+
         }
         else
         {
@@ -38,11 +40,13 @@ class CheckCallWorkerController extends Controller
             if($soKyTu == 11)
             {
                 $rturn_call = CheckCallWorker::where('worker_call_date','like',$date_get)->limit(100)->get();
+                // dd($rturn_call);
             }
             elseif($soKyTu == 9)
             {
                 $phone = '84'.$request->phone;
                 $rturn_call = CheckCallWorker::where('worker_phone','=',$phone)->where('worker_call_date','like',$date_get)->limit(100)->get();
+                // dd($rturn_call);
             }
             else
             {
@@ -51,7 +55,7 @@ class CheckCallWorkerController extends Controller
                 $rturn_call = CheckCallWorker::where('worker_phone','=',$phone)->where('worker_call_date','like',$date_get)->limit(100)->get();
             }
             foreach($rturn_call as $item)
-            {   
+            {
 
                 $phone_cus=substr($item['worker_phone_called'],1);
                 // dd($phone_cus);
@@ -67,11 +71,8 @@ class CheckCallWorkerController extends Controller
                     $item['check'] = 0;
                 }
             }
-
-            
-
         }
-        
         return $rturn_call;
+        // dd($rturn_call);
     }
 }

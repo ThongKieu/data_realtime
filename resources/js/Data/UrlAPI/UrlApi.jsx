@@ -112,12 +112,22 @@ const getFormattedToday = () => {
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
 };
+const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
 
+    const formattedHours = hours > 0 ? `${hours} giờ ` : '';
+    const formattedMinutes = minutes > 0 ? `${minutes} phút ` : '';
+    const formattedSeconds = `${remainingSeconds} giây`;
+
+    return formattedHours + formattedMinutes + formattedSeconds;
+};
 export {
     getFormattedToday,
     getFirstName,
     sendPhanThoRequest,
-    sendDoiThoRequest,
+    sendDoiThoRequest,formatTime,
     url_API,
     url_API_District,
 };

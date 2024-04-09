@@ -120,7 +120,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('work-list')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\WorkListController@index');
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
-        Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
+        // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
 })->withoutMiddleware("throttle:api")
     ->middleware(
@@ -129,7 +129,14 @@ Route::prefix('web')->group(function () {
             decayMinutes: 1
         )
     );
-Route::apiResource('posts', PostsController::class);
+// Route::apiResource('posts', ::class);
+//Maps
+Route::prefix('posts')->group(function () {
+    Route::get('/', 'App\Http\Controllers\Api\PostsController@index');
+    Route::post('/', 'App\Http\Controllers\Api\PostsController@store');
+    Route::post('/{id}', 'App\Http\Controllers\Api\PostsController@update');
+    Route::post('/delete/{id}', 'App\Http\Controllers\Api\PostsController@delete');
+});
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

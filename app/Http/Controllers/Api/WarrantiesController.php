@@ -31,6 +31,22 @@ class WarrantiesController extends Controller
       else
         return 'Không có tiền mà đòi bảo hành???????????????';
     }
+    public static function insertWarrantiesFix( $id_work_has, $warranty_time, $warranty_info,$unit)
+    {
+        $i = new Warranties([
+            'id_work_has'=>$id_work_has,
+            'warranty_time'=> $warranty_time,
+            'warranty_info' => $warranty_info,
+            'unit'=> $unit,
+        ]);
+        $i->save();
+        if($i)
+        {
+            return 1;
+        }
+        return 0;
+      
+    }
     public function infoWarranty(Request $req)
     {
         if($req->id_cus)

@@ -28,7 +28,7 @@ class WorkListController extends Controller
     public function delete()
     {
         WorkList::where('id','!=',0)->delete();
-        
+
         return response()->json('Delete Done!');
     }
     public function importWork(Request $request)
@@ -38,15 +38,15 @@ class WorkListController extends Controller
             $validator = Validator::make($request->all(), [
                 'file' => 'required|mimes:xlsx,xls,csv'
             ]);
-    
+
             // Nếu tệp không hợp lệ, trả về thông báo lỗi
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
             }
-    
+
             // Tiến hành nhập khẩu
             Excel::import(new WorkListImport(), $request->file);
-    
+
             return response()->json('Import Done!');
         } else {
             // Trả về thông báo lỗi nếu không tìm thấy tệp

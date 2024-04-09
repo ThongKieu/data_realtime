@@ -13,6 +13,7 @@ class PriceListController extends Controller
 {
     public function create(Request $request)
     {
+        // dd($request->all());
         if ($request->hasFile('image')) {
            
             $image = $request->file('image');
@@ -22,7 +23,7 @@ class PriceListController extends Controller
         {
             $storedPath = '';
         }
-
+ 
         $priceList = new PriceList([
             'ID_price_list' => $request->ID_price_list,
             'name_price_list' => $request->name_price_list,

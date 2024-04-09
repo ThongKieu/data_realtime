@@ -136,6 +136,16 @@
 .edit-alert > div{
     margin-bottom: 0;
 }
-.tox-notifications-container{
-    display: none !important;
+/* post  */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+}
+
+#EditPostDialog>div>div>textarea{
+    height: 100px !important;
 }

@@ -351,10 +351,9 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
-            if(isset($request->from_app))
-            {
+            if (isset($request->from_app)) {
 
-                NoticationAllController::create('3',$note,'');
+                NoticationAllController::create('3', $note, '');
             }
             return 1;
         }
@@ -448,18 +447,22 @@ class WorksAssignmentController extends Controller
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
 
             //id_work, id_worker, id_phu
-           $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
+            $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
 
-            $n = new WorksAssignment([
+            $workContinue = new WorksAssignment([
                 'id_cus' => $request->id_cus,
                 'id_worker' => $request->id_worker,
                 'id_phu' => $request->id_phu,
                 'real_note' => $note,
-                'created_at'=>$created_at,
+                'created_at' => $created_at,
             ]);
 
-            $n->save();
-            return response()->json('Update continue work !!!');
+            $workContinue->save();
+            if ($workContinue) {
+                return 'true';
+            } else {
+                return 'failed';
+            }
         } else {
             $id_cus = $request->id_cus;
             $up_work = Work::where('id', '=', $id_cus)->update([
@@ -547,8 +550,7 @@ class WorksAssignmentController extends Controller
                         // Warranties::where('id', '=', $request->id)->update(['unit' => $request->unit,'warranty_time'=>$request->warranty_time,'warranty_info'=>$request->warranty_info]);
                         if ($request->id_del_warranty) {
                             // dd($request->id_del_warranty);
-                            for($i = 0 ; $i<count($request->id_del_warranty);$i++)
-                            {
+                            for ($i = 0; $i < count($request->id_del_warranty); $i++) {
                                 $num = Warranties::where('id', '=', $request->id_del_warranty[$i])->delete();
                             }
                             return 'Del warranties';
@@ -556,32 +558,27 @@ class WorksAssignmentController extends Controller
 
                             $a = $request->info_warranties;
                             $num = Warranties::where('id_work_has', '=', $request->id_work_has)->get('id');
-                            if(count($num) == count($a))
-                            {   // Sửa thông tin lịch bảo hành
-                                for ($i = 0; $i < count($a); $i++)
-
-                                    {
-                                        Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
-                                    }
-                                    return 'Sua thanh cong';
-                            }
-                            else{
+                            if (count($num) == count($a)) { // Sửa thông tin lịch bảo hành
+                                for ($i = 0; $i < count($a); $i++) {
+                                    Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                }
+                                return 'Sua thanh cong';
+                            } else {
                                 $n = count($request->info_warranties);
                                 // dd(count($num));
 
-                                for($i = 0; $i<$n; $i++)
-                                {
-                                   if ($request->info_warranties[$i]['warranty_create']==1) {
-                                    $new = new Warranties([
-                                        'id_work_has' => $request->id_work_has,
-                                        'warranty_time' => $request->info_warranties[$i]['warranty_time'],
-                                        'warranty_info' => $request->info_warranties[$i]['warranty_info'],
-                                        'unit' => $request->info_warranties[$i]['unit'],
-                                    ]);
-                                    $new->save();
-                                   }else {
-                                    Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
-                                   }
+                                for ($i = 0; $i < $n; $i++) {
+                                    if ($request->info_warranties[$i]['warranty_create'] == 1) {
+                                        $new = new Warranties([
+                                            'id_work_has' => $request->id_work_has,
+                                            'warranty_time' => $request->info_warranties[$i]['warranty_time'],
+                                            'warranty_info' => $request->info_warranties[$i]['warranty_info'],
+                                            'unit' => $request->info_warranties[$i]['unit'],
+                                        ]);
+                                        $new->save();
+                                    } else {
+                                        Warranties::where('id', '=', $a[$i]['id'])->update(['unit' => $a[$i]['unit'], 'warranty_time' => $a[$i]['warranty_time'], 'warranty_info' => $a[$i]['warranty_info']]);
+                                    }
                                 }
                             }
 

@@ -30,7 +30,7 @@ const EditableInput = ({
                 label={label}
                 id={id}
                 name={name}
-                value={value != 'undefined' || value =='' ? value : 'khách không có ghi chú'}
+                value={value || ''}
                 color="green"
                 ref={inputRef}
                 autoFocus={editableInput === id} // Đặt autoFocus dựa trên điều kiện

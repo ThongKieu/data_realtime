@@ -1443,7 +1443,6 @@ function Dashboard({ auth }) {
                         console.log("Vui lòng chọn hình trước khi gửi.");
                     }
                 };
-
                 const vatCard = params.row.bill_image === null;
                 const [isAllowed, setIsAllowed] = useState(false); // Trạng thái cho phép/mở
                 const [valueRadio, setValueRadio] = useState("0");
@@ -1453,43 +1452,6 @@ function Dashboard({ auth }) {
                     setValueRadio(value); // Nếu radio "allow" được chọn, cho phép.
                 };
                 // Các phần khác của component
-                // const handleValueBh = async () => {
-                //     try {
-                //         const promises = isDataChanged.map(async (data) => {
-                //             const dataBh = {
-                //                 id_work_has: params.id,
-                //                 warranty_time: data.warranty_time,
-                //                 warranty_info: data.warranty_info,
-                //                 unit: data.unit,
-                //                 income_total: cardExpires.income_total,
-                //             };
-                //             const res = await fetch(
-                //                 "api/web/update/work-assignment-warranties",
-                //                 {
-                //                     method: "POST",
-                //                     headers: {
-                //                         "Content-Type": "application/json",
-                //                     },
-                //                     body: JSON.stringify(dataBh),
-                //                 }
-                //             );
-                //             if (res.ok) {
-                //                 socketD?.emit(
-                //                     "UpdateDateTable_To_Server",
-                //                     "TTBH"
-                //                 );
-                //             } else {
-                //                 console.error(
-                //                     "Lỗi khi gửi dữ liệu:",
-                //                     res.statusText
-                //                 );
-                //             }
-                //         });
-                //         await Promise.all(promises);
-                //     } catch (error) {
-                //         console.error("Error fetching data lỗi rồi:", error);
-                //     }
-                // };
                 const handleUpdateThuChi = async (e) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
@@ -1510,23 +1472,23 @@ function Dashboard({ auth }) {
                         id_phu: params.row.id_phu,
                     };
                     console.log(data_0);
-                    // if (valueRadio === "0") {
-                    //     const image_Pt =
-                    //         document.getElementById("image_Pt")?.files;
-                    //     const image_Vt =
-                    //         document.getElementById("image_Vt")?.files;
-                    //     fetchDataUpdateThuchi(
-                    //         data_0,
-                    //         UrlApi,
-                    //         image_Pt,
-                    //         image_Vt
-                    //     );
-                    //     // handleValueBh();
-                    // } else if (valueRadio === "1") {
-                    //     fetchDataUpdateThuchi(data_1, UrlApi);
-                    // }
-                    // handleOpenSpending_total();
+                    if (valueRadio === "0") {
+                        const image_Pt =
+                            document.getElementById("image_Pt")?.files;
+                        const image_Vt =
+                            document.getElementById("image_Vt")?.files;
+                        fetchDataUpdateThuchi(
+                            data_0,
+                            UrlApi,
+                            image_Pt,
+                            image_Vt
+                        );
+                    } else if (valueRadio === "1") {
+                        fetchDataUpdateThuchi(data_1, UrlApi);
+                    }
+                    handleOpenSpending_total();
                 };
+
                 const handleThuHoi = async (e) => {
                     let data = {
                         id: params.id,

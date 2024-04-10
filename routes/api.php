@@ -159,7 +159,8 @@ Route::prefix('fuel-ot')->group(function () {
     Route::get('/getID', 'App\Http\Controllers\Api\FuelOTWorkerController@getByIdWorker');
     Route::get('/getAllFuel', 'App\Http\Controllers\Api\FuelOTWorkerController@getAllFOWorker');
     Route::post('', 'App\Http\Controllers\Api\FuelOTWorkerController@insertFuelOTWorker');
-    Route::post('/update', 'App\Http\Controllers\Api\FuelOTWorkerController@checkFuelOTByAdmin');
+    Route::post('/update', 'App\Http\Controllers\Api\FuelOTWorkerController@updateFuelOT');
+    Route::post('/adcheck', 'App\Http\Controllers\Api\FuelOTWorkerController@checkFuelOTByAdmin');
 });
 // --------------------------------------------------------------------------//
 // Application

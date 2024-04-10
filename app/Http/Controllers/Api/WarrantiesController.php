@@ -45,7 +45,7 @@ class WarrantiesController extends Controller
             return 1;
         }
         return 0;
-      
+
     }
     public function infoWarranty(Request $req)
     {

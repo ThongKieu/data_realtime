@@ -346,7 +346,7 @@ class WorksAssignmentController extends Controller
                 $item->warranty = $warranty;
             }
         }
-            
+
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWorkDone = [
             'dien_nuoc_done' => $dien_nuoc,
@@ -363,11 +363,11 @@ class WorksAssignmentController extends Controller
     }
     public static function getWarrantiesById ($id)
     {
-        $warranty = Warranties::where('id_work_has','=',$id)->get(['id_work_has','warranty_time','warranty_info','unit']);
+        $warranty = Warranties::where('id_work_has','=',$id)->get(['id','id_work_has','warranty_time','warranty_info','unit']);
 
         if(count($warranty)>0)
         {
-            return json_decode($warranty);
+            return $warranty;
         }
         return 'KBH';
     }
@@ -509,7 +509,7 @@ class WorksAssignmentController extends Controller
     }
     public function continueWorkAss(Request $request)
     {
-       
+
         if ($request->ac == 1) {
             // update bảng đã phân
             // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
@@ -542,14 +542,14 @@ class WorksAssignmentController extends Controller
             {
                 $warranty = json_decode($request->warranty);
                 foreach($warranty as $item)
-                {   
+                {
                     if($item->warranty_time != 0)
                     {
                        WarrantiesController::insertWarrantiesFix($request->id,$item->warranty_time,$item->warranty_info,$item->unit);
                     }
-                    
+
                 }
-                
+
             }
             $up_work = Work::where('id', '=', $id_cus)->update([
                 'work_content' => $request->work_content,
@@ -560,7 +560,7 @@ class WorksAssignmentController extends Controller
                 'street' => $request->street,
                 'name_cus' => $request->name_cus,
             ]);
-            
+
             if ($request->hasFile('seri_imag')) {
                 $file_na = '';
                 foreach ($request->file('seri_imag') as $files_seri) {
@@ -630,7 +630,7 @@ class WorksAssignmentController extends Controller
         // dd($request->hasFile('seri_imag_new'));
         if ($request->ac != null) {
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
-            if ($per == 1) {
+            if ($per == 1 || $per == 0 ) {
                 switch ($request->ac) {
                     case 1:
                         // thay đổi thông tin bảo hành
@@ -759,9 +759,7 @@ class WorksAssignmentController extends Controller
                         }
                     case 13:
                         // Admin Check
-
                         $data = $request->data;
-
                         Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'], 'phone_number' => $data['phone_number'], 'street' => $data['street'], 'district' => $data['district'], 'name_cus' => $data['name_cus']]);
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 

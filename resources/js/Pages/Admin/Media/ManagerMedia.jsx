@@ -192,6 +192,19 @@ function ManagerMedia({ auth }) {
         console.log(saved);
         setSaved(true);
     };
+    const getImageUrls = () => {
+        // Lấy danh sách tên file hình ảnh từ thư mục assets trong thư mục public của Laravel
+        const imageNames = require.context(
+            "./assets",
+            false,
+            /\.(png|jpe?g|svg)$/
+        );
+        // Lặp qua danh sách tên file và lấy URL của mỗi hình ảnh
+        return imageNames.keys().map((image) => imageNames(image).default);
+    };
+
+    const images = getImageUrls();
+    console.log(images);
 
     return (
         <AuthenticatedLayoutAdmin children={auth.user} user={auth.user}>
@@ -204,7 +217,6 @@ function ManagerMedia({ auth }) {
                     >
                         Media Library
                     </Typography>
-
                 </Card>
                 <Box sx={{ height: { height }, width: 1 }}>
                     <Card

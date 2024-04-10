@@ -58,6 +58,9 @@ Route::prefix('web')->group(function () {
         Route::post('/returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWork');
         Route::post('/setActive', 'App\Http\Controllers\Api\WorksAssignmentController@setActive');
     });
+     
+    
+
     Route::prefix('quote')->group(function () {
         Route::get('', 'App\Http\Controllers\Api\Web\QuoteFlowController@index');
         Route::get('users', 'App\Http\Controllers\Api\Web\QuoteFlowController@getAdminName');
@@ -148,6 +151,14 @@ Route::prefix('maps')->group(function () {
     Route::post('/', 'App\Http\Controllers\Api\MapsWorkerController@create');
     Route::post('/{id}', 'App\Http\Controllers\Api\MapsWorkerController@update');
     Route::get('worker', 'App\Http\Controllers\Api\MapsWorkerController@getOneWorker');
+});
+// Fuel - Over Time Worker 
+Route::prefix('fuel-ot')->group(function () {
+    Route::get('/getID', 'App\Http\Controllers\Api\FuelOTWorkerController@getByIdWorker');
+    Route::get('/getAllFuel', 'App\Http\Controllers\Api\FuelOTWorkerController@getAllFOWorker');
+    Route::post('', 'App\Http\Controllers\Api\FuelOTWorkerController@insertFuelOTWorker');
+    Route::post('/update', 'App\Http\Controllers\Api\FuelOTWorkerController@updateFuelOT');
+    Route::post('/adcheck', 'App\Http\Controllers\Api\FuelOTWorkerController@checkFuelOTByAdmin');
 });
 // --------------------------------------------------------------------------//
 // Application

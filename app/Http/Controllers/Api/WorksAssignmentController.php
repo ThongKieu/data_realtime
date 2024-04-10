@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
+
 class WorksAssignmentController extends Controller
 {
     public function __invoke()
@@ -363,11 +364,11 @@ class WorksAssignmentController extends Controller
     }
     public static function getWarrantiesById ($id)
     {
-        $warranty = Warranties::where('id_work_has','=',$id)->get(['id_work_has','warranty_time','warranty_info','unit']);
+        $warranty = Warranties::where('id_work_has','=',$id)->get(['id','id_work_has','warranty_time','warranty_info','unit']);
 
         if(count($warranty)>0)
         {
-            return json_decode($warranty);
+            return $warranty;
         }
         return 'KBH';
     }
@@ -630,7 +631,7 @@ class WorksAssignmentController extends Controller
         // dd($request->hasFile('seri_imag_new'));
         if ($request->ac != null) {
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
-            if ($per == 1) {
+            if ($per == 1 || $per == 0) {
                 switch ($request->ac) {
                     case 1:
                         // thay đổi thông tin bảo hành

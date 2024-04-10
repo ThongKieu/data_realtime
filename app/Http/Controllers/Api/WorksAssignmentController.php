@@ -283,70 +283,56 @@ class WorksAssignmentController extends Controller
                     "workers.worker_phone_company",
                 ]
             );
-        if(count($dien_nuoc)>0)
-        {
-           foreach($dien_nuoc as $item)
-           {
+        if (count($dien_nuoc) > 0) {
+            foreach ($dien_nuoc as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($dien_lanh)>0)
-        {
-           foreach($dien_lanh as $item)
-           {
+        if (count($dien_lanh) > 0) {
+            foreach ($dien_lanh as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($do_go)>0)
-        {
-           foreach($do_go as $item)
-           {
+        if (count($do_go) > 0) {
+            foreach ($do_go as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($nlmt)>0)
-        {
-           foreach($nlmt as $item)
-           {
+        if (count($nlmt) > 0) {
+            foreach ($nlmt as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($xay_dung)>0)
-        {
-           foreach($xay_dung as $item)
-           {
+        if (count($xay_dung) > 0) {
+            foreach ($xay_dung as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($tai_xe)>0)
-        {
-           foreach($tai_xe as $item)
-           {
+        if (count($tai_xe) > 0) {
+            foreach ($tai_xe as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-        if(count($co_khi)>0)
-        {
-           foreach($co_khi as $item)
-           {
+        if (count($co_khi) > 0) {
+            foreach ($co_khi as $item) {
                 $warranty = WorksAssignmentController::getWarrantiesById($item->id);
 
                 $item->warranty = $warranty;
             }
         }
-            
+
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
         $dataWorkDone = [
             'dien_nuoc_done' => $dien_nuoc,
@@ -361,12 +347,11 @@ class WorksAssignmentController extends Controller
         return response()->json($dataWorkDone);
 
     }
-    public static function getWarrantiesById ($id)
+    public static function getWarrantiesById($id)
     {
-        $warranty = Warranties::where('id_work_has','=',$id)->get(['id_work_has','warranty_time','warranty_info','unit']);
+        $warranty = Warranties::where('id_work_has', '=', $id)->get(['id_work_has', 'warranty_time', 'warranty_info', 'unit']);
 
-        if(count($warranty)>0)
-        {
+        if (count($warranty) > 0) {
             return json_decode($warranty);
         }
         return 'KBH';

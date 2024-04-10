@@ -277,5 +277,59 @@ class WorkersController extends Controller
         $nameCodeWorker = DB::table('workers')->get(['worker_code', 'worker_full_name']);
         return $nameCodeWorker;
     }
+    public function checkActiveWorker(Request $req)
+    {
+
+        $keay = $req->device_key;
+        $check = AccountionWorker::where('id_worker', '=', $req->id)->get(['active', 'device_key']);
+        // return $check;
+        if ($check != null) {
+            foreach ($check as $item) {
+                $active = $item->active;
+                $device = $item->device_key;
+                // return $device;
+                switch ($active) {
+                    //chưa kích hoạt
+                    case 0:
+                        return 0;
+                        break;
+                    //đã kích hoạt
+                    case 1:
+                        if ($device == $req->device_key) {
+                            return 1;
+                        } else {
+                            AccountWorkers::where('id_worker', '=', $req->id)->update(['active' => 2, 'device_key' => $req->device_key, 'FCM_token' => $req->fcm_token]);
+                            return 2;
+                        }
+                        break;
+                    //tạm giữ
+                    case 2:
+                        return 2;
+                        break;
+                    //Đã xóa tài khoản
+                    case 3:
+                        return 3;
+                        break;
+                }
+            }
+        } else {
+            return 0;
+        }
+
+    }
+    public function historyWork(Request $request)
+    {
+        $id = $request->id_worker;
+        $history = DB::table('works_assignments')
+            ->leftJoin('works', 'works.id', '=', 'works_assignments.id_cus')
+            ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
+            ->leftJoin('warranties', 'warranties.id_work_has', '=', 'works_assignments.id')
+            ->where('works_assignments.id_worker', '=', $id)
+            ->where('works_assignments.status_work', '!=', '5')
+            ->orderByDesc('works_assignments.id')
+            ->limit(100)
+            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.income_total', 'works_assignments.spending_total', 'warranties.warranty_time', 'warranties.warranty_info', 'warranties.unit', 'works_assignments.status_work']);
+        return $history;
+    }
 
 }

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\DistrictController;
-use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\Web\WorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -156,8 +155,12 @@ Route::prefix('app')->group(function () {
     // Worker
     Route::prefix('worker')->group(function () {
 
+        // active
+        Route::post('check-active', 'App\Http\Controllers\Api\Mobile\WorkersController@checkActiveWorker');
+
         // fcm
         Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
+
         // user
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
         Route::post('avatar', 'App\Http\Controllers\Api\Mobile\WorkersController@addAvatar');
@@ -169,6 +172,7 @@ Route::prefix('app')->group(function () {
         Route::post('deleteWork', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('returnWork', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
         Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
+        Route::post('historyWork', 'App\Http\Controllers\Api\Mobile\WorkersController@historyWork');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
         Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
     });

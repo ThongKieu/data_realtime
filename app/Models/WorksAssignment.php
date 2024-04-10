@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class WorksAssignment extends Model
 {
     use HasFactory;
-    protected $fillable =[
+    protected $fillable = [
         'id_cus',
         'id_worker',
         'id_phu',
@@ -23,4 +23,8 @@ class WorksAssignment extends Model
         'kind_work_assign',
         'status_work',
         'created_at'];
+    public function warranty()
+    {
+        return $this->hasOne(Warranties::class);
+    }
 }

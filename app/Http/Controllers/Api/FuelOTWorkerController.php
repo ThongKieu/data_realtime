@@ -82,6 +82,7 @@ class FuelOTWorkerController extends Controller
             }
             return 0;
         }
+        return 0;
     }
     public static function checkFuelOTByAdmin($id_fuel, $id_admin_check)
     {
@@ -98,10 +99,10 @@ class FuelOTWorkerController extends Controller
         // lấy id của dòng
         $up = FuelOTWorker::where('id', '=', $r->id)->update(['fuel_o_t_workers_content' => $r->fuel_o_t_workers_content,
             'fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
-        if ($up) {
-            return 1;
-        }
-        return 0;
+            if ($up) {
+                return 1;
+            }
+            return 0;
 
     }
 }

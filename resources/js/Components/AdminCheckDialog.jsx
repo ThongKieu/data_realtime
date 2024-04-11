@@ -11,13 +11,8 @@ import {
     DialogHeader,
     DialogFooter,
     IconButton,
-    Tabs,
-    TabsHeader,
-    TabsBody,
-    Tab,
 } from "@material-tailwind/react";
 import {
-    XMarkIcon,
     XCircleIcon,
     PencilSquareIcon,
     PlusCircleIcon,
@@ -27,6 +22,7 @@ import {
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
+import useWindowSize from "@/Core/Resize";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -47,6 +43,7 @@ function AdminCheckDialog({
     classNameChild,
     handleChange,
     socketD,
+
     handleSearch,
 }) {
     const [activePt, setActivePt] = useState({
@@ -71,38 +68,20 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [dataBH, setDataBH] = useState([
-        {
-            id: 0,
-            warranty_time: 0,
-            unit: "kbh",
-            warranty_info: "Không Bảo Hành",
-            warranty_create: 0,
-        },
-    ]);
-    const [oldDataBH, setOldDataBH] = useState([]);
-    const fetchDataBH = async (id) => {
-        if (id || id != "undefined") {
-            try {
-                const response = await fetch(
-                    `api/web/work-assignment/warranties?id=${id}`
-                );
-                const jsonData = await response.json();
-                if (response.ok && jsonData.length != 0) {
-                    const formatJson = jsonData.map((item) => ({
-                        id: item.id,
-                        warranty_info: item.warranty_info,
-                        warranty_time: item.warranty_time,
-                        unit: item.unit,
-                    }));
-                    setDataBH(formatJson);
-                    setOldDataBH(formatJson);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-    };
+    const [oldDataBH, setOldDataBH] = useState(params.row.warranty);
+    const [dataBH, setDataBH] = useState(
+        params.row.warranty == "KBH"
+            ? [
+                  {
+                      id: 0,
+                      warranty_time: 0,
+                      unit: "kbh",
+                      warranty_info: "Không Bảo Hành",
+                      warranty_create: 0,
+                  },
+              ]
+            : params.row.warranty
+    );
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
 
@@ -136,7 +115,9 @@ function AdminCheckDialog({
     ];
     const handleClick = () => {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
-        const maxKey = Math.max(...dataBH.map((item) => item.id));
+        const maxKey = Math.max(
+             ...dataBH.map((item) => item.id)
+        );
         const newId = maxKey + 1;
         setDataBH((prevData) => [
             ...prevData,
@@ -193,7 +174,7 @@ function AdminCheckDialog({
             if (oldDataBH !== "") {
                 const modifiedData = dataBH
                     .map((item) => {
-                        const matchingItem = oldDataBH.find(
+                        const matchingItem = Array.isArray(...oldDataBH) && oldDataBH.find(
                             (oldItem) => oldItem.id === item.id
                         );
                         return matchingItem
@@ -216,7 +197,7 @@ function AdminCheckDialog({
                     id_work_has: params.row.id,
                     info_warranties: modifiedData,
                 };
-
+                console.log(dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {
@@ -227,7 +208,7 @@ function AdminCheckDialog({
 
                 if (res.ok) {
                     console.log("Đã Gửi Thông Tin Bảo Hành", dataBh);
-                    socketD?.emit('UpdateDateTable_To_Server');
+                    socketD?.emit("UpdateDateTable_To_Server");
                     handleOpenBH();
                 } else {
                     console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -282,15 +263,11 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 300,
-    });
-    var heightScreenTV = screenSize.height;
+    const { width, height } = useWindowSize(300);
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
-        fetchDataBH(id);
+        // setOldDataBH(id);
     };
     return (
         <Dialog
@@ -305,7 +282,7 @@ function AdminCheckDialog({
             </div>
             <DialogBody
                 className={`overflow-y-auto`}
-                style={{ height: `${heightScreenTV}px` }}
+                style={{ height: `${height}px` }}
                 divider
             >
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
@@ -348,11 +325,7 @@ function AdminCheckDialog({
                             <u>Nội Dung Bảo Hành:</u>
                             <PencilSquareIcon
                                 className="w-5 h-5 text-blue-500 cursor-pointer"
-                                onClick={
-                                    handleOpenBH
-                                        ? handleOpenBH
-                                        : fetchDataBH(params.row.id)
-                                }
+                                onClick={handleOpenBH}
                             />
                             <Dialog
                                 open={openBH}
@@ -367,82 +340,99 @@ function AdminCheckDialog({
                                 </DialogHeader>
                                 <Divider />
                                 <DialogBody>
-                                    {dataBH.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex justify-between gap-1 mb-2"
-                                        >
-                                            <div className="flex-none">
-                                                <Input
-                                                    label="Thời Gian Bảo Hành"
-                                                    id="warranty_time"
-                                                    name="warranty_time"
-                                                    type="number"
-                                                    min="1"
-                                                    max="30"
-                                                    value={item.warranty_time}
-                                                    onChange={(e) =>
-                                                        handleChangeBH(
-                                                            e,
-                                                            item.id
-                                                        )
-                                                    }
-                                                    className="w-[100%] shadow-none"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Select
-                                                    value={item.unit}
-                                                    defaultValue={selectedValue}
-                                                    label="Bảo Hành"
-                                                    onChange={(selectedValue) =>
-                                                        handleSelectChange(
-                                                            selectedValue,
-                                                            item.id
-                                                        )
-                                                    }
-                                                >
-                                                    {optionBH.map((option) => (
-                                                        <Option
-                                                            key={option.unit}
-                                                            value={option.unit}
-                                                        >
-                                                            {option.label}
-                                                        </Option>
-                                                    ))}
-                                                </Select>
-                                            </div>
-
-                                            <div className="flex-1">
-                                                <Input
-                                                    label="Nội Dung Bảo Hành"
-                                                    id="warranty_info"
-                                                    name="warranty_info"
-                                                    value={item.warranty_info}
-                                                    onChange={(e) =>
-                                                        handleChangeBH(
-                                                            e,
-                                                            item.id
-                                                        )
-                                                    }
-                                                    className="mr-1 w-[100%] shadow-none"
-                                                />
-                                            </div>
-                                            <Button
-                                                variant="outlined"
-                                                color="red"
-                                                className="px-2 py-0 mx-1 "
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
-                                                disabled={disabledButtons.includes(
-                                                    item.id
-                                                )}
+                                    {Array.isArray(dataBH) &&
+                                        dataBH.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex justify-between gap-1 mb-2"
                                             >
-                                                <TrashIcon className="w-5 h-5" />
-                                            </Button>
-                                        </div>
-                                    ))}
+                                                <div className="flex-none">
+                                                    <Input
+                                                        label="Thời Gian Bảo Hành"
+                                                        id="warranty_time"
+                                                        name="warranty_time"
+                                                        type="number"
+                                                        min="1"
+                                                        max="30"
+                                                        value={
+                                                            item.warranty_time
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleChangeBH(
+                                                                e,
+                                                                item.id
+                                                            )
+                                                        }
+                                                        className="w-[100%] shadow-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Select
+                                                        value={item.unit}
+                                                        defaultValue={
+                                                            selectedValue
+                                                        }
+                                                        label="Bảo Hành"
+                                                        onChange={(
+                                                            selectedValue
+                                                        ) =>
+                                                            handleSelectChange(
+                                                                selectedValue,
+                                                                item.id
+                                                            )
+                                                        }
+                                                    >
+                                                        {optionBH.map(
+                                                            (option) => (
+                                                                <Option
+                                                                    key={
+                                                                        option.unit
+                                                                    }
+                                                                    value={
+                                                                        option.unit
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        option.label
+                                                                    }
+                                                                </Option>
+                                                            )
+                                                        )}
+                                                    </Select>
+                                                </div>
+
+                                                <div className="flex-1">
+                                                    <Input
+                                                        label="Nội Dung Bảo Hành"
+                                                        id="warranty_info"
+                                                        name="warranty_info"
+                                                        value={
+                                                            item.warranty_info
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleChangeBH(
+                                                                e,
+                                                                item.id
+                                                            )
+                                                        }
+                                                        className="mr-1 w-[100%] shadow-none"
+                                                    />
+                                                </div>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="red"
+                                                    className="px-2 py-0 mx-1 "
+                                                    onClick={() =>
+                                                        handleDelete(item.id)
+                                                    }
+                                                    disabled={disabledButtons.includes(
+                                                        item.id
+                                                    )}
+                                                >
+                                                    <TrashIcon className="w-5 h-5" />
+                                                </Button>
+                                            </div>
+                                        ))}
                                     <Button
                                         onClick={() => handleClick()}
                                         variant="outlined"
@@ -486,7 +476,7 @@ function AdminCheckDialog({
                         </i>
                         <p
                             onClick={() => {
-                                toggleReadMore(params.row.id);
+                                toggleReadMore(params.row.warranty);
                             }}
                             className="p-1 mt-1 text-center border border-green-500 rounded-md cursor-pointer"
                         >
@@ -498,24 +488,25 @@ function AdminCheckDialog({
                                 isReadMore !== true ? "hidden" : ""
                             } border border-green-500 border-t-0 mb-0 mx-2`}
                         >
-                            {dataBH?.map((element, index) => (
-                                <span
-                                    className={`flex p-2 mt-1 border `}
-                                    key={index}
-                                >
-                                    {`${element.warranty_time} ${`${
-                                        element.unit === "d"
-                                            ? "ngày"
-                                            : element.unit === "w"
-                                            ? "tuần"
-                                            : element.unit === "m"
-                                            ? "tháng"
-                                            : element.unit === "y"
-                                            ? "năm"
-                                            : ""
-                                    }`} ${element.warranty_info}`}
-                                </span>
-                            ))}{" "}
+                            {Array.isArray(dataBH) &&
+                                dataBH.map((element, index) => (
+                                    <span
+                                        className={`flex p-2 mt-1 border `}
+                                        key={index}
+                                    >
+                                        {`${element.warranty_time} ${`${
+                                            element.unit === "d"
+                                                ? "ngày"
+                                                : element.unit === "w"
+                                                ? "tuần"
+                                                : element.unit === "m"
+                                                ? "tháng"
+                                                : element.unit === "y"
+                                                ? "năm"
+                                                : ""
+                                        }`} ${element.warranty_info}`}
+                                    </span>
+                                ))}
                         </div>
                     </div>
                     <div className="flex-1 p-2 border border-green-500 border-x-0">

@@ -55,11 +55,15 @@ import {
     KhaoSatDialog,
     ReasonDialog,
     ThuHoiDialog,
+    ViewTotalDialog,
+    processSeriImages,
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
 import Select from "react-select";
+import useWindowSize from "@/Core/Resize";
+
 // ----
 
 function Dashboard({ auth }) {
@@ -94,20 +98,6 @@ function Dashboard({ auth }) {
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
-    const dataDefault = [
-        {
-            id: 1,
-            work_content: "1",
-            BH: "",
-            street: "",
-            district: "",
-            phone_number: "",
-            date_book: "",
-            worker_full_name: "",
-            spending_total: "",
-            income_total: "",
-        },
-    ];
     const [workDataDN_done, setWorkDataDN_done] = useState([]);
     const [workDataDL_done, setWorkDataDL_done] = useState([]);
     const [workDataDG_done, setWorkDataDG_done] = useState([]);
@@ -118,10 +108,8 @@ function Dashboard({ auth }) {
 
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 100,
-    });
+
+    const { width, height } = useWindowSize(100);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState();
@@ -130,16 +118,6 @@ function Dashboard({ auth }) {
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
         pushOn();
-        const handleResize = () => {
-            setScreenSize({
-                width: window.innerWidth,
-                height: window.innerHeight - 100,
-            });
-        };
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
     }, [selectedDate]);
     useEffect(() => {
         if (socketD) {
@@ -165,14 +143,12 @@ function Dashboard({ auth }) {
                 setRowIdData(id);
                 setIdUserFix(userFix);
                 setIsButtonDisabled(isDisabled);
-                fetchDateDoneCheck(selectedDate);
             }
         );
         return () => {
             newSocket.disconnect();
         };
     }, [selectedDate]);
-    var heightScreenTV = screenSize.height;
     const handleDateChange = async (event) => {
         setSelectedDate(event.target.value);
         socketD?.emit("UpdateDateTable_To_Server", event);
@@ -406,10 +382,7 @@ function Dashboard({ auth }) {
                 const handleOpen = () => setOpen(!open);
                 const hasData = params.row;
                 const data = hasData.image_work_path;
-                const parts = data?.split(",");
-                const filteredArray = parts?.filter(
-                    (item) => item.trim() !== ""
-                );
+                const filteredArray = processSeriImages(data)
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
@@ -731,58 +704,45 @@ function Dashboard({ auth }) {
             editable: false,
         },
         {
-            field: "BH",
+            field: "warranty",
             headerName: "BH",
             width: 50,
             editable: false,
             type: "text",
             renderCell: (params, index) => {
-                const [TTBH, setDataBH] = useState([]);
+                const [TTBH, setTTBH] = useState(
+                    params.row.warranty == "KBH"
+                        ? [
+                              {
+                                  id: 0,
+                                  warranty_time: 0,
+                                  unit: "kbh",
+                                  warranty_info: "Không Bảo Hành",
+                                  warranty_create: 0,
+                              },
+                          ]
+                        : params.row.warranty
+                );
                 const [open, setOpen] = useState(false);
-                const [checkBtnBh, setCheckBtnBH] = useState(0);
-                useEffect(() => {
-                    getDataBh();
-                }, []);
-                useEffect(() => {
-                    newSocket.on("UpdateDateTable_To_Client", () => {
-                        getDataBh();
-                    });
-                }, []);
                 const handleOpen = () => {
                     setOpen(!open);
-                };
-                const getDataBh = async () => {
-                    if (params.row.id != "undefined") {
-                        try {
-                            const url = `/api/web/work-assignment/warranties?id=${params.row.id}`;
-                            const response = await fetch(url);
-                            const data = await response.json();
-                            if (data != "") {
-                                setDataBH(data);
-                            } else {
-                                setCheckBtnBH(1);
-                            }
-                        } catch (error) {
-                            console.error("Error fetching data:", error);
-                        }
-                    }
                 };
                 const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
                 return (
                     <>
                         <IconButton
                             className={`${
-                                checkBtnBh == 0 ? "" : "hidden"
+                                TTBH == undefined || TTBH == "" ? "hidden" : ""
                             } w-8 h-8 p-1`}
                             variant="outlined"
                             onClick={() => {
                                 handleOpen();
-                                getDataBh();
+                                // pa
+                                // setTTBH();
                             }}
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
                         </IconButton>
-
                         <Dialog open={open} handler={handleOpen} size="sm">
                             <DialogHeader>Thông Tin Bảo Hành</DialogHeader>
                             <DialogBody divider>
@@ -808,80 +768,84 @@ function Dashboard({ auth }) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {TTBH?.map(
-                                                    (
-                                                        {
-                                                            warranty_time,
-                                                            unit,
-                                                            warranty_info,
-                                                        },
-                                                        index
-                                                    ) => {
-                                                        const isLast =
-                                                            index ===
-                                                            TTBH.length - 1;
-                                                        const classes = isLast
-                                                            ? "p-4"
-                                                            : "p-4 border border-blue-gray-50";
+                                                {Array.isArray(TTBH) &&
+                                                    TTBH.map(
+                                                        (
+                                                            {
+                                                                warranty_time,
+                                                                unit,
+                                                                warranty_info,
+                                                            },
+                                                            index
+                                                        ) => {
+                                                            const isLast =
+                                                                index ===
+                                                                TTBH.length - 1;
+                                                            const classes =
+                                                                isLast
+                                                                    ? "p-4"
+                                                                    : "p-4 border border-blue-gray-50";
 
-                                                        return (
-                                                            <tr key={index}>
-                                                                <td
-                                                                    className={`${classes} w-[10px]`}
-                                                                >
-                                                                    <Typography
-                                                                        variant="small"
-                                                                        color="blue-gray"
-                                                                        className="font-normal"
+                                                            return (
+                                                                <tr key={index}>
+                                                                    <td
+                                                                        className={`${classes} w-[10px]`}
                                                                     >
-                                                                        {index}
-                                                                    </Typography>
-                                                                </td>
-                                                                <td
-                                                                    className={`${classes} w-[70px]`}
-                                                                >
-                                                                    <Typography
-                                                                        variant="small"
-                                                                        color="blue-gray"
-                                                                        className="font-normal"
+                                                                        <Typography
+                                                                            variant="small"
+                                                                            color="blue-gray"
+                                                                            className="font-normal"
+                                                                        >
+                                                                            {
+                                                                                index
+                                                                            }
+                                                                        </Typography>
+                                                                    </td>
+                                                                    <td
+                                                                        className={`${classes} w-[70px]`}
                                                                     >
-                                                                        {warranty_time ===
-                                                                        0
-                                                                            ? "kbh"
-                                                                            : `${warranty_time} ${
-                                                                                  unit ===
-                                                                                  "d"
-                                                                                      ? "ngày"
-                                                                                      : unit ===
-                                                                                        "w"
-                                                                                      ? "tuần"
-                                                                                      : unit ===
-                                                                                        "m"
-                                                                                      ? "tháng"
-                                                                                      : unit ===
-                                                                                        "y"
-                                                                                      ? "năm"
-                                                                                      : ""
-                                                                              }`}
-                                                                    </Typography>
-                                                                </td>
-                                                                <td
-                                                                    className={`${classes} w-[180px]`}
-                                                                >
-                                                                    <Typography
-                                                                        variant="small"
-                                                                        color="blue-gray"
-                                                                        className="font-normal"
+                                                                        <Typography
+                                                                            variant="small"
+                                                                            color="blue-gray"
+                                                                            className="font-normal"
+                                                                        >
+                                                                            {warranty_time ===
+                                                                            0
+                                                                                ? "kbh"
+                                                                                : `${warranty_time} ${
+                                                                                      unit ===
+                                                                                      "d"
+                                                                                          ? "ngày"
+                                                                                          : unit ===
+                                                                                            "w"
+                                                                                          ? "tuần"
+                                                                                          : unit ===
+                                                                                            "m"
+                                                                                          ? "tháng"
+                                                                                          : unit ===
+                                                                                            "y"
+                                                                                          ? "năm"
+                                                                                          : ""
+                                                                                  }`}
+                                                                        </Typography>
+                                                                    </td>
+                                                                    <td
+                                                                        className={`${classes} w-[180px]`}
                                                                     >
-                                                                        {
-                                                                            warranty_info
-                                                                        }
-                                                                    </Typography>
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    }
-                                                )}
+                                                                        <Typography
+                                                                            variant="small"
+                                                                            color="blue-gray"
+                                                                            className="font-normal"
+                                                                        >
+                                                                            {
+                                                                                warranty_info
+                                                                            }
+                                                                        </Typography>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        }
+                                                    )}
                                             </tbody>
                                         </table>
                                     </Card>
@@ -1238,6 +1202,7 @@ function Dashboard({ auth }) {
                 const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);
                 const [openSpending_total, handleOpenSpending_total] =
                     useToggle(false);
+                const [openViewTotal, handleOpenViewTotal] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
                 const handleChange = (e) => {
                     const { name, value } = e.target;
@@ -1274,6 +1239,9 @@ function Dashboard({ auth }) {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openAdminCheck":
+                            handleOpenFunction(!isOpenState);
+                            break;
+                        case "openViewTotal":
                             handleOpenFunction(!isOpenState);
                             break;
                         default:
@@ -1319,6 +1287,15 @@ function Dashboard({ auth }) {
                         openAdminCheck,
                         handleOpenAdminCheck,
                         "openAdminCheck"
+                    );
+                };
+                const handleOpenViewTotalWithDisable = (rowId) => {
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openViewTotal,
+                        handleOpenViewTotal,
+                        "openViewTotal"
                     );
                 };
                 const handleSentDeleteDone = async () => {
@@ -1402,7 +1379,7 @@ function Dashboard({ auth }) {
                     );
                     setImagePreview(previews);
                 };
-                const handleImageSubmit = (selectedHinh, type, id_ac) => {
+                const handleImageSubmit = (selectedHinh, id_ac) => {
                     if (selectedHinh) {
                         const urlAPI = `api/web/update/check-admin`;
                         const formData = new FormData();
@@ -1542,12 +1519,7 @@ function Dashboard({ auth }) {
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
-                const data = hasData.bill_imag;
-                const parts = data?.split(",");
-                const filteredArray = parts?.filter(
-                    (item) => item.trim() !== ""
-                );
-
+                const filteredArray =processSeriImages(params.row.bill_imag)
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
@@ -1597,10 +1569,7 @@ function Dashboard({ auth }) {
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
                 const hinhPt = hasData.seri_imag;
-                const partsPt = hinhPt?.split(",");
-                const filteredImgPt = partsPt?.filter(
-                    (item) => item.trim() !== ""
-                );
+                const filteredImgPt = processSeriImages(hinhPt)
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
@@ -1628,7 +1597,7 @@ function Dashboard({ auth }) {
                                 "Hình đã được xóa thành công từ máy chủ",
                                 dataBody
                             );
-                            socketD.emit("addWorkTo_Server");
+                            socketD.emit("addWorkTo_Server", "Xóa hình ảnh");
                         } else {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
@@ -1655,11 +1624,14 @@ function Dashboard({ auth }) {
                                     <>
                                         <Tooltip content="Admin đã xác nhận">
                                             <CheckCircleIcon
-                                                className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white ${
+                                                className={`text-green-500 border-green-500 hover:bg-green-500 w-8 h-8 p-1 mr-2 rounded border hover:text-white cursor-pointer${
                                                     params.row.flag_check === 1
                                                         ? "hidden"
                                                         : ""
                                                 }`}
+                                                onClick={
+                                                    handleOpenViewTotalWithDisable
+                                                }
                                             />
                                         </Tooltip>
                                     </>
@@ -1689,7 +1661,7 @@ function Dashboard({ auth }) {
                                         >
                                             <Button
                                                 color="white"
-                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2} `}
+                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
                                                 onClick={
                                                     handleOpenSpendingTotalWithDisable
                                                 }
@@ -1709,6 +1681,9 @@ function Dashboard({ auth }) {
                                         >
                                             <BookmarkSquareIcon
                                                 className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
+                                                onClick={
+                                                    handleOpenViewTotalWithDisable
+                                                }
                                             />
                                         </Tooltip>
                                         <Tooltip
@@ -1858,10 +1833,10 @@ function Dashboard({ auth }) {
                             cardExpires={cardExpires}
                             auth={auth}
                             handleSendImagePT={() =>
-                                handleImageSubmit(selectedFilesPT, "PT", 3)
+                                handleImageSubmit(selectedFilesPT, 3)
                             }
                             handleSendImageVT={() =>
-                                handleImageSubmit(selectedFilesVT, "VT", 2)
+                                handleImageSubmit(selectedFilesVT, 2)
                             }
                             socketD={socketD}
                             handleSearch={handleSearch}
@@ -1921,6 +1896,13 @@ function Dashboard({ auth }) {
                             dataBtnChi={dataBtnChi}
                             params={params}
                             handleDataFromChild={handleDataFromChild}
+                        />
+
+                        <ViewTotalDialog
+                            openViewTotal={openViewTotal}
+                            handleOpenViewTotal={handleOpenViewTotalWithDisable}
+                            handleViewTotal={handleOpenViewTotal}
+                            params={params.row}
                         />
                     </div>
                 );
@@ -2049,7 +2031,7 @@ function Dashboard({ auth }) {
             <Head title="Lịch Hẹn" />
             <div
                 className={`flex flex-row w-full overflow-scroll mt-1 gap-[2px] `}
-                style={{ height: `${heightScreenTV}px` }}
+                style={{ height: `${height}px` }}
             >
                 <Card className="w-full mt-1 text-white rounded-none basis-5/12">
                     {isLoading ? (
@@ -2119,7 +2101,7 @@ function Dashboard({ auth }) {
                                                 columns={columns}
                                                 hideFooterPagination={true}
                                                 autoHeight
-                                                {...heightScreenTV}
+                                                {...height}
                                                 ref={result.ref}
                                                 containerProps={{
                                                     className: "hidden",
@@ -2204,7 +2186,7 @@ function Dashboard({ auth }) {
                                                 }}
                                                 width={100}
                                                 autoHeight
-                                                {...heightScreenTV}
+                                                {...height}
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsright}
                                                 hideFooterPagination={false}

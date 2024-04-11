@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Button,
     Dialog,
@@ -7,10 +7,13 @@ import {
     Textarea,
     DialogFooter,
     Input,
+    Typography,
+    Card,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
+import { host } from "@/Utils/UrlApi";
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -306,6 +309,285 @@ const KhaoSatDialog = ({
         </Dialog>
     );
 };
+const processSeriImages = (data) => {
+    const parts = data?.split(",");
+    const filteredArray = parts?.filter((item) => item.trim() !== "");
+    return filteredArray;
+};
+const ViewTotalDialog = ({
+    openViewTotal,
+    handleOpenViewTotal,
+    params,
+    handleViewTotal,
+}) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    });
+    const ContentData = [
+        {
+            id: 0,
+            label: "Yêu Cầu Công Việc:",
+            TextContent: params.work_content,
+        },
+        {
+            id: 1,
+            label: "Ghi Chú:",
+            TextContent: params.name_cus + " - " + params.real_note,
+        },
+        { id: 2, label: "Ngày Làm:", TextContent: params.date_book },
+        {
+            id: 3,
+            label: "Địa Chỉ:",
+            TextContent: params.street + " - " + params.district,
+        },
+        { id: 4, label: "Số Điện Thoại:", TextContent: params.phone_number },
+        {
+            id: 5,
+            label: "Thợ:",
+            TextContent:
+                "(" +
+                params.worker_code +
+                ") - " +
+                params.worker_full_name +
+                " - " +
+                params.worker_phone_company,
+        },
+        { id: 6, label: "Số Phiếu Thu:", TextContent: params.seri_number },
+        {
+            id: 7,
+            label: "Thông Tin Bảo Hành:",
+            TextContent: `${params.warranty == "KBH" ? params.warranty : ""}`,
+        },
+    ];
+    const LoiNhuan = params.income_total - params.spending_total;
+    const processedDataVT = processSeriImages(params.bill_imag);
+    const processedDataPT = processSeriImages(params.seri_imag);
+    const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
+    return (
+        <Dialog
+            open={openViewTotal}
+            handler={handleOpenViewTotal}
+            className="bg-none"
+        >
+            <DialogBody className="p-1">
+                <div className="relative flex flex-col w-full p-8 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
+                    <div className="relative pb-8 m-0 mb-8 overflow-hidden text-center text-gray-700 bg-transparent border-b rounded-none shadow-none bg-clip-border border-white/10">
+                        <h3 className="block font-sans antialiased font-normal leading-normal text-white uppercase">
+                            Thông Tin Thu Chi của{" "}
+                            <span className="italic underline">
+                                {"(" +
+                                    params.worker_code +
+                                    ") - " +
+                                    params.worker_full_name +
+                                    " - " +
+                                    params.worker_phone_company}
+                            </span>
+                        </h3>
+                        <div className="flex justify-between gap-1 mt-6 font-sans antialiased font-normal tracking-normal text-white">
+                            <div className="flex flex-col text-center">
+                                <span className="pr-1 mt-2 text-2xl underline">
+                                    Tổng Chi
+                                </span>
+                                <span className="text-2xl ">
+                                    {formatter.format(params.spending_total)}
+                                </span>
+                            </div>
+                            <div className="flex flex-col text-center ">
+                                <span className="pr-1 mt-2 text-2xl underline">
+                                    Tổng Thu
+                                </span>
+                                <span className="text-2xl">
+                                    {formatter.format(params.income_total)}
+                                </span>
+                            </div>
+                            <div className="flex flex-col text-center ">
+                                <span className="pr-1 mt-2 text-2xl underline">
+                                    Lợi Nhuận
+                                </span>
+                                <span className="text-2xl">
+                                    {formatter.format(LoiNhuan)}
+                                </span>
+                            </div>
+                        </div>
+                        <p
+                            className={`${
+                                LoiNhuan > 0
+                                    ? "text-green-500"
+                                    : LoiNhuan == 0
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                            }`}
+                        >
+                            {LoiNhuan > 0
+                                ? "Chưa Lỗ Được Đâu"
+                                : LoiNhuan == 0
+                                ? "Huề rồi"
+                                : "Lỗ Banh Xát"}
+                        </p>
+                    </div>
+                    <div className="p-0">
+                        <div className="grid grid-cols-2 gap-1">
+                            <ul className="flex flex-col gap-4">
+                                {ContentData.map((item) => {
+                                    return (
+                                        <li
+                                            key={item.id}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <span className="p-1 border rounded-full border-white/20 bg-white/20">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={2}
+                                                    stroke="currentColor"
+                                                    className="w-3 h-3"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M4.5 12.75l6 6 9-13.5"
+                                                    />
+                                                </svg>
+                                            </span>
+                                            <span className="underline">
+                                                {item.label}
+                                            </span>
+                                            <p className="block font-sans text-base antialiased font-normal leading-relaxed text-inherit">
+                                                {item.TextContent}
+                                            </p>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                            <div className="flex flex-col items-center justify-center">
+                                <p>Hình Vật Tư:</p>
+                                {params.bill_imag == null ||
+                                processedDataVT == false ? (
+                                    <p className="flex items-center justify-center w-32 h-32 border border-green-500">
+                                        Not Image
+                                    </p>
+                                ) : (
+                                    <>
+                                        {Array.isArray(processedDataVT) &&
+                                            processedDataVT.map((item) => (
+                                                <img
+                                                    src={item}
+                                                    alt=""
+                                                    className="w-32 h-32"
+                                                />
+                                            ))}
+                                    </>
+                                )}
+
+                                <p>Phiếu Thu:</p>
+                                {params.seri_imag == null ||
+                                processedDataPT == false ? (
+                                    <p className="flex items-center justify-center w-32 h-32 border border-green-500">
+                                        Not Image
+                                    </p>
+                                ) : (
+                                    <>
+                                        {Array.isArray(processedDataPT) &&
+                                            processedDataPT.map((item) => (
+                                                <img
+                                                    src={item}
+                                                    alt=""
+                                                    className="w-32 h-32"
+                                                />
+                                            ))}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div className={`${ params.warranty == 'KBH'? 'hidden':"block"}`}>
+                            <Card className="w-full h-[200px] overflow-scroll">
+                                <table className="w-full text-left table-auto min-w-max">
+                                    <thead>
+                                        <tr>
+                                            {TABLE_HEAD.map((head) => (
+                                                <th
+                                                    key={head}
+                                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                                >
+                                                    <Typography
+                                                        variant="small"
+                                                        color="blue-gray"
+                                                        className="font-normal leading-none opacity-70"
+                                                    >
+                                                        {head}
+                                                    </Typography>
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Array.isArray(params.warranty) &&
+                                            params.warranty?.map(
+                                                ( item , index) => {
+                                                    console.log(params.warranty);
+                                                    return (
+                                                        <tr
+                                                            key={index}
+                                                            className="even:bg-blue-gray-50/50"
+                                                        >
+
+                                                               <><td className="p-4">
+                                                                <Typography
+                                                                    variant="small"
+                                                                    color="blue-gray"
+                                                                    className="font-normal"
+                                                                >
+                                                                  { params.warranty !== undefined ? item.id :"KBH" }
+                                                                </Typography>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <Typography
+                                                                    variant="small"
+                                                                    color="blue-gray"
+                                                                    className="font-normal"
+                                                                >
+                                                                    {
+                                                                        item.warranty_time
+                                                                    }
+                                                                </Typography>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <Typography
+                                                                    variant="small"
+                                                                    color="blue-gray"
+                                                                    className="font-normal"
+                                                                >
+                                                                    {
+                                                                        item.warranty_info
+                                                                    }
+                                                                </Typography>
+                                                            </td></>
+
+                                                        </tr>
+                                                    );
+                                                }
+                                            )}
+                                    </tbody>
+                                </table>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="p-0 mt-12">
+                        <Button
+                            className="w-full"
+                            color="white"
+                            onClick={handleViewTotal}
+                        >
+                            Xem xong
+                        </Button>
+                    </div>
+                </div>
+            </DialogBody>
+        </Dialog>
+    );
+};
 export {
     ThoDialog,
     ReasonDialog,
@@ -313,4 +595,6 @@ export {
     HuyDialog,
     KhaoSatDialog,
     BHDialog,
+    ViewTotalDialog,
+    processSeriImages,
 };

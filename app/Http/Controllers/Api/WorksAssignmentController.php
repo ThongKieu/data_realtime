@@ -352,8 +352,10 @@ class WorksAssignmentController extends Controller
 
         if (count($warranty) > 0) {
             return $warranty;
+        } else {
+            return [];
         }
-        return 'KBH';
+
     }
     public function workAssignWorker(Request $request)
     {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Mobile;
 
-use App\Http\Controllers\AccountionWorkerController;
+use App\Http\Controllers\Api\WorksAssignmentController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
 use App\Models\User;
@@ -323,12 +323,17 @@ class WorkersController extends Controller
         $history = DB::table('works_assignments')
             ->leftJoin('works', 'works.id', '=', 'works_assignments.id_cus')
             ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
-            ->leftJoin('warranties', 'warranties.id_work_has', '=', 'works_assignments.id')
             ->where('works_assignments.id_worker', '=', $id)
             ->where('works_assignments.status_work', '!=', '5')
             ->orderByDesc('works_assignments.id')
             ->limit(100)
-            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.income_total', 'works_assignments.spending_total', 'warranties.warranty_time', 'warranties.warranty_info', 'warranties.unit', 'works_assignments.status_work']);
+            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.income_total', 'works_assignments.spending_total', 'works_assignments.status_work']);
+        if (count($history) > 0) {
+            foreach ($history as $item) {
+                $warranty = WorksAssignmentController::getWarrantiesById($item->id);
+                $item->warranty = $warranty;
+            }
+        }
         return $history;
     }
 

@@ -49,9 +49,9 @@ class MapsWorkerController extends Controller
     {
         if (isset($request->id_worker) || $request->id_worker != null) {
             MapsWorker::where('id_worker', '=', $request->id_worker)->update(['lat' => $request->lat, 'lng' => $request->lng, 'last_active' => $request->last_active, 'is_online' => 1]);
-            return 'Update Local Done';
+            return 'True';
         } else {
-            return 'Fail Update Local - 401';
+            return 'Failed';
         }
     }
     public function getOneWorker(Request $request)
@@ -70,7 +70,7 @@ class MapsWorkerController extends Controller
     }
     public static function updateDismissal($id)
     {
-        MapsWorker::where('id_worker','=',$id)->update(['is_online'=>2]);
+        MapsWorker::where('id_worker', '=', $id)->update(['is_online' => 2]);
         return 1;
     }
 }

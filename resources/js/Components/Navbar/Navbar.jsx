@@ -35,7 +35,7 @@ import { host } from "@/Utils/UrlApi";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
-
+import useWindowSize from "@/Core/Resize";
 // profile menu component
 const profileMenuItems = [
     {
@@ -428,7 +428,6 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
-
     // In kết quả ra console
     const jobCategories = [
         { code: "A", name: "Điện Nước" },
@@ -461,16 +460,14 @@ function NavbarDefault({ propauth, check }) {
                             </div>
                         )
                 )}
+
             </div>
         );
     };
     const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
-    const heightScreenTV = screenSize.height - 200;
+
+    const { width, height } = useWindowSize(200);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -542,19 +539,38 @@ function NavbarDefault({ propauth, check }) {
                         </Typography>
                     </Card>
                     <Dialog
-                        className={`w-full  2xl:min-w-[65%] lg:min-w-[65%] h-[${heightScreenTV}px]`}
+                        className={`w-full  2xl:min-w-[65%] lg:min-w-[65%] h-[${height}px]`}
                         open={openWorker}
                         handler={handleOpenWorker}
                     >
                         <DialogBody
-                            className={`w-full h-[${heightScreenTV}px]`}
-                            style={{ height: `${heightScreenTV}px` }}
+                            className={`w-full h-[${height}px]`}
+                            style={{ height: `${height}px` }}
                         >
                             <div className={`overflow-y-scroll w-full h-full`}>
                                 <div className="w-full">
-                                    <Typography className="w-full p-1 font-bold text-center text-white bg-blue-500">
-                                        Thợ đi làm
-                                    </Typography>
+                                    <div className="flex flex-row items-center justify-between w-full p-1 font-bold text-white bg-blue-500">
+                                        <Typography
+                                            variant="h5"
+                                            className="p-1"
+                                        >
+                                            Thợ Đi Làm
+                                        </Typography>
+                                        <div className="flex flex-row justify-between">
+                                            <span className="pr-3">
+                                                Đã đủ thu chi:
+                                                <span className="ml-1 px-4 py-[-1] bg-green-500 border">
+                                                    {" "}
+                                                </span>
+                                            </span>
+                                            <span>
+                                                Chưa nhập thu chi:
+                                                <span className=" ml-1 px-4 py-[-1] bg-red-500 border">
+                                                    {" "}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-7">
                                         {jobCategories.map(({ code }) =>
                                             renderWorkerGroup(code, 0)

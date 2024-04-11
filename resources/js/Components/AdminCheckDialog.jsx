@@ -43,6 +43,7 @@ function AdminCheckDialog({
     classNameChild,
     handleChange,
     socketD,
+
     handleSearch,
 }) {
     const [activePt, setActivePt] = useState({
@@ -115,7 +116,7 @@ function AdminCheckDialog({
     const handleClick = () => {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
         const maxKey = Math.max(
-            Array.isArray(...dataBH) && dataBH.map((item) => item.id)
+             ...dataBH.map((item) => item.id)
         );
         const newId = maxKey + 1;
         setDataBH((prevData) => [

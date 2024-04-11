@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
+
 class WorksAssignmentController extends Controller
 {
     public function __invoke()
@@ -630,7 +631,7 @@ class WorksAssignmentController extends Controller
         // dd($request->hasFile('seri_imag_new'));
         if ($request->ac != null) {
             $per = DB::table('users')->where('id', '=', $request->auth_id)->value('permission');
-            if ($per == 1 || $per == 0 ) {
+            if ($per == 1) {
                 switch ($request->ac) {
                     case 1:
                         // thay đổi thông tin bảo hành

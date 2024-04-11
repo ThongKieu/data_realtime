@@ -56,6 +56,7 @@ import {
     ReasonDialog,
     ThuHoiDialog,
     ViewTotalDialog,
+    processSeriImages,
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -149,7 +150,6 @@ function Dashboard({ auth }) {
         };
     }, [selectedDate]);
     const handleDateChange = async (event) => {
-        window.location.reload();
         setSelectedDate(event.target.value);
         socketD?.emit("UpdateDateTable_To_Server", event);
     };
@@ -382,10 +382,7 @@ function Dashboard({ auth }) {
                 const handleOpen = () => setOpen(!open);
                 const hasData = params.row;
                 const data = hasData.image_work_path;
-                const parts = data?.split(",");
-                const filteredArray = parts?.filter(
-                    (item) => item.trim() !== ""
-                );
+                const filteredArray = processSeriImages(data)
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
@@ -1522,12 +1519,7 @@ function Dashboard({ auth }) {
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
-                const data = hasData.bill_imag;
-                const parts = data?.split(",");
-                const filteredArray = parts?.filter(
-                    (item) => item.trim() !== ""
-                );
-
+                const filteredArray =processSeriImages(params.row.bill_imag)
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
@@ -1577,10 +1569,7 @@ function Dashboard({ auth }) {
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
                 const hinhPt = hasData.seri_imag;
-                const partsPt = hinhPt?.split(",");
-                const filteredImgPt = partsPt?.filter(
-                    (item) => item.trim() !== ""
-                );
+                const filteredImgPt = processSeriImages(hinhPt)
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";

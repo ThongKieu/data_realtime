@@ -371,11 +371,11 @@ const ViewTotalDialog = ({
             className="bg-none"
         >
             <DialogBody className="p-1">
-                <div className="relative flex flex-col w-full p-8 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
-                    <div className="relative pb-8 m-0 mb-8 overflow-hidden text-center text-gray-700 bg-transparent border-b rounded-none shadow-none bg-clip-border border-white/10">
-                        <h3 className="block font-sans antialiased font-normal leading-normal text-white uppercase">
+                <div className="relative flex flex-col w-full p-8 text-black shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-black-900 to-white-800 shadow-black-900/20">
+                    <div className="relative pb-8 m-0 mb-8 overflow-hidden text-center bg-transparent border-b rounded-none shadow-none text-black-700 bg-clip-border border-black/10">
+                        <h3 className="block pb-3 font-sans antialiased font-bold leading-normal text-black uppercase border-b r">
                             Thông Tin Thu Chi của{" "}
-                            <span className="italic underline">
+                            <span className="italic font-bold underline">
                                 {"(" +
                                     params.worker_code +
                                     ") - " +
@@ -384,10 +384,10 @@ const ViewTotalDialog = ({
                                     params.worker_phone_company}
                             </span>
                         </h3>
-                        <div className="flex justify-between gap-1 mt-6 font-sans antialiased font-normal tracking-normal text-white">
+                        <div className="flex justify-between gap-1 mt-6 font-sans antialiased font-normal tracking-normal text-black">
                             <div className="flex flex-col text-center">
                                 <span className="pr-1 mt-2 text-2xl underline">
-                                    Tổng Chi
+                                    Chi
                                 </span>
                                 <span className="text-2xl ">
                                     {formatter.format(params.spending_total)}
@@ -395,7 +395,7 @@ const ViewTotalDialog = ({
                             </div>
                             <div className="flex flex-col text-center ">
                                 <span className="pr-1 mt-2 text-2xl underline">
-                                    Tổng Thu
+                                    Thu
                                 </span>
                                 <span className="text-2xl">
                                     {formatter.format(params.income_total)}
@@ -501,7 +501,7 @@ const ViewTotalDialog = ({
                                 )}
                             </div>
                         </div>
-                        <div className={`${ params.warranty == 'KBH'? 'hidden':"block"}`}>
+                        <div className={`${ params.warranty == 'KBH'? 'hidden':"block"} pt-3`}>
                             <Card className="w-full h-[200px] overflow-scroll">
                                 <table className="w-full text-left table-auto min-w-max">
                                     <thead>
@@ -509,7 +509,7 @@ const ViewTotalDialog = ({
                                             {TABLE_HEAD.map((head) => (
                                                 <th
                                                     key={head}
-                                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+                                                    className="p-4 border-b border-blue-gray-500 bg-blue-gray-200"
                                                 >
                                                     <Typography
                                                         variant="small"
@@ -530,7 +530,7 @@ const ViewTotalDialog = ({
                                                     return (
                                                         <tr
                                                             key={index}
-                                                            className="even:bg-blue-gray-50/50"
+                                                            className="even:bg-blue-gray-50"
                                                         >
 
                                                                <><td className="p-4">

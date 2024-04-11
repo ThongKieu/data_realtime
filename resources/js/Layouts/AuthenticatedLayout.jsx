@@ -6,7 +6,7 @@ import { memo } from "react";
 function Authenticated({ children, user,checkDate}) {
     return (
         <div className="min-h-screen bg-gray-100" >
-            <NavbarDefault  propauth={user} check={checkDate}/>
+            <NavbarDefault  propauth={user}  check={checkDate}/>
             <main >{children}</main>
             <div className='fixed bottom-2 right-2'>
                 <FloatingButton />

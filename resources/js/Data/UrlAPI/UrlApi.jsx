@@ -22,16 +22,13 @@ const sendPhanThoRequest = async (
     };
 
     try {
-        const response = await fetch(
-            `api/web/work-assignment`,
-            {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+        const response = await fetch(`api/web/work-assignment`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
         if (response.ok) {
             socketD.emit("addWorkTo_Server", selectedDate);
@@ -102,8 +99,17 @@ const sendDoiThoRequest = async (
     }
 };
 const getFirstName = (fullName) => {
+   if (fullName != undefined) {
     const parts = fullName.split(" ");
-    return parts.length >= 2 ? parts.slice(1).join(" ") : parts.length >= 3 ? parts.slice(2).join(" ") : parts.length >= 1 ? parts.slice(0).join(" "): "";
+    return parts.length >= 2
+    ? parts.slice(1).join(" ")
+    : parts.length >= 3
+    ? parts.slice(2).join(" ")
+    : parts.length >= 1
+    ? parts.slice(0).join(" ")
+    : "";
+   }
+
 };
 const getFormattedToday = () => {
     const today = new Date();
@@ -117,8 +123,8 @@ const formatTime = (seconds) => {
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
 
-    const formattedHours = hours > 0 ? `${hours} giờ ` : '';
-    const formattedMinutes = minutes > 0 ? `${minutes} phút ` : '';
+    const formattedHours = hours > 0 ? `${hours} giờ ` : "";
+    const formattedMinutes = minutes > 0 ? `${minutes} phút ` : "";
     const formattedSeconds = `${remainingSeconds} giây`;
 
     return formattedHours + formattedMinutes + formattedSeconds;
@@ -127,7 +133,8 @@ export {
     getFormattedToday,
     getFirstName,
     sendPhanThoRequest,
-    sendDoiThoRequest,formatTime,
+    sendDoiThoRequest,
+    formatTime,
     url_API,
     url_API_District,
 };

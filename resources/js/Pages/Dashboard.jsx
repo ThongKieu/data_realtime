@@ -247,6 +247,7 @@ function Dashboard({ auth }) {
                     " - " +
                     item.worker_full_name,
                 workerCode: item.worker_code,
+                workerStatus: item.worker_status,
             }));
             setInfoWorkerDashboard(formatJson);
         } catch (error) {
@@ -382,7 +383,7 @@ function Dashboard({ auth }) {
                 const handleOpen = () => setOpen(!open);
                 const hasData = params.row;
                 const data = hasData.image_work_path;
-                const filteredArray = processSeriImages(data)
+                const filteredArray = processSeriImages(data);
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
@@ -1519,7 +1520,7 @@ function Dashboard({ auth }) {
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
                 const hasData = params.row;
-                const filteredArray =processSeriImages(params.row.bill_imag)
+                const filteredArray = processSeriImages(params.row.bill_imag);
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
@@ -1569,7 +1570,7 @@ function Dashboard({ auth }) {
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
                 const hinhPt = hasData.seri_imag;
-                const filteredImgPt = processSeriImages(hinhPt)
+                const filteredImgPt = processSeriImages(hinhPt);
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
@@ -2027,6 +2028,7 @@ function Dashboard({ auth }) {
             children={auth.user}
             user={auth.user}
             checkDate={selectedDate}
+            workerInfo={infoWorkerDashboard}
         >
             <Head title="Lịch Hẹn" />
             <div

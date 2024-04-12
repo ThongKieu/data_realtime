@@ -372,7 +372,6 @@ function NavbarDefault({ propauth, check }) {
         }
     };
     const [infoWorker, setInfoWorker] = useState([]);
-    console.log(infoWorker);
     const fetchInfoWorker = async () => {
         try {
             const response = await fetch(host + "api/web/workers");
@@ -406,7 +405,7 @@ function NavbarDefault({ propauth, check }) {
     const [openSpending, setOpenSpending] = useState(false);
     const handleOpenSpending = () => setOpenSpending(!openSpending);
 
-    const renderWorkerGroup = (prefix, status, handleOpen) => {
+    const renderWorkerGroup = (prefix, status, handleOpen ,handle) => {
         return (
             <div className="w-full p-1" key={`${prefix}-${status}`}>
                 <p className="border-b-[3px] border-b-blue-500 text-center w-full">
@@ -423,12 +422,7 @@ function NavbarDefault({ propauth, check }) {
                             <div className="w-full pb-1" key={index}>
                                 <p
                                     className="p-1 text-sm border border-green-500 cursor-pointer"
-                                    onClick={() => {
-                                        return (
-                                            handleOpen &&
-                                            getDataWorkerSales(item.value)
-                                        );
-                                    }}
+                                    onClick={handleOpen&&handle}
                                 >
                                     {item.label}
                                 </p>
@@ -456,7 +450,7 @@ function NavbarDefault({ propauth, check }) {
         const uri = `api/report-worker?id_worker=${id}`;
         const res = await fetch(uri);
         const jsonData = JSON.stringify(res);
-        console.log(jsonData);
+        console.log(typeof jsonData);
         if (jsonData) {
             setDataWorkerSales(jsonData);
         } else {
@@ -467,7 +461,7 @@ function NavbarDefault({ propauth, check }) {
         style: "currency",
         currency: "VND",
     });
-    console.log(dataWorkerSales);
+    console.log('dataWorkerSales',dataWorkerSales);
     const ContentData = [
         {
             id: 0,

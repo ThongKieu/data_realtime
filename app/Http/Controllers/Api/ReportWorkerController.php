@@ -25,7 +25,7 @@ class ReportWorkerController extends Controller
                     $item-> work_expenditure = $item-> work_expenditure + $work_expenditure;
                 }
 
-                
+
                 $up = ReportWorker::where('date_do', '=', $date_do)->where('id_worker', '=', $id_worker)-> update(['work_revenue'=>$item-> work_revenue, 'work_expenditure'=>$item-> work_expenditure]);
                 if($up)
                 {

@@ -217,6 +217,7 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    console.log(params);
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
         const check_admin = {
@@ -225,6 +226,7 @@ function AdminCheckDialog({
             id: params.row.id,
             id_cus: params.row.id_cus,
             data: {
+                id_worker:params.row.id_worker,
                 work_content: cardExpires.work_content,
                 phone_number: cardExpires.phone_number,
                 street: cardExpires.street,

@@ -423,7 +423,12 @@ function NavbarDefault({ propauth, check }) {
                             <div className="w-full pb-1" key={index}>
                                 <p
                                     className="p-1 text-sm border border-green-500 cursor-pointer"
-                                    onClick={handleOpen}
+                                    onClick={() => {
+                                        return (
+                                            handleOpen &&
+                                            getDataWorkerSales(item.value)
+                                        );
+                                    }}
                                 >
                                     {item.label}
                                 </p>
@@ -447,10 +452,11 @@ function NavbarDefault({ propauth, check }) {
     };
 
     const [dataWorkerSales, setDataWorkerSales] = useState(data);
-    const getDataWorkerSales = async () => {
-        const uri = "";
+    const getDataWorkerSales = async (id) => {
+        const uri = `api/report-worker?id_worker=${id}`;
         const res = await fetch(uri);
         const jsonData = JSON.stringify(res);
+        console.log(jsonData);
         if (jsonData) {
             setDataWorkerSales(jsonData);
         } else {
@@ -467,7 +473,6 @@ function NavbarDefault({ propauth, check }) {
             id: 0,
             label: "Tổng Chi:",
             TextContent: formatter.format(dataWorkerSales.spend_total),
-
         },
         {
             id: 1,
@@ -625,9 +630,16 @@ function NavbarDefault({ propauth, check }) {
                                                         </h2>
                                                         <Card className="w-full h-full p-1">
                                                             <div className="grid grid-cols-5 p-1 border-b border-blue-gray-500">
-                                                                <div className="col-span-1 font-bold text-center border-r border-blue-gray-500">STT</div>
-                                                                <div  className="col-span-2 pl-2 font-bold border-r border-blue-gray-500"> Nội Dung</div>
-                                                                <div className="pl-2 font-bold">Số Tiền</div>
+                                                                <div className="col-span-1 font-bold text-center border-r border-blue-gray-500">
+                                                                    STT
+                                                                </div>
+                                                                <div className="col-span-2 pl-2 font-bold border-r border-blue-gray-500">
+                                                                    {" "}
+                                                                    Nội Dung
+                                                                </div>
+                                                                <div className="pl-2 font-bold">
+                                                                    Số Tiền
+                                                                </div>
                                                             </div>
                                                             {ContentData.map(
                                                                 (item) => {
@@ -646,7 +658,9 @@ function NavbarDefault({ propauth, check }) {
                                                                                     item.id
                                                                                 }
                                                                             </span>
-                                                                            <span className={`underline col-span-2 border-r border-blue-gray-500 pl-2`}>
+                                                                            <span
+                                                                                className={`underline col-span-2 border-r border-blue-gray-500 pl-2`}
+                                                                            >
                                                                                 {
                                                                                     item.label
                                                                                 }

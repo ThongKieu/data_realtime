@@ -160,8 +160,8 @@ Route::prefix('fuel-ot')->group(function () {
     Route::post('/update', 'App\Http\Controllers\Api\FuelOTWorkerController@updateFuelOT');
     Route::post('/adcheck', 'App\Http\Controllers\Api\FuelOTWorkerController@checkFuelOTByAdmin');
 });
-// Report Worker 
-Route::post('report-worker','App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
+// Report Worker
+Route::get('report-worker','App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
 // --------------------------------------------------------------------------//
 // Application
 Route::prefix('app')->group(function () {

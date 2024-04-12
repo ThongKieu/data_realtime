@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('fuel_o_t_workers_id');
             $table->string('fuel_o_t_workers_content',500);
-            $table->string('fuel_o_t_workers_spend_money');
+            $table->integer('fuel_o_t_workers_spend_money')->default(0);
             $table->string('fuel_o_t_workers_date_set');
             $table->tinyInteger('fuel_o_t_workers_flag')->default(0);
             $table->integer('fuel_o_t_id_admin_check')->default(0);

@@ -52,6 +52,9 @@ return new class extends Migration
             $table -> tinyInteger('worker_status')->default(0)->comment('0: Đang làm; 1: Nghỉ Phép; 2: Nghỉ luôn ');
             $table-> tinyInteger('worker_check_acc')->default('0');
             $table->string('worker_avatar')->nullable();
+            // thêm chỗ này doanh số ngày của thợ để tính hệ số tăng ca 
+            $table->integer('worker_daily_sales')->default('570000');
+            $table->integer('worker_daily_o_t_by_hour')->default('37000');
             $table->timestamps();
         });
     }

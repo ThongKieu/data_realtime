@@ -372,6 +372,7 @@ function NavbarDefault({ propauth, check }) {
         }
     };
     const [infoWorker, setInfoWorker] = useState([]);
+    console.log(infoWorker);
     const fetchInfoWorker = async () => {
         try {
             const response = await fetch(host + "api/web/workers");
@@ -436,6 +437,70 @@ function NavbarDefault({ propauth, check }) {
     const handleOpenWorker = () => setOpenWorker(!openWorker);
 
     const { width, height } = useWindowSize(200);
+    const data = {
+        id: 0,
+        spend_total: 500000,
+        income_total: 1500000,
+        worker_phu_spend: 50000,
+        oils_spend: 50000,
+        ot_spend: 37000,
+    };
+
+    const [dataWorkerSales, setDataWorkerSales] = useState(data);
+    const getDataWorkerSales = async () => {
+        const uri = "";
+        const res = await fetch(uri);
+        const jsonData = JSON.stringify(res);
+        if (jsonData) {
+            setDataWorkerSales(jsonData);
+        } else {
+            console.error("not get data", jsonData);
+        }
+    };
+    const formatter = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    });
+    console.log(dataWorkerSales);
+    const ContentData = [
+        {
+            id: 0,
+            label: "Tổng Chi:",
+            TextContent: formatter.format(dataWorkerSales.spend_total),
+
+        },
+        {
+            id: 1,
+            label: "Tổng Thu:",
+            TextContent: formatter.format(dataWorkerSales.income_total),
+        },
+        {
+            id: 2,
+            label: "Chi Thợ Phụ:",
+            TextContent: formatter.format(dataWorkerSales.worker_phu_spend),
+        },
+        {
+            id: 3,
+            label: "Xăng",
+            TextContent: formatter.format(dataWorkerSales.oils_spend),
+        },
+        {
+            id: 4,
+            label: "Tăng ca:",
+            TextContent: formatter.format(dataWorkerSales.ot_spend),
+        },
+        {
+            id: 5,
+            label: "Tổng doanh số:",
+            TextContent: formatter.format(
+                dataWorkerSales.income_total -
+                    dataWorkerSales.spend_total -
+                    dataWorkerSales.worker_phu_spend -
+                    dataWorkerSales.oils_spend -
+                    dataWorkerSales.ot_spend
+            ),
+        },
+    ];
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -552,254 +617,49 @@ function NavbarDefault({ propauth, check }) {
                                             handler={handleOpenSpending}
                                         >
                                             <DialogBody>
-                                                <div className="relative flex flex-col w-full p-8 pt-3 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
-                                                    <div className="relative pb-2 m-0 overflow-hidden text-center text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
-                                                        <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-white uppercase">
+                                                <div className="relative w-full p-2 pt-3 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
+                                                    <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
+                                                        <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
                                                             Tổng Thu Chi Cuối
                                                             Ngày
                                                         </h2>
-                                                        <Card className="w-full h-full">
-                                                            <table className="w-full text-left table-auto min-w-max">
-                                                                <thead>
-                                                                    <tr>
-                                                                    <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="black"
-                                                                                className="font-bold leading-none opacity-70"
-                                                                            >
-                                                                               STT
-                                                                            </Typography>
-
-                                                                        </th>
-                                                                        <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="black"
-                                                                                className="font-bold leading-none opacity-70"
-                                                                            >
-                                                                                Nội Dung
-                                                                            </Typography>
-
-                                                                        </th>
-                                                                        <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="black"
-                                                                                className="font-bold leading-none opacity-70"
-                                                                            >
-                                                                                Số Tiền
-                                                                            </Typography>
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
+                                                        <Card className="w-full h-full p-1">
+                                                            <div className="grid grid-cols-5 p-1 border-b border-blue-gray-500">
+                                                                <div className="col-span-1 font-bold text-center border-r border-blue-gray-500">STT</div>
+                                                                <div  className="col-span-2 pl-2 font-bold border-r border-blue-gray-500"> Nội Dung</div>
+                                                                <div className="pl-2 font-bold">Số Tiền</div>
+                                                            </div>
+                                                            {ContentData.map(
+                                                                (item) => {
+                                                                    console.log(
+                                                                        item
+                                                                    );
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                item.id
+                                                                            }
+                                                                            className="grid grid-cols-5 p-1 border-b border-blue-gray-500"
                                                                         >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               0
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                                Tổng Chi
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               500.000 đ
-                                                                            </Typography>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               1
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                                Tổng Thu
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               2.000.000 đ
-                                                                            </Typography>
-                                                                        </td>
-
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               2
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               Thợ Phụ
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               150.000 đ
-                                                                            </Typography>
-                                                                        </td>
-
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               3
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                                Xăng
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               50.000 đ
-                                                                            </Typography>
-                                                                        </td>
-
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               4
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                                Tăng ca
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-normal"
-                                                                            >
-                                                                               50.000 đ
-                                                                            </Typography>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                            colSpan={2}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="self-end font-bold"
-                                                                            >
-                                                                                Doanh Thu
-                                                                            </Typography>
-                                                                        </td>
-                                                                        <td
-                                                                            className={`p-4 border-b border-blue-gray-50`}
-                                                                        >
-                                                                            <Typography
-                                                                                variant="small"
-                                                                                color="blue-gray"
-                                                                                className="font-bold"
-                                                                            >
-                                                                               1.250.000 đ
-                                                                            </Typography>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                                            <span className="text-center border-r border-blue-gray-500">
+                                                                                {
+                                                                                    item.id
+                                                                                }
+                                                                            </span>
+                                                                            <span className={`underline col-span-2 border-r border-blue-gray-500 pl-2`}>
+                                                                                {
+                                                                                    item.label
+                                                                                }
+                                                                            </span>
+                                                                            <p className="col-span-2 pl-2">
+                                                                                {
+                                                                                    item.TextContent
+                                                                                }
+                                                                            </p>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            )}
                                                         </Card>
                                                     </div>
                                                     <div className="p-0 mt-1">

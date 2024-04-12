@@ -11,6 +11,7 @@ import {
     DialogHeader,
     DialogFooter,
     IconButton,
+    Radio,
 } from "@material-tailwind/react";
 import {
     XCircleIcon,
@@ -115,9 +116,7 @@ function AdminCheckDialog({
     ];
     const handleClick = () => {
         // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
-        const maxKey = Math.max(
-             ...dataBH.map((item) => item.id)
-        );
+        const maxKey = Math.max(...dataBH.map((item) => item.id));
         const newId = maxKey + 1;
         setDataBH((prevData) => [
             ...prevData,
@@ -174,9 +173,9 @@ function AdminCheckDialog({
             if (oldDataBH !== "") {
                 const modifiedData = dataBH
                     .map((item) => {
-                        const matchingItem = Array.isArray(...oldDataBH) && oldDataBH.find(
-                            (oldItem) => oldItem.id === item.id
-                        );
+                        const matchingItem =
+                            Array.isArray(...oldDataBH) &&
+                            oldDataBH.find((oldItem) => oldItem.id === item.id);
                         return matchingItem
                             ? !Object.entries(item).every(
                                   ([key, value]) => matchingItem[key] === value
@@ -285,6 +284,26 @@ function AdminCheckDialog({
                 style={{ height: `${height}px` }}
                 divider
             >
+                <div className="flex flex-row justify-center"><Card className="flex flex-row justify-between w-[50%] px-10 mb-2 border">
+                    <Radio
+                        id="chuaTT"
+                        name="status_work"
+                        label="Chưa thanh toán"
+                        value="0"
+                        checked={`isAllowed`} // Đảo ngược trạng thái, checked là true khi isAllowed là false
+                        // onChange={handleRadioChangeAllow}
+                        className="w-1 h-1 p-1"
+                    />
+                    <Radio
+                        id="VAT"
+                        name="status_work"
+                        label="Xuất hóa đơn"
+                        value="1"
+                        checked={`isAllowed`} // checked là true khi isAllowed là true
+                        // onChange={handleRadioChangeAllow}
+                        className="w-1 h-1 p-1"
+                    />
+                </Card></div>
                 <div className="flex flex-row justify-between w-full gap-4 mb-2 text-sm">
                     <div className="w-full p-2 text-sm border border-green-500 ">
                         <div>

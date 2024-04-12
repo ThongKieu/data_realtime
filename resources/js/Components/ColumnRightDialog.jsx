@@ -471,8 +471,9 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataVT) &&
-                                            processedDataVT.map((item) => (
+                                            processedDataVT.map((item,index) => (
                                                 <img
+                                                    key={index}
                                                     src={item}
                                                     alt=""
                                                     className="w-32 h-32"
@@ -490,8 +491,9 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataPT) &&
-                                            processedDataPT.map((item) => (
+                                            processedDataPT.map((item,index) => (
                                                 <img
+                                                key={index}
                                                     src={item}
                                                     alt=""
                                                     className="w-32 h-32"

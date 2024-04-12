@@ -23,6 +23,7 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 import useWindowSize from "@/Core/Resize";
+
 function ManagerMedia({ auth }) {
     const { width, height } = useWindowSize(65);
     const [openDetail, setOpenDetail] = useState(false);
@@ -194,11 +195,11 @@ function ManagerMedia({ auth }) {
     };
     const getImageUrls = () => {
         // Lấy danh sách tên file hình ảnh từ thư mục assets trong thư mục public của Laravel
-        const imageNames = require.context(
+        const imageNames = NodeJS.require.context(
             "./assets",
-            false,
+            true,
             /\.(png|jpe?g|svg)$/
-        );
+        )
         // Lặp qua danh sách tên file và lấy URL của mỗi hình ảnh
         return imageNames.keys().map((image) => imageNames(image).default);
     };

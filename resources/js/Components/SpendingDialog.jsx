@@ -7,7 +7,7 @@ import {
     Radio,
     Dialog,
     DialogHeader,
-} from "@material-tailwind/react"; // Thay thế 'your-ui-library' bằng thư viện UI của bạn
+} from "@material-tailwind/react";
 import WorkForm from "./WorkForm";
 import DynamicTwoInput from "./DynamicInput";
 import { Divider } from "@mui/material";
@@ -74,6 +74,28 @@ const SpendingDialog = ({
                     {cardExpires.income_total != 0 ||
                     cardExpires.spending_total != 0 ? (
                         <>
+                            <div className="flex flex-row justify-center">
+                                <Card className="flex flex-row w-[50%] border justify-between px-10">
+                                    <Radio
+                                        id="chuaTT"
+                                        name="status_work"
+                                        label="Chưa thanh toán"
+                                        value="0"
+                                        checked={`isAllowed`} // Đảo ngược trạng thái, checked là true khi isAllowed là false
+                                        // onChange={handleRadioChangeAllow}
+                                        className="w-1 h-1 p-1"
+                                    />
+                                    <Radio
+                                        id="VAT"
+                                        name="status_work"
+                                        label="Xuất hóa đơn"
+                                        value="1"
+                                        checked={`isAllowed`} // checked là true khi isAllowed là true
+                                        // onChange={handleRadioChangeAllow}
+                                        className="w-1 h-1 p-1"
+                                    />
+                                </Card>
+                            </div>
                             <div className="flex justify-between w-full my-2 text-sm">
                                 <DynamicTwoInput
                                     disabledAllowed={isAllowed}

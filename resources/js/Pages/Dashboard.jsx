@@ -1380,7 +1380,7 @@ function Dashboard({ auth }) {
                     );
                     setImagePreview(previews);
                 };
-                const handleImageSubmit = (selectedHinh, id_ac) => {
+                const handleImageSubmit = async (selectedHinh, id_ac) => {
                     if (selectedHinh) {
                         const urlAPI = `api/web/update/check-admin`;
                         const formData = new FormData();
@@ -1397,23 +1397,25 @@ function Dashboard({ auth }) {
                                 selectedHinh[i]
                             );
                         }
-                        const res = fetch(urlAPI, {
-                            method: "POST",
-                            headers: {
-                                Accept: "application/json",
-                                "Content-Type": "application/json",
-                            },
-                            mode: "no-cors",
-                            body: formData,
-                        });
+                        try {
+                            const res = await fetch(urlAPI, {
+                                method: "POST",
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                },
+                                mode: "no-cors",
+                                body: formData,
+                            });
 
-                        if (res.ok) {
-                            socketD.emit("UpdateDateTable_To_Server", formData);
-                        } else {
-                            console.error(
-                                "Lỗi khi gửi dữ liệu:",
-                                res.statusText
-                            );
+                            if (res.ok) {
+                                socketD.emit("UpdateDateTable_To_Server", formData);
+                                console.log("Yêu cầu POST đã được gửi thành công");
+                            } else {
+                                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+                            }
+                        } catch (error) {
+                            console.error("Lỗi khi gửi yêu cầu:", error);
                         }
                     } else {
                         console.log("Vui lòng chọn hình trước khi gửi.");

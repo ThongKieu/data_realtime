@@ -42,23 +42,15 @@ function ProfileMenu({ propauthprofile }) {
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
     const [noti, setNoti] = useState("");
-    const numberOnline = async () => {
+    const numberOn = async () => {
         try {
-            const response = await fetch(host + "api/web/list-online", {
-                method: "get",
-                headers: {
-                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                },
-            });
-            if (!response.ok) {
-                throw new Error("Fetch không thành công");
+            const res = await fetch(`${host}api/web/list-online`);
+            const jsonData = await res.json();
+            if (jsonData) {
+                setNumberOnline(jsonData);
             }
-            const jsonData = await response.json();
-            // Xử lý dữ liệu lấy được từ API
-            // console.log('1111111111111111111',jsonData);
-            setNumberOnline(jsonData);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Lỗi khi lấy dữ liệu:", error);
         }
     };
     const fetchNoti = async () => {
@@ -91,16 +83,20 @@ function ProfileMenu({ propauthprofile }) {
             console.error("Repair:", error);
         }
     };
-    // fetchNoti();
-
-    numberOnline();
     useEffect(() => {
         fetchNoti();
         newSocket.on("notication_Client", () => {
             fetchNoti();
         });
-    }, []);
-
+        if (isMenuOpen == true) {
+            numberOn();
+        } else {
+            console.log(true);
+        }
+        return () => {
+            newSocket.off("notication_Client");
+        };
+    }, [isMenuOpen]);
     return (
         <div className="flex">
             <NavLink
@@ -181,14 +177,14 @@ function ProfileMenu({ propauthprofile }) {
                 open={isMenuOpen}
                 handler={setIsMenuOpen}
                 placement="bottom-end"
-                onClick={numberOnline}
-                allowHover
+                allowHover={() => numberOn()}
             >
                 <MenuHandler>
                     <Button
                         variant="text"
                         color="blue-gray"
-                        className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+                        className="flex bg-blue-gray-200 items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+                        onClick={() => numberOn()}
                     >
                         <Avatar
                             variant="circular"
@@ -233,7 +229,7 @@ function ProfileMenu({ propauthprofile }) {
                     <NavLink
                         href={route("logout")}
                         method="POST"
-                        as="button"
+                        as="span"
                         className="w-full font-normal"
                     >
                         <MenuItem
@@ -425,7 +421,10 @@ function NavbarDefault({ propauth, check }) {
                                     onClick={() => {
                                         return (
                                             handleOpen() ||
-                                            getDataWorkerSales(item.value, check)
+                                            getDataWorkerSales(
+                                                item.value,
+                                                check
+                                            )
                                         );
                                     }}
                                 >
@@ -444,7 +443,7 @@ function NavbarDefault({ propauth, check }) {
     const [dataWorkerSales, setDataWorkerSales] = useState();
     const [total, setTotal] = useState();
     const [workerID, setWorkerID] = useState();
-    const getDataWorkerSales = async (id,date_check) => {
+    const getDataWorkerSales = async (id, date_check) => {
         const uri = `api/report-worker?id_worker=${id}&&date_check=${date_check}`;
         const res = await fetch(uri);
         const jsonData = await res.json();
@@ -587,6 +586,7 @@ function NavbarDefault({ propauth, check }) {
                                             )
                                         )}
                                         <Dialog
+                                            key={1}
                                             open={openSpending}
                                             handler={handleOpenSpending}
                                         >
@@ -597,15 +597,21 @@ function NavbarDefault({ propauth, check }) {
                                                             Tổng Thu Chi Cuối
                                                             Ngày{" "}
                                                             {infoWorker.map(
-                                                                (item,index) => {
+                                                                (
+                                                                    item,
+                                                                    index
+                                                                ) => {
                                                                     return (
-
-                                                                            <span key={index}>
-                                                                                {
-                                                                                    item.value == workerID ? item.label : ''
-                                                                                }
-                                                                            </span>
-
+                                                                        <span
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                        >
+                                                                            {item.value ==
+                                                                            workerID
+                                                                                ? item.label
+                                                                                : ""}
+                                                                        </span>
                                                                     );
                                                                 }
                                                             )}
@@ -740,7 +746,7 @@ function NavbarDefault({ propauth, check }) {
                                                                                           "TC"
                                                                                         ? "Tăng ca"
                                                                                         : item.fuel_o_t_workers_content ==
-                                                                                          "CX"
+                                                                                          "CP"
                                                                                         ? "Chi Phụ"
                                                                                         : item.fuel_o_t_workers_content}
                                                                                 </p>
@@ -769,36 +775,37 @@ function NavbarDefault({ propauth, check }) {
                                                                         <span className="pl-2 text-red-500">
                                                                             (Chưa
                                                                             đạt
-                                                                            Ds - Đã trừ DS:
-                                                                            '
-                                                                            {formatter.format(
-                                                                                total -
-                                                                                    570000
-                                                                            )}
+                                                                            Ds -
+                                                                            Đã
+                                                                            trừ
+                                                                            DS:'
+                                                                            570000
                                                                             ')
                                                                         </span>
                                                                     ) : total >
-                                                                    570000 ? (
+                                                                      570000 ? (
                                                                         <span className="pl-2 text-green-500">
                                                                             (Vượt
                                                                             đạt
-                                                                            Ds - Đã trừ DS:
+                                                                            Ds -
+                                                                            Đã
+                                                                            trừ
+                                                                            DS:
                                                                             '
-                                                                            {formatter.format(
-                                                                                total -
-                                                                                    570000
-                                                                            )}
+                                                                            570000
                                                                             ')
                                                                         </span>
-                                                                    ):
+                                                                    ) : (
                                                                         <span className="pl-2 text-yellow-500">
-                                                                            (Vừa đủ)
+                                                                            (Vừa
+                                                                            đủ)
                                                                         </span>
-                                                                    }
+                                                                    )}
                                                                 </p>
                                                                 <p className="col-span-2 pl-2 text-xl font-bold">
                                                                     {formatter.format(
-                                                                        total
+                                                                        total -
+                                                                            570000
                                                                     )}
                                                                 </p>
                                                             </div>

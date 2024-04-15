@@ -14,6 +14,7 @@ io.on("connection", (socket) => {
         io.sockets.emit("userOnline_Client", userId);
     });
     socket.on("notication_Server", async (data) => {
+        console.log('notication_Server',data);
         io.sockets.emit("notication_Client", data);
     });
     socket.on("pushOnline", (message) => {

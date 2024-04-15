@@ -126,6 +126,7 @@ function Dashboard({ auth }) {
         }
         setSocketD(newSocket, { secure: true });
         newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
+            console.log(selectedDate);
             fetchDateCheck(data, selectedDate);
             fetchDateDoneCheck(data, selectedDate);
             fetchDataDashboard(data, selectedDate);
@@ -149,13 +150,13 @@ function Dashboard({ auth }) {
             newSocket.disconnect();
         };
     }, [selectedDate]);
-    const handleDateChange = async (event) => {
+    const handleDateChange = (event) => {
         setSelectedDate(event.target.value);
-        socketD?.emit("UpdateDateTable_To_Server", event);
+        newSocket?.emit("addWorkTo_Server", event);
     };
-    const handleSearch = async () => {
-        fetchDateCheck(selectedDate);
-        fetchDateDoneCheck(selectedDate);
+    const handleSearch = (dateCheckSearch) => {
+        fetchDateCheck(dateCheckSearch);
+        fetchDateDoneCheck(dateCheckSearch);
     };
     // --------------------------kiem tra socket io tai khoan online -----------------------------
     const pushOn = async () => {
@@ -184,6 +185,7 @@ function Dashboard({ auth }) {
             try {
                 const response = await fetch(url);
                 const jsonData = await response.json();
+                socketD?.emit('addWorkTo_Server', jsonData);
                 return jsonData;
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -1842,7 +1844,7 @@ function Dashboard({ auth }) {
                                 handleImageSubmit(selectedFilesVT, 2)
                             }
                             socketD={socketD}
-                            handleSearch={handleSearch}
+                            handleSearch={()=>handleSearch(selectedDate)}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
@@ -2038,6 +2040,7 @@ function Dashboard({ auth }) {
                 style={{ height: `${height}px` }}
             >
                 <Card className="w-full mt-1 text-white rounded-none basis-5/12">
+
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -2244,7 +2247,7 @@ function Dashboard({ auth }) {
                     <Button
                         size="sm"
                         className="p-2 text-green-700 border border-green-700 rounded-full"
-                        onClick={handleSearch}
+                        onClick={()=>handleSearch(selectedDate)}
                         variant="outlined"
                     >
                         <MagnifyingGlassIcon className="w-4 h-4 " />

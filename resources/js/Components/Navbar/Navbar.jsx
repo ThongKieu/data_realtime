@@ -405,7 +405,7 @@ function NavbarDefault({ propauth, check }) {
     const [openSpending, setOpenSpending] = useState(false);
     const handleOpenSpending = () => setOpenSpending(!openSpending);
 
-    const renderWorkerGroup = (prefix, status, handleOpen ,handle) => {
+    const renderWorkerGroup = (prefix, status, handleOpen) => {
         return (
             <div className="w-full p-1" key={`${prefix}-${status}`}>
                 <p className="border-b-[3px] border-b-blue-500 text-center w-full">
@@ -422,7 +422,12 @@ function NavbarDefault({ propauth, check }) {
                             <div className="w-full pb-1" key={index}>
                                 <p
                                     className="p-1 text-sm border border-green-500 cursor-pointer"
-                                    onClick={handleOpen&&handle}
+                                    onClick={() => {
+                                        return (
+                                            handleOpen() ||
+                                            getDataWorkerSales(item.value, check)
+                                        );
+                                    }}
                                 >
                                     {item.label}
                                 </p>
@@ -436,70 +441,40 @@ function NavbarDefault({ propauth, check }) {
     const handleOpenWorker = () => setOpenWorker(!openWorker);
 
     const { width, height } = useWindowSize(200);
-    const data = {
-        id: 0,
-        spend_total: 500000,
-        income_total: 1500000,
-        worker_phu_spend: 50000,
-        oils_spend: 50000,
-        ot_spend: 37000,
-    };
-
-    const [dataWorkerSales, setDataWorkerSales] = useState(data);
-    const getDataWorkerSales = async (id) => {
-        const uri = `api/report-worker?id_worker=${id}`;
+    const [dataWorkerSales, setDataWorkerSales] = useState();
+    const [total, setTotal] = useState();
+    const [workerID, setWorkerID] = useState();
+    const getDataWorkerSales = async (id,date_check) => {
+        const uri = `api/report-worker?id_worker=${id}&&date_check=${date_check}`;
         const res = await fetch(uri);
-        const jsonData = JSON.stringify(res);
-        console.log(typeof jsonData);
+        const jsonData = await res.json();
+
+        let totalSpend = 0;
+        Array.isArray(jsonData) &&
+            jsonData.slice(1).forEach((item) => {
+                if (
+                    ["CX", "CP", "TC"].includes(item?.fuel_o_t_workers_content)
+                ) {
+                    totalSpend += item.fuel_o_t_workers_spend_money;
+                }
+            });
+
+        // Tính giá trị của biến 'a'
+        const a = jsonData[0]?.work_revenue - totalSpend;
+        setWorkerID(id);
         if (jsonData) {
             setDataWorkerSales(jsonData);
+            setTotal(a);
         } else {
-            console.error("not get data", jsonData);
+            setDataWorkerSales(0);
+            setTotal(0);
         }
     };
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
-    console.log('dataWorkerSales',dataWorkerSales);
-    const ContentData = [
-        {
-            id: 0,
-            label: "Tổng Chi:",
-            TextContent: formatter.format(dataWorkerSales.spend_total),
-        },
-        {
-            id: 1,
-            label: "Tổng Thu:",
-            TextContent: formatter.format(dataWorkerSales.income_total),
-        },
-        {
-            id: 2,
-            label: "Chi Thợ Phụ:",
-            TextContent: formatter.format(dataWorkerSales.worker_phu_spend),
-        },
-        {
-            id: 3,
-            label: "Xăng",
-            TextContent: formatter.format(dataWorkerSales.oils_spend),
-        },
-        {
-            id: 4,
-            label: "Tăng ca:",
-            TextContent: formatter.format(dataWorkerSales.ot_spend),
-        },
-        {
-            id: 5,
-            label: "Tổng doanh số:",
-            TextContent: formatter.format(
-                dataWorkerSales.income_total -
-                    dataWorkerSales.spend_total -
-                    dataWorkerSales.worker_phu_spend -
-                    dataWorkerSales.oils_spend -
-                    dataWorkerSales.ot_spend
-            ),
-        },
-    ];
+
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -620,54 +595,213 @@ function NavbarDefault({ propauth, check }) {
                                                     <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
                                                         <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
                                                             Tổng Thu Chi Cuối
-                                                            Ngày
-                                                        </h2>
-                                                        <Card className="w-full h-full p-1">
-                                                            <div className="grid grid-cols-5 p-1 border-b border-blue-gray-500">
-                                                                <div className="col-span-1 font-bold text-center border-r border-blue-gray-500">
-                                                                    STT
-                                                                </div>
-                                                                <div className="col-span-2 pl-2 font-bold border-r border-blue-gray-500">
-                                                                    {" "}
-                                                                    Nội Dung
-                                                                </div>
-                                                                <div className="pl-2 font-bold">
-                                                                    Số Tiền
-                                                                </div>
-                                                            </div>
-                                                            {ContentData.map(
-                                                                (item) => {
-                                                                    console.log(
-                                                                        item
-                                                                    );
+                                                            Ngày{" "}
+                                                            {infoWorker.map(
+                                                                (item,index) => {
                                                                     return (
-                                                                        <div
-                                                                            key={
-                                                                                item.id
-                                                                            }
-                                                                            className="grid grid-cols-5 p-1 border-b border-blue-gray-500"
-                                                                        >
-                                                                            <span className="text-center border-r border-blue-gray-500">
+
+                                                                            <span key={index}>
                                                                                 {
-                                                                                    item.id
+                                                                                    item.value == workerID ? item.label : ''
                                                                                 }
                                                                             </span>
-                                                                            <span
-                                                                                className={`underline col-span-2 border-r border-blue-gray-500 pl-2`}
-                                                                            >
-                                                                                {
-                                                                                    item.label
-                                                                                }
-                                                                            </span>
-                                                                            <p className="col-span-2 pl-2">
-                                                                                {
-                                                                                    item.TextContent
-                                                                                }
-                                                                            </p>
-                                                                        </div>
+
                                                                     );
                                                                 }
                                                             )}
+                                                        </h2>
+                                                        <Card className="w-full h-full p-1 pr-0">
+                                                            <div className="grid grid-cols-5 text-center border-b border-blue-gray-500">
+                                                                <p className="col-span-1 ">
+                                                                    STT
+                                                                </p>
+                                                                <p className="col-span-2 border-x border-blue-gray-500 ">
+                                                                    Nội Dung
+                                                                </p>
+                                                                <p className="col-span-2 ">
+                                                                    Số Tiền
+                                                                </p>
+                                                            </div>
+                                                            <div className="grid grid-cols-5">
+                                                                <div className="col-span-1 font-bold text-center ">
+                                                                    <p className="font-bold border-b border-blue-gray-400">
+                                                                        1
+                                                                    </p>
+                                                                    <p className="font-bold border-b border-blue-gray-400">
+                                                                        2
+                                                                    </p>
+                                                                    <p className="font-bold border-b border-blue-gray-400">
+                                                                        3
+                                                                    </p>
+                                                                </div>
+                                                                <div className="col-span-2 font-bold">
+                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
+                                                                        Ngày làm
+                                                                    </p>
+                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
+                                                                        Thu Ngày
+                                                                    </p>
+                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
+                                                                        Chi Ngày
+                                                                    </p>
+                                                                </div>
+                                                                <div className="col-span-2 ">
+                                                                    {Array.isArray(
+                                                                        dataWorkerSales
+                                                                    ) &&
+                                                                        dataWorkerSales.map(
+                                                                            (
+                                                                                item,
+                                                                                index
+                                                                            ) => {
+                                                                                return (
+                                                                                    <div
+                                                                                        className="flex flex-col"
+                                                                                        key={
+                                                                                            index
+                                                                                        }
+                                                                                    >
+                                                                                        <p
+                                                                                            className={`${
+                                                                                                item.date_do
+                                                                                                    ? "pl-2 border-l border-blue-gray-400"
+                                                                                                    : ""
+                                                                                            }`}
+                                                                                        >
+                                                                                            {
+                                                                                                item.date_do
+                                                                                            }
+                                                                                        </p>
+                                                                                        <p
+                                                                                            className={`${
+                                                                                                item.date_do
+                                                                                                    ? "pl-2  border border-r-0 border-blue-gray-400"
+                                                                                                    : ""
+                                                                                            }`}
+                                                                                        >
+                                                                                            {item.work_revenue
+                                                                                                ? formatter.format(
+                                                                                                      item.work_revenue
+                                                                                                  )
+                                                                                                : item.work_revenue}
+                                                                                        </p>
+                                                                                        <p
+                                                                                            className={`${
+                                                                                                item.date_do
+                                                                                                    ? "pl-2  border-l border-b border-blue-gray-400"
+                                                                                                    : ""
+                                                                                            }`}
+                                                                                        >
+                                                                                            {item.work_expenditure
+                                                                                                ? formatter.format(
+                                                                                                      item.work_expenditure
+                                                                                                  )
+                                                                                                : item.work_expenditure}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                </div>
+                                                            </div>
+                                                            {Array.isArray(
+                                                                dataWorkerSales
+                                                            ) &&
+                                                                dataWorkerSales.map(
+                                                                    (
+                                                                        item,
+                                                                        index
+                                                                    ) => {
+                                                                        return (
+                                                                            <div className="grid grid-cols-5">
+                                                                                <p
+                                                                                    className={`${
+                                                                                        item.fuel_o_t_workers_content
+                                                                                            ? " font-bold border-b border-blue-gray-400 text-center"
+                                                                                            : ""
+                                                                                    }`}
+                                                                                >
+                                                                                    {item.fuel_o_t_workers_content
+                                                                                        ? index +
+                                                                                          3
+                                                                                        : item.fuel_o_t_workers_content}
+                                                                                </p>
+                                                                                <p
+                                                                                    className={`${
+                                                                                        item.fuel_o_t_workers_content
+                                                                                            ? " col-span-2 pl-2 font-bold border-b border-l border-blue-gray-400"
+                                                                                            : ""
+                                                                                    }`}
+                                                                                >
+                                                                                    {item.fuel_o_t_workers_content ==
+                                                                                    "CX"
+                                                                                        ? "Xăng"
+                                                                                        : item.fuel_o_t_workers_content ==
+                                                                                          "TC"
+                                                                                        ? "Tăng ca"
+                                                                                        : item.fuel_o_t_workers_content ==
+                                                                                          "CX"
+                                                                                        ? "Chi Phụ"
+                                                                                        : item.fuel_o_t_workers_content}
+                                                                                </p>
+                                                                                <p
+                                                                                    className={`${
+                                                                                        item.fuel_o_t_workers_content
+                                                                                            ? " col-span-2 pl-2 border-b border-l border-blue-gray-400"
+                                                                                            : ""
+                                                                                    }`}
+                                                                                >
+                                                                                    {item.fuel_o_t_workers_spend_money
+                                                                                        ? formatter.format(
+                                                                                              item.fuel_o_t_workers_spend_money
+                                                                                          )
+                                                                                        : item.fuel_o_t_workers_spend_money}
+                                                                                </p>
+                                                                            </div>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            <div className="grid grid-cols-5">
+                                                                <p className="col-span-3 text-xl font-bold text-center ">
+                                                                    Doanh Thu:
+                                                                    {total <
+                                                                    570000 ? (
+                                                                        <span className="pl-2 text-red-500">
+                                                                            (Chưa
+                                                                            đạt
+                                                                            Ds - Đã trừ DS:
+                                                                            '
+                                                                            {formatter.format(
+                                                                                total -
+                                                                                    570000
+                                                                            )}
+                                                                            ')
+                                                                        </span>
+                                                                    ) : total >
+                                                                    570000 ? (
+                                                                        <span className="pl-2 text-green-500">
+                                                                            (Vượt
+                                                                            đạt
+                                                                            Ds - Đã trừ DS:
+                                                                            '
+                                                                            {formatter.format(
+                                                                                total -
+                                                                                    570000
+                                                                            )}
+                                                                            ')
+                                                                        </span>
+                                                                    ):
+                                                                        <span className="pl-2 text-yellow-500">
+                                                                            (Vừa đủ)
+                                                                        </span>
+                                                                    }
+                                                                </p>
+                                                                <p className="col-span-2 pl-2 text-xl font-bold">
+                                                                    {formatter.format(
+                                                                        total
+                                                                    )}
+                                                                </p>
+                                                            </div>
                                                         </Card>
                                                     </div>
                                                     <div className="p-0 mt-1">

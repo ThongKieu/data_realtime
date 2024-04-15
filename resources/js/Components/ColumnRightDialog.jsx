@@ -528,7 +528,6 @@ const ViewTotalDialog = ({
                                         {Array.isArray(params.warranty) &&
                                             params.warranty?.map(
                                                 ( item , index) => {
-                                                    console.log(params.warranty);
                                                     return (
                                                         <tr
                                                             key={index}

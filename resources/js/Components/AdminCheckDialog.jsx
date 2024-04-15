@@ -217,7 +217,6 @@ function AdminCheckDialog({
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    console.log(params);
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
         const check_admin = {

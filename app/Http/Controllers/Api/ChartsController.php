@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WorksAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChartsController extends Controller
 {
@@ -18,7 +19,13 @@ class ChartsController extends Controller
         // $this_m = '';
         $befo_m = $today->subMonth(1);;
         
-        $dien_nuoc = WorksAssignment::where('');
+        $dien_nuoc = DB::table('works_assignments')
+        ->join('works','works_assignments.id_cus','works.id')
+        ->get();
+        ;
+        
+
+        return $dien_nuoc;
     }
     public function DoanhThuBang()
     {

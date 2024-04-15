@@ -145,6 +145,8 @@ function Home({ auth }) {
 
     const [dataTongThu, setDataTongThu] = useState([]);
     const [dataTongChi, setDataTongChi] = useState([]);
+    const [topBannerAdmin, settopBannerAdmin] = useState([]);
+
     const fetchDataTongthu = async (e) => {
         try {
 
@@ -173,6 +175,21 @@ function Home({ auth }) {
             console.log("push on Loi", error);
         }
     }
+    const fetchTopBannerAdmin = async (e) => {
+        try {
+
+            const response = await fetch("api/web/chart/topadmin");
+            const TopBannerAdminF = await response.json();
+            if (response.status == 200) {
+
+                settopBannerAdmin(TopBannerAdminF);
+                console.log(TopBannerAdminF);
+            }
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
+    }
+
 
     const data = {
         labels,
@@ -190,15 +207,10 @@ function Home({ auth }) {
         ],
     }
 
-
-
-
-
-
     useEffect(() => {
         fetchDataTongChi();
         fetchDataTongthu();
-
+        fetchTopBannerAdmin();
         fetchData();
     }, []);
     const [getData, usersData] = useState([]);

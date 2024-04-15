@@ -838,4 +838,7 @@ class WorksAssignmentController extends Controller
             return 'Không tìm thấy';
         }
     }
+// Lấy thông tin thợ làm ngày tính Ds
+    
+
 }

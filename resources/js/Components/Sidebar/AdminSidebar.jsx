@@ -57,10 +57,16 @@ function AdminSidebar({ children }) {
                     href: route("admin/worker-list"),
                 },
                 {
+                    title: "Ds Mã Thợ",
+                    icon: <ChevronDoubleRightIcon className="w-3" />,
+                    href: route("admin/worker-code"),
+                },
+                {
                     title: " Tài Khoản App",
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/worker-account"),
                 },
+                
             ],
         },
         {

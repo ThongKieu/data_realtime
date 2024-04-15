@@ -54,6 +54,9 @@ class ReportWorkerController extends Controller
         if ($r->date_check == null) {
             $date_check = date('Y-m-d');
         }
+        else{
+            $date_check= $r->date_check;
+        }
         if ($r->id_worker != null) {
             $data = ReportWorker::where('date_do', '=', $date_check)->where('id_worker', '=', '4')->get(['id_worker', 'date_do', 'work_revenue', 'work_expenditure']);
             $data_2 = FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $date_check)->where('fuel_o_t_workers_id', '=', '4')->get(['fuel_o_t_workers_content', 'fuel_o_t_workers_spend_money']);
@@ -66,11 +69,11 @@ class ReportWorkerController extends Controller
 
                 // Nối các mảng
                 $r_data = array_merge($array1, $array2);
-                $resultJson = json_encode($r_data);
+               
             } else {
-                $resultJson = 0;
+                $r_data = 0;
             }
-            return response()->json($resultJson);
+            return response()->json($r_data);
         }
         return response()->json(' Vui lòng kiểm tra lại thông tin');
     }

@@ -31,30 +31,7 @@ class CheckCallWorkerController extends Controller
         } else {
             // dd($date_get);
             $soKyTu = strlen($request->phone);
-            // if ($soKyTu == 11) {
-            //     $rturn_call = CheckCallWorker::where('worker_call_date', 'like', $date_get)->get();
-            //     // dd($rturn_call);
-            // } elseif ($soKyTu == 9) {
-            //     $phone = '84' . $request->phone;
-            //     $rturn_call = CheckCallWorker::where('worker_phone', '=', $phone)->where('worker_call_date', 'like', $date_get)->get();
-            //     // dd($rturn_call);
-            // } else {
-            //     $chuoiSauXoaKyTuDauTien = substr($request->phone, 1);
-            //     $phone = '84' . $chuoiSauXoaKyTuDauTien;
-            //     $rturn_call = CheckCallWorker::where('worker_phone', '=', $phone)->where('worker_call_date', 'like', $date_get)->get();
-            // }
-            // foreach ($rturn_call as $item) {
-
-            //     $phone_cus = substr($item['worker_phone_called'], 1);
-            //     // dd($phone_cus);
-
-            //     $get = OldCustomer::where('phone_cus', '=', $phone_cus)->where('date_book', 'like', $date_get)->get('id');
-            //     if (count($get) > 0) {
-            //         $item['check'] = 1;
-            //     } else {
-            //         $item['check'] = 0;
-            //     }
-            // }
+            
             // kiểm tra số điện thoại đầu vào 
             //số đầu vào 9 ký tự dạng 912847218
             if($soKyTu == 9)

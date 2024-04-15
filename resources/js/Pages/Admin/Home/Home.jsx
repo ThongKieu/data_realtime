@@ -44,6 +44,10 @@ ChartJS.register(
     Legend
 );
 const dataNumber = [11111, 2222, 444, 555];
+// const [da,setDa] = useState('');
+// const fetchDataTongChi = fetch()=>{};
+
+
 // ________Doanh so thu chi_________________
 export const options = {
     responsive: true,
@@ -71,21 +75,21 @@ const labels = [
     "T11",
     "T12",
 ];
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: "Tổng Thu",
-            data: labels.map((label, index) => dataNumber[index]),
-            backgroundColor: "#3480b5",
-        },
-        {
-            label: "Tổng Chi",
-            data: labels.map((label, index) => dataNumber[index]),
-            backgroundColor: "#d30303",
-        },
-    ],
-};
+// export const data = {
+//     labels,
+//     datasets: [
+//         {
+//             label: "Tổng Thu",
+//             data: labels.map((label, index) => dataNumber[index]),
+//             backgroundColor: "#3480b5",
+//         },
+//         {
+//             label: "Tổng Chi",
+//             data: labels.map((label, index) => dataNumber[index]),
+//             backgroundColor: "#d30303",
+//         },
+//     ],
+// };
 //_______________   end ___________________________
 // ________Doanh Số tho_________________
 export const dataVDS = {
@@ -137,8 +141,64 @@ export const dataOrderSource = {
 //___________SMS Brand Count_____________
 // ________End Nguồn nhận lịch_________________
 function Home({ auth }) {
-const { width, height } = useWindowSize(65);
+    const { width, height } = useWindowSize(65);
+
+    const [dataTongThu, setDataTongThu] = useState([]);
+    const [dataTongChi, setDataTongChi] = useState([]);
+    const fetchDataTongthu = async (e) => {
+        try {
+
+            const response = await fetch("api/web/chart/totalincome");
+            const setDataTongThuF = await response.json();
+            if (response.status == 200) {
+
+                setDataTongThu(setDataTongThuF);
+                console.log(setDataTongThuF);
+            }
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
+    }
+    const fetchDataTongChi = async (e) => {
+        try {
+
+            const response = await fetch("api/web/chart/totalspend");
+            const setDataTongChiF = await response.json();
+            if (response.status == 200) {
+
+                setDataTongChi(setDataTongChiF);
+                console.log(setDataTongChiF);
+            }
+        } catch (error) {
+            console.log("push on Loi", error);
+        }
+    }
+
+    const data = {
+        labels,
+        datasets: [
+            {
+                label: "Tổng Thu",
+                data: labels.map((label, index) => dataTongThu[index]),
+                backgroundColor: "#3480b5",
+            },
+            {
+                label: "Tổng Chi",
+                data: labels.map((label, index) => dataTongChi[index]),
+                backgroundColor: "#d30303",
+            },
+        ],
+    }
+
+
+
+
+
+
     useEffect(() => {
+        fetchDataTongChi();
+        fetchDataTongthu();
+
         fetchData();
     }, []);
     const [getData, usersData] = useState([]);
@@ -251,17 +311,16 @@ const { width, height } = useWindowSize(65);
                 </Card>
                 <div className="flex flex-row justify-between p-1 m-2 text-center">
                     {dataCardOrder.map((item, index) => {
-                        const classBot = `${
-                            item.titleBot >= 15
+                        const classBot = `${item.titleBot >= 15
                                 ? "green"
                                 : item.titleBot <= 14 && item.titleBot >= 6
-                                ? "yellow"
-                                : item.titleBot <= 5 && item.titleBot >= 3
-                                ? "orange"
-                                : item.titleBot < 3
-                                ? "red"
-                                : ""
-                        }`;
+                                    ? "yellow"
+                                    : item.titleBot <= 5 && item.titleBot >= 3
+                                        ? "orange"
+                                        : item.titleBot < 3
+                                            ? "red"
+                                            : ""
+                            }`;
 
                         return (
                             <CardOrder

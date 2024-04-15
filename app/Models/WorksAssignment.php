@@ -21,8 +21,8 @@ class WorksAssignment extends Model
         'admin_check',
         'check_admin_check',
         'kind_work_assign',
-        'status_work',
-        'created_at'];
+        'status_work'
+        ];
     public function warranty()
     {
         return $this->hasOne(Warranties::class);

@@ -124,6 +124,13 @@ Route::prefix('web')->group(function () {
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
         // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
+    Route::prefix('chart')->group(function () {
+        Route::get('/totalincome', 'App\Http\Controllers\Api\ChartsController@doanhThuNam');
+        Route::get('/totalspend', 'App\Http\Controllers\Api\ChartsController@chiPhiNam');
+
+        // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
+        // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
+    });
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(

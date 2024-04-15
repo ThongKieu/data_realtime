@@ -333,6 +333,7 @@ class WorksAssignmentController extends Controller
         }
 
         $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
+
         $dataWorkDone = [
             'dien_nuoc_done' => $dien_nuoc,
             'dien_lanh_done' => $dien_lanh,
@@ -591,7 +592,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y '),
+                        'work_done_date' => date('d-m-Y'),
                     ]);
                 return response()->json('Update work with image !!!');
             } else {
@@ -602,7 +603,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y '),
+                        'work_done_date' => date('d-m-Y'),
                     ]);
                 // if($request->datainput != null || $request->datainput != '')
                 // {
@@ -745,6 +746,7 @@ class WorksAssignmentController extends Controller
                         // dd($$request->all())
 // ;
                         Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'], 'phone_number' => $data['phone_number'], 'street' => $data['street'], 'district' => $data['district'], 'name_cus' => $data['name_cus']]);
+                       
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
                         ReportWorkerController::setReportDay($data['id_worker'],date('Y-m-d'),$data['income_total'],$data['spending_total']);

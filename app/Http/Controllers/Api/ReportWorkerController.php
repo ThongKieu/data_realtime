@@ -57,7 +57,7 @@ class ReportWorkerController extends Controller
         else{
             $date_check = $r->date_check;
         }
-        
+
         if ($r->id_worker != null) {
             $data = ReportWorker::where('date_do', '=', $date_check)->where('id_worker', '=', $r->id_worker)->get(['id_worker', 'date_do', 'work_revenue', 'work_expenditure']);
             $data_2 = FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $date_check)->where('fuel_o_t_workers_id', '=', $r->id_worker)->get(['fuel_o_t_workers_content', 'fuel_o_t_workers_spend_money']);

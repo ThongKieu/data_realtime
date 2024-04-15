@@ -67,7 +67,6 @@ function FloatingButton() {
     // const [selectedOptionDistrict, setSelectedOptionDistrict] = useState('');
     const [optionsDistrict, setOptionsDistrict] = useState([]);
     const [selectedOption, setSelectedOption] = useState("khác");
-    const [socketFTB, setSocketFTB] = useState(null);
     const handleOptionChangeDistrict = (event) => {
         setSelectedOption(event.target.value);
     };
@@ -78,7 +77,6 @@ function FloatingButton() {
     };
     useEffect(() => {
         fetchData();
-        setSocketFTB(newSocket, { secure: true });
         return () => {
             newSocket.disconnect();
         };
@@ -105,7 +103,6 @@ function FloatingButton() {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedFiles(files);
-        console.log(files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
     };
@@ -141,7 +138,7 @@ function FloatingButton() {
                 body: formData1,
             });
             if (response.status === 200) {
-                newSocket.emit("addWorkTo_Server", formData1);
+                newSocket.emit("addWorkTo_Server", formData);
                 handleOpen();
                 setFormData({
                     member_read: 1,

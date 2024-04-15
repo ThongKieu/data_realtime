@@ -530,11 +530,9 @@ class WorksAssignmentController extends Controller
             // dd($request->all());
             if (count((json_decode($request->warranty))) > 0) {
                 $warranty = json_decode($request->warranty);
-                foreach($warranty as $item)
-                {
-                    if($item->warranty_time != 0)
-                    {
-                       WarrantiesController::insertWarrantiesFix($request->id,$item->warranty_time,$item->warranty_info,$item->unit);
+                foreach ($warranty as $item) {
+                    if ($item->warranty_time != 0) {
+                        WarrantiesController::insertWarrantiesFix($request->id, $item->warranty_time, $item->warranty_info, $item->unit);
                     }
 
                 }
@@ -746,10 +744,10 @@ class WorksAssignmentController extends Controller
                         // dd($$request->all())
 // ;
                         Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'], 'phone_number' => $data['phone_number'], 'street' => $data['street'], 'district' => $data['district'], 'name_cus' => $data['name_cus']]);
-                       
+
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
-                        ReportWorkerController::setReportDay($data['id_worker'],date('Y-m-d'),$data['income_total'],$data['spending_total']);
+                        ReportWorkerController::setReportDay($data['id_worker'], date('Y-m-d'), $data['income_total'], $data['spending_total']);
                         return 'Admin Check';
                     default:
                         return 'Done With None Update !';

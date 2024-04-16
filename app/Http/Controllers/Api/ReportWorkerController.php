@@ -15,7 +15,19 @@ class ReportWorkerController extends Controller
         // dd($id_worker);
         if ($id_worker != null) {
             $check = ReportWorker::where('date_do', '=', $date_do)->where('id_worker', '=', $id_worker)->get('work_revenue', 'work_expenditure');
-            if (count($check) == 1) {
+            if (count($check) == 0) {
+                $add_n = new ReportWorker([
+                    'id_worker' => $id_worker,
+                    'date_do' => $date_do,
+                    'work_revenue' => $work_revenue,
+                    'work_expenditure' => $work_expenditure,
+                ]);
+                $add_n->save();
+                if ($add_n) {
+                    return 1;
+                }
+            } else {
+                
                 if ($work_revenue == null) {
                     $work_revenue = 0;
                 }
@@ -33,17 +45,6 @@ class ReportWorkerController extends Controller
                     return 1;
                 }
                 return 0;
-            } else {
-                $add_n = new ReportWorker([
-                    'id_worker' => $id_worker,
-                    'date_do' => $date_do,
-                    'work_revenue' => $work_revenue,
-                    'work_expenditure' => $work_expenditure,
-                ]);
-                $add_n->save();
-                if ($add_n) {
-                    return 1;
-                }
             }
         }
         return 0;

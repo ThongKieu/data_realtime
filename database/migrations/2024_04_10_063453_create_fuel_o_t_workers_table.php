@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('fuel_o_t_workers', function (Blueprint $table) {
             $table->id();
             $table->integer('fuel_o_t_workers_id');
-            $table->string('fuel_o_t_workers_content',500);
+            $table->string('fuel_o_t_workers_content',500)->comment('CX,TC,CP');
             $table->integer('fuel_o_t_workers_spend_money')->default(0);
             $table->string('fuel_o_t_workers_date_set');
             $table->tinyInteger('fuel_o_t_workers_flag')->default(0)->comment('0: chua xac nhan, 1: xac nhan, 2: tu choi');

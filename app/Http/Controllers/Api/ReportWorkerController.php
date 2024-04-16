@@ -51,7 +51,7 @@ class ReportWorkerController extends Controller
     public function getByIdWorker(Request $r)
     {
         if ($r->date_check == null || $r->date_check == '') {
-            $date_check = date('Y-m-d');
+            $date_check = date('d-m-Y');
         } else {
             $date_check = $r->date_check;
         }

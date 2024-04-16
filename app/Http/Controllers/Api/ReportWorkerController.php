@@ -27,7 +27,7 @@ class ReportWorkerController extends Controller
                     return 1;
                 }
             } else {
-                
+
                 if ($work_revenue == null) {
                     $work_revenue = 0;
                 }

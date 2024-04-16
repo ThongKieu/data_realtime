@@ -84,11 +84,11 @@ class FuelOTWorkerController extends Controller
             } else {
                 foreach ($check as $item) {
                     if ($item->fuel_o_t_workers_content == 'CX' && $r->fuel_o_t_workers_content == 'CX') {
-                        FuelOTWorker::where('id', '=', $item->id)->update('fuel_o_t_workers_spend_money', '=', $r->fuel_o_t_workers_spend_money);
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
                     } elseif ($item->fuel_o_t_workers_content == 'CP' && $r->fuel_o_t_workers_content == 'CP') {
-                        FuelOTWorker::where('id', '=', $item->id)->update('fuel_o_t_workers_spend_money', '=', $r->fuel_o_t_workers_spend_money);
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
                     } elseif ($item->fuel_o_t_workers_content == 'TC' && $r->fuel_o_t_workers_content == 'TC') {
-                        FuelOTWorker::where('id', '=', $item->id)->update('fuel_o_t_workers_spend_money', '=', $r->fuel_o_t_workers_spend_money);
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
                     }
                 }
                 return 1;

@@ -125,6 +125,7 @@ Route::prefix('web')->group(function () {
         // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
     Route::prefix('chart')->group(function () {
+        Route::get('/topadmin', 'App\Http\Controllers\Api\ChartsController@TopBannerAdmin');
         Route::get('/totalincome', 'App\Http\Controllers\Api\ChartsController@doanhThuNam');
         Route::get('/totalspend', 'App\Http\Controllers\Api\ChartsController@chiPhiNam');
 

@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
         // Worker
         Route::get('/worker-list ',function(){return Inertia::render('Admin/Worker/WorkerList');})->name('admin/worker-list');
         Route::get('/worker-account ',function(){return Inertia::render('Admin/Worker/WorkerAccount');})->name('admin/worker-account');
+        Route::get('/worker-code ',function(){return Inertia::render('Admin/Worker/CodeWorker');})->name('admin/worker-code');
         Route::get('/worker-check-call',function(){return Inertia::render('Admin/Worker/WorkerCheckCall');})->name('admin/worker-check-call');
         Route::get('/block-number-phone',function(){return Inertia::render('Admin/ToolsAdmin/ToolsAdminBlockSDT');})->name('admin/tools-admin-block');
         Route::get('/test-table',function(){return Inertia::render('Admin/Worker/TestTable');})->name('admin/test-table');
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');
+
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
     Route::get('/products', function () {return Inertia::render('Products/Products');})->name('products');

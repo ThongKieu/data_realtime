@@ -460,6 +460,7 @@ function NavbarDefault({ propauth, check }) {
 
         // Tính giá trị của biến 'a'
         const a = jsonData[0]?.work_revenue - totalSpend;
+        console.log(a);
         setWorkerID(id);
         if (jsonData) {
             setDataWorkerSales(jsonData);

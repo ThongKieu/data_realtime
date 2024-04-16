@@ -53,7 +53,7 @@ class ReportWorkerController extends Controller
         if ($r->date_check == null || $r->date_check == '') {
             $date_check = date('d-m-Y');
         } else {
-            $date_check = $r->date_check;
+            $date_check = date("d-m-Y", strtotime($r->date_check));
         }
 
         if ($r->id_worker != null) {

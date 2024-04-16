@@ -16,7 +16,7 @@ class FuelOTWorkerController extends Controller
     {
         // dd($r->all());
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = $r->date_check;
+            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
         } else {
             $fuel_o_t_workers_date_set = date('d-m-Y');
         }
@@ -42,7 +42,7 @@ class FuelOTWorkerController extends Controller
     public function getAllFOWorker(Request $r)
     {
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = $r->date_check;
+            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
         } else {
 
             $fuel_o_t_workers_date_set = date('d-m-Y');

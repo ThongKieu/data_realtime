@@ -747,7 +747,7 @@ class WorksAssignmentController extends Controller
 
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
-                        ReportWorkerController::setReportDay($data['id_worker'], date('Y-m-d'), $data['income_total'], $data['spending_total']);
+                        ReportWorkerController::setReportDay($data['id_worker'], date('d-m-Y'), $data['income_total'], $data['spending_total']);
                         return 'Admin Check';
                     default:
                         return 'Done With None Update !';
@@ -837,6 +837,5 @@ class WorksAssignmentController extends Controller
         }
     }
 // Lấy thông tin thợ làm ngày tính Ds
-    
 
 }

@@ -59,8 +59,6 @@ Route::prefix('web')->group(function () {
         Route::post('/setActive', 'App\Http\Controllers\Api\WorksAssignmentController@setActive');
     });
 
-
-
     Route::prefix('quote')->group(function () {
         Route::get('', 'App\Http\Controllers\Api\Web\QuoteFlowController@index');
         Route::get('users', 'App\Http\Controllers\Api\Web\QuoteFlowController@getAdminName');
@@ -169,7 +167,7 @@ Route::prefix('fuel-ot')->group(function () {
     Route::post('/adcheck', 'App\Http\Controllers\Api\FuelOTWorkerController@checkFuelOTByAdmin');
 });
 // Report Worker
-Route::get('report-worker','App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
+Route::post('report-worker', 'App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
 // --------------------------------------------------------------------------//
 // Application
 Route::prefix('app')->group(function () {

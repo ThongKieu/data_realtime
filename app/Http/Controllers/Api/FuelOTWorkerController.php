@@ -16,9 +16,9 @@ class FuelOTWorkerController extends Controller
     {
         // dd($r->all());
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = $r->date_check;
+            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
         } else {
-            $fuel_o_t_workers_date_set = date('Y-m-d');
+            $fuel_o_t_workers_date_set = date('d-m-Y');
         }
         if ($r->id) {
             $fuel_o_t_workers_id = $r->id;
@@ -34,7 +34,6 @@ class FuelOTWorkerController extends Controller
             {
                 return response()->json(0);
             }
-
         }
         // none id
         return response()->json(-1);
@@ -42,10 +41,10 @@ class FuelOTWorkerController extends Controller
     public function getAllFOWorker(Request $r)
     {
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = $r->date_check;
+            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
         } else {
 
-            $fuel_o_t_workers_date_set = date('Y-m-d');
+            $fuel_o_t_workers_date_set = date('d-m-Y');
         }
 
         $get_id = FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $fuel_o_t_workers_date_set)->get([
@@ -59,28 +58,41 @@ class FuelOTWorkerController extends Controller
         {
             return response()->json(0);
         }
-
     }
     public function insertFuelOTWorker(Request $r)
     {
         // $id_worker, $fuel_o_t_workers_content,$fuel_o_t_workers_spend_money
-        $fuel_o_t_workers_date_set = date('Y-m-d');
+        $fuel_o_t_workers_date_set = date('d-m-Y');
         $fuel_o_t_workers_flag = 0;
         if ($r->fuel_o_t_workers_spend_money > 0) {
-            $new = new FuelOTWorker(
-                [
-                    'fuel_o_t_workers_id' => $r->id_worker,
-                    'fuel_o_t_workers_content' => $r->fuel_o_t_workers_content,
-                    'fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money,
-                    'fuel_o_t_workers_date_set' => $fuel_o_t_workers_date_set,
-                    'fuel_o_t_workers_flag' => $fuel_o_t_workers_flag,
-                ]
-            );
-            $new->save();
-            if ($new) {
+            $check = FuelOTWorker::where('fuel_o_t_workers_date_set', 'like', $fuel_o_t_workers_date_set)->where('fuel_o_t_workers_id', '=', $r->id_worker)->get();
+            if (count($check) == 0) {
+                $new = new FuelOTWorker(
+                    [
+                        'fuel_o_t_workers_id' => $r->id_worker,
+                        'fuel_o_t_workers_content' => $r->fuel_o_t_workers_content,
+                        'fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money,
+                        'fuel_o_t_workers_date_set' => $fuel_o_t_workers_date_set,
+                        'fuel_o_t_workers_flag' => $fuel_o_t_workers_flag,
+                    ]
+                );
+                $new->save();
+                if ($new) {
+                    return 1;
+                }
+                return 0;
+            } else {
+                foreach ($check as $item) {
+                    if ($item->fuel_o_t_workers_content == 'CX' && $r->fuel_o_t_workers_content == 'CX') {
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
+                    } elseif ($item->fuel_o_t_workers_content == 'CP' && $r->fuel_o_t_workers_content == 'CP') {
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
+                    } elseif ($item->fuel_o_t_workers_content == 'TC' && $r->fuel_o_t_workers_content == 'TC') {
+                        FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
+                    }
+                }
                 return 1;
             }
-            return 0;
         }
         return 0;
     }
@@ -97,12 +109,13 @@ class FuelOTWorkerController extends Controller
     {
 
         // lấy id của dòng
-        $up = FuelOTWorker::where('id', '=', $r->id)->update(['fuel_o_t_workers_content' => $r->fuel_o_t_workers_content,
-            'fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money]);
-            if ($up) {
-                return 1;
-            }
-            return 0;
-
+        $up = FuelOTWorker::where('id', '=', $r->id)->update([
+            'fuel_o_t_workers_content' => $r->fuel_o_t_workers_content,
+            'fuel_o_t_workers_spend_money' => $r->fuel_o_t_workers_spend_money
+        ]);
+        if ($up) {
+            return 1;
+        }
+        return 0;
     }
 }

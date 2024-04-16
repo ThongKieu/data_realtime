@@ -27,6 +27,8 @@ import {
     IdentificationIcon,
     ListBulletIcon,
 } from "@heroicons/react/24/outline";
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
@@ -438,34 +440,18 @@ function NavbarDefault({ propauth, check }) {
     };
     const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
-
     const { width, height } = useWindowSize(200);
-    const [dataWorkerSales, setDataWorkerSales] = useState();
-    const [total, setTotal] = useState();
+    const [dataWorkerSales, setDataWorkerSales] = useState([]);
     const [workerID, setWorkerID] = useState();
+    const [dataFuelOT, setDataFuelOT] = useState([]);
     const getDataWorkerSales = async (id, date_check) => {
         const uri = `api/report-worker?id_worker=${id}&&date_check=${date_check}`;
         const res = await fetch(uri);
         const jsonData = await res.json();
-
-        let totalSpend = 0;
-        Array.isArray(jsonData) &&
-            jsonData.slice(1).forEach((item) => {
-                if (
-                    ["CX", "CP", "TC"].includes(item?.fuel_o_t_workers_content)
-                ) {
-                    totalSpend += item.fuel_o_t_workers_spend_money;
-                }
-            });
-
-        // Tính giá trị của biến 'a'
-        console.log(total);
-        const a = jsonData[0]?.work_revenue - totalSpend;
-        console.log('dss',totalSpend);
+        setDataFuelOT(jsonData[0]?.fuel_ot);
         setWorkerID(id);
         if (jsonData) {
             setDataWorkerSales(jsonData);
-            setTotal(a);
         } else {
             setDataWorkerSales(0);
             setTotal(0);
@@ -475,7 +461,84 @@ function NavbarDefault({ propauth, check }) {
         style: "currency",
         currency: "VND",
     });
-
+    const moneyCX = dataFuelOT?.reduce((total, item) => {
+        if (item.fuel_o_t_workers_content === "CX") {
+            return total + item.fuel_o_t_workers_spend_money;
+        } else {
+            return total;
+        }
+    }, 0);
+    const moneyCP = dataFuelOT?.reduce((total, item) => {
+        if (item.fuel_o_t_workers_content === "CP") {
+            return total + item.fuel_o_t_workers_spend_money;
+        } else {
+            return total;
+        }
+    }, 0);
+    const moneyTC = dataFuelOT?.reduce((total, item) => {
+        if (item.fuel_o_t_workers_content === "TC") {
+            return total + item.fuel_o_t_workers_spend_money;
+        } else {
+            return total;
+        }
+    }, 0);
+    const moneyTotal =
+        dataWorkerSales[0]?.work_revenue -
+        dataWorkerSales[0]?.work_expenditure -
+        moneyCX -
+        moneyCP -
+        moneyTC;
+    const dataTable = [
+        {
+            STT: 0,
+            Content: "Ngày Làm",
+            Money:
+                dataWorkerSales[0]?.date_do != undefined
+                    ? dataWorkerSales[0]?.date_do
+                    : 'Hôm nay chưa chốt thu chi',
+        },
+        {
+            STT: 1,
+            Content: "Thu Trong Ngày",
+            Money:
+                dataWorkerSales[0]?.work_revenue != 0 &&
+                dataWorkerSales[0]?.work_revenue
+                    ? formatter.format(dataWorkerSales[0]?.work_revenue)
+                    : formatter.format(0),
+        },
+        {
+            STT: 2,
+            Content: "Chi Trong Ngày",
+            Money:
+                dataWorkerSales[0]?.work_expenditure != 0 &&
+                dataWorkerSales[0]?.work_expenditure
+                    ? formatter.format(dataWorkerSales[0]?.work_expenditure)
+                    : formatter.format(0),
+        },
+        {
+            STT: 3,
+            Content: "Chi Xăng",
+            Money: moneyCX ? formatter.format(moneyCX) : formatter.format(0),
+        },
+        {
+            STT: 4,
+            Content: "Chi Phụ",
+            Money: moneyCP ? formatter.format(moneyCP) : formatter.format(0),
+        },
+        {
+            STT: 5,
+            Content: "Chi Tăng Ca",
+            Money: moneyTC ? formatter.format(moneyTC) : formatter.format(0),
+        },
+        {
+            STT: 6,
+            Content: "Doanh thu ngày sau trừ doanh số",
+            Money: moneyTotal
+                ? formatter.format(moneyTotal)
+                : formatter.format(0),
+        },
+    ];
+    console.log(dataTable);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -618,198 +681,74 @@ function NavbarDefault({ propauth, check }) {
                                                                 }
                                                             )}
                                                         </h2>
-                                                        <Card className="w-full h-full p-1 pr-0">
-                                                            <div className="grid grid-cols-5 text-center border-b border-blue-gray-500">
-                                                                <p className="col-span-1 ">
-                                                                    STT
-                                                                </p>
-                                                                <p className="col-span-2 border-x border-blue-gray-500 ">
-                                                                    Nội Dung
-                                                                </p>
-                                                                <p className="col-span-2 ">
-                                                                    Số Tiền
-                                                                </p>
-                                                            </div>
-                                                            <div className="grid grid-cols-5">
-                                                                <div className="col-span-1 font-bold text-center ">
-                                                                    <p className="font-bold border-b border-blue-gray-400">
-                                                                        1
-                                                                    </p>
-                                                                    <p className="font-bold border-b border-blue-gray-400">
-                                                                        2
-                                                                    </p>
-                                                                    <p className="font-bold border-b border-blue-gray-400">
-                                                                        3
-                                                                    </p>
-                                                                </div>
-                                                                <div className="col-span-2 font-bold">
-                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
-                                                                        Ngày làm
-                                                                    </p>
-                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
-                                                                        Thu Ngày
-                                                                    </p>
-                                                                    <p className="pl-2 font-bold border-b border-l border-blue-gray-400">
-                                                                        Chi Ngày
-                                                                    </p>
-                                                                </div>
-                                                                <div className="col-span-2 ">
-                                                                    {Array.isArray(
-                                                                        dataWorkerSales
-                                                                    ) &&
-                                                                        dataWorkerSales.map(
+                                                        <Card
+                                                            className={`w-[${width}px] m-1 mt-1`}
+                                                        >
+                                                            <div className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+                                                                <table className="w-full text-left table-auto min-w-max">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                    STT
+                                                                                </p>
+                                                                            </th>
+                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                    Nội
+                                                                                    Dung
+                                                                                </p>
+                                                                            </th>
+                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                    Số
+                                                                                    Tiền
+                                                                                </p>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {dataTable.map(
                                                                             (
                                                                                 item,
                                                                                 index
                                                                             ) => {
                                                                                 return (
-                                                                                    <div
-                                                                                        className="flex flex-col"
+                                                                                    <tr
                                                                                         key={
-                                                                                            index
+                                                                                            index +
+                                                                                            1
                                                                                         }
                                                                                     >
-                                                                                        <p
-                                                                                            className={`${
-                                                                                                item.date_do
-                                                                                                    ? "pl-2 border-l border-blue-gray-400"
-                                                                                                    : ""
-                                                                                            }`}
-                                                                                        >
-                                                                                            {
-                                                                                                item.date_do
-                                                                                            }
-                                                                                        </p>
-                                                                                        <p
-                                                                                            className={`${
-                                                                                                item.date_do
-                                                                                                    ? "pl-2  border border-r-0 border-blue-gray-400"
-                                                                                                    : ""
-                                                                                            }`}
-                                                                                        >
-                                                                                            {item.work_revenue
-                                                                                                ? formatter.format(
-                                                                                                      item.work_revenue
-                                                                                                  )
-                                                                                                : item.work_revenue}
-                                                                                        </p>
-                                                                                        <p
-                                                                                            className={`${
-                                                                                                item.date_do
-                                                                                                    ? "pl-2  border-l border-b border-blue-gray-400"
-                                                                                                    : ""
-                                                                                            }`}
-                                                                                        >
-                                                                                            {item.work_expenditure
-                                                                                                ? formatter.format(
-                                                                                                      item.work_expenditure
-                                                                                                  )
-                                                                                                : item.work_expenditure}
-                                                                                        </p>
-                                                                                    </div>
+                                                                                        <td className="p-4 border-b border-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                                                                                                {
+                                                                                                    item.STT
+                                                                                                }
+                                                                                            </p>
+                                                                                        </td>
+                                                                                        <td className="p-4 border-b border-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                                                                                                {
+                                                                                                    item.Content
+                                                                                                }
+                                                                                            </p>
+                                                                                        </td>
+                                                                                        <td className="p-4 border-b border-blue-gray-50">
+                                                                                            <p
+                                                                                                className="block font-sans text-sm antialiased font-medium leading-normal text-blue-gray-900"
+                                                                                            >
+                                                                                                {
+                                                                                                    item.Money
+                                                                                                }
+                                                                                            </p>
+                                                                                        </td>
+                                                                                    </tr>
                                                                                 );
                                                                             }
                                                                         )}
-                                                                </div>
-                                                            </div>
-                                                            {Array.isArray(
-                                                                dataWorkerSales
-                                                            ) &&
-                                                                dataWorkerSales.map(
-                                                                    (
-                                                                        item,
-                                                                        index
-                                                                    ) => {
-                                                                        return (
-                                                                            <div className="grid grid-cols-5">
-                                                                                <p
-                                                                                    className={`${
-                                                                                        item.fuel_o_t_workers_content
-                                                                                            ? " font-bold border-b border-blue-gray-400 text-center"
-                                                                                            : ""
-                                                                                    }`}
-                                                                                >
-                                                                                    {item.fuel_o_t_workers_content
-                                                                                        ? index +
-                                                                                          3
-                                                                                        : item.fuel_o_t_workers_content}
-                                                                                </p>
-                                                                                <p
-                                                                                    className={`${
-                                                                                        item.fuel_o_t_workers_content
-                                                                                            ? " col-span-2 pl-2 font-bold border-b border-l border-blue-gray-400"
-                                                                                            : ""
-                                                                                    }`}
-                                                                                >
-                                                                                    {item.fuel_o_t_workers_content ==
-                                                                                    "CX"
-                                                                                        ? "Xăng"
-                                                                                        : item.fuel_o_t_workers_content ==
-                                                                                          "TC"
-                                                                                        ? "Tăng ca"
-                                                                                        : item.fuel_o_t_workers_content ==
-                                                                                          "CP"
-                                                                                        ? "Chi Phụ"
-                                                                                        : item.fuel_o_t_workers_content}
-                                                                                </p>
-                                                                                <p
-                                                                                    className={`${
-                                                                                        item.fuel_o_t_workers_content
-                                                                                            ? " col-span-2 pl-2 border-b border-l border-blue-gray-400"
-                                                                                            : ""
-                                                                                    }`}
-                                                                                >
-                                                                                    {item.fuel_o_t_workers_spend_money
-                                                                                        ? formatter.format(
-                                                                                              item.fuel_o_t_workers_spend_money
-                                                                                          )
-                                                                                        : item.fuel_o_t_workers_spend_money}
-                                                                                </p>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                            <div className="grid grid-cols-5">
-                                                                <p className="col-span-3 text-xl font-bold text-center ">
-                                                                    Doanh Thu:
-                                                                    {total <
-                                                                    570000 ? (
-                                                                        <span className="pl-2 text-red-500">
-                                                                            (Chưa
-                                                                            đạt
-                                                                            Ds -
-                                                                            Đã
-                                                                            trừ
-                                                                            DS:'
-                                                                            570000
-                                                                            ')
-                                                                        </span>
-                                                                    ) : total >
-                                                                      570000 ? (
-                                                                        <span className="pl-2 text-green-500">
-                                                                            (Vượt
-                                                                            đạt
-                                                                            Ds -
-                                                                            Đã
-                                                                            trừ
-                                                                            DS:
-                                                                            '
-                                                                            570000
-                                                                            ')
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span className="pl-2 text-yellow-500">
-                                                                            (Vừa
-                                                                            đủ)
-                                                                        </span>
-                                                                    )}
-                                                                </p>
-                                                                <p className="col-span-2 pl-2 text-xl font-bold">
-                                                                    {formatter.format(
-                                                                        total -
-                                                                            570000
-                                                                    )}
-                                                                </p>
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </Card>
                                                     </div>

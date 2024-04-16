@@ -15,19 +15,7 @@ class ReportWorkerController extends Controller
         // dd($id_worker);
         if ($id_worker != null) {
             $check = ReportWorker::where('date_do', '=', $date_do)->where('id_worker', '=', $id_worker)->get('work_revenue', 'work_expenditure');
-            if (count($check) == 0) {
-                $add_n = new ReportWorker([
-                    'id_worker' => $id_worker,
-                    'date_do' => $date_do,
-                    'work_revenue' => $work_revenue,
-                    'work_expenditure' => $work_expenditure,
-                ]);
-                $add_n->save();
-                if ($add_n) {
-                    return 1;
-                }
-            } else {
-                
+            if (count($check) == 1) {
                 if ($work_revenue == null) {
                     $work_revenue = 0;
                 }
@@ -45,6 +33,17 @@ class ReportWorkerController extends Controller
                     return 1;
                 }
                 return 0;
+            } else {
+                $add_n = new ReportWorker([
+                    'id_worker' => $id_worker,
+                    'date_do' => $date_do,
+                    'work_revenue' => $work_revenue,
+                    'work_expenditure' => $work_expenditure,
+                ]);
+                $add_n->save();
+                if ($add_n) {
+                    return 1;
+                }
             }
         }
         return 0;
@@ -52,9 +51,9 @@ class ReportWorkerController extends Controller
     public function getByIdWorker(Request $r)
     {
         if ($r->date_check == null || $r->date_check == '') {
-            $date_check = date('d-m-Y');
+            $date_check = date('Y-m-d');
         } else {
-            $date_check = date("d-m-Y", strtotime($r->date_check));
+            $date_check = $r->date_check;
         }
 
         if ($r->id_worker != null) {

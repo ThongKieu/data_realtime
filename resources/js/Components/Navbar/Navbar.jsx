@@ -459,7 +459,9 @@ function NavbarDefault({ propauth, check }) {
             });
 
         // Tính giá trị của biến 'a'
+        console.log(total);
         const a = jsonData[0]?.work_revenue - totalSpend;
+        console.log('dss',totalSpend);
         setWorkerID(id);
         if (jsonData) {
             setDataWorkerSales(jsonData);

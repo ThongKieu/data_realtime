@@ -17,6 +17,7 @@ import {
     DialogHeader,
     DialogBody,
     DialogFooter,
+    Input,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -26,6 +27,7 @@ import {
     Bars2Icon,
     IdentificationIcon,
     ListBulletIcon,
+    PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -34,7 +36,11 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
-import { getFirstName } from "@/Data/UrlAPI/UrlApi";
+import {
+    getFirstName,
+    getFormattedToday,
+    getFormattedTodayDDMMYYYY,
+} from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
 import useWindowSize from "@/Core/Resize";
@@ -444,23 +450,67 @@ function NavbarDefault({ propauth, check }) {
     const [dataWorkerSales, setDataWorkerSales] = useState([]);
     const [workerID, setWorkerID] = useState();
     const [dataFuelOT, setDataFuelOT] = useState([]);
+
+    const [dataChangeFuelOT, setDataChangeFuelOT] = useState([dataFuelOT]);
     const getDataWorkerSales = async (id, date_check) => {
-        const uri = `api/report-worker?id_worker=${id}&&date_check=${date_check}`;
-        const res = await fetch(uri);
-        const jsonData = await res.json();
-        setDataFuelOT(jsonData[0]?.fuel_ot);
-        setWorkerID(id);
-        if (jsonData) {
-            setDataWorkerSales(jsonData);
-        } else {
-            setDataWorkerSales(0);
-            setTotal(0);
+        const uri = "api/report-worker";
+        const data = {
+            id_worker: id,
+            date_check: getFormattedTodayDDMMYYYY(date_check),
+        };
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        try {
+            const res = await fetch(uri, options);
+            const jsonData = await res.json();
+
+            if (jsonData) {
+                setDataFuelOT(jsonData[0]?.fuel_ot);
+                setWorkerID(id);
+                setDataWorkerSales(jsonData);
+            } else {
+                setDataWorkerSales(0);
+                setTotal(0);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const handleAccept = async (event) => {
+        event.preventDefault();
+        try {
+            if (dataChangeFuelOT != 'undefined' ) {
+                const data =dataChangeFuelOT.map((item) => ({
+                    id_worker: dataWorkerSales[0].id_worker,
+                    fuel_o_t_workers_content: item.Content,
+                    fuel_o_t_workers_spend_money: item.Money
+                }));
+                console.log(JSON.stringify(data));
+            }
+
+            // const response = await fetch("URL_API", {
+            //     method: "POST",
+            //     body: data, // Đặt dữ liệu của form vào phần body của request
+            // });
+
+            // if (!response.ok) {
+            //     throw new Error("Đã xảy ra lỗi khi gửi form"); // Xử lý lỗi nếu request không thành công
+            // }
+        } catch (error) {
+            console.error("Lỗi:", error.message);
         }
     };
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
+    console.log(dataWorkerSales);
     const moneyCX = dataFuelOT?.reduce((total, item) => {
         if (item.fuel_o_t_workers_content === "CX") {
             return total + item.fuel_o_t_workers_spend_money;
@@ -495,7 +545,7 @@ function NavbarDefault({ propauth, check }) {
             Money:
                 dataWorkerSales[0]?.date_do != undefined
                     ? dataWorkerSales[0]?.date_do
-                    : 'Hôm nay chưa chốt thu chi',
+                    : "Hôm nay chưa chốt thu chi",
         },
         {
             STT: 1,
@@ -538,7 +588,16 @@ function NavbarDefault({ propauth, check }) {
                 : formatter.format(0),
         },
     ];
-    console.log(dataTable);
+    const handleInputChange = (e) => {
+        // Loại bỏ tham số item
+        const { name, value } = e.target;
+        setDataChangeFuelOT((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+    console.log("dataChangeFuelOT", dataChangeFuelOT);
+    console.log("dataFuelOT", dataFuelOT);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -735,13 +794,43 @@ function NavbarDefault({ propauth, check }) {
                                                                                             </p>
                                                                                         </td>
                                                                                         <td className="p-4 border-b border-blue-gray-50">
-                                                                                            <p
-                                                                                                className="block font-sans text-sm antialiased font-medium leading-normal text-blue-gray-900"
-                                                                                            >
-                                                                                                {
-                                                                                                    item.Money
-                                                                                                }
-                                                                                            </p>
+                                                                                            {item.Content ===
+                                                                                                "Chi Xăng" ||
+                                                                                            item.Content ===
+                                                                                                "Chi Tăng Ca" ||
+                                                                                            item.Content ===
+                                                                                                "Chi Phụ" ? (
+                                                                                                <input
+                                                                                                    name={
+                                                                                                        item.Content ===
+                                                                                                        "Chi Xăng"
+                                                                                                            ? "CX"
+                                                                                                            : item.Content ===
+                                                                                                              "Chi Tăng Ca"
+                                                                                                            ? "TC"
+                                                                                                            : "CP"
+                                                                                                    }
+                                                                                                    // defaultValue={item.Money}
+                                                                                                    value={
+                                                                                                        item.Money && dataChangeFuelOT.fuel_o_t_workers_spend_money
+                                                                                                    }
+
+                                                                                                    onChange={(
+                                                                                                        e
+                                                                                                    ) =>
+                                                                                                        handleInputChange(
+                                                                                                            e
+                                                                                                        )
+                                                                                                    } // Không cần truyền tham số item vào hàm handleInputChange
+                                                                                                    className="p-1 rounded"
+                                                                                                />
+                                                                                            ) : (
+                                                                                                <p className="block font-sans text-sm antialiased font-medium leading-normal text-blue-gray-900">
+                                                                                                    {
+                                                                                                        item.Money
+                                                                                                    }
+                                                                                                </p>
+                                                                                            )}
                                                                                         </td>
                                                                                     </tr>
                                                                                 );
@@ -756,9 +845,10 @@ function NavbarDefault({ propauth, check }) {
                                                         <Button
                                                             className="w-full"
                                                             color="white"
-                                                            onClick={
-                                                                handleOpenSpending
-                                                            }
+                                                            // onClick={
+                                                            //     handleOpenSpending
+                                                            // }
+                                                            onClick={handleAccept}
                                                         >
                                                             Xem xong
                                                         </Button>

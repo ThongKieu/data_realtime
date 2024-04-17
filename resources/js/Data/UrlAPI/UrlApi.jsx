@@ -99,17 +99,16 @@ const sendDoiThoRequest = async (
     }
 };
 const getFirstName = (fullName) => {
-   if (fullName != undefined) {
-    const parts = fullName.split(" ");
-    return parts.length >= 2
-    ? parts.slice(1).join(" ")
-    : parts.length >= 3
-    ? parts.slice(2).join(" ")
-    : parts.length >= 1
-    ? parts.slice(0).join(" ")
-    : "";
-   }
-
+    if (fullName != undefined) {
+        const parts = fullName.split(" ");
+        return parts.length >= 2
+            ? parts.slice(1).join(" ")
+            : parts.length >= 3
+            ? parts.slice(2).join(" ")
+            : parts.length >= 1
+            ? parts.slice(0).join(" ")
+            : "";
+    }
 };
 const getFormattedToday = () => {
     const today = new Date();
@@ -117,6 +116,13 @@ const getFormattedToday = () => {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
+};
+const getFormattedTodayDDMMYYYY = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${day}-${month}-${year}`;
 };
 const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -137,4 +143,5 @@ export {
     formatTime,
     url_API,
     url_API_District,
+    getFormattedTodayDDMMYYYY,
 };

@@ -52,9 +52,20 @@ class NoticationAllController extends Controller
     // public function newWorkFromApp(){
 
     // }
-    // public function newWorkFromWorker(){
+    public function needWorkFromWorker(Request $re){
+        $new_noti = new NoticationAll([
+            'from_table'=> $re->from_table,
+            'info_notication' => $re->info_notication,
+            'user_read'=>0,
+         ]);
+         $new_noti->save();
+         if ($new_noti) {
+             return 1;
+         } else {
+             return 0;
+         }
 
-    // }
+    }
     public function newFeeback()
     {
 

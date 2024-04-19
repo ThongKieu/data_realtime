@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\Web\WorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::prefix('web')->group(function () {
         Route::post('/changePass', 'App\Http\Controllers\AccountionWorkerController@changePass');
         // ------------------------------------------------------------------------------------------
         Route::post('/updateActive', 'App\Http\Controllers\AccountionWorkerController@updateActive');
+        //----------------------------------------------
+        Route::post('code-worker','App\Http\Controllers\CodeWorkerKindController@store');
+        Route::post('check-code-worker','App\Http\Controllers\CodeWorkerKindController@checkCode');
     });
     Route::apiResource('district', DistrictController::class);
     Route::post('push-online', 'App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
@@ -194,6 +198,8 @@ Route::prefix('app')->group(function () {
         Route::post('historyWork', 'App\Http\Controllers\Api\Mobile\WorkersController@historyWork');
         Route::post('sendWorkByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
         Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
+        // need work
+        Route::post('needWork', 'App\Http\Controllers\Api\NoticationAllController@needWorkFromWorker');
     });
     // Customer
     Route::prefix('customer')->group(function () {

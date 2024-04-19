@@ -17,6 +17,7 @@ import {
     DialogHeader,
     DialogBody,
     DialogFooter,
+    Input,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -26,6 +27,7 @@ import {
     Bars2Icon,
     IdentificationIcon,
     ListBulletIcon,
+    PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -34,7 +36,11 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
-import { getFirstName } from "@/Data/UrlAPI/UrlApi";
+import {
+    getFirstName,
+    getFormattedToday,
+    getFormattedTodayDDMMYYYY,
+} from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
 import useWindowSize from "@/Core/Resize";
@@ -442,103 +448,44 @@ function NavbarDefault({ propauth, check }) {
     const handleOpenWorker = () => setOpenWorker(!openWorker);
     const { width, height } = useWindowSize(200);
     const [dataWorkerSales, setDataWorkerSales] = useState([]);
+    const [dataFuel_OT, setDataFuel_OT] = useState([]);
     const [workerID, setWorkerID] = useState();
-    const [dataFuelOT, setDataFuelOT] = useState([]);
     const getDataWorkerSales = async (id, date_check) => {
-        const uri = `api/report-worker?id_worker=${id}&&date_check=${date_check}`;
-        const res = await fetch(uri);
-        const jsonData = await res.json();
-        setDataFuelOT(jsonData[0]?.fuel_ot);
-        setWorkerID(id);
-        if (jsonData) {
-            setDataWorkerSales(jsonData);
-        } else {
-            setDataWorkerSales(0);
-            setTotal(0);
+        const uri = "api/report-worker";
+        const data = {
+            id_worker: id,
+            date_check: getFormattedTodayDDMMYYYY(date_check),
+        };
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        try {
+            const res = await fetch(uri, options);
+            const jsonData = await res.json();
+            if (jsonData) {
+                setDataWorkerSales(jsonData);
+                setDataFuel_OT(jsonData[0].fuel_ot);
+            } else {
+                setDataWorkerSales(0);
+            }
+            console.log(jsonData[0].fuel_ot);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
     };
+
+    console.log(dataWorkerSales);
+    console.log(dataFuel_OT);
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
-    const moneyCX = dataFuelOT?.reduce((total, item) => {
-        if (item.fuel_o_t_workers_content === "CX") {
-            return total + item.fuel_o_t_workers_spend_money;
-        } else {
-            return total;
-        }
-    }, 0);
-    const moneyCP = dataFuelOT?.reduce((total, item) => {
-        if (item.fuel_o_t_workers_content === "CP") {
-            return total + item.fuel_o_t_workers_spend_money;
-        } else {
-            return total;
-        }
-    }, 0);
-    const moneyTC = dataFuelOT?.reduce((total, item) => {
-        if (item.fuel_o_t_workers_content === "TC") {
-            return total + item.fuel_o_t_workers_spend_money;
-        } else {
-            return total;
-        }
-    }, 0);
-    const moneyTotal =
-        dataWorkerSales[0]?.work_revenue -
-        dataWorkerSales[0]?.work_expenditure -
-        moneyCX -
-        moneyCP -
-        moneyTC;
-    const dataTable = [
-        {
-            STT: 0,
-            Content: "Ngày Làm",
-            Money:
-                dataWorkerSales[0]?.date_do != undefined
-                    ? dataWorkerSales[0]?.date_do
-                    : 'Hôm nay chưa chốt thu chi',
-        },
-        {
-            STT: 1,
-            Content: "Thu Trong Ngày",
-            Money:
-                dataWorkerSales[0]?.work_revenue != 0 &&
-                dataWorkerSales[0]?.work_revenue
-                    ? formatter.format(dataWorkerSales[0]?.work_revenue)
-                    : formatter.format(0),
-        },
-        {
-            STT: 2,
-            Content: "Chi Trong Ngày",
-            Money:
-                dataWorkerSales[0]?.work_expenditure != 0 &&
-                dataWorkerSales[0]?.work_expenditure
-                    ? formatter.format(dataWorkerSales[0]?.work_expenditure)
-                    : formatter.format(0),
-        },
-        {
-            STT: 3,
-            Content: "Chi Xăng",
-            Money: moneyCX ? formatter.format(moneyCX) : formatter.format(0),
-        },
-        {
-            STT: 4,
-            Content: "Chi Phụ",
-            Money: moneyCP ? formatter.format(moneyCP) : formatter.format(0),
-        },
-        {
-            STT: 5,
-            Content: "Chi Tăng Ca",
-            Money: moneyTC ? formatter.format(moneyTC) : formatter.format(0),
-        },
-        {
-            STT: 6,
-            Content: "Doanh thu ngày sau trừ doanh số",
-            Money: moneyTotal
-                ? formatter.format(moneyTotal)
-                : formatter.format(0),
-        },
-    ];
-    console.log(dataTable);
+
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -685,70 +632,156 @@ function NavbarDefault({ propauth, check }) {
                                                             className={`w-[${width}px] m-1 mt-1`}
                                                         >
                                                             <div className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
-                                                                <table className="w-full text-left table-auto min-w-max">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                    STT
-                                                                                </p>
-                                                                            </th>
-                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                    Nội
-                                                                                    Dung
-                                                                                </p>
-                                                                            </th>
-                                                                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                    Số
-                                                                                    Tiền
-                                                                                </p>
-                                                                            </th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {dataTable.map(
+                                                                <div className="grid grid-cols-5">
+                                                                    <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                            STT
+                                                                        </p>
+                                                                    </p>
+                                                                    <p className="col-span-3 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                            Nội
+                                                                            Dung
+                                                                        </p>
+                                                                    </p>
+                                                                    <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                            Số
+                                                                            Tiền
+                                                                        </p>
+                                                                    </p>
+                                                                </div>
+                                                                <div className="grid grid-cols-3">
+                                                                    <div className="col-span-1 ">
+                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                1
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                2
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                3
+                                                                            </p>
+                                                                        </p>{" "}
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                4
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                5
+                                                                            </p>
+                                                                        </p>{" "}
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                6
+                                                                            </p>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="col-span-1 ">
+                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Ngày
+                                                                                làm
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Thu
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Chi
+                                                                            </p>
+                                                                        </p>{" "}
+                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Chi
+                                                                                Xăng
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Chi
+                                                                                Phụ
+                                                                            </p>
+                                                                        </p>
+                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                Tăng
+                                                                                Ca
+                                                                            </p>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="col-span-1 ">
+                                                                        {dataWorkerSales.map(
                                                                             (
                                                                                 item,
                                                                                 index
                                                                             ) => {
                                                                                 return (
-                                                                                    <tr
+                                                                                    <div
                                                                                         key={
-                                                                                            index +
-                                                                                            1
+                                                                                            index
                                                                                         }
                                                                                     >
-                                                                                        <td className="p-4 border-b border-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                                 {
-                                                                                                    item.STT
+                                                                                                    item.date_do
                                                                                                 }
                                                                                             </p>
-                                                                                        </td>
-                                                                                        <td className="p-4 border-b border-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                                                                                        </p>
+                                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                                 {
-                                                                                                    item.Content
+                                                                                                    item.work_revenue
                                                                                                 }
                                                                                             </p>
-                                                                                        </td>
-                                                                                        <td className="p-4 border-b border-blue-gray-50">
-                                                                                            <p
-                                                                                                className="block font-sans text-sm antialiased font-medium leading-normal text-blue-gray-900"
-                                                                                            >
+                                                                                        </p>
+                                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                                 {
-                                                                                                    item.Money
+                                                                                                    item.work_expenditure
                                                                                                 }
                                                                                             </p>
-                                                                                        </td>
-                                                                                    </tr>
+                                                                                        </p>
+                                                                                    </div>
                                                                                 );
                                                                             }
                                                                         )}
-                                                                    </tbody>
-                                                                </table>
+                                                                        {dataFuel_OT.map(
+                                                                            (
+                                                                                item,
+                                                                                index
+                                                                            ) => {
+                                                                                return (
+                                                                                    <div
+                                                                                        key={
+                                                                                            index
+                                                                                        }
+                                                                                    >
+                                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                                {
+                                                                                                    item.fuel_o_t_workers_spend_money
+                                                                                                }
+                                                                                            </p>
+                                                                                        </p>
+
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </Card>
                                                     </div>
@@ -759,6 +792,7 @@ function NavbarDefault({ propauth, check }) {
                                                             onClick={
                                                                 handleOpenSpending
                                                             }
+                                                            // onClick={handleAccept}
                                                         >
                                                             Xem xong
                                                         </Button>

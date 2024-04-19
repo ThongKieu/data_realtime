@@ -64,14 +64,14 @@ class ReportWorkerController extends Controller
                 foreach ($data as $item) {
                     $item->fuel_ot = $data_2;
                 }
-                return response()->json($data);
+                return $data;
             } else {
                 if (count($data_2) > 0) {
                     $dataEmpty = [['id_worker' => $r->id_worker, 'date_do' => $date_check, 'work_revenue' => 0, 'work_expenditure' => 0]];
                     foreach ($dataEmpty as &$item) {
                         $item['fuel_ot'] = $data_2;
                     }
-                    return response()->json($dataEmpty);
+                    return $dataEmpty;
 
                 } else {
                     return [];

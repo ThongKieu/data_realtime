@@ -450,6 +450,7 @@ function NavbarDefault({ propauth, check }) {
     const [dataWorkerSales, setDataWorkerSales] = useState([]);
     const [dataFuel_OT, setDataFuel_OT] = useState([]);
     const [workerID, setWorkerID] = useState();
+    const [ds, setDs] = useState(0);
     const getDataWorkerSales = async (id, date_check) => {
         const uri = "api/report-worker";
         const data = {
@@ -467,25 +468,97 @@ function NavbarDefault({ propauth, check }) {
         try {
             const res = await fetch(uri, options);
             const jsonData = await res.json();
-            if (jsonData) {
+            if (jsonData || jsonData != "undefined") {
                 setDataWorkerSales(jsonData);
-                setDataFuel_OT(jsonData[0].fuel_ot);
+                setDataFuel_OT(jsonData[0]?.fuel_ot);
             } else {
                 setDataWorkerSales(0);
+                setDataFuel_OT(0);
             }
-            console.log(jsonData[0].fuel_ot);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
+    useEffect(() => {
+        const fuelOTContentValues = ["CX", "CP", "TC"];
+        const totalSpendMoney = dataFuel_OT?.reduce((total, item) => {
+            if (fuelOTContentValues.includes(item.fuel_o_t_workers_content)) {
+                return total + item.fuel_o_t_workers_spend_money;
+            }
+            return total;
+        }, 0);
 
-    console.log(dataWorkerSales);
-    console.log(dataFuel_OT);
+        setDs(
+            dataWorkerSales.length > 0 && totalSpendMoney > 0
+                ? dataWorkerSales[0].work_revenue -
+                      dataWorkerSales[0].work_expenditure -
+                      totalSpendMoney
+                : 0
+        );
+    }, [dataWorkerSales, dataFuel_OT]);
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
+    console.log(ds, dataFuel_OT);
+    const [dataChange, setDataChange] = useState({});
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setDataChange((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
 
+        // Cập nhật giá trị trong mảng dataFuel_OT nếu cần thiết
+        setDataFuel_OT((prevData) =>
+            prevData.map((item) => {
+                if (item.fuel_o_t_workers_content === name) {
+                    return {
+                        ...item,
+                        fuel_o_t_workers_spend_money: value,
+                    };
+                }
+                return item;
+            })
+        );
+    };
+    const handleAccept = async (event) => {
+        event.preventDefault();
+        try {
+            // Hiển thị thông báo hoặc thực hiện các hành động khác trước khi gửi request
+
+            // Tạo một mảng data từ các dữ liệu trong dataChange
+            const data = Object.keys(dataChange).map((key) => ({
+                id_worker: dataWorkerSales[0].id_worker, // Lấy id_worker từ dataWorkerSales
+                fuel_o_t_workers_content: key, // Lấy key (name của input) làm fuel_o_t_workers_content
+                fuel_o_t_workers_spend_money:
+                    key == "TC"
+                        ? parseFloat(dataChange[key]) * 37000
+                        : dataChange[key], // Lấy giá trị của input làm fuel_o_t_workers_spend_money
+            })); // In ra mảng data để kiểm tra
+            // // Gửi request POST đến API
+            const formatJson = JSON.stringify({ data: JSON.stringify(data) });
+            // console.log(data);
+            const response = await fetch("api/fuel-ot", {
+                method: "POST",
+                body: formatJson, // Chuyển mảng data thành chuỗi JSON và đặt vào phần body của request
+                headers: {
+                    "Content-Type": "application/json", // Đặt header "Content-Type" là "application/json"
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Đã xảy ra lỗi khi gửi form"); // Xử lý lỗi nếu request không thành công
+            } else {
+                handleOpenSpending();
+            }
+            // Xử lý response nếu cần thiết
+        } catch (error) {
+            console.error("Lỗi:", error.message); // Xử lý lỗi nếu có
+        } finally {
+            // Reset state sau khi hoàn thành request
+            setDataChange({});
+        }
+    };
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -653,134 +726,268 @@ function NavbarDefault({ propauth, check }) {
                                                                 </div>
                                                                 <div className="grid grid-cols-3">
                                                                     <div className="col-span-1 ">
-                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 1
                                                                             </p>
                                                                         </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 2
                                                                             </p>
                                                                         </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 3
                                                                             </p>
                                                                         </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                4
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                5
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                6
-                                                                            </p>
-                                                                        </p>
+                                                                        {dataFuel_OT?.map(
+                                                                            (
+                                                                                item,
+                                                                                index
+                                                                            ) => {
+                                                                                return (
+                                                                                    <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                        <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                            {index +
+                                                                                                4}
+                                                                                        </p>
+                                                                                    </p>
+                                                                                );
+                                                                            }
+                                                                        )}
                                                                     </div>
                                                                     <div className="col-span-1 ">
-                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 Ngày
                                                                                 làm
                                                                             </p>
                                                                         </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 Thu
                                                                             </p>
                                                                         </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 Chi
                                                                             </p>
                                                                         </p>
-                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Chi
-                                                                                Xăng
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Chi
-                                                                                Phụ
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Tăng
-                                                                                Ca
-                                                                            </p>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div className="col-span-1 ">
-                                                                        {dataWorkerSales.map(
+                                                                        {dataFuel_OT?.map(
                                                                             (
                                                                                 item,
                                                                                 index
                                                                             ) => {
+                                                                                console.log(
+                                                                                    index
+                                                                                );
                                                                                 return (
-                                                                                    <div
+                                                                                    <p
                                                                                         key={
                                                                                             index
                                                                                         }
+                                                                                        className="p-2 border-b border-blue-gray-100 bg-blue-gray-50"
                                                                                     >
-                                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                {
-                                                                                                    item.date_do
-                                                                                                }
-                                                                                            </p>
+                                                                                        <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                            {item.fuel_o_t_workers_content ==
+                                                                                            "CX"
+                                                                                                ? " Chi Xăng"
+                                                                                                : item.fuel_o_t_workers_content ==
+                                                                                                  "CP"
+                                                                                                ? "Chi Phụ"
+                                                                                                : "Tăng Ca"}
                                                                                         </p>
-                                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                {
-                                                                                                    item.work_revenue
-                                                                                                }
-                                                                                            </p>
-                                                                                        </p>
-                                                                                        <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                {
-                                                                                                    item.work_expenditure
-                                                                                                }
-                                                                                            </p>
-                                                                                        </p>
-                                                                                    </div>
+                                                                                    </p>
                                                                                 );
                                                                             }
                                                                         )}
-                                                                        {dataFuel_OT.map(
-                                                                            (
-                                                                                item,
-                                                                                index
-                                                                            ) => {
-                                                                                return (
-                                                                                    <div
-                                                                                        key={
-                                                                                            index
-                                                                                        }
-                                                                                    >
-                                                                                        <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                {
-                                                                                                    item.fuel_o_t_workers_spend_money
-                                                                                                }
-                                                                                            </p>
-                                                                                        </p>
 
-                                                                                    </div>
-                                                                                );
-                                                                            }
-                                                                        )}
+                                                                        <p className="col-span-3 p-2 ">
+                                                                            <p className="block p-1 font-sans text-sm antialiased font-bold leading-none text-black opacity-70">
+                                                                                Doanh
+                                                                                Số
+                                                                            </p>
+                                                                        </p>
                                                                     </div>
+                                                                    {(dataFuel_OT !=
+                                                                        undefined &&
+                                                                        dataWorkerSales !=
+                                                                            undefined) ||
+                                                                    dataFuel_OT ||
+                                                                    dataWorkerSales ? (
+                                                                        <div className="col-span-1 ">
+                                                                            <>
+                                                                                {dataWorkerSales.map(
+                                                                                    (
+                                                                                        item,
+                                                                                        index
+                                                                                    ) => {
+                                                                                        // console.log(infoWorker);
+                                                                                        return (
+                                                                                            <div
+                                                                                                key={
+                                                                                                    index
+                                                                                                }
+                                                                                            >
+                                                                                                <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                                        {
+                                                                                                            item.date_do
+                                                                                                        }
+                                                                                                    </p>
+                                                                                                </p>
+                                                                                                <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                                        {item.work_revenue ||
+                                                                                                        item.id_worker ||
+                                                                                                        dataWorkerSales !=
+                                                                                                            ""
+                                                                                                            ? formatter.format(
+                                                                                                                  item.work_revenue
+                                                                                                              )
+                                                                                                            : 0}
+                                                                                                    </p>
+                                                                                                </p>
+                                                                                                <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
+                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                                        {item.work_expenditure
+                                                                                                            ? formatter.format(
+                                                                                                                  item.work_expenditure
+                                                                                                              )
+                                                                                                            : formatter.format(
+                                                                                                                  0
+                                                                                                              )}
+                                                                                                    </p>
+                                                                                                </p>
+                                                                                            </div>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                                {dataFuel_OT ==
+                                                                                undefined ? (
+                                                                                    <p className="flex flex-col items-center justify-center p-[45px] bg-blue-gray-50">
+                                                                                        <p className="block font-sans text-sm antialiased font-bold leading-none text-red-400 opacity-70">
+                                                                                            Chưa
+                                                                                            có
+                                                                                            dữ
+                                                                                            liệu
+                                                                                        </p>
+                                                                                    </p>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        {dataFuel_OT?.map(
+                                                                                            (
+                                                                                                item,
+                                                                                                index
+                                                                                            ) => {
+                                                                                                return (
+                                                                                                    <div
+                                                                                                        key={
+                                                                                                            index
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <p className="p-[4px]  bg-blue-gray-50">
+                                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                                                                                                                {/* {item.fuel_o_t_workers_spend_money ||
+                                                                                                        item.fuel_o_t_workers_spend_money !=
+                                                                                                            undefined
+                                                                                                            ? item.fuel_o_t_workers_spend_money
+                                                                                                            : 0}  */}
+                                                                                                                <input
+                                                                                                                    name={
+                                                                                                                        item.fuel_o_t_workers_content
+                                                                                                                    }
+                                                                                                                    className="p-[2px]"
+                                                                                                                    value={
+                                                                                                                        dataChange[
+                                                                                                                            item
+                                                                                                                                .fuel_o_t_workers_content
+                                                                                                                        ] ||
+                                                                                                                        item.fuel_o_t_workers_spend_money ||
+                                                                                                                        ""
+                                                                                                                    }
+                                                                                                                    onChange={
+                                                                                                                        handleChange
+                                                                                                                    }
+                                                                                                                />
+                                                                                                            </p>
+                                                                                                        </p>
+                                                                                                    </div>
+                                                                                                );
+                                                                                            }
+                                                                                        )}
+                                                                                    </>
+                                                                                )}
+                                                                            </>
+                                                                            <p className="p-[10px]">
+                                                                                <p
+                                                                                    className={`block font-sans text-sm antialiased font-bold leading-none text-${
+                                                                                        ds -
+                                                                                            570000 <=
+                                                                                        0
+                                                                                            ? "red-500"
+                                                                                            : ds -
+                                                                                                  570000 <=
+                                                                                              300000
+                                                                                            ? "yellow-500"
+                                                                                            : ds -
+                                                                                                  570000 >
+                                                                                              300000
+                                                                                            ? "green-500"
+                                                                                            : "blue-500"
+                                                                                    } opacity-70`}
+                                                                                >
+                                                                                    {dataFuel_OT ==
+                                                                                        "undefined" ||
+                                                                                    dataFuel_OT ==
+                                                                                        "" ? (
+                                                                                        <p
+                                                                                            className={`block font-sans text-sm antialiased font-bold leading-none text-blue-500`}
+                                                                                        >
+                                                                                            {formatter.format(
+                                                                                                dataWorkerSales[0]
+                                                                                                    .work_revenue -
+                                                                                                    dataWorkerSales[0]
+                                                                                                        .work_expenditure -
+                                                                                                    570000
+                                                                                            )}
+                                                                                        </p>
+                                                                                    ) : (
+                                                                                        <p
+                                                                                            className={`block font-sans text-sm antialiased font-bold leading-none text-${
+                                                                                                ds -
+                                                                                                    570000 <=
+                                                                                                0
+                                                                                                    ? "red-500"
+                                                                                                    : ds -
+                                                                                                          570000 <=
+                                                                                                      300000
+                                                                                                    ? "yellow-500"
+                                                                                                    : ds -
+                                                                                                          570000 >
+                                                                                                      300000
+                                                                                                    ? "green-500"
+                                                                                                    : "blue-500"
+                                                                                            }`}
+                                                                                        >
+                                                                                            {formatter.format(
+                                                                                                ds -
+                                                                                                    570000
+                                                                                            )}
+                                                                                        </p>
+                                                                                    )}
+                                                                                </p>
+                                                                            </p>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <p className="text-red-500">
+                                                                            Chưa
+                                                                            có
+                                                                            thu
+                                                                            chi
+                                                                        </p>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </Card>
@@ -790,9 +997,8 @@ function NavbarDefault({ propauth, check }) {
                                                             className="w-full"
                                                             color="white"
                                                             onClick={
-                                                                handleOpenSpending
+                                                                handleAccept
                                                             }
-                                                            // onClick={handleAccept}
                                                         >
                                                             Xem xong
                                                         </Button>

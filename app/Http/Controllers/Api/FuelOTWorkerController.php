@@ -63,6 +63,7 @@ class FuelOTWorkerController extends Controller
     {
         // $id_worker, $fuel_o_t_workers_content,$fuel_o_t_workers_spend_money
         // $re = '[{id_worker : "1",   fuel_o_t_workers_content: "CX",   fuel_o_t_workers_spend_money: "500001"},{id_worker : "1",   fuel_o_t_workers_content: "CP",   fuel_o_t_workers_spend_money: "500001"},{id_worker : "1",   fuel_o_t_workers_content: "CX",   fuel_o_t_workers_spend_money: "500001"}]';
+        // dd($r->all());
         $a = json_decode($r->data);
         // dd($a);
 

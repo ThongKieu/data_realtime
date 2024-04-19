@@ -89,18 +89,18 @@ class FuelOTWorkerController extends Controller
                         if ($item->fuel_o_t_workers_content == 'CX' && $c_a->fuel_o_t_workers_content == 'CX') {
                             // dd('1');
                             FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);
-                        } 
+                        }
                         if ($item->fuel_o_t_workers_content == 'CP' && $c_a->fuel_o_t_workers_content == 'CP') {
                         // dd('22');
 
                             FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);
-                        } 
+                        }
                         if ($item->fuel_o_t_workers_content == 'TC' && $c_a->fuel_o_t_workers_content == 'TC') {
                             // dd('3');
                             FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);
                         }
                     }
-                   
+
                 }
             }
             // dd($c_a);

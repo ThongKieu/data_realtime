@@ -667,7 +667,7 @@ function NavbarDefault({ propauth, check }) {
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 3
                                                                             </p>
-                                                                        </p>{" "}
+                                                                        </p>
                                                                         <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 4
@@ -677,7 +677,7 @@ function NavbarDefault({ propauth, check }) {
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 5
                                                                             </p>
-                                                                        </p>{" "}
+                                                                        </p>
                                                                         <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 6
@@ -700,7 +700,7 @@ function NavbarDefault({ propauth, check }) {
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 Chi
                                                                             </p>
-                                                                        </p>{" "}
+                                                                        </p>
                                                                         <p className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
                                                                             <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                                                                                 Chi

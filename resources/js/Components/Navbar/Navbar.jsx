@@ -27,7 +27,9 @@ import {
     Bars2Icon,
     IdentificationIcon,
     ListBulletIcon,
-    PencilSquareIcon,
+    CurrencyDollarIcon,
+    ExclamationCircleIcon,
+    ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -425,7 +427,7 @@ function NavbarDefault({ propauth, check }) {
                         item.workerStatus === status && (
                             <div className="w-full pb-1" key={index}>
                                 <p
-                                    className="p-1 text-sm border border-green-500 cursor-pointer"
+                                    className="flex flex-row items-center justify-between p-1 text-sm border border-green-500 cursor-pointer"
                                     onClick={() => {
                                         return (
                                             handleOpen() ||
@@ -436,7 +438,11 @@ function NavbarDefault({ propauth, check }) {
                                         );
                                     }}
                                 >
-                                    {item.label}
+                                    <span> {item.label}</span>{" "}
+
+                                    <CurrencyDollarIcon className="w-5 h-5" />
+                                    <ExclamationCircleIcon className="w-5 h-5" />
+                                    <ShieldCheckIcon className="w-5 h-5" />
                                 </p>
                             </div>
                         )
@@ -447,10 +453,7 @@ function NavbarDefault({ propauth, check }) {
     const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
     const { width, height } = useWindowSize(200);
-    const [dataWorkerSales, setDataWorkerSales] = useState([]);
-    const [dataFuel_OT, setDataFuel_OT] = useState([]);
-    const [workerID, setWorkerID] = useState();
-    const [ds, setDs] = useState(0);
+    const [jobs, setJobs] = useState([]);
     const getDataWorkerSales = async (id, date_check) => {
         const uri = "api/report-worker";
         const data = {
@@ -469,96 +472,202 @@ function NavbarDefault({ propauth, check }) {
             const res = await fetch(uri, options);
             const jsonData = await res.json();
             if (jsonData || jsonData != "undefined") {
-                setDataWorkerSales(jsonData);
-                setDataFuel_OT(jsonData[0]?.fuel_ot);
+                setJobs(jsonData);
             } else {
-                setDataWorkerSales(0);
-                setDataFuel_OT(0);
+                setJobs(0);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-    useEffect(() => {
-        const fuelOTContentValues = ["CX", "CP", "TC"];
-        const totalSpendMoney = dataFuel_OT?.reduce((total, item) => {
-            if (fuelOTContentValues.includes(item.fuel_o_t_workers_content)) {
-                return total + item.fuel_o_t_workers_spend_money;
-            }
-            return total;
-        }, 0);
-
-        setDs(
-            dataWorkerSales.length > 0 && totalSpendMoney > 0
-                ? dataWorkerSales[0].work_revenue -
-                      dataWorkerSales[0].work_expenditure -
-                      totalSpendMoney
-                : 0
-        );
-    }, [dataWorkerSales, dataFuel_OT]);
+    console.log(jobs);
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
-    console.log(ds, dataFuel_OT);
-    const [dataChange, setDataChange] = useState({});
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setDataChange((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-
-        // Cập nhật giá trị trong mảng dataFuel_OT nếu cần thiết
-        setDataFuel_OT((prevData) =>
-            prevData.map((item) => {
-                if (item.fuel_o_t_workers_content === name) {
-                    return {
-                        ...item,
-                        fuel_o_t_workers_spend_money: value,
-                    };
-                }
-                return item;
-            })
-        );
-    };
-    const handleAccept = async (event) => {
-        event.preventDefault();
-        try {
-            // Hiển thị thông báo hoặc thực hiện các hành động khác trước khi gửi request
-
-            // Tạo một mảng data từ các dữ liệu trong dataChange
-            const data = Object.keys(dataChange).map((key) => ({
-                id_worker: dataWorkerSales[0].id_worker, // Lấy id_worker từ dataWorkerSales
-                fuel_o_t_workers_content: key, // Lấy key (name của input) làm fuel_o_t_workers_content
-                fuel_o_t_workers_spend_money:
-                    key == "TC"
-                        ? parseFloat(dataChange[key]) * 37000
-                        : dataChange[key], // Lấy giá trị của input làm fuel_o_t_workers_spend_money
-            })); // In ra mảng data để kiểm tra
-            // // Gửi request POST đến API
-            const formatJson = JSON.stringify({ data: JSON.stringify(data) });
-            // console.log(data);
-            const response = await fetch("api/fuel-ot", {
-                method: "POST",
-                body: formatJson, // Chuyển mảng data thành chuỗi JSON và đặt vào phần body của request
-                headers: {
-                    "Content-Type": "application/json", // Đặt header "Content-Type" là "application/json"
-                },
+    function JobTable({ data }) {
+        const [jobTable, setJobTable] = useState(data);
+        const handleMoneyChange = (
+            jobIndex,
+            fuelIndex,
+            newValue,
+            fuel_o_t_workers_content
+        ) => {
+            setJobTable((prevJobs) => {
+                const updatedJobs = [...prevJobs];
+                const updatedJob = { ...updatedJobs[jobIndex] };
+                const updatedFuelOt = [...updatedJob.fuel_ot];
+                const updatedFuel = { ...updatedFuelOt[fuelIndex] };
+                updatedFuel.fuel_o_t_workers_spend_money = newValue;
+                updatedFuel.fuel_o_t_workers_content = fuel_o_t_workers_content; // Lưu fuel_o_t_workers_content
+                updatedFuelOt[fuelIndex] = updatedFuel;
+                updatedJob.fuel_ot = updatedFuelOt;
+                updatedJobs[jobIndex] = updatedJob;
+                return updatedJobs;
             });
-            if (!response.ok) {
-                throw new Error("Đã xảy ra lỗi khi gửi form"); // Xử lý lỗi nếu request không thành công
-            } else {
-                handleOpenSpending();
+        };
+
+        const handleAccept = async (event) => {
+            event.preventDefault();
+            try {
+                const data = jobTable.flatMap((job) =>
+                    job.fuel_ot.map((fuel) => ({
+                        id_worker: job.id_worker,
+                        fuel_o_t_workers_content: fuel.fuel_o_t_workers_content,
+                        fuel_o_t_workers_spend_money:
+                            fuel.fuel_o_t_workers_content === "TC"
+                                ? parseFloat(
+                                      fuel.fuel_o_t_workers_spend_money
+                                  ) * 37000
+                                : fuel.fuel_o_t_workers_spend_money,
+                    }))
+                );
+                console.log(data);
+                const formatJson = JSON.stringify({
+                    data: JSON.stringify(data),
+                });
+                const response = await fetch("api/fuel-ot", {
+                    method: "POST",
+                    body: formatJson, // Chuyển mảng data thành chuỗi JSON và đặt vào phần body của request
+                    headers: {
+                        "Content-Type": "application/json", // Đặt header "Content-Type" là "application/json"
+                    },
+                });
+                if (response.status === 200) {
+                    console.log("Dữ liệu đã được gửi thành công lên server");
+                    // Xử lý phản hồi từ server nếu cần
+                    handleOpenSpending();
+                }
+            } catch (error) {
+                console.error("Lỗi khi gửi dữ liệu lên server:", error);
+                // Xử lý lỗi nếu có
             }
-            // Xử lý response nếu cần thiết
-        } catch (error) {
-            console.error("Lỗi:", error.message); // Xử lý lỗi nếu có
-        } finally {
-            // Reset state sau khi hoàn thành request
-            setDataChange({});
-        }
-    };
+        };
+        const totalFuelSpend = jobTable.reduce((total, job) => {
+            const fuelSpend = job.fuel_ot.reduce(
+                (sum, fuel) =>
+                    sum + parseFloat(fuel.fuel_o_t_workers_spend_money),
+                0
+            );
+            return total + fuelSpend;
+        }, 0);
+
+        // Tính toán doanh số (ds)
+        const ds =
+            jobTable.reduce((total, job) => {
+                const workRevenue = parseFloat(job.work_revenue);
+                const workExpenditure = parseFloat(job.work_expenditure);
+                return total + workRevenue - workExpenditure;
+            }, 0) - totalFuelSpend;
+        return (
+            <Card className="w-full h-full ">
+                <table className="w-full overflow-scroll text-center table-auto min-w-max">
+                    <thead>
+                        <tr>
+                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                STT
+                            </th>
+                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                Nội dung
+                            </th>
+                            <th className="p-4 border-b border-blue-gray-100 bg-blue-gray-50">
+                                Thành Tiền
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {jobTable.map((job, index, i) => {
+                            return (
+                                <React.Fragment key={index}>
+                                    <tr className="even:bg-blue-gray-50/50">
+                                        <td className="p-4">{1}</td>
+                                        <td className="p-4">Ngày làm</td>
+                                        <td className="p-4">{job.date_do}</td>
+                                    </tr>
+                                    <tr className="even:bg-blue-gray-50/50">
+                                        <td className="p-4">{2}</td>
+                                        <td className="p-4">Thu</td>
+                                        <td className="p-4">
+                                            {formatter.format(job.work_revenue)}
+                                        </td>
+                                    </tr>
+                                    <tr className="even:bg-blue-gray-50/50">
+                                        <td className="p-4">{3}</td>
+                                        <td className="p-4">Chi</td>
+                                        <td className="p-4">
+                                            {formatter.format(
+                                                job.work_expenditure
+                                            )}
+                                        </td>
+                                    </tr>
+                                    {job.fuel_ot.map((fuel, i) => {
+                                        const currentIndex = index + i + 4;
+                                        return (
+                                            <tr
+                                                key={`${index}-${i}`}
+                                                className="even:bg-blue-gray-50/50"
+                                            >
+                                                <td className="p-4">
+                                                    {currentIndex}
+                                                </td>
+                                                <td className="p-4">
+                                                    {fuel.fuel_o_t_workers_content ==
+                                                    "CX"
+                                                        ? "Chi Xăng"
+                                                        : fuel.fuel_o_t_workers_content ==
+                                                          "CP"
+                                                        ? "Chi Phụ"
+                                                        : " Tăng Ca"}
+                                                </td>
+                                                <td className="p-4">
+                                                    <input
+                                                        className="p-1 rounded-md"
+                                                        type="text"
+                                                        value={
+                                                            fuel.fuel_o_t_workers_spend_money
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleMoneyChange(
+                                                                index,
+                                                                i,
+                                                                e.target.value,
+                                                                fuel.fuel_o_t_workers_content // Truyền fuel_o_t_workers_content vào hàm handleMoneyChange
+                                                            )
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    <tr className="even:bg-blue-gray-50/50">
+                                        <td
+                                            className="p-4 text-xl font-bold text-center"
+                                            colSpan={2}
+                                        >
+                                            Doanh Số
+                                        </td>
+                                        <td className="p-4">
+                                            {formatter.format(ds)}
+                                        </td>
+                                    </tr>
+                                </React.Fragment>
+                            );
+                        })}
+                    </tbody>
+                </table>
+                <div className="p-4 mt-1">
+                    <Button
+                        className="w-full"
+                        color="green"
+                        variant="outlined"
+                        onClick={handleAccept}
+                    >
+                        Cập Nhật
+                    </Button>
+                </div>
+            </Card>
+        );
+    }
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto text-black-400 lg:pl-6 bg-blue-gray-200 ">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900 ">
@@ -647,20 +756,18 @@ function NavbarDefault({ propauth, check }) {
                                         >
                                             Thợ Đi Làm
                                         </Typography>
-                                        {/* <div className="flex flex-row justify-between">
-                                            <span className="pr-3">
-                                                Đã đủ thu chi:
+                                        <div className="flex flex-row justify-between">
+                                            {/* <span className="pr-3">
+                                                :
                                                 <span className="ml-1 px-4 py-[-1] bg-green-500 border">
                                                     {" "}
                                                 </span>
-                                            </span>
+                                            </span> */}
                                             <span>
-                                                Chưa nhập thu chi:
-                                                <span className=" ml-1 px-4 py-[-1] bg-red-500 border">
-                                                    {" "}
-                                                </span>
+                                                Thiếu Lịch:
+                                                <span className=" ml-1 px-4 py-[-1] bg-red-500 border"></span>
                                             </span>
-                                        </div> */}
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-7">
                                         {jobCategories.map(({ code }) =>
@@ -680,328 +787,9 @@ function NavbarDefault({ propauth, check }) {
                                                     <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
                                                         <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
                                                             Tổng Thu Chi Cuối
-                                                            Ngày{" "}
-                                                            {infoWorker.map(
-                                                                (
-                                                                    item,
-                                                                    index
-                                                                ) => {
-                                                                    return (
-                                                                        <span
-                                                                            key={
-                                                                                index
-                                                                            }
-                                                                        >
-                                                                            {item.value ==
-                                                                            workerID
-                                                                                ? item.label
-                                                                                : ""}
-                                                                        </span>
-                                                                    );
-                                                                }
-                                                            )}
+                                                            Ngày
                                                         </h2>
-                                                        <Card
-                                                            className={`w-[${width}px] m-1 mt-1`}
-                                                        >
-                                                            <div className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
-                                                                <div className="grid grid-cols-5">
-                                                                    <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                            STT
-                                                                        </p>
-                                                                    </p>
-                                                                    <p className="col-span-3 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                            Nội
-                                                                            Dung
-                                                                        </p>
-                                                                    </p>
-                                                                    <p className="col-span-1 p-4 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                        <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                            Số
-                                                                            Tiền
-                                                                        </p>
-                                                                    </p>
-                                                                </div>
-                                                                <div className="grid grid-cols-3">
-                                                                    <div className="col-span-1 ">
-                                                                        <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                1
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                2
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                3
-                                                                            </p>
-                                                                        </p>
-                                                                        {dataFuel_OT?.map(
-                                                                            (
-                                                                                item,
-                                                                                index
-                                                                            ) => {
-                                                                                return (
-                                                                                    <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                        <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                            {index +
-                                                                                                4}
-                                                                                        </p>
-                                                                                    </p>
-                                                                                );
-                                                                            }
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="col-span-1 ">
-                                                                        <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Ngày
-                                                                                làm
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Thu
-                                                                            </p>
-                                                                        </p>
-                                                                        <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                Chi
-                                                                            </p>
-                                                                        </p>
-                                                                        {dataFuel_OT?.map(
-                                                                            (
-                                                                                item,
-                                                                                index
-                                                                            ) => {
-                                                                                console.log(
-                                                                                    index
-                                                                                );
-                                                                                return (
-                                                                                    <p
-                                                                                        key={
-                                                                                            index
-                                                                                        }
-                                                                                        className="p-2 border-b border-blue-gray-100 bg-blue-gray-50"
-                                                                                    >
-                                                                                        <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                            {item.fuel_o_t_workers_content ==
-                                                                                            "CX"
-                                                                                                ? " Chi Xăng"
-                                                                                                : item.fuel_o_t_workers_content ==
-                                                                                                  "CP"
-                                                                                                ? "Chi Phụ"
-                                                                                                : "Tăng Ca"}
-                                                                                        </p>
-                                                                                    </p>
-                                                                                );
-                                                                            }
-                                                                        )}
-
-                                                                        <p className="col-span-3 p-2 ">
-                                                                            <p className="block p-1 font-sans text-sm antialiased font-bold leading-none text-black opacity-70">
-                                                                                Doanh
-                                                                                Số
-                                                                            </p>
-                                                                        </p>
-                                                                    </div>
-                                                                    {(dataFuel_OT !=
-                                                                        undefined &&
-                                                                        dataWorkerSales !=
-                                                                            undefined) ||
-                                                                    dataFuel_OT ||
-                                                                    dataWorkerSales ? (
-                                                                        <div className="col-span-1 ">
-                                                                            <>
-                                                                                {dataWorkerSales.map(
-                                                                                    (
-                                                                                        item,
-                                                                                        index
-                                                                                    ) => {
-                                                                                        // console.log(infoWorker);
-                                                                                        return (
-                                                                                            <div
-                                                                                                key={
-                                                                                                    index
-                                                                                                }
-                                                                                            >
-                                                                                                <p className="p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                        {
-                                                                                                            item.date_do
-                                                                                                        }
-                                                                                                    </p>
-                                                                                                </p>
-                                                                                                <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                        {item.work_revenue ||
-                                                                                                        item.id_worker ||
-                                                                                                        dataWorkerSales !=
-                                                                                                            ""
-                                                                                                            ? formatter.format(
-                                                                                                                  item.work_revenue
-                                                                                                              )
-                                                                                                            : 0}
-                                                                                                    </p>
-                                                                                                </p>
-                                                                                                <p className="col-span-1 p-2 border-b border-blue-gray-100 bg-blue-gray-50">
-                                                                                                    <p className="block p-1 font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                        {item.work_expenditure
-                                                                                                            ? formatter.format(
-                                                                                                                  item.work_expenditure
-                                                                                                              )
-                                                                                                            : formatter.format(
-                                                                                                                  0
-                                                                                                              )}
-                                                                                                    </p>
-                                                                                                </p>
-                                                                                            </div>
-                                                                                        );
-                                                                                    }
-                                                                                )}
-                                                                                {dataFuel_OT ==
-                                                                                undefined ? (
-                                                                                    <p className="flex flex-col items-center justify-center p-[45px] bg-blue-gray-50">
-                                                                                        <p className="block font-sans text-sm antialiased font-bold leading-none text-red-400 opacity-70">
-                                                                                            Chưa
-                                                                                            có
-                                                                                            dữ
-                                                                                            liệu
-                                                                                        </p>
-                                                                                    </p>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        {dataFuel_OT?.map(
-                                                                                            (
-                                                                                                item,
-                                                                                                index
-                                                                                            ) => {
-                                                                                                return (
-                                                                                                    <div
-                                                                                                        key={
-                                                                                                            index
-                                                                                                        }
-                                                                                                    >
-                                                                                                        <p className="p-[4px]  bg-blue-gray-50">
-                                                                                                            <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                                                                                                                {/* {item.fuel_o_t_workers_spend_money ||
-                                                                                                        item.fuel_o_t_workers_spend_money !=
-                                                                                                            undefined
-                                                                                                            ? item.fuel_o_t_workers_spend_money
-                                                                                                            : 0}  */}
-                                                                                                                <input
-                                                                                                                    name={
-                                                                                                                        item.fuel_o_t_workers_content
-                                                                                                                    }
-                                                                                                                    className="p-[2px]"
-                                                                                                                    value={
-                                                                                                                        dataChange[
-                                                                                                                            item
-                                                                                                                                .fuel_o_t_workers_content
-                                                                                                                        ] ||
-                                                                                                                        item.fuel_o_t_workers_spend_money ||
-                                                                                                                        ""
-                                                                                                                    }
-                                                                                                                    onChange={
-                                                                                                                        handleChange
-                                                                                                                    }
-                                                                                                                />
-                                                                                                            </p>
-                                                                                                        </p>
-                                                                                                    </div>
-                                                                                                );
-                                                                                            }
-                                                                                        )}
-                                                                                    </>
-                                                                                )}
-                                                                            </>
-                                                                            <p className="p-[10px]">
-                                                                                <p
-                                                                                    className={`block font-sans text-sm antialiased font-bold leading-none text-${
-                                                                                        ds -
-                                                                                            570000 <=
-                                                                                        0
-                                                                                            ? "red-500"
-                                                                                            : ds -
-                                                                                                  570000 <=
-                                                                                              300000
-                                                                                            ? "yellow-500"
-                                                                                            : ds -
-                                                                                                  570000 >
-                                                                                              300000
-                                                                                            ? "green-500"
-                                                                                            : "blue-500"
-                                                                                    } opacity-70`}
-                                                                                >
-                                                                                    {dataFuel_OT ==
-                                                                                        "undefined" ||
-                                                                                    dataFuel_OT ==
-                                                                                        "" ? (
-                                                                                        <p
-                                                                                            className={`block font-sans text-sm antialiased font-bold leading-none text-blue-500`}
-                                                                                        >
-                                                                                            {formatter.format(
-                                                                                                dataWorkerSales[0]
-                                                                                                    .work_revenue -
-                                                                                                    dataWorkerSales[0]
-                                                                                                        .work_expenditure -
-                                                                                                    570000
-                                                                                            )}
-                                                                                        </p>
-                                                                                    ) : (
-                                                                                        <p
-                                                                                            className={`block font-sans text-sm antialiased font-bold leading-none text-${
-                                                                                                ds -
-                                                                                                    570000 <=
-                                                                                                0
-                                                                                                    ? "red-500"
-                                                                                                    : ds -
-                                                                                                          570000 <=
-                                                                                                      300000
-                                                                                                    ? "yellow-500"
-                                                                                                    : ds -
-                                                                                                          570000 >
-                                                                                                      300000
-                                                                                                    ? "green-500"
-                                                                                                    : "blue-500"
-                                                                                            }`}
-                                                                                        >
-                                                                                            {formatter.format(
-                                                                                                ds -
-                                                                                                    570000
-                                                                                            )}
-                                                                                        </p>
-                                                                                    )}
-                                                                                </p>
-                                                                            </p>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <p className="text-red-500">
-                                                                            Chưa
-                                                                            có
-                                                                            thu
-                                                                            chi
-                                                                        </p>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </Card>
-                                                    </div>
-                                                    <div className="p-0 mt-1">
-                                                        <Button
-                                                            className="w-full"
-                                                            color="white"
-                                                            onClick={
-                                                                handleAccept
-                                                            }
-                                                        >
-                                                            Xem xong
-                                                        </Button>
+                                                        <JobTable data={jobs} />
                                                     </div>
                                                 </div>
                                             </DialogBody>

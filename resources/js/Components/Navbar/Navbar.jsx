@@ -18,6 +18,7 @@ import {
     DialogBody,
     DialogFooter,
     Input,
+    Radio,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -411,48 +412,6 @@ function NavbarDefault({ propauth, check }) {
     const [openSpending, setOpenSpending] = useState(false);
     const handleOpenSpending = () => setOpenSpending(!openSpending);
 
-    const renderWorkerGroup = (prefix, status, handleOpen) => {
-        return (
-            <div className="w-full p-1" key={`${prefix}-${status}`}>
-                <p className="border-b-[3px] border-b-blue-500 text-center w-full">
-                    {
-                        jobCategories.find(
-                            (category) => category.code === prefix
-                        )?.name
-                    }
-                </p>
-                {infoWorker.map(
-                    (item, index) =>
-                        item.workerCode.startsWith(prefix) &&
-                        item.workerStatus === status && (
-                            <div className="w-full pb-1" key={index}>
-                                <p
-                                    className="flex flex-row items-center justify-between p-1 text-sm border border-green-500 cursor-pointer"
-                                    onClick={() => {
-                                        return (
-                                            handleOpen() ||
-                                            getDataWorkerSales(
-                                                item.value,
-                                                check
-                                            )
-                                        );
-                                    }}
-                                >
-                                    <span> {item.label}</span>{" "}
-
-                                    <CurrencyDollarIcon className="w-5 h-5" />
-                                    <ExclamationCircleIcon className="w-5 h-5" />
-                                    <ShieldCheckIcon className="w-5 h-5" />
-                                </p>
-                            </div>
-                        )
-                )}
-            </div>
-        );
-    };
-    const [openWorker, setOpenWorker] = useState(false);
-    const handleOpenWorker = () => setOpenWorker(!openWorker);
-    const { width, height } = useWindowSize(200);
     const [jobs, setJobs] = useState([]);
     const getDataWorkerSales = async (id, date_check) => {
         const uri = "api/report-worker";
@@ -481,6 +440,59 @@ function NavbarDefault({ propauth, check }) {
         }
     };
     console.log(jobs);
+    const renderWorkerGroup = (prefix, status, handleOpen) => {
+        return (
+            <div className="w-full p-1" key={`${prefix}-${status}`}>
+                <p className="border-b-[3px] border-b-blue-500 text-center w-full">
+                    {
+                        jobCategories.find(
+                            (category) => category.code === prefix
+                        )?.name
+                    }
+                </p>
+                {infoWorker.map(
+                    (item, index) =>
+                        item.workerCode.startsWith(prefix) &&
+                        item.workerStatus === status && (
+                            <div className="w-full pb-1" key={index}>
+                                <p
+                                    className="flex flex-row items-center justify-between p-1 text-sm border border-green-500 cursor-pointer"
+                                    onClick={() => {
+                                        return (
+                                            handleOpen() ||
+                                            getDataWorkerSales(
+                                                item.value,
+                                                check
+                                            )
+                                        );
+                                    }}
+                                >
+                                    <span> {item.label}</span>
+                                    {jobs.map((item) =>
+                                        item.fuel_ot.map(
+                                            (itemFuel_ot, index) => (
+                                                <React.Fragment key={index}>
+                                                    {itemFuel_ot.fuel_o_t_workers_flag ===
+                                                    0 ? (
+                                                        <CurrencyDollarIcon className="w-5 h-5" />
+                                                    ) : (
+                                                        <ShieldCheckIcon className="w-5 h-5" />
+                                                    )}
+                                                </React.Fragment>
+                                            )
+                                        )
+                                    )}
+                                </p>
+                            </div>
+                        )
+                )}
+            </div>
+        );
+    };
+    const [openWorker, setOpenWorker] = useState(false);
+    const handleOpenWorker = () => setOpenWorker(!openWorker);
+    const { width, height } = useWindowSize(200);
+
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
@@ -506,20 +518,20 @@ function NavbarDefault({ propauth, check }) {
                 return updatedJobs;
             });
         };
-
         const handleAccept = async (event) => {
             event.preventDefault();
             try {
                 const data = jobTable.flatMap((job) =>
                     job.fuel_ot.map((fuel) => ({
                         id_worker: job.id_worker,
+                        fuel_o_t_id_admin_check: propauth.id,
                         fuel_o_t_workers_content: fuel.fuel_o_t_workers_content,
-                        fuel_o_t_workers_spend_money:
-                            fuel.fuel_o_t_workers_content === "TC"
-                                ? parseFloat(
-                                      fuel.fuel_o_t_workers_spend_money
-                                  ) * 37000
-                                : fuel.fuel_o_t_workers_spend_money,
+                        fuel_o_t_workers_spend_money: fuel.fuel_o_t_workers_spend_money
+                            // fuel.fuel_o_t_workers_content === "TC"
+                            //     ? parseFloat(
+                            //           fuel.fuel_o_t_workers_spend_money
+                            //       ) * 37000
+                            //     : fuel.fuel_o_t_workers_spend_money,
                     }))
                 );
                 console.log(data);
@@ -631,7 +643,7 @@ function NavbarDefault({ propauth, check }) {
                                                                 index,
                                                                 i,
                                                                 e.target.value,
-                                                                fuel.fuel_o_t_workers_content // Truyền fuel_o_t_workers_content vào hàm handleMoneyChange
+                                                                fuel.fuel_o_t_workers_content
                                                             )
                                                         }
                                                     />

@@ -11,7 +11,7 @@ export default defineConfig({
         }),
       ],
       server:{
-        // hmr:'localhost'////
+        // hmr:'localhost'// Tung test
         host: ["192.168.0.44"],
         port: 5173,
         hmr: {host: ["192.168.0.44"],},

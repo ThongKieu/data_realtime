@@ -27,7 +27,9 @@ import {
     Bars2Icon,
     IdentificationIcon,
     ListBulletIcon,
-    PencilSquareIcon,
+    CurrencyDollarIcon,
+    ExclamationCircleIcon,
+    ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -425,7 +427,7 @@ function NavbarDefault({ propauth, check }) {
                         item.workerStatus === status && (
                             <div className="w-full pb-1" key={index}>
                                 <p
-                                    className="p-1 text-sm border border-green-500 cursor-pointer"
+                                    className="flex flex-row items-center justify-between p-1 text-sm border border-green-500 cursor-pointer"
                                     onClick={() => {
                                         return (
                                             handleOpen() ||
@@ -436,7 +438,11 @@ function NavbarDefault({ propauth, check }) {
                                         );
                                     }}
                                 >
-                                    {item.label}
+                                    <span> {item.label}</span>{" "}
+
+                                    <CurrencyDollarIcon className="w-5 h-5" />
+                                    <ExclamationCircleIcon className="w-5 h-5" />
+                                    <ShieldCheckIcon className="w-5 h-5" />
                                 </p>
                             </div>
                         )
@@ -474,6 +480,7 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
+    console.log(jobs);
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
@@ -569,7 +576,7 @@ function NavbarDefault({ propauth, check }) {
                         </tr>
                     </thead>
                     <tbody>
-                        { jobTable.map((job, index, i) => {
+                        {jobTable.map((job, index, i) => {
                             return (
                                 <React.Fragment key={index}>
                                     <tr className="even:bg-blue-gray-50/50">
@@ -588,7 +595,9 @@ function NavbarDefault({ propauth, check }) {
                                         <td className="p-4">{3}</td>
                                         <td className="p-4">Chi</td>
                                         <td className="p-4">
-                                            {formatter.format(job.work_expenditure)}
+                                            {formatter.format(
+                                                job.work_expenditure
+                                            )}
                                         </td>
                                     </tr>
                                     {job.fuel_ot.map((fuel, i) => {
@@ -612,7 +621,7 @@ function NavbarDefault({ propauth, check }) {
                                                 </td>
                                                 <td className="p-4">
                                                     <input
-                                                    className="p-1 rounded-md"
+                                                        className="p-1 rounded-md"
                                                         type="text"
                                                         value={
                                                             fuel.fuel_o_t_workers_spend_money
@@ -631,9 +640,14 @@ function NavbarDefault({ propauth, check }) {
                                         );
                                     })}
                                     <tr className="even:bg-blue-gray-50/50">
-                                        <td className="p-4 text-xl font-bold text-center" colSpan={2}>Doanh Số</td>
+                                        <td
+                                            className="p-4 text-xl font-bold text-center"
+                                            colSpan={2}
+                                        >
+                                            Doanh Số
+                                        </td>
                                         <td className="p-4">
-                                        {formatter.format(ds)}
+                                            {formatter.format(ds)}
                                         </td>
                                     </tr>
                                 </React.Fragment>
@@ -742,20 +756,18 @@ function NavbarDefault({ propauth, check }) {
                                         >
                                             Thợ Đi Làm
                                         </Typography>
-                                        {/* <div className="flex flex-row justify-between">
-                                            <span className="pr-3">
-                                                Đã đủ thu chi:
+                                        <div className="flex flex-row justify-between">
+                                            {/* <span className="pr-3">
+                                                :
                                                 <span className="ml-1 px-4 py-[-1] bg-green-500 border">
                                                     {" "}
                                                 </span>
-                                            </span>
+                                            </span> */}
                                             <span>
-                                                Chưa nhập thu chi:
-                                                <span className=" ml-1 px-4 py-[-1] bg-red-500 border">
-                                                    {" "}
-                                                </span>
+                                                Thiếu Lịch:
+                                                <span className=" ml-1 px-4 py-[-1] bg-red-500 border"></span>
                                             </span>
-                                        </div> */}
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-7">
                                         {jobCategories.map(({ code }) =>

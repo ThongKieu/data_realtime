@@ -74,4 +74,5 @@ function TableDataTV ({tableHead,tableRows}) {
         </table>
     </Card>)
 };
-export default TableDataTV;
+
+export default {TableDataTV};

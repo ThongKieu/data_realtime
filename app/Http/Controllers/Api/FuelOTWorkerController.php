@@ -99,7 +99,7 @@ class FuelOTWorkerController extends Controller
                             FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);
                         }
                     }
-
+                    
                 }
             }
             // dd($c_a);

@@ -21,6 +21,7 @@ function Notice({ auth }) {
         new_feeback: [],
         new_return_work_from_worker: [],
     });
+    console.log(dataNoti);
     const [notificationData, setInfoNotification] = useState("");
     const fetchNotiUser = async () => {
         try {
@@ -33,20 +34,8 @@ function Notice({ auth }) {
             console.log("push on Loi", error);
         }
     };
-    // const fetchNoti = async () => {
-    //     try {
-    //         const response = await fetch(
-    //             `api/web/noti/soket_noti?code=${auth.user.code}`
-    //         );
-    //         const jsonData = await response.json();
-    //         setInfoNotification(jsonData);
-    //     } catch (error) {
-    //         console.error("Error fetching data:", error);
-    //     }
-    // };
     const handleMakeReadAll = async () => {
         let data = { code: auth.user.code };
-        console.log(data, "ssss");
         try {
             const response = await fetch(`api/web/noti/markReadAll`, {
                 method: "POST",
@@ -77,8 +66,8 @@ function Notice({ auth }) {
     });
     var heightScreenTV = screenSize.height;
     const data = [
-        { id: 1, label: "Lịch Từ App Khách" },
-        { id: 2, label: "Thông Tin Thợ Báo Lịch" },
+        { id: 1, label: "Thông Tin Thợ Báo Lịch" },
+        { id: 2, label: "Lịch Từ App Khách" },
         { id: 3, label: "Thợ Xin Lịch" },
         { id: 4, label: "Khách Phàn Nàn" },
     ];

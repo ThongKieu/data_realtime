@@ -91,15 +91,15 @@ class FuelOTWorkerController extends Controller
                         if ($item->fuel_o_t_workers_content == 'CX' && $c_a->fuel_o_t_workers_content == 'CX') {
                             // dd($item);
                             FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);
-                            FuelOTWorkerController::checkFuelOTByAdmin($item->id,$item->fuel_o_t_id_admin_check);
+                            FuelOTWorkerController::checkFuelOTByAdmin($item->id,$c_a->fuel_o_t_id_admin_check);
                         }
                         if ($item->fuel_o_t_workers_content == 'CP' && $c_a->fuel_o_t_workers_content == 'CP') {
                             // dd('22');
-                            FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);FuelOTWorkerController::checkFuelOTByAdmin($item->id,$item->fuel_o_t_id_admin_check);
+                            FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);FuelOTWorkerController::checkFuelOTByAdmin($item->id,$c_a->fuel_o_t_id_admin_check);
                         }
                         if ($item->fuel_o_t_workers_content == 'TC' && $c_a->fuel_o_t_workers_content == 'TC') {
                             // dd('3');
-                            FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);FuelOTWorkerController::checkFuelOTByAdmin($item->id,$item->fuel_o_t_id_admin_check);
+                            FuelOTWorker::where('id', '=', $item->id)->update(['fuel_o_t_workers_spend_money' => $c_a->fuel_o_t_workers_spend_money]);FuelOTWorkerController::checkFuelOTByAdmin($item->id,$c_a->fuel_o_t_id_admin_check);
                         }
                     }
 

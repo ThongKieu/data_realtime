@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 const appName = import.meta.env.VITE_APP_NAME || "Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt";
 
 createInertiaApp({
-    title: (title) => `${title} - Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt`,
+    title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

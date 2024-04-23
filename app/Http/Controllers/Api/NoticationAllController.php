@@ -66,7 +66,7 @@ class NoticationAllController extends Controller
          }
 
     }
-    public function newFeeback()
+    public function getNeedWorkForWeb()
     {
 
     }

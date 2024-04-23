@@ -172,6 +172,8 @@ Route::prefix('fuel-ot')->group(function () {
 });
 // Report Worker
 Route::post('report-worker', 'App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
+Route::get('report-worker-web', 'App\Http\Controllers\Api\ReportWorkerController@getAllWorker');
+
 // --------------------------------------------------------------------------//
 // Application
 Route::prefix('app')->group(function () {

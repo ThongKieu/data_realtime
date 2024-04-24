@@ -2,11 +2,7 @@ import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 
 import { Head } from "@inertiajs/react";
 import React from "react";
-import {
-    PlusCircleIcon,
-    MapPinIcon,
-    UserPlusIcon,
-} from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import {
     Button,
     Card,
@@ -14,7 +10,6 @@ import {
     DialogBody,
     DialogFooter,
     DialogHeader,
-    Typography,
     Input,
     Textarea,
     Spinner,
@@ -27,9 +22,10 @@ import { host } from "@/Utils/UrlApi";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect } from "react";
-function CodeWorker(auth) {
+import useWindowSize from "@/Core/Resize";
+function CodeWorker({ auth }) {
+    const { width, height } = useWindowSize(50);
     const [open, setOpen] = useState(false);
-    const [checkCode, setCheckCode] = useState("");
     const [getData, usersData] = useState([]);
     const handleOpen = () => setOpen(!open);
     const [dataCodeWorker, setFormDataCodeWorker] = useState({
@@ -37,21 +33,12 @@ function CodeWorker(auth) {
         kind_worker: "",
         descript_code_worker: "",
     });
-    const [changStatus, setchangStatus] = useState({
-        id: "",
-        status: "",
-    });
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormDataCodeWorker({ ...dataCodeWorker, [name]: value });
-        // fetchCheckCode(value);
-        console.log(dataCodeWorker.code_worker);
     };
     // useEffect chỉ chạy một lần sau khi render đầu tiên
-
     const sentData = async (dataCodeWorker) => {
-        console.log(dataCodeWorker);
         try {
             const res = await fetch(host + "api/web/workers/code-worker", {
                 method: "POST",
@@ -77,28 +64,7 @@ function CodeWorker(auth) {
         }
         // console.log('11111');
     };
-    const fetchChangSataus = async (changStatus) => {
-        try {
-            const res = await fetch(
-                host + "api/web/workers/change-code-status",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(changStatus),
-                }
-            );
-            if (res.ok) {
-                console.log(res);
-                // Xử lý kết quả trả về từ API nếu cần
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Lỗi khi gửi dữ liệu:", error);
-        }
-    };
+
     const fetchData = async () => {
         try {
             const response = await fetch(host + "api/web/workers/all-code");
@@ -122,12 +88,13 @@ function CodeWorker(auth) {
             field: "id",
             headerName: "STT",
             type: "text",
-            width: 100,
-            minWidth: 50,
-            maxWidth: 200,
+            width: 50,
             editable: false,
             align: "center",
             headerAlign: "center",
+            renderCell: (params) => {
+                return <p>{params.row.id}</p>;
+            },
         },
         {
             field: "code_worker",
@@ -137,6 +104,9 @@ function CodeWorker(auth) {
             align: "center",
             width: 250,
             headerAlign: "center",
+            renderCell: (params) => {
+                return <p>{params.row.code_worker}</p>;
+            },
         },
         {
             field: "kind_worker",
@@ -146,6 +116,9 @@ function CodeWorker(auth) {
             align: "center",
             width: 250,
             headerAlign: "center",
+            renderCell: (params) => {
+                return <p>{params.row.kind_worker}</p>;
+            },
         },
         {
             field: "descript_code_worker",
@@ -155,6 +128,9 @@ function CodeWorker(auth) {
             align: "center",
             width: 250,
             headerAlign: "center",
+            renderCell: (params) => {
+                return <p>{params.row.descript_code_worker}</p>;
+            },
         },
         {
             field: "status_code_worker",
@@ -163,23 +139,50 @@ function CodeWorker(auth) {
             width: 220,
             editable: false,
             renderCell: (params) => {
-                // pramas.row.status_code_worker
                 const [checked, setChecked] = useState(
                     params.row.status_code_worker === 1
                 );
+                const fetchChangeStatus = async (changStatus) => {
+                    const data = {
+                        id: params.row.id,
+                        auth_id: auth.user.id,
+                        status_code_worker: changStatus == true ? 1 : 0,
+                    };
+                    try {
+                        const res = await fetch(
+                            host + "api/web/workers/change-code-status",
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(data),
+                            }
+                        );
+                        if (res.ok) {
+                            console.log(res);
+                        } else {
+                            console.error(
+                                "Lỗi khi gửi dữ liệu:",
+                                res.statusText
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi dữ liệu:", error);
+                    }
+                };
                 const handleChange = () => {
                     const newChecked = !checked;
                     setChecked(newChecked);
-                    // onUpdate(params.row.id, newChecked ? 1 : 0); // Gửi yêu cầu cập nhật dữ liệu tới server
+                    fetchChangeStatus(newChecked);
                 };
-
-                // const [checked, setChecked] = useState(false);
-
-                console.log('checked',checked);
-
                 return (
                     <>
-                        <Switch checked={checked} onChange={handleChange} />
+                        <Switch
+                            id={params.id}
+                            checked={checked}
+                            onChange={handleChange}
+                        />
                         <div className="text-sm font-semibold text-gray-700">
                             status_code_worker
                         </div>
@@ -270,7 +273,7 @@ function CodeWorker(auth) {
                     </div>
                 </Card>
             </div>
-            <Card className="bg-white ">
+            <Card className="m-2 bg-white" >
                 {isLoading ? (
                     <div className="flex justify-center p-2 align-middle ">
                         <Spinner className="w-6 h-6" color="amber" />
@@ -279,20 +282,22 @@ function CodeWorker(auth) {
                         </p>
                     </div>
                 ) : (
-                    <DataGrid
-                        {...getData}
-                        rows={getData}
-                        disableColumnFilter
-                        disableColumnSelector
-                        disableDensitySelector
-                        columns={column}
-                        slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                    />
+                    <Box sx={{ width: 1, height: height }}>
+                        <DataGrid
+                            {...getData}
+                            rows={getData}
+                            disableColumnFilter
+                            disableColumnSelector
+                            disableDensitySelector
+                            columns={column}
+                            slots={{ toolbar: GridToolbar }}
+                            slotProps={{
+                                toolbar: {
+                                    showQuickFilter: true,
+                                },
+                            }}
+                        />
+                    </Box>
                 )}
             </Card>
         </AuthenticatedLayoutAdmin>

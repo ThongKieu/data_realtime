@@ -19,7 +19,6 @@ import {
     DialogFooter,
     Input,
     Radio,
-    Switch,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -426,7 +425,18 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
-    const renderWorkerGroup = (prefix, status, handleOpen) => {
+    const renderWorkerGroup = (prefix, status) => {
+        const [openSpending, setOpenSpending] = useState(
+            Array(jobs.length).fill(false)
+        );
+
+        const handleOpenSpending = (index) => {
+            setOpenSpending((prevOpenSpending) => {
+                const updatedOpenSpending = [...prevOpenSpending];
+                updatedOpenSpending[index] = !updatedOpenSpending[index];
+                return updatedOpenSpending;
+            });
+        };
 
         return (
             <div className="w-full p-1" key={`${prefix}-${status}`}>
@@ -438,12 +448,10 @@ function NavbarDefault({ propauth, check }) {
                     }
                 </p>
                 {jobs.map((item, index) => {
-                    // Kiểm tra nếu worker_kind và worker_status phù hợp
                     if (
                         item.worker_kind === prefix &&
                         item.worker_status === status
                     ) {
-                        // Kiểm tra điều kiện cho mỗi thợ trong mảng jobs
                         const hasFlagZeroFlag = item.fuel_ot.some(
                             (element) => element.fuel_o_t_workers_flag !== 0
                         );
@@ -454,20 +462,20 @@ function NavbarDefault({ propauth, check }) {
                             <div className="w-full pb-1" key={index}>
                                 <p
                                     className="flex flex-row items-center justify-between p-[2px] text-sm border border-green-500 cursor-pointer"
-                                    onClick={() => handleOpen()}
+                                    onClick={() => handleOpenSpending(index)}
                                 >
                                     <span>
                                         ({item.worker_code}){" "}
                                         {getFirstName(item.worker_full_name)}
                                     </span>
                                     <span>
-                                        {hasFlagZeroFlag == true ? (
+                                        {hasFlagZeroFlag ? (
                                             <CurrencyDollarIcon
                                                 className="w-5 h-5"
                                                 color="green"
                                             />
                                         ) : null}
-                                        {hasFlagZeroAdmin == true ? (
+                                        {hasFlagZeroAdmin ? (
                                             <ShieldCheckIcon
                                                 className="w-5 h-5"
                                                 color="green"
@@ -475,10 +483,45 @@ function NavbarDefault({ propauth, check }) {
                                         ) : null}
                                     </span>
                                 </p>
+                                {openSpending[index] != undefined && (
+                                    <Dialog
+                                        key={index}
+                                        open={openSpending[index]}
+                                        handler={() =>
+                                            handleOpenSpending(index)
+                                        }
+                                    >
+                                        <DialogBody>
+                                            <div className="relative w-full p-2 pt-3 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
+                                                <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
+                                                    <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
+                                                        Tổng Thu Chi Cuối Ngày -
+                                                        ({item.worker_code})
+                                                        {" - "}
+                                                        {getFirstName(
+                                                            item.worker_full_name
+                                                        )}
+                                                    </h2>
+                                                    {item.report !== "" && (
+                                                        <JobTable
+                                                            key={index}
+                                                            data={item}
+                                                            handleClose={() =>
+                                                                handleOpenSpending(
+                                                                    index
+                                                                )
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </DialogBody>
+                                    </Dialog>
+                                )}
                             </div>
                         );
                     } else {
-                        return null; // Không phù hợp với điều kiện, trả về null
+                        return null;
                     }
                 })}
             </div>
@@ -489,8 +532,9 @@ function NavbarDefault({ propauth, check }) {
         style: "currency",
         currency: "VND",
     });
-    function JobTable() {
-        const [jobTable, setJobTable] = useState(jobs);
+    function JobTable({ data, handleClose }) {
+        console.log(data);
+        const [jobTable, setJobTable] = useState([data]);
         const handleMoneyChange = (
             jobIndex,
             fuelIndex,
@@ -510,60 +554,63 @@ function NavbarDefault({ propauth, check }) {
                 return updatedJobs;
             });
         };
-        // const handleAccept = async (event) => {
-        //     event.preventDefault();
-        //     try {
-        //         const data = jobTable.flatMap((job) =>
-        //             job.fuel_ot.map((fuel) => ({
-        //                 id_worker: job.id_worker,
-        //                 fuel_o_t_id_admin_check: propauth.id,
-        //                 fuel_o_t_workers_content: fuel.fuel_o_t_workers_content,
-        //                 fuel_o_t_workers_spend_money:
-        //                     fuel.fuel_o_t_workers_spend_money,
-        //                 // fuel.fuel_o_t_workers_content === "TC"
-        //                 //     ? parseFloat(
-        //                 //           fuel.fuel_o_t_workers_spend_money
-        //                 //       ) * 37000
-        //                 //     : fuel.fuel_o_t_workers_spend_money,
-        //             }))
-        //         );
-        //         console.log(data);
-        //         const formatJson = JSON.stringify({
-        //             data: JSON.stringify(data),
-        //         });
-        //         const response = await fetch("api/fuel-ot", {
-        //             method: "POST",
-        //             body: formatJson, // Chuyển mảng data thành chuỗi JSON và đặt vào phần body của request
-        //             headers: {
-        //                 "Content-Type": "application/json", // Đặt header "Content-Type" là "application/json"
-        //             },
-        //         });
-        //         if (response.status === 200) {
-        //             console.log("Dữ liệu đã được gửi thành công lên server");
-        //             // Xử lý phản hồi từ server nếu cần
-        //             handleOpenSpending();
-        //         }
-        //     } catch (error) {
-        //         console.error("Lỗi khi gửi dữ liệu lên server:", error);
-        //         // Xử lý lỗi nếu có
-        //     }
-        // };
-        // const totalFuelSpend = jobTable.reduce((total, job) => {
-        //     const fuelSpend = job.fuel_ot.reduce(
-        //         (sum, fuel) =>
-        //             sum + parseFloat(fuel.fuel_o_t_workers_spend_money),
-        //         0
-        //     );
-        //     return total + fuelSpend;
-        // }, 0);
+        const handleAccept = async (event) => {
+            event.preventDefault();
+            try {
+                const data = jobTable.flatMap((job) =>
+                    job.report.map((reportItem) =>
+                        job.fuel_ot.map((fuel) => ({
+                            id_worker: reportItem.id_worker,
+                            fuel_o_t_id_admin_check: propauth.id,
+                            fuel_o_t_workers_content:
+                                fuel.fuel_o_t_workers_content,
+                            fuel_o_t_workers_spend_money:
+                                fuel.fuel_o_t_workers_spend_money,
+                            // fuel.fuel_o_t_workers_content === "TC"
+                            //     ? parseFloat(fuel.fuel_o_t_workers_spend_money) * 37000
+                            //     : fuel.fuel_o_t_workers_spend_money,
+                        }))
+                    )
+                );
+                const formatJson = JSON.stringify({
+                    data: JSON.stringify(data[0]),
+                });
+                const response = await fetch("api/fuel-ot", {
+                    method: "POST",
+                    body: formatJson, // Chuyển mảng data thành chuỗi JSON và đặt vào phần body của request
+                    headers: {
+                        "Content-Type": "application/json", // Đặt header "Content-Type" là "application/json"
+                    },
+                });
+                if (response.status === 200) {
+                    console.log("Dữ liệu đã được gửi thành công lên server");
+                    // Xử lý phản hồi từ server nếu cần
+                    handleClose();
+                }
+            } catch (error) {
+                console.error("Lỗi khi gửi dữ liệu lên server:", error);
+                // Xử lý lỗi nếu có
+            }
+        };
 
-        // // Tính toán doanh số (ds)
-        // const ds =
-        //     jobTable.reduce((total, job) => {
-        //         const workRevenue = parseFloat(job.work_revenue);
-        //         const workExpenditure = parseFloat(job.work_expenditure);
-        //         return total + workRevenue - workExpenditure;
-        //     }, 0) - totalFuelSpend;
+        const calculateRevenue = (data) => {
+            let totalRevenue = 0;
+            if (data || data != 'undefined') {
+                data.forEach((item) => {
+                    const workRevenue = item.report[0]?.work_revenue; // Lấy doanh thu từ báo cáo
+                    const workExpenditure = item.report[0]?.work_expenditure; // Lấy chi phí từ báo cáo
+                    const fuelSpend = item.fuel_ot.reduce(
+                        (acc, fuel) => acc + fuel.fuel_o_t_workers_spend_money,
+                        0
+                    ); // Tổng chi phí nhiên liệu từ từng loại
+                    totalRevenue += workRevenue - (workExpenditure + fuelSpend); // Tính toán doanh số và cộng vào tổng
+                });
+            }
+            return totalRevenue;
+        };
+
+        // Sử dụng hàm tính toán
+        const ds = calculateRevenue(jobTable);
         return (
             <Card className="w-full h-full ">
                 <table className="w-full overflow-scroll text-center table-auto min-w-max">
@@ -581,128 +628,131 @@ function NavbarDefault({ propauth, check }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {jobTable.map((job, index) => {
-                            return (
-                                <React.Fragment key={index}>
-                                    {job.report.map((jobReport) => {
-                                        console.log(
-                                            jobReport.id_worker,
-                                            "=",
-                                            job.id
-                                        );
-                                        return (
-                                            <>
-                                                {job.id ==
-                                                jobReport.id_worker ? (
-                                                    <>
-                                                        <tr className="even:bg-blue-gray-50/50">
-                                                            <td className="p-4">
-                                                                {1}
-                                                            </td>
-                                                            <td className="p-4">
-                                                                Ngày làm
-                                                            </td>
-                                                            <td className="p-4">
-                                                                {
-                                                                    jobReport.date_do
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                        <tr className="even:bg-blue-gray-50/50">
-                                                            <td className="p-4">
-                                                                {2}
-                                                            </td>
-                                                            <td className="p-4">
-                                                                Thu
-                                                            </td>
-                                                            <td className="p-4">
-                                                                {formatter.format(
-                                                                    jobReport.work_revenue
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                        <tr className="even:bg-blue-gray-50/50">
-                                                            <td className="p-4">
-                                                                {3}
-                                                            </td>
-                                                            <td className="p-4">
-                                                                Chi
-                                                            </td>
-                                                            <td className="p-4">
-                                                                {formatter.format(
-                                                                    jobReport.work_expenditure
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                        {job.fuel_ot.map(
-                                                            (fuel, i) => {
-                                                                const currentIndex =
-                                                                    index +
-                                                                    i +
-                                                                    2;
-                                                                return (
-                                                                    <tr
-                                                                        key={`${index}-${i}`}
-                                                                        className="even:bg-blue-gray-50/50"
-                                                                    >
-                                                                        <td className="p-4">
-                                                                            {
-                                                                                currentIndex
-                                                                            }
-                                                                        </td>
-                                                                        <td className="p-4">
-                                                                            {fuel.fuel_o_t_workers_content ==
-                                                                            "CX"
-                                                                                ? "Chi Xăng"
-                                                                                : fuel.fuel_o_t_workers_content ==
-                                                                                  "CP"
-                                                                                ? "Chi Phụ"
-                                                                                : " Tăng Ca"}
-                                                                        </td>
-                                                                        <td className="p-4">
-                                                                            <input
-                                                                                className="p-1 rounded-md"
-                                                                                type="text"
-                                                                                value={
-                                                                                    fuel.fuel_o_t_workers_spend_money
+                        {Array.isArray(jobTable) &&
+                            jobTable.map((job, index) => {
+                                return (
+                                    <React.Fragment key={index}>
+                                        {job.report.map((jobReport) => {
+                                            console.log(
+                                                jobReport.id_worker,
+                                                "=",
+                                                job.id
+                                            );
+                                            return (
+                                                <>
+                                                    {job.id ==
+                                                    jobReport.id_worker ? (
+                                                        <>
+                                                            <tr className="even:bg-blue-gray-50/50">
+                                                                <td className="p-4">
+                                                                    {1}
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    Ngày làm
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    {
+                                                                        jobReport.date_do
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                            <tr className="even:bg-blue-gray-50/50">
+                                                                <td className="p-4">
+                                                                    {2}
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    Thu
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    {formatter.format(
+                                                                        jobReport.work_revenue
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                            <tr className="even:bg-blue-gray-50/50">
+                                                                <td className="p-4">
+                                                                    {3}
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    Chi
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    {formatter.format(
+                                                                        jobReport.work_expenditure
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                            {job.fuel_ot.map(
+                                                                (fuel, i) => {
+                                                                    const currentIndex =
+                                                                        index +
+                                                                        i +
+                                                                        2;
+                                                                    return (
+                                                                        <tr
+                                                                            key={`${index}-${i}`}
+                                                                            className="even:bg-blue-gray-50/50"
+                                                                        >
+                                                                            <td className="p-4">
+                                                                                {
+                                                                                    currentIndex
                                                                                 }
-                                                                                onChange={(
-                                                                                    e
-                                                                                ) =>
-                                                                                    handleMoneyChange(
-                                                                                        index,
-                                                                                        i,
+                                                                            </td>
+                                                                            <td className="p-4">
+                                                                                {fuel.fuel_o_t_workers_content ==
+                                                                                "CX"
+                                                                                    ? "Chi Xăng"
+                                                                                    : fuel.fuel_o_t_workers_content ==
+                                                                                      "CP"
+                                                                                    ? "Chi Phụ"
+                                                                                    : " Tăng Ca"}
+                                                                            </td>
+                                                                            <td className="p-4">
+                                                                                <input
+                                                                                    className="p-1 rounded-md"
+                                                                                    type="text"
+                                                                                    value={
+                                                                                        fuel.fuel_o_t_workers_spend_money
+                                                                                    }
+                                                                                    onChange={(
                                                                                         e
-                                                                                            .target
-                                                                                            .value,
-                                                                                        fuel.fuel_o_t_workers_content
-                                                                                    )
-                                                                                }
-                                                                            />
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            }
-                                                        )}{" "}
-                                                        <tr className="even:bg-blue-gray-50/50">
-                                                            <td
-                                                                className="p-4 text-xl font-bold text-center"
-                                                                colSpan={2}
-                                                            >
-                                                                Doanh Số
-                                                            </td>
-                                                            {/* <td className="p-4">
-                                {formatter.format(ds)}
-                            </td> */}
-                                                        </tr>
-                                                    </>
-                                                ) : null}
-                                            </>
-                                        );
-                                    })}
-                                </React.Fragment>
-                            );
-                        })}
+                                                                                    ) =>
+                                                                                        handleMoneyChange(
+                                                                                            index,
+                                                                                            i,
+                                                                                            e
+                                                                                                .target
+                                                                                                .value,
+                                                                                            fuel.fuel_o_t_workers_content
+                                                                                        )
+                                                                                    }
+                                                                                />
+                                                                            </td>
+                                                                        </tr>
+                                                                    );
+                                                                }
+                                                            )}{" "}
+                                                            <tr className="even:bg-blue-gray-50/50">
+                                                                <td
+                                                                    className="p-4 text-xl font-bold text-center"
+                                                                    colSpan={2}
+                                                                >
+                                                                    Doanh Số
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    {formatter.format(
+                                                                        ds
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        </>
+                                                    ) : null}
+                                                </>
+                                            );
+                                        })}
+                                    </React.Fragment>
+                                );
+                            })}
                     </tbody>
                 </table>
                 <div className="p-4 mt-1">
@@ -710,7 +760,7 @@ function NavbarDefault({ propauth, check }) {
                         className="w-full"
                         color="green"
                         variant="outlined"
-                        // onClick={handleAccept}
+                        onClick={handleAccept}
                     >
                         Cập Nhật
                     </Button>
@@ -824,11 +874,11 @@ function NavbarDefault({ propauth, check }) {
                                         {jobCategories.map(({ code }) =>
                                             renderWorkerGroup(
                                                 code,
-                                                0,
-                                                handleOpenSpending
+                                                0
+                                                // handleOpenSpending
                                             )
                                         )}
-                                        <Dialog
+                                        {/* <Dialog
                                             key={1}
                                             open={openSpending}
                                             handler={handleOpenSpending}
@@ -840,11 +890,26 @@ function NavbarDefault({ propauth, check }) {
                                                             Tổng Thu Chi Cuối
                                                             Ngày
                                                         </h2>
-                                                        <JobTable />
+                                                        {jobs.map(
+                                                            (job, index) => {
+                                                                return (
+                                                                    <>
+                                                                        {job.report !=
+                                                                            "" && (
+                                                                            <JobTable
+                                                                                data={
+                                                                                    job.report
+                                                                                }
+                                                                            />
+                                                                        )}
+                                                                    </>
+                                                                );
+                                                            }
+                                                        )}
                                                     </div>
                                                 </div>
                                             </DialogBody>
-                                        </Dialog>
+                                        </Dialog> */}
                                     </div>
                                 </div>
                                 <div className="w-full">

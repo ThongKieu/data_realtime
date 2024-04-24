@@ -32,6 +32,11 @@ Route::prefix('web')->group(function () {
         //----------------------------------------------
         Route::post('code-worker','App\Http\Controllers\CodeWorkerKindController@store');
         Route::post('check-code-worker','App\Http\Controllers\CodeWorkerKindController@checkCode');
+        Route::get('all-code','App\Http\Controllers\CodeWorkerKindController@index');
+        Route::post('change-code-status','App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
+
+        
+
     });
     Route::apiResource('district', DistrictController::class);
     Route::post('push-online', 'App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');

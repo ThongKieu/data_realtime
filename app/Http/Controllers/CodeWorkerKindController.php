@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\UsersAdminController;
 use App\Models\CodeWorkerKind;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,25 @@ class CodeWorkerKindController extends Controller
     public function checkCode(Request $re) {
         
         return $re->all();
+    }
+    public function changeCodeStatus(Request $re) {
+        $check = UsersAdminController::checkPerAd($re->auth_id);
+        if($check == 1 )
+        {
+            if( $re->id)
+            {
+               $up = CodeWorkerKind::where($re->id)->update(['status_code_worker'=>$re->status_code_worker]);
+               if($up)
+               {
+                return response()->json('Up done');
+               }
+               else 
+               {
+                return response()->json('Up false');
+               }
+            }
+        }
+        return 'Permission Dinied!!!!!!!';
     }
 
 

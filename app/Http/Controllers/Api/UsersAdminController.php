@@ -55,4 +55,18 @@ class UsersAdminController extends Controller
         User::where('id','=',$id)->update(['permission'=>$request->permission]);
         return response()->json('Done');
     }
+    public static function checkPerAd ($auth_id)
+    {
+        $check = User::where($auth_id)->value('permission');
+        if($check == 0)
+        {
+            return 1;
+        }
+        elseif($check == 1)
+        {
+            return 1;
+        }
+        else 
+         return 0;
+    }
 }

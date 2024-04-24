@@ -343,20 +343,20 @@ function NavList({ active = false }) {
 }
 
 function NavbarDefault({ propauth, check }) {
+    const { width, height } = useWindowSize(200);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     const [socketDelete, setSocketDelete] = useState();
     const [countDelete, setCountDelete] = useState(0);
+    const [infoWorker, setInfoWorker] = useState([]);
+    const [openWorker, setOpenWorker] = useState(false);
+    const handleOpenWorker = () => setOpenWorker(!openWorker);
     useEffect(() => {
         fetchDelete();
         fetchInfoWorker();
     }, [check]);
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
-        window.addEventListener(
-            "resize",
-            () => window.innerWidth >= 960 && setIsNavOpen(false)
-        );
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
@@ -378,7 +378,6 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
-    const [infoWorker, setInfoWorker] = useState([]);
     const fetchInfoWorker = async () => {
         try {
             const response = await fetch(host + "api/web/workers");
@@ -411,8 +410,34 @@ function NavbarDefault({ propauth, check }) {
     ];
     const [openSpending, setOpenSpending] = useState(false);
     const handleOpenSpending = () => setOpenSpending(!openSpending);
-
     const [jobs, setJobs] = useState([]);
+
+    const data = [
+        {
+            id_worker: 1,
+            work_revenue: 10000,
+            work_expenditure: 1110,
+            date_do: "22-04-2024",
+            infoWorker: {
+                name: "Nguyen Van A",
+                code: "A15",
+            },
+            fuel_ot: [
+                {
+                    fuel_content: "CX",
+                    fuel_money: 150000,
+                    fuel_o_t_id_admin_check: 3,
+                    fuel_o_t_workers_flag: 0, //0: Chưa xác nhận, 1 đã xác nhận, 2 từ chối
+                },
+                {
+                    fuel_content: "CP",
+                    fuel_money: 150000,
+                    fuel_o_t_id_admin_check: 3,
+                    fuel_o_t_workers_flag: 0, //0: Chưa xác nhận, 1 đã xác nhận, 2 từ chối
+                },
+            ],
+        },
+    ];
     const getDataWorkerSales = async (id, date_check) => {
         const uri = "api/report-worker";
         const data = {
@@ -439,7 +464,6 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
-    console.log(jobs);
     const renderWorkerGroup = (prefix, status, handleOpen) => {
         return (
             <div className="w-full p-1" key={`${prefix}-${status}`}>
@@ -468,20 +492,6 @@ function NavbarDefault({ propauth, check }) {
                                     }}
                                 >
                                     <span> {item.label}</span>
-                                    {jobs.map((item) =>
-                                        item.fuel_ot.map(
-                                            (itemFuel_ot, index) => (
-                                                <React.Fragment key={index}>
-                                                    {itemFuel_ot.fuel_o_t_workers_flag ===
-                                                    0 ? (
-                                                        <CurrencyDollarIcon className="w-5 h-5" />
-                                                    ) : (
-                                                        <ShieldCheckIcon className="w-5 h-5" />
-                                                    )}
-                                                </React.Fragment>
-                                            )
-                                        )
-                                    )}
                                 </p>
                             </div>
                         )
@@ -489,9 +499,6 @@ function NavbarDefault({ propauth, check }) {
             </div>
         );
     };
-    const [openWorker, setOpenWorker] = useState(false);
-    const handleOpenWorker = () => setOpenWorker(!openWorker);
-    const { width, height } = useWindowSize(200);
 
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
@@ -526,12 +533,13 @@ function NavbarDefault({ propauth, check }) {
                         id_worker: job.id_worker,
                         fuel_o_t_id_admin_check: propauth.id,
                         fuel_o_t_workers_content: fuel.fuel_o_t_workers_content,
-                        fuel_o_t_workers_spend_money: fuel.fuel_o_t_workers_spend_money
-                            // fuel.fuel_o_t_workers_content === "TC"
-                            //     ? parseFloat(
-                            //           fuel.fuel_o_t_workers_spend_money
-                            //       ) * 37000
-                            //     : fuel.fuel_o_t_workers_spend_money,
+                        fuel_o_t_workers_spend_money:
+                            fuel.fuel_o_t_workers_spend_money,
+                        // fuel.fuel_o_t_workers_content === "TC"
+                        //     ? parseFloat(
+                        //           fuel.fuel_o_t_workers_spend_money
+                        //       ) * 37000
+                        //     : fuel.fuel_o_t_workers_spend_money,
                     }))
                 );
                 console.log(data);

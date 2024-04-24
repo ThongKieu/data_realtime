@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code_worker',100);
             $table->string('kind_worker',100);
             $table->string('descript_code_worker',200);
-            $table->tinyInteger('status_code_worker')->default(1)->comment('0:chưa kích hoạt; 1: kích hoạt');
+            $table->tinyInteger('status_code_worker')->default(1)->comment('0:chưa kích hoạt; 1: kích hoạt;2: đã bỏ ');
             $table->timestamps();
         });
     }

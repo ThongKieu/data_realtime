@@ -7,35 +7,36 @@ import {
     MapPinIcon,
     UserPlusIcon,
 } from "@heroicons/react/24/outline";
-import { Button, Card, Dialog, DialogBody, DialogFooter, DialogHeader, Typography, Input, Textarea } from "@material-tailwind/react";
+import { Button, Card, Dialog, DialogBody, DialogFooter, DialogHeader, Typography, Input, Textarea, Spinner, Divider, Switch } from "@material-tailwind/react";
 
 import { useState } from "react";
 import { host } from "@/Utils/UrlApi";
+import { Box } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { useEffect } from "react";
 function CodeWorker(auth) {
     const [open, setOpen] = useState(false);
     const [checkCode, setCheckCode] = useState('');
-
+    const [getData, usersData] = useState([]);
     const handleOpen = () => setOpen(!open);
     const [dataCodeWorker, setFormDataCodeWorker] = useState({
         code_worker: '', kind_worker: '', descript_code_worker: ''
     });
+    const [changStatus, setchangStatus] = useState({
+        id: '', status: ''
+    });
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'code_worker') {
-            // Kiểm tra xem mã code_worker có ít nhất 3 ký tự không
-            if (value.length < 3) {
-                console.log('Mã code_worker cần ít nhất 3 ký tự');
-                // Thực hiện các hành động khác nếu cần
-            }
-        }
-        
+
+
         setFormDataCodeWorker({ ...dataCodeWorker, [name]: value });
         // fetchCheckCode(value);
         console.log(dataCodeWorker.code_worker);
     };
-     // useEffect chỉ chạy một lần sau khi render đầu tiên
+    // useEffect chỉ chạy một lần sau khi render đầu tiên
 
-     const fetchData = async (dataCodeWorker) => {
+    const sentData = async (dataCodeWorker) => {
+        console.log(dataCodeWorker);
         try {
             const res = await fetch(host + "api/web/workers/code-worker", {
                 method: "POST",
@@ -45,9 +46,15 @@ function CodeWorker(auth) {
                 body: JSON.stringify(dataCodeWorker),
             });
             if (res.ok) {
-                console.log("status_change_worker");
-                handleOpen();
-                window.location.reload();
+                const resData = await res.json();
+                console.log("re", resData);
+                if (resData.data == 1) {
+                    alert('Mã vừa nhập đã tồn tại vui lòng đổi mã!!! ');
+                }
+                else {
+                    window.location.reload();
+                }
+                // handleOpen();
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -56,14 +63,14 @@ function CodeWorker(auth) {
         }
         // console.log('11111');
     };
-    const fetchCheckCode = async (code) => {
+    const fetchChangSataus = async (changStatus) => {
         try {
-            const res = await fetch(host + "api/web/workers/check-code-worker", {
+            const res = await fetch(host + "api/web/workers/change-code-status", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(code),
+                body: JSON.stringify(changStatus),
             });
             if (res.ok) {
 
@@ -76,6 +83,101 @@ function CodeWorker(auth) {
             console.error("Lỗi khi gửi dữ liệu:", error);
         }
     };
+    const fetchData = async () => {
+        try {
+            const response = await fetch(host + "api/web/workers/all-code");
+            const jsonData = await response.json();
+            if (response.ok) {
+                usersData(jsonData);
+                console.log(jsonData);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+    const column = [
+        {
+            field: "id",
+            headerName: "STT",
+            type: "text",
+            width: 100,
+            minWidth: 50,
+            maxWidth: 200,
+            editable: false,
+            align: "center",
+            headerAlign: "center",
+        },
+        {
+            field: "code_worker",
+            headerName: "Mã Thợ",
+            type: "text",
+            editable: false,
+            align: "center",
+            width: 250,
+            headerAlign: "center",
+        },
+        {
+            field: "kind_worker",
+            headerName: "Loại Thợ",
+            type: "text",
+            editable: false,
+            align: "center",
+            width: 250,
+            headerAlign: "center",
+        },
+        {
+            field: "descript_code_worker",
+            headerName: "Mô tả",
+            type: "text",
+            editable: false,
+            align: "center",
+            width: 250,
+            headerAlign: "center",
+        },
+        {
+            field: 'status_code_worker',
+            headerName: "Trạng Thái ",
+            type: "text",
+            width: 220,
+            editable: false,
+            renderCell: (params) => {
+
+                // pramas.row.status_code_worker
+                const [switches, setSwitches] = useState(params.row.status_code_worker);
+
+                const handleChange = (id) => {
+                    setSwitches({
+                        ...switches,
+                        [id]: !switches[id]
+                    });
+                };
+
+                // const [checked, setChecked] = useState(false);
+
+                console.log(switches);
+
+                return (
+                    <>
+                        <Switch
+                            id={params.id}
+                            checked={params.row.status_code_worker===1? switches[0]:switches[1]}
+                            onChange={() => handleChange(`${params.row.status_code_worker}`)}
+                        />
+                        <div className="text-sm font-semibold text-gray-700">status_code_worker</div>
+                    </>
+                );
+
+            },
+
+        },
+    ];
+
     return (
         <AuthenticatedLayoutAdmin>
             <Head title="Tài khoản thợ" />
@@ -140,8 +242,8 @@ function CodeWorker(auth) {
                                     >
                                         <span>Cancel</span>
                                     </Button>
-                                    <Button variant="gradient" color="green" onClick={()=>fetchData(dataCodeWorker)}>
-                                        <span>Con1firm</span>
+                                    <Button variant="gradient" color="green" onClick={() => sentData(dataCodeWorker)}>
+                                        <span>Con1irm</span>
                                     </Button>
                                 </DialogFooter>
                             </Dialog>
@@ -152,7 +254,29 @@ function CodeWorker(auth) {
 
             </div>
             <Card className="bg-white ">
-
+                {isLoading ? (
+                    <div className="flex justify-center p-2 align-middle ">
+                        <Spinner className="w-6 h-6" color="amber" />
+                        <p className="pl-2 text-center text-black">
+                            Loading...
+                        </p>
+                    </div>
+                ) : (
+                    <DataGrid
+                        {...getData}
+                        rows={getData}
+                        disableColumnFilter
+                        disableColumnSelector
+                        disableDensitySelector
+                        columns={column}
+                        slots={{ toolbar: GridToolbar }}
+                        slotProps={{
+                            toolbar: {
+                                showQuickFilter: true,
+                            },
+                        }}
+                    />
+                )}
             </Card>
         </AuthenticatedLayoutAdmin>
     )

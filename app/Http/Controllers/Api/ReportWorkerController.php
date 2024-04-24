@@ -52,7 +52,7 @@ class ReportWorkerController extends Controller
     public function getByIdWorker(Request $r)
     {
 
-        
+
         if ($r->date_check == null || $r->date_check == '') {
             $date_check = date('Y-m-d');
         } else {
@@ -92,15 +92,15 @@ class ReportWorkerController extends Controller
         } else {
             $date_check = $r->date_check;
         }
-       
-        $id_worker =    Worker::where('id','>','0')->get(['id','worker_full_name',  'worker_code'] );
+
+        $id_worker =    Worker::where('id','>','0')->get(['id','worker_full_name','worker_code','worker_status','worker_kind'] );
         foreach($id_worker as $item)
         {
             $item->report = ReportWorker::where('date_do', '=', $date_check)->where('id_worker', '=', $item->id)->get(['id_worker', 'date_do', 'work_revenue', 'work_expenditure']);
-            $item->fuel_ot =FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $date_check)->where('fuel_o_t_workers_id', '=', $r->id_worker)->get(['fuel_o_t_workers_content', 'fuel_o_t_workers_spend_money', 'fuel_o_t_workers_flag','fuel_o_t_id_admin_check']);
+            $item->fuel_ot =FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $date_check)->where('fuel_o_t_workers_id', '=', $item->id)->get(['fuel_o_t_workers_content', 'fuel_o_t_workers_spend_money', 'fuel_o_t_workers_flag','fuel_o_t_id_admin_check']);
 
         }
-            
+
         return response()->json($id_worker);
     }
 }

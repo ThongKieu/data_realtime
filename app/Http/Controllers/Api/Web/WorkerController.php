@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Worker;
 use App\Models\AccountionWorker;
+use App\Models\CodeWorkerKind;
 use App\Models\MapsWorker;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -97,6 +98,10 @@ class WorkerController extends Controller
     {
         $next_worker_code = substr($r_last_num, 1)+1;
     }
+    elseif($r_last_num == null)
+    {
+        $next_worker_code = '01';
+    }
     else
     {
         return response()->json('Check infomation!!!!');
@@ -109,34 +114,37 @@ class WorkerController extends Controller
         $paddedNumber = $next_worker_code;
     }
 
-        switch($request->worker_kind)
-            {
-                case 0:
-                    $next_worker_code = 'A'. $paddedNumber;
-                    break;
-                case 1:
-                    $next_worker_code = 'B'. $paddedNumber;
-                    break;
-                case 2:
-                    $next_worker_code = 'C'. $paddedNumber;
-                    break;
-                case 3:
-                    $next_worker_code = 'D'. $paddedNumber;
-                    break;
-                case 4:
-                    $next_worker_code = 'F'. $paddedNumber;
-                    break;
-                case 6:
-                    $next_worker_code = 'H'. $paddedNumber;
-                    break;
-                case 5:
-                    $next_worker_code = 'G'. $paddedNumber;
-                    break;
-                default:
-                    $next_worker_code = '121';
-                    return $next_worker_code;
-            }
+        // switch($request->worker_kind)
+        //     {
+        //         case 0:
+        //             $next_worker_code = 'A'. $paddedNumber;
+        //             break;
+        //         case 1:
+        //             $next_worker_code = 'B'. $paddedNumber;
+        //             break;
+        //         case 2:
+        //             $next_worker_code = 'C'. $paddedNumber;
+        //             break;
+        //         case 3:
+        //             $next_worker_code = 'D'. $paddedNumber;
+        //             break;
+        //         case 4:
+        //             $next_worker_code = 'F'. $paddedNumber;
+        //             break;
+        //         case 6:
+        //             $next_worker_code = 'H'. $paddedNumber;
+        //             break;
+        //         case 5:
+        //             $next_worker_code = 'G'. $paddedNumber;
+        //             break;
+        //         default:
+        //             $next_worker_code = '121';
+        //             return $next_worker_code;
+        //     }
 
+        $code = CodeWorkerKind::where('id','=',$request->worker_kind)->value('code_worker');
+        $next_worker_code = $code. $paddedNumber;
+            dd($code);
     $da = new Worker([
         "worker_full_name" => $request->worker_full_name,
         "worker_kind" => $request->worker_kind,

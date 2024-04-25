@@ -60,7 +60,7 @@ class UsersAdminController extends Controller
         $check = User::where($auth_id)->value('permission');
         if($check == 0)
         {
-            return 1;
+            return 2;
         }
         elseif($check == 1)
         {

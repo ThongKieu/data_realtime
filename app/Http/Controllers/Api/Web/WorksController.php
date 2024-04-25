@@ -205,7 +205,6 @@ class WorksController extends Controller
             }
             return 1;
         } else {
-
             if (isset($request->from_app)) {
                 NoticationAllController::create('2', $request->content, '');
             }

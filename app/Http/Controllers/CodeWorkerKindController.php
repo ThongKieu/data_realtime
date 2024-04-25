@@ -35,7 +35,7 @@ class CodeWorkerKindController extends Controller
     }
     public function changeCodeStatus(Request $re) {
         $check = UsersAdminController::checkPerAd($re->auth_id);
-        
+
         if($check == 2 )
         {
             if( $re->id)

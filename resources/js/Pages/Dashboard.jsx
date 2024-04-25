@@ -120,8 +120,8 @@ function Dashboard({ auth }) {
         pushOn();
     }, [selectedDate]);
     useEffect(() => {
-        if (socketD) {
-            socketD.emit("pushOnline", message);
+        if (newSocket) {
+            newSocket.emit("pushOnline", message);
             pushOn();
         }
         setSocketD(newSocket, { secure: true });

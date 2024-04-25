@@ -144,7 +144,7 @@ class WorkerController extends Controller
 
         $code = CodeWorkerKind::where('id','=',$request->worker_kind)->value('code_worker');
         $next_worker_code = $code. $paddedNumber;
-            dd($code);
+            // dd($code);
     $da = new Worker([
         "worker_full_name" => $request->worker_full_name,
         "worker_kind" => $request->worker_kind,

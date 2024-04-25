@@ -203,7 +203,7 @@ class WorksController extends Controller
                 ]);
                 $workHas->save();
             }
-            return 'true';
+            return 1;
         } else {
 
             if (isset($request->from_app)) {
@@ -217,7 +217,7 @@ class WorksController extends Controller
                 ]);
                 $workHas->save();
             }
-            return 'true';
+            return 1;
 
         }
     }

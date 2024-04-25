@@ -346,12 +346,10 @@ function NavbarDefault({ propauth, check }) {
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     const [socketDelete, setSocketDelete] = useState();
     const [countDelete, setCountDelete] = useState(0);
-    const [infoWorker, setInfoWorker] = useState([]);
     const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
     useEffect(() => {
         fetchDelete();
-        fetchInfoWorker();
         getDataWorkerSales();
     }, [check]);
     useEffect(() => {
@@ -359,7 +357,7 @@ function NavbarDefault({ propauth, check }) {
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
-                fetchInfoWorker();
+                getDataWorkerSales(data);
             }
         });
     }, [check]);
@@ -377,35 +375,16 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
-    const fetchInfoWorker = async () => {
-        try {
-            const response = await fetch(host + "api/web/workers");
-            const jsonData = await response.json();
-            const formatJson = jsonData.map((item) => ({
-                value: item.id,
-                label:
-                    "(" +
-                    item.worker_code +
-                    ")" +
-                    " " +
-                    getFirstName(item.worker_full_name),
-                workerCode: item.worker_code,
-                workerStatus: item.worker_status,
-            }));
-            setInfoWorker(formatJson);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
+
     // In kết quả ra console
     const jobCategories = [
-        { code: 0, name: "Điện Nước" },
-        { code: 1, name: "Điện Lạnh" },
-        { code: 2, name: "Đồ Gỗ" },
-        { code: 3, name: "NLMT" },
-        { code: 4, name: " Xây Dựng" },
-        { code: 5, name: " Vận Chuyển" },
-        { code: 6, name: "Cơ Khí" },
+        { code: 1, name: "Điện Nước" },
+        { code: 2, name: "Điện Lạnh" },
+        { code: 3, name: "Đồ Gỗ" },
+        { code: 4, name: "NLMT" },
+        { code: 5, name: " Xây Dựng" },
+        { code: 6, name: " Vận Chuyển" },
+        { code: 7, name: "Cơ Khí" },
     ];
     const [openSpending, setOpenSpending] = useState(false);
     const handleOpenSpending = () => setOpenSpending(!openSpending);
@@ -559,17 +538,27 @@ function NavbarDefault({ propauth, check }) {
             try {
                 const data = jobTable.flatMap((job) =>
                     job.report.map((reportItem) =>
-                        job.fuel_ot.map((fuel) => ({
-                            id_worker: reportItem.id_worker,
-                            fuel_o_t_id_admin_check: propauth.id,
-                            fuel_o_t_workers_content:
-                                fuel.fuel_o_t_workers_content,
-                            fuel_o_t_workers_spend_money:
-                                fuel.fuel_o_t_workers_spend_money,
-                            // fuel.fuel_o_t_workers_content === "TC"
-                            //     ? parseFloat(fuel.fuel_o_t_workers_spend_money) * 37000
-                            //     : fuel.fuel_o_t_workers_spend_money,
-                        }))
+                        job.fuel_ot.map((fuel) => {
+                            let updatedSpendMoney =
+                                fuel.fuel_o_t_workers_spend_money;
+                            if (fuel.fuel_o_t_workers_content === "TC") {
+                                const originalSpendMoney = parseFloat(
+                                    fuel.fuel_o_t_workers_spend_money
+                                );
+                                updatedSpendMoney =
+                                    originalSpendMoney !==
+                                    fuel.fuel_o_t_workers_spend_money
+                                        ? originalSpendMoney * 37000
+                                        : fuel.fuel_o_t_workers_spend_money;
+                            }
+                            return {
+                                id_worker: reportItem.id_worker,
+                                fuel_o_t_id_admin_check: propauth.id,
+                                fuel_o_t_workers_content:
+                                    fuel.fuel_o_t_workers_content,
+                                fuel_o_t_workers_spend_money: updatedSpendMoney,
+                            };
+                        })
                     )
                 );
                 const formatJson = JSON.stringify({
@@ -583,8 +572,8 @@ function NavbarDefault({ propauth, check }) {
                     },
                 });
                 if (response.status === 200) {
-                    console.log("Dữ liệu đã được gửi thành công lên server");
-                    // Xử lý phản hồi từ server nếu cần
+                    newSocket.emit('addWorkTo_Server',data)
+                    // setJobTable();
                     handleClose();
                 }
             } catch (error) {
@@ -595,8 +584,8 @@ function NavbarDefault({ propauth, check }) {
 
         const calculateRevenue = (data) => {
             let totalRevenue = 0;
-            if (data || data != 'undefined') {
-                data.forEach((item) => {
+            if (data || data != "undefined") {
+                data?.forEach((item) => {
                     const workRevenue = item.report[0]?.work_revenue; // Lấy doanh thu từ báo cáo
                     const workExpenditure = item.report[0]?.work_expenditure; // Lấy chi phí từ báo cáo
                     const fuelSpend = item.fuel_ot.reduce(
@@ -835,7 +824,7 @@ function NavbarDefault({ propauth, check }) {
                             variant="paragraph"
                             color="blue-gray"
                         >
-                            {infoWorker.length}
+                            {jobs.length}
                         </Typography>
                     </Card>
 

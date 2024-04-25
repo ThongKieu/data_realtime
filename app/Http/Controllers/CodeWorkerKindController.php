@@ -12,7 +12,7 @@ class CodeWorkerKindController extends Controller
     public function index() {
         return response()->json(CodeWorkerKind::all());
     }
-    public function store(Request $re) {  
+    public function store(Request $re) {
         // dd($re->all());
         $data= CodeWorkerKind::where('code_worker','=',$re->code_worker)->get('id');
         // dd(count($data));
@@ -25,12 +25,12 @@ class CodeWorkerKindController extends Controller
             return response()->json(['data'=> 0]);
 
         }
-       
+
         return response()->json(['data'=>1]);
     }
 
     public function checkCode(Request $re) {
-        
+
         return $re->all();
     }
     public function changeCodeStatus(Request $re) {
@@ -39,12 +39,12 @@ class CodeWorkerKindController extends Controller
         {
             if( $re->id)
             {
-               $up = CodeWorkerKind::where($re->id)->update(['status_code_worker'=>$re->status_code_worker]);
+               $up = CodeWorkerKind::where('id','=',$re->id)->update(['status_code_worker'=>$re->status_code_worker]);
                if($up)
                {
                 return response()->json('Up done');
                }
-               else 
+               else
                {
                 return response()->json('Up false');
                }

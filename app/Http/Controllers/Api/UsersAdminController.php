@@ -57,7 +57,7 @@ class UsersAdminController extends Controller
     }
     public static function checkPerAd ($auth_id)
     {
-        $check = User::where($auth_id)->value('permission');
+        $check = User::where('id','=',$auth_id)->value('permission');
         if($check == 0)
         {
             return 2;
@@ -66,7 +66,7 @@ class UsersAdminController extends Controller
         {
             return 1;
         }
-        else 
+        else
          return 0;
     }
 }

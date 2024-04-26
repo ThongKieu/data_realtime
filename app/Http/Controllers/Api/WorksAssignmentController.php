@@ -521,9 +521,9 @@ class WorksAssignmentController extends Controller
 
             $workContinue->save();
             if ($workContinue) {
-                return 'true';
+                return 1;
             } else {
-                return 'failed';
+                return 0;
             }
         } else {
             $id_cus = $request->id_cus;

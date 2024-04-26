@@ -20,12 +20,14 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 import useWindowSize from "@/Core/Resize";
+import newSocket from "@/Utils/Socket";
 function WorkerList({ auth }) {
     // thêm thợ
     const [open, setOpen] = useState(false);
     const [openAccApp, setOpenAccApp] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [rows, setData] = useState([]);
+    const [workersKind, setWorkersKind] = useState([]);
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
         worker_address: "",
@@ -38,7 +40,13 @@ function WorkerList({ auth }) {
 
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
-    const handleSelectChange = (e) => {};
+    const handleSelectChange = (event) => {
+        const { name, value } = event.target;
+        setFormDataWorker((prevInfo) => ({
+            ...prevInfo,
+            [name]: value,
+        }));
+    };
     const handleFileChange = (event) => {
         setSelectedFiles({ avatar_new: event.target.files[0] });
     };
@@ -90,6 +98,10 @@ function WorkerList({ auth }) {
     };
     useEffect(() => {
         // Gọi API để lấy dữ liệu
+        fetchDataWorker();
+        fetchDataCodeWorker();
+    }, []);
+    const fetchDataWorker = () => {
         fetch(host + "api/web/workers")
             .then((response) => {
                 if (!response.ok) {
@@ -103,9 +115,23 @@ function WorkerList({ auth }) {
             .catch((error) => {
                 console.error("Lỗi khi lấy dữ liệu từ API:", error);
             });
-    }, []);
-    // useEffect chỉ chạy một lần sau khi render đầu tiên
-
+    };
+    const fetchDataCodeWorker = () => {
+        fetch(host + "api/web/workers/all-code")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setWorkersKind(data); // Cập nhật dữ liệu vào trạng thái React
+            })
+            .catch((error) => {
+                console.error("Lỗi khi lấy dữ liệu từ API:", error);
+                // Thực hiện xử lý lỗi ở đây, ví dụ: hiển thị thông báo lỗi cho người dùng hoặc thử lại yêu cầu
+            });
+    };
     const fetchData = async (data1) => {
         try {
             const res = await fetch(host + "api/web/update/worker", {
@@ -116,6 +142,7 @@ function WorkerList({ auth }) {
                 body: JSON.stringify(data1),
             });
             if (res.ok) {
+                newSocket.emit("addWorkTo_Server", data1);
                 console.log("status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -319,7 +346,6 @@ function WorkerList({ auth }) {
             field: "avatar",
             headerName: "Ảnh",
             renderCell: (params) => {
-                console.log(params);
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => setOpen(!open);
                 const [selectedImage, setSelectedImage] = useState(null);
@@ -431,7 +457,6 @@ function WorkerList({ auth }) {
             headerName: "Tài Khoản",
             align: "center",
             renderCell: (params) => {
-                console.log(params);
                 const handleActiveAccApp = async () => {
                     const URL_API = "/api/web/workers";
                     const data = {
@@ -589,14 +614,11 @@ function WorkerList({ auth }) {
                                 className="w-full border rounded-lg"
                                 required
                             >
-                                {/* <option value="">Vui lòng chọn loại thợ</option> */}
-                                <option value={0}>Điện Nước</option>
-                                <option value={1}>Điện Lạnh</option>
-                                <option value={2}>Đồ Gỗ</option>
-                                <option value={3}>Năng lượng mặt trời</option>
-                                <option value={4}>Xây Dựng</option>
-                                <option value={5}>Tài Xế</option>
-                                <option value={6}>Cơ Khí</option>
+                                {workersKind.map((item, index) => (
+                                    <option key={index} value={item.id}>
+                                        {item.kind_worker}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div>

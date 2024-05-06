@@ -132,10 +132,11 @@ function Dashboard({ auth }) {
             fetchDataDashboard(data, selectedDate);
         });
         newSocket.on("sendAddWorkTo_Client", (selectedDate, data) => {
-            if (data !== "") {
+            fetchDateDoneCheck();
+            if (data !== "" || data) {
                 fetchDateCheck(selectedDate);
                 fetchDataDashboard(data);
-                fetchDateDoneCheck(data, selectedDate);
+                fetchDateDoneCheck();
             }
         });
         newSocket.on(
@@ -182,11 +183,11 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDataDemo = async (url) => {
-        if (url || url != undefined || url != null || url != "") {
+        if (url) {
             try {
                 const response = await fetch(url);
                 const jsonData = await response.json();
-                socketD?.emit('addWorkTo_Server', jsonData);
+                socketD?.emit("addWorkTo_Server", jsonData);
                 return jsonData;
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -220,7 +221,7 @@ function Dashboard({ auth }) {
             console.log("Data lỗi không tồn tại!!");
         }
     };
-    const fetchDateDoneCheck = async (dateCheck) => {
+    const fetchDateDoneCheck = async () => {
         const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
@@ -1222,7 +1223,6 @@ function Dashboard({ auth }) {
                     actionType
                 ) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-
                     socketD.emit("ButtonDisable_To_Server", {
                         id: rowId,
                         isDisabled: !isOpenState,
@@ -1231,7 +1231,6 @@ function Dashboard({ auth }) {
                     switch (actionType) {
                         case "openSpendingTotal":
                             handleOpenFunction(!isOpenState);
-                            console.log("isOpenState", !isOpenState);
                             break;
                         case "openHuy":
                             handleOpenFunction(!isOpenState);
@@ -1260,6 +1259,7 @@ function Dashboard({ auth }) {
                         handleOpenSpending_total,
                         "openSpendingTotal"
                     );
+                    fetchDateDoneCheck();
                     console.log("xin chao openSpendingTotal", rowId);
                 };
                 const handleOpenHuyWithDisable = (rowId) => {
@@ -1339,7 +1339,6 @@ function Dashboard({ auth }) {
                             auth_id: auth.user.id,
                             image_work_path: selectedFilesKS,
                         };
-                        console.log("data khao sat:", data);
                         const response = await fetch(
                             "api/web/update/work-assignment-quote",
                             {
@@ -1412,10 +1411,18 @@ function Dashboard({ auth }) {
                             });
 
                             if (res.ok) {
-                                socketD.emit("UpdateDateTable_To_Server", formData);
-                                console.log("Yêu cầu POST đã được gửi thành công");
+                                socketD.emit(
+                                    "UpdateDateTable_To_Server",
+                                    formData
+                                );
+                                console.log(
+                                    "Yêu cầu POST đã được gửi thành công"
+                                );
                             } else {
-                                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+                                console.error(
+                                    "Lỗi khi gửi dữ liệu:",
+                                    res.statusText
+                                );
                             }
                         } catch (error) {
                             console.error("Lỗi khi gửi yêu cầu:", error);
@@ -1500,11 +1507,11 @@ function Dashboard({ auth }) {
                     }
                 };
                 const dataBtnChi = [
-                    {
-                        id: "BtnTraLich",
-                        content: "Trả Lịch",
-                        className: "text-blue-500 rounded-none border-blue-500",
-                    },
+                    // {
+                    //     id: "BtnTraLich",
+                    //     content: "Trả Lịch",
+                    //     className: "text-blue-500 rounded-none border-blue-500",
+                    // },
                     {
                         id: "BtnCapNhat",
                         content: "Cập Nhật",
@@ -1802,7 +1809,6 @@ function Dashboard({ auth }) {
                                 )}
                             </div>
                         )}
-
                         {/* ----------------ADMIN CHECK ------------ */}
                         <AdminCheckDialog
                             imageVt1={imageVt1}
@@ -1835,8 +1841,8 @@ function Dashboard({ auth }) {
                             handleImagePtDelete={(index) => {
                                 handleImagePtDelete(index);
                             }}
-                            handleChange={handleChange}
-                            cardExpires={cardExpires}
+                            // handleChange={handleChange}
+                            // cardExpires={cardExpires}
                             auth={auth}
                             handleSendImagePT={() =>
                                 handleImageSubmit(selectedFilesPT, 3)
@@ -1845,7 +1851,7 @@ function Dashboard({ auth }) {
                                 handleImageSubmit(selectedFilesVT, 2)
                             }
                             socketD={socketD}
-                            handleSearch={()=>handleSearch(selectedDate)}
+                            handleSearch={() => handleSearch(selectedDate)}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
@@ -2041,7 +2047,6 @@ function Dashboard({ auth }) {
                 style={{ height: `${height}px` }}
             >
                 <Card className="w-full mt-1 text-white rounded-none basis-5/12">
-
                     {isLoading ? (
                         <div className="flex justify-center p-2 align-middle ">
                             <Spinner className="w-6 h-6" color="amber" />
@@ -2109,8 +2114,6 @@ function Dashboard({ auth }) {
                                                 columns={columns}
                                                 hideFooterPagination={true}
                                                 autoHeight
-                                                {...height}
-                                                ref={result.ref}
                                                 containerProps={{
                                                     className: "hidden",
                                                 }}
@@ -2193,8 +2196,6 @@ function Dashboard({ auth }) {
                                                         },
                                                 }}
                                                 width={100}
-                                                autoHeight
-                                                {...height}
                                                 rows={result.rowsDataGrid}
                                                 columns={columnsright}
                                                 hideFooterPagination={false}
@@ -2248,7 +2249,7 @@ function Dashboard({ auth }) {
                     <Button
                         size="sm"
                         className="p-2 text-green-700 border border-green-700 rounded-full"
-                        onClick={()=>handleSearch(selectedDate)}
+                        onClick={() => handleSearch(selectedDate)}
                         variant="outlined"
                     >
                         <MagnifyingGlassIcon className="w-4 h-4 " />

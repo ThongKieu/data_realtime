@@ -280,32 +280,32 @@ function FloatingButton() {
                                         id="DN"
                                         name="kind_work"
                                         label="Điện Nước"
-                                        value="0"
-                                        checked={formData.kind_work === "0"}
+                                        value="1"
+                                        checked={formData.kind_work === "1"}
                                         onChange={handleChange}
                                     />
                                     <Radio
                                         id="DL"
                                         name="kind_work"
                                         label="Điện Lạnh"
-                                        value="1"
-                                        checked={formData.kind_work === "1"}
+                                        value="2"
+                                        checked={formData.kind_work === "2"}
                                         onChange={handleChange}
                                     />
                                     <Radio
                                         id="DG"
                                         name="kind_work"
                                         label="Đồ Gỗ"
-                                        value="2"
-                                        checked={formData.kind_work === "2"}
+                                        value="3"
+                                        checked={formData.kind_work === "3"}
                                         onChange={handleChange}
                                     />
                                     <Radio
                                         id="NLMT"
                                         name="kind_work"
                                         label="Năng Lượng"
-                                        value="3"
-                                        checked={formData.kind_work === "3"}
+                                        value="4"
+                                        checked={formData.kind_work === "4"}
                                         onChange={handleChange}
                                     />
                                 </div>
@@ -314,24 +314,24 @@ function FloatingButton() {
                                         id="XD"
                                         name="kind_work"
                                         label="Xây Dựng"
-                                        value="4"
-                                        checked={formData.kind_work === "4"}
+                                        value="5"
+                                        checked={formData.kind_work === "5"}
                                         onChange={handleChange}
                                     />
                                     <Radio
                                         id="TX"
                                         name="kind_work"
                                         label="Tài Xế"
-                                        value="5"
-                                        checked={formData.kind_work === "5"}
+                                        value="6"
+                                        checked={formData.kind_work === "6"}
                                         onChange={handleChange}
                                     />
                                     <Radio
                                         id="HX"
                                         name="kind_work"
                                         label="Cơ Khí"
-                                        value="6"
-                                        checked={formData.kind_work === "6"}
+                                        value="7"
+                                        checked={formData.kind_work === "7"}
                                         onChange={handleChange}
                                     />
                                 </div>

@@ -35,14 +35,14 @@ function AdminCheckDialog({
     handleImageVtDelete,
     handleImagePtDelete,
     imagePt1,
-    // cardExpires,
+    cardExpires,
     auth,
     openAdminCheck,
     handleOpenAdminCheck,
     previewImagesVT,
     previewImagesPT,
     classNameChild,
-    // handleChange,
+    handleChange,
     socketD,
     handleSearch,
 }) {
@@ -59,15 +59,6 @@ function AdminCheckDialog({
         inputThuChi: false,
         // Thêm các trạng thái khác tại đây nếu bạn có nhiều input hơn
     });
-    const [cardExpires, setCardExpires] = useState(params.row);
-    console.log(cardExpires);
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setCardExpires((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
     const handleSetActive = (field) => {
         setActivePt({
             ...activePt,

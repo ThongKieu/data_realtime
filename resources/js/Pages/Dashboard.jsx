@@ -1841,8 +1841,8 @@ function Dashboard({ auth }) {
                             handleImagePtDelete={(index) => {
                                 handleImagePtDelete(index);
                             }}
-                            // handleChange={handleChange}
-                            // cardExpires={cardExpires}
+                            handleChange={handleChange}
+                            cardExpires={cardExpires}
                             auth={auth}
                             handleSendImagePT={() =>
                                 handleImageSubmit(selectedFilesPT, 3)

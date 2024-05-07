@@ -67,7 +67,8 @@ import useWindowSize from "@/Core/Resize";
 // ----
 
 function Dashboard({ auth }) {
-    const [socketD, setSocketD] = useState();
+    const [newSocketD, setNewSocketD] = useState(null);
+    const [socketD, setSocketD] = useState(null);
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
@@ -114,47 +115,62 @@ function Dashboard({ auth }) {
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState();
     useEffect(() => {
-        fetchInfoWorker();
-        fetchDateCheck(selectedDate);
-        fetchDateDoneCheck(selectedDate);
-        pushOn();
-    }, [selectedDate]);
-    useEffect(() => {
-        if (newSocket) {
-            newSocket.emit("pushOnline", message);
-            pushOn();
-        }
-        setSocketD(newSocket, { secure: true });
-        newSocket.on("UpdateDateTable_To_Client", (selectedDate, data) => {
-            console.log(selectedDate);
-            fetchDateCheck(data, selectedDate);
-            fetchDateDoneCheck(data, selectedDate);
-            fetchDataDashboard(data, selectedDate);
-        });
-        newSocket.on("sendAddWorkTo_Client", (selectedDate, data) => {
-            fetchDateDoneCheck();
-            if (data !== "" || data) {
-                fetchDateCheck(selectedDate);
-                fetchDataDashboard(data);
-                fetchDateDoneCheck();
-            }
-        });
-        newSocket.on(
-            "ButtonDisable_To_Client",
-            ({ id, isDisabled, userFix }) => {
-                setRowIdData(id);
-                setIdUserFix(userFix);
-                setIsButtonDisabled(isDisabled);
-            }
-        );
+        // Khởi tạo socket mới
+        setNewSocketD(newSocket);
         return () => {
             newSocket.disconnect();
         };
+      }, []);
+    useEffect(() => {
+        fetchInfoWorker(selectedDate);
+        fetchDateCheck(selectedDate);
+        fetchDateDoneCheck(selectedDate);
     }, [selectedDate]);
+    useEffect(() => {
+        pushOn();
+    }, []);
+    useEffect(() => {
+        if (newSocketD) {
+            newSocketD.emit("pushOnline", message);
+            newSocketD.on("UpdateDateTable_To_Client", ({ data }) => {
+                fetchDateCheck();
+                fetchDateDoneCheck();
+                fetchDataDashboard();
+            });
+
+            newSocketD.on("sendAddWorkTo_Client", ({ jsonData }) => {
+                console.log(jsonData);
+                if (jsonData !== "" || jsonData) {
+                    fetchDateCheck(jsonData);
+                    fetchDataDashboard(jsonData);
+                    fetchDateDoneCheck(jsonData);
+                }
+            });
+
+            newSocketD.on(
+                "ButtonDisable_To_Client",
+                ({ id, isDisabled, userFix }) => {
+                    setRowIdData(id);
+                    setIdUserFix(userFix);
+                    setIsButtonDisabled(isDisabled);
+                }
+            );
+        }
+        return () => {
+            if (newSocketD) {
+                newSocketD.off("UpdateDateTable_To_Client");
+                newSocketD.off("sendAddWorkTo_Client");
+                newSocketD.off("ButtonDisable_To_Client");
+            }
+          };
+      }, [newSocketD]);
+
+
     const handleDateChange = (event) => {
-        setSelectedDate(event.target.value);
-        newSocket?.emit("addWorkTo_Server", event);
+        const selectedDate = event.target.value;
+        setSelectedDate(selectedDate);
     };
+
     const handleSearch = (dateCheckSearch) => {
         fetchDateCheck(dateCheckSearch);
         fetchDateDoneCheck(dateCheckSearch);
@@ -198,7 +214,7 @@ function Dashboard({ auth }) {
         }
     };
 
-    const fetchDateCheck = async (dateCheck) => {
+    const fetchDateCheck = async () => {
         const url = `api/web/works?dateCheck=${selectedDate}`;
         const jsonData = await fetchDataDemo(url);
         if (jsonData) {
@@ -1259,7 +1275,6 @@ function Dashboard({ auth }) {
                         handleOpenSpending_total,
                         "openSpendingTotal"
                     );
-                    fetchDateDoneCheck();
                     console.log("xin chao openSpendingTotal", rowId);
                 };
                 const handleOpenHuyWithDisable = (rowId) => {
@@ -1362,7 +1377,6 @@ function Dashboard({ auth }) {
                 // const [selectedFiles, setSelectedFiles] = useState([]);
                 const [selectedFilesPT, setSelectedFilesPT] = useState([]);
                 const [selectedFilesVT, setSelectedFilesVT] = useState([]);
-
                 const [previewImgVt, setPreviewImgVt] = useState([]);
                 const [previewImgPt, setPreviewImgPt] = useState([]);
                 const [previewImgKS, setPreviewImgKS] = useState([]);
@@ -2183,6 +2197,7 @@ function Dashboard({ auth }) {
                                             }}
                                         >
                                             <DataGrid
+                                                key={index}
                                                 sx={{
                                                     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
                                                         {

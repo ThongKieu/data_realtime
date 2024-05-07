@@ -5,6 +5,9 @@ import { Server } from "socket.io";
 const httpServer = createServer();
 const io = new Server(httpServer, {
     cors: { origin: "*" },
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
 });
 
 io.on("connection", (socket) => {
@@ -14,7 +17,7 @@ io.on("connection", (socket) => {
         io.sockets.emit("userOnline_Client", userId);
     });
     socket.on("notication_Server", async (data) => {
-        console.log('notication_Server',data);
+        console.log("notication_Server", data);
         io.sockets.emit("notication_Client", data);
     });
     socket.on("pushOnline", (message) => {
@@ -45,13 +48,13 @@ io.on("connection", (socket) => {
         io.sockets.emit("returnWorkServerToMobile", data);
     });
     socket.on("sentLocalToServer", async (data) => {
-        console.log('xin chao data:',data);
+        console.log("xin chao data:", data);
         io.sockets.emit("getLocalFormServer", data);
     });
     // // Xử lý sự kiện khi máy khách ngắt kết nối
-    socket.on('disconnect', (id) => {
-        console.log('User disconnected:',socket.id);
-      });
+    socket.on("disconnect", (id) => {
+        console.log("User disconnected:", socket.id);
+    });
     // socket.on("disconnect", () => {
     //     console.log("User disconnected");
     //     io.sockets.emit("userOffline", socket.id);

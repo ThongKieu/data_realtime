@@ -638,7 +638,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputYCCV}
                             active={activePt.inputYCCV}
                             handleSetActive={() => handleSetActive("inputYCCV")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -651,7 +650,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputSDT}
                             active={activePt.inputSDT}
                             handleSetActive={() => handleSetActive("inputSDT")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -668,7 +666,6 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputDiaChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -681,7 +678,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputQuan}
                             active={activePt.inputQuan}
                             handleSetActive={() => handleSetActive("inputQuan")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -698,7 +694,6 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputTenKH")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -730,7 +725,6 @@ function AdminCheckDialog({
                                 handleSetActive={() =>
                                     handleSetActive("inputGhiChu")
                                 }
-                                // handleEdit={handleEdit}
                                 classNameChild={classNameChild}
                             />
                         </div>
@@ -749,10 +743,8 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
-
                         <EditableInput
                             label="Tiền Thu"
                             id="income_total"
@@ -766,13 +758,11 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
                 </form>
             </DialogBody>
-            {/* <Divider className="pt-2" /> */}
             {auth.user.permission == 1 || auth.user.permission == 0 ? (
                 <div className="flex flex-row justify-center py-2">
                     <Typography className="font-medium text-red-700">

@@ -19,6 +19,19 @@ class WorkerController extends Controller
     public function importDataWorker(Request $request)
     {
         $imported = Excel::import(new WorkerImport(), $request->file);
+        // dd('1111111111111');
+        $worker_update_code = Worker::where('id','>',0)->get(['id','worker_kind','worker_code']);
+       
+        foreach ($worker_update_code as $item)
+        {
+            $new_code = WorkerController::findCodeWorker($item->worker_kind,$item->worker_code);
+            // dd($item->worker_kind);
+            if($new_code)
+            {
+                $w_u = Worker::where('id','=',$item->id)->update(['worker_code'=>$new_code]);
+            }
+
+        }
         if ($imported) {
             return 'Ok';
         } else {
@@ -28,7 +41,7 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $workers = Worker::where('worker_kind', '!=', 9)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
+        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
         $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
         foreach ($workers as $worker) {
             $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');
@@ -91,60 +104,9 @@ class WorkerController extends Controller
 
    public function addNewWorker(Request $request){
 
-    $r_last_num = WorkerController::findCodeWorker($request->worker_kind);
-    // dd($r_last_num);
-
-    if($r_last_num != ''|| $r_last_num != null)
-    {
-        $next_worker_code = substr($r_last_num, 1)+1;
-    }
-    elseif($r_last_num == null)
-    {
-        $next_worker_code = '01';
-    }
-    else
-    {
-        return response()->json('Check infomation!!!!');
-    }
-    if($next_worker_code < 10)
-    {
-        $paddedNumber = str_pad($next_worker_code, 2, '0', STR_PAD_LEFT);
-    }
-    else{
-        $paddedNumber = $next_worker_code;
-    }
-
-        // switch($request->worker_kind)
-        //     {
-        //         case 0:
-        //             $next_worker_code = 'A'. $paddedNumber;
-        //             break;
-        //         case 1:
-        //             $next_worker_code = 'B'. $paddedNumber;
-        //             break;
-        //         case 2:
-        //             $next_worker_code = 'C'. $paddedNumber;
-        //             break;
-        //         case 3:
-        //             $next_worker_code = 'D'. $paddedNumber;
-        //             break;
-        //         case 4:
-        //             $next_worker_code = 'F'. $paddedNumber;
-        //             break;
-        //         case 6:
-        //             $next_worker_code = 'H'. $paddedNumber;
-        //             break;
-        //         case 5:
-        //             $next_worker_code = 'G'. $paddedNumber;
-        //             break;
-        //         default:
-        //             $next_worker_code = '121';
-        //             return $next_worker_code;
-        //     }
-
-        $code = CodeWorkerKind::where('id','=',$request->worker_kind)->value('code_worker');
-        $next_worker_code = $code. $paddedNumber;
-            // dd($code);
+    // dd($request->worker_kind);
+    $next_worker_code = WorkerController::findCodeWorker($request->worker_kind);
+// dd( $next_worker_code);
     $da = new Worker([
         "worker_full_name" => $request->worker_full_name,
         "worker_kind" => $request->worker_kind,
@@ -186,8 +148,32 @@ class WorkerController extends Controller
 
    }
     public function findCodeWorker($worker_kind) {
-        $r_last_num = Worker::where('worker_kind','=',$worker_kind)->orderBy('id','desc')->value('worker_code');
-        return $r_last_num;
+        $r_last_num = Worker::where('worker_kind','=',$worker_kind)->where('worker_code','!=',null)->orderBy('id','desc')->value('worker_code');
+        // dd($worker_kind);
+        if($r_last_num != ''|| $r_last_num != null)
+        {
+            $next_worker_code = substr($r_last_num, 1)+1;
+        }
+        elseif($r_last_num == null)
+        {
+            $next_worker_code = '01';
+        }
+        else
+        {
+            return response()->json('Check infomation!!!!');
+        }
+        if($next_worker_code < 10)
+        {
+            $paddedNumber = str_pad($next_worker_code, 2, '0', STR_PAD_LEFT);
+        }
+        else{
+            $paddedNumber = $next_worker_code;
+        }
+
+            $code = CodeWorkerKind::where('id','=',$worker_kind)->value('code_worker');
+            $next_worker_code = $code. $paddedNumber;
+            // dd($next_worker_code);
+        return $next_worker_code;
     }
     public function createAcc($id_worker,$acc_worker,$pass_worker,$avatar)  {
         $n_acc = new AccountionWorker([

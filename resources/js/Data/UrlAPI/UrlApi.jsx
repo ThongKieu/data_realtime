@@ -71,7 +71,7 @@ const sendDoiThoRequest = async (
         id_work_as: params.id,
         id_cus: params.row.id_cus,
         real_note: `${params.row.real_note} + ${
-            reasonMessage !== "undefined"
+            reasonMessage != "undefined"
                 ? reasonMessage
                 : "Chưa nhập thông tin"
         }`,

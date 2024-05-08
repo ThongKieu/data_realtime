@@ -67,7 +67,6 @@ import useWindowSize from "@/Core/Resize";
 // ----
 
 function Dashboard({ auth }) {
-    const [newSocketD, setNewSocketD] = useState(null);
     const [socketD, setSocketD] = useState(null);
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
@@ -114,13 +113,7 @@ function Dashboard({ auth }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState();
-    useEffect(() => {
-        // Khởi tạo socket mới
-        setNewSocketD(newSocket);
-        return () => {
-            newSocket.disconnect();
-        };
-      }, []);
+
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -130,24 +123,24 @@ function Dashboard({ auth }) {
         pushOn();
     }, []);
     useEffect(() => {
-        if (newSocketD) {
-            newSocketD.emit("pushOnline", message);
-            newSocketD.on("UpdateDateTable_To_Client", ({ data }) => {
-                fetchDateCheck();
-                fetchDateDoneCheck();
-                fetchDataDashboard();
+        if (newSocket) {
+            newSocket.emit("pushOnline", message);
+            newSocket.on("UpdateDateTable_To_Client", (data) => {
+                fetchDateCheck(data);
+                fetchDateDoneCheck(data);
+                fetchDataDashboard(data);
             });
-
-            newSocketD.on("sendAddWorkTo_Client", ({ jsonData }) => {
+            setSocketD(newSocket, { secure: true });
+            newSocket.on("sendAddWorkTo_Client", (jsonData) => {
                 console.log(jsonData);
-                if (jsonData !== "" || jsonData) {
+                if (jsonData) {
                     fetchDateCheck(jsonData);
                     fetchDataDashboard(jsonData);
                     fetchDateDoneCheck(jsonData);
                 }
             });
 
-            newSocketD.on(
+            newSocket.on(
                 "ButtonDisable_To_Client",
                 ({ id, isDisabled, userFix }) => {
                     setRowIdData(id);
@@ -157,17 +150,16 @@ function Dashboard({ auth }) {
             );
         }
         return () => {
-            if (newSocketD) {
-                newSocketD.off("UpdateDateTable_To_Client");
-                newSocketD.off("sendAddWorkTo_Client");
-                newSocketD.off("ButtonDisable_To_Client");
+            if (newSocket) {
+                newSocket.disconnect();
             }
-          };
-      }, [newSocketD]);
+        };
+    }, [newSocket]);
 
 
     const handleDateChange = (event) => {
         const selectedDate = event.target.value;
+        console.log(selectedDate);
         setSelectedDate(selectedDate);
     };
 
@@ -238,19 +230,24 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDateDoneCheck = async () => {
-        const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
-            setWorkDataDN_done(jsonData.dien_nuoc_done);
-            setWorkDataDL_done(jsonData.dien_lanh_done);
-            setWorkDataDG_done(jsonData.do_go_done);
-            setWorkDataNLMT_done(jsonData.nlmt_done);
-            setWorkDataXD_done(jsonData.xay_dung_done);
-            setWorkDataVC_done(jsonData.tai_xe_done);
-            setWorkDataHX_done(jsonData.co_khi_done);
-            setIsLoading(false);
-        } else {
-            console.log("Data lỗi không tồn tại!!");
+        try {
+            const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
+            const jsonData = await fetchDataDemo(url);
+            if (jsonData) {
+                setWorkDataDN_done(jsonData.dien_nuoc_done);
+                setWorkDataDL_done(jsonData.dien_lanh_done);
+                setWorkDataDG_done(jsonData.do_go_done);
+                setWorkDataNLMT_done(jsonData.nlmt_done);
+                setWorkDataXD_done(jsonData.xay_dung_done);
+                setWorkDataVC_done(jsonData.tai_xe_done);
+                setWorkDataHX_done(jsonData.co_khi_done);
+                setIsLoading(false);
+            } else {
+                console.log("Data lỗi không tồn tại!!");
+            }
+        } catch (error) {
+            console.error("Lỗi khi fetch dữ liệu:", error);
+            // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
         }
     };
     // ----------------------------lay thong tin tho ----------------------------
@@ -1881,7 +1878,7 @@ function Dashboard({ auth }) {
                             setWorkNote={setWorkNote}
                             handleSentDeleteDone={handleSentDeleteDone}
                         />
-                        {/*----------------------------- dialog form Huy ----------- */}
+                        {/*----------------------------- dialog form KS ----------- */}
                         <KhaoSatDialog
                             openKS={openKS}
                             handleOpenKS={handleOpenKSWithDisable}

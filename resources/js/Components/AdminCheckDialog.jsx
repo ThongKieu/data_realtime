@@ -84,7 +84,6 @@ function AdminCheckDialog({
     );
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
-
     const [selectedValue, setSelectedValue] = useState();
     const handleSelectChange = (selectedValue, id) => {
         const updatedData = dataBH.map((item) => {
@@ -267,7 +266,6 @@ function AdminCheckDialog({
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
-        // setOldDataBH(id);
     };
     return (
         <Dialog

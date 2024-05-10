@@ -67,7 +67,7 @@ import useWindowSize from "@/Core/Resize";
 // ----
 
 function Dashboard({ auth }) {
-    const [socketD, setSocketD] = useState(null);
+    const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // table left
@@ -112,7 +112,7 @@ function Dashboard({ auth }) {
     const { width, height } = useWindowSize(100);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
-    const [rowIdData, setRowIdData] = useState();
+    const [rowIdData, setRowIdData] = useState(0);
 
     useEffect(() => {
         fetchInfoWorker(selectedDate);
@@ -126,17 +126,21 @@ function Dashboard({ auth }) {
         if (newSocket) {
             newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
-                fetchDateCheck(data);
-                fetchDateDoneCheck(data);
-                fetchDataDashboard(data);
+                if (data) {
+                    console.log("130", selectedDate);
+                    fetchDateCheck(selectedDate);
+                    fetchDateDoneCheck(selectedDate);
+                    fetchDataDashboard(selectedDate);
+                }
             });
             setSocketD(newSocket, { secure: true });
             newSocket.on("sendAddWorkTo_Client", (jsonData) => {
-                console.log(jsonData);
+                console.log("sendAddWorkTo_Client", jsonData);
+                console.log("139", selectedDate);
                 if (jsonData) {
-                    fetchDateCheck(jsonData);
-                    fetchDataDashboard(jsonData);
-                    fetchDateDoneCheck(jsonData);
+                    fetchDateCheck(selectedDate);
+                    fetchDataDashboard(selectedDate);
+                    fetchDateDoneCheck(selectedDate);
                 }
             });
 
@@ -156,10 +160,8 @@ function Dashboard({ auth }) {
         };
     }, [newSocket]);
 
-
     const handleDateChange = (event) => {
         const selectedDate = event.target.value;
-        console.log(selectedDate);
         setSelectedDate(selectedDate);
     };
 
@@ -190,26 +192,15 @@ function Dashboard({ auth }) {
         }
     };
     // ---------------lay du lieu cong viec chua phan ---------
-    const fetchDataDemo = async (url) => {
-        if (url) {
-            try {
-                const response = await fetch(url);
-                const jsonData = await response.json();
-                socketD?.emit("addWorkTo_Server", jsonData);
-                return jsonData;
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                return null;
+    const fetchDateCheck = async (dateCheck) => {
+        console.log('196',dateCheck);
+        try {
+            const url = `api/web/works?dateCheck=${dateCheck}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Response not OK");
             }
-        } else {
-            console.error("Fail connect fetch data demo");
-        }
-    };
-
-    const fetchDateCheck = async () => {
-        const url = `api/web/works?dateCheck=${selectedDate}`;
-        const jsonData = await fetchDataDemo(url);
-        if (jsonData) {
+            const jsonData = await response.json();
             setWorkDataDN(jsonData.dien_nuoc);
             setWorkDataDL(jsonData.dien_lanh);
             setWorkDataDG(jsonData.do_go);
@@ -225,14 +216,21 @@ function Dashboard({ auth }) {
             setWorkDataVC_cu(jsonData.tai_xe_cu);
             setWorkDataHX_cu(jsonData.co_khi_cu);
             setIsLoading(false);
-        } else {
-            console.log("Data lỗi không tồn tại!!");
+        } catch (error) {
+            console.error("Fetch error:", error.message);
+            setIsLoading(false);
         }
     };
-    const fetchDateDoneCheck = async () => {
+    const fetchDateDoneCheck = async (dateCheck) => {
+        console.log('225',dateCheck);
         try {
-            const url = `/api/web/work-assignment?dateCheck=${selectedDate}`;
-            const jsonData = await fetchDataDemo(url);
+            const response = await fetch(
+                `/api/web/work-assignment?dateCheck=${dateCheck}`
+            );
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const jsonData = await response.json();
             if (jsonData) {
                 setWorkDataDN_done(jsonData.dien_nuoc_done);
                 setWorkDataDL_done(jsonData.dien_lanh_done);
@@ -250,6 +248,7 @@ function Dashboard({ auth }) {
             // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
         }
     };
+
     // ----------------------------lay thong tin tho ----------------------------
     const fetchInfoWorker = async (e) => {
         try {
@@ -607,7 +606,7 @@ function Dashboard({ auth }) {
                         auth,
                         socketD,
                         copyTextToClipboard,
-                        handleOpenTho
+                        handleOpenTho,selectedDate
                     );
                 };
                 const handleSentNhanDoi = async (e) => {
@@ -1272,7 +1271,6 @@ function Dashboard({ auth }) {
                         handleOpenSpending_total,
                         "openSpendingTotal"
                     );
-                    console.log("xin chao openSpendingTotal", rowId);
                 };
                 const handleOpenHuyWithDisable = (rowId) => {
                     rowId = params.row.id;
@@ -1637,8 +1635,7 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled == true &&
-                        params.row.id == rowIdData ? (
+                        {isButtonDisabled && params.row.id === rowIdData ? (
                             <p className="w-full text-center">{idUserFix}</p>
                         ) : (
                             <div className="flex flex-row justify-center">

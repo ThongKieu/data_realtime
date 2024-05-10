@@ -46,6 +46,22 @@ function AdminCheckDialog({
     socketD,
     handleSearch,
 }) {
+    useEffect(() => {
+        // Lắng nghe sự kiện từ socket và cập nhật dữ liệu khi có thay đổi
+        if (socketD) {
+            socketD.on("UpdateDateTable_To_Client", () => {
+                // Gọi lại hàm handleSearch để cập nhật dữ liệu
+                handleSearch();
+            });
+        }
+
+        // Hủy lắng nghe khi component unmount
+        return () => {
+            if (socketD) {
+                socketD.off("UpdateDateTable_To_Client");
+            }
+        };
+    }, [socketD, handleSearch]);
     const [activePt, setActivePt] = useState({
         inputSPT: false,
         inputBH: false,

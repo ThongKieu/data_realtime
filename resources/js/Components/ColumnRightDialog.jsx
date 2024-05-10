@@ -13,7 +13,6 @@ import {
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
-import { host } from "@/Utils/UrlApi";
 const ThoDialog = ({
     open,
     handleOpenTho,

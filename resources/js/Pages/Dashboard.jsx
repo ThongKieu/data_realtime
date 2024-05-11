@@ -135,8 +135,6 @@ function Dashboard({ auth }) {
             });
             setSocketD(newSocket, { secure: true });
             newSocket.on("sendAddWorkTo_Client", (jsonData) => {
-                console.log("sendAddWorkTo_Client", jsonData);
-                console.log("139", selectedDate);
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
@@ -193,7 +191,7 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDateCheck = async (dateCheck) => {
-        console.log('196',dateCheck);
+        console.log("196", dateCheck);
         try {
             const url = `api/web/works?dateCheck=${dateCheck}`;
             const response = await fetch(url);
@@ -222,7 +220,7 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDateDoneCheck = async (dateCheck) => {
-        console.log('225',dateCheck);
+        console.log("225", dateCheck);
         try {
             const response = await fetch(
                 `/api/web/work-assignment?dateCheck=${dateCheck}`
@@ -606,7 +604,8 @@ function Dashboard({ auth }) {
                         auth,
                         socketD,
                         copyTextToClipboard,
-                        handleOpenTho,selectedDate
+                        handleOpenTho,
+                        selectedDate
                     );
                 };
                 const handleSentNhanDoi = async (e) => {
@@ -1221,6 +1220,11 @@ function Dashboard({ auth }) {
                     useToggle(false);
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
+                const hasData = params.row;
+                const filteredArray = processSeriImages(hasData.bill_imag);
+                const [imageVt1, setImageVt1] = useState(filteredArray);
+                const filteredImgPt = processSeriImages(hasData.seri_imag);
+                const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1296,6 +1300,9 @@ function Dashboard({ auth }) {
                 };
                 const handleOpenAdminCheckWithDisable = (rowId) => {
                     rowId = params.row.id;
+                    setCardExpires(params.row);
+                    setImageVt1(filteredArray);
+                    setImagePt1(filteredImgPt);
                     handleButtonAction(
                         rowId,
                         openAdminCheck,
@@ -1540,9 +1547,7 @@ function Dashboard({ auth }) {
                 const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
-                const hasData = params.row;
-                const filteredArray = processSeriImages(params.row.bill_imag);
-                const [imageVt1, setImageVt1] = useState(filteredArray);
+
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
@@ -1590,9 +1595,7 @@ function Dashboard({ auth }) {
                     }
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
-                const hinhPt = hasData.seri_imag;
-                const filteredImgPt = processSeriImages(hinhPt);
-                const [imagePt1, setImagePt1] = useState(filteredImgPt);
+
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
@@ -1848,8 +1851,7 @@ function Dashboard({ auth }) {
                             }}
                             handleImagePtDelete={(index) => {
                                 handleImagePtDelete(index);
-                            }}
-                            handleChange={handleChange}
+                            }}handleChange={handleChange}
                             cardExpires={cardExpires}
                             auth={auth}
                             handleSendImagePT={() =>
@@ -1945,14 +1947,14 @@ function Dashboard({ auth }) {
     };
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
     const dataBtnFixed = [
-        { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
-        { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
-        { id: 2, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
-        { id: 3, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
-        { id: 4, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
-        { id: 5, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
-        { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
-        { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
+        { id: 1, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
+        { id: 2, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
+        { id: 3, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
+        { id: 4, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
+        { id: 5, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
+        { id: 6, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
+        { id: 7, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
+        { id: 8, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
     const dataGridLichChuaPhan = [
         {
@@ -2101,7 +2103,7 @@ function Dashboard({ auth }) {
                                                 height:
                                                     result.rowsDataGrid == ""
                                                         ? 40
-                                                        : "fit-content",
+                                                        : 1,
                                                 width: "100%",
                                             }}
                                         >
@@ -2186,7 +2188,7 @@ function Dashboard({ auth }) {
                                                 height:
                                                     result.rowsDataGrid == ""
                                                         ? 40
-                                                        : "fit-content",
+                                                        : 1,
                                                 width: "100%",
                                             }}
                                         >

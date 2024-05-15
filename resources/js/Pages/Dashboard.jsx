@@ -57,6 +57,7 @@ import {
     ThuHoiDialog,
     ViewTotalDialog,
     processSeriImages,
+    KSDialog,
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -113,6 +114,7 @@ function Dashboard({ auth }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
+    const [userId, setSetUserId] = useState(0);
 
     useEffect(() => {
         fetchInfoWorker(selectedDate);
@@ -144,13 +146,16 @@ function Dashboard({ auth }) {
 
             newSocket.on(
                 "ButtonDisable_To_Client",
-                ({ id, isDisabled, userFix }) => {
+                ({ id, isDisabled, userFix, userID }) => {
                     setRowIdData(id);
                     setIdUserFix(userFix);
                     setIsButtonDisabled(isDisabled);
+                    setSetUserId(userID);
                 }
             );
         }
+
+        console.log(userId);
         return () => {
             if (newSocket) {
                 newSocket.disconnect();
@@ -191,7 +196,6 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDateCheck = async (dateCheck) => {
-        console.log("196", dateCheck);
         try {
             const url = `api/web/works?dateCheck=${dateCheck}`;
             const response = await fetch(url);
@@ -220,7 +224,6 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDateDoneCheck = async (dateCheck) => {
-        console.log("225", dateCheck);
         try {
             const response = await fetch(
                 `/api/web/work-assignment?dateCheck=${dateCheck}`
@@ -1211,6 +1214,7 @@ function Dashboard({ auth }) {
                     };
                     return [open, handleOpen];
                 };
+
                 // Sử dụng hàm useToggle
                 const [openHuy, handleOpenHuy] = useToggle(false);
                 const [openKS, handleOpenKS] = useToggle(false);
@@ -1219,12 +1223,14 @@ function Dashboard({ auth }) {
                 const [openSpending_total, handleOpenSpending_total] =
                     useToggle(false);
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
+                const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
                 const hasData = params.row;
                 const filteredArray = processSeriImages(hasData.bill_imag);
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const filteredImgPt = processSeriImages(hasData.seri_imag);
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
+                console.log('imagePt1',imagePt1);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1243,6 +1249,7 @@ function Dashboard({ auth }) {
                         id: rowId,
                         isDisabled: !isOpenState,
                         userFix: auth.user.name,
+                        userID: auth.user.id,
                     });
                     switch (actionType) {
                         case "openSpendingTotal":
@@ -1261,6 +1268,9 @@ function Dashboard({ auth }) {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openViewTotal":
+                            handleOpenFunction(!isOpenState);
+                            break;
+                        case "openViewKS":
                             handleOpenFunction(!isOpenState);
                             break;
                         default:
@@ -1319,6 +1329,15 @@ function Dashboard({ auth }) {
                         "openViewTotal"
                     );
                 };
+                const handleOpenViewKSDisable = (rowId) => {
+                    rowId = params.row.id;
+                    handleButtonAction(
+                        rowId,
+                        openView_KS,
+                        handleOpenView_KS,
+                        "openViewKS"
+                    );
+                };
                 const handleSentDeleteDone = async () => {
                     try {
                         let data = {
@@ -1347,31 +1366,36 @@ function Dashboard({ auth }) {
                     } catch (error) {}
                 };
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
-                const handleSentKS = async () => {
-                    try {
-                        let data = {
-                            id: params.id,
-                            id_cus: params.row.id_cus,
-                            real_note: params.row.real_note,
-                            auth_id: auth.user.id,
-                            image_work_path: selectedFilesKS,
-                        };
-                        const response = await fetch(
-                            "api/web/update/work-assignment-quote",
-                            {
-                                method: "POST",
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
+                const handleSentKS = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData();
+                    formData.append("id", params.id);
+                    formData.append("id_cus", params.row.id_cus);
+                    formData.append("real_note", params.row.real_note);
+                    formData.append("auth_id", auth.user.id);
+                    for (let i = 0; i < selectedFilesKS.length; i++) {
+                        formData.append(
+                            "image_work_path[]",
+                            selectedFilesKS[i]
                         );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "Khảo sát");
-                            handleOpen();
-                            handleOpenKSWithDisable();
+                    }
+                    const response = await fetch(
+                        "api/web/update/work-assignment-quote",
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                            },
+                            mode: "no-cors",
+                            body: formData,
                         }
-                    } catch (error) {}
+                    );
+                    if (response.ok) {
+                        socketD.emit("addWorkTo_Server", "Khảo sát");
+                        handleOpen();
+                        handleOpenKSWithDisable();
+                    }
                 };
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
@@ -1638,7 +1662,9 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled && params.row.id === rowIdData ? (
+                        {isButtonDisabled == true &&
+                        params.row.id === rowIdData &&
+                        userId ? (
                             <p className="w-full text-center">{idUserFix}</p>
                         ) : (
                             <div className="flex flex-row justify-center">
@@ -1666,11 +1692,12 @@ function Dashboard({ auth }) {
                                         Mai Làm Tiếp
                                     </p>
                                 ) : params.row.status_work == 3 ? (
-                                    <p
-                                        className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                    <Button
+                                        className={`p-2 rounded`}
+                                        onClick={handleOpenViewKSDisable}
                                     >
                                         Khảo Sát
-                                    </p>
+                                    </Button>
                                 ) : (
                                     <>
                                         <Tooltip
@@ -1851,7 +1878,8 @@ function Dashboard({ auth }) {
                             }}
                             handleImagePtDelete={(index) => {
                                 handleImagePtDelete(index);
-                            }}handleChange={handleChange}
+                            }}
+                            handleChange={handleChange}
                             cardExpires={cardExpires}
                             auth={auth}
                             handleSendImagePT={() =>
@@ -1924,6 +1952,11 @@ function Dashboard({ auth }) {
                             openViewTotal={openViewTotal}
                             handleOpenViewTotal={handleOpenViewTotalWithDisable}
                             handleViewTotal={handleOpenViewTotal}
+                            params={params.row}
+                        />
+                        <KSDialog
+                            openViewKS={openView_KS}
+                            handleOpenViewKS={handleOpenView_KS} handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
                         />
                     </div>

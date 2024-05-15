@@ -166,7 +166,6 @@ function AdminCheckDialog({
             }
         }
     };
-    console.log('169 Admin Check', cardExpires);
     const handleValueBh = async () => {
         try {
             if (oldDataBH !== "") {
@@ -195,7 +194,6 @@ function AdminCheckDialog({
                     id_work_has: params.row.id,
                     info_warranties: modifiedData,
                 };
-                console.log(dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {

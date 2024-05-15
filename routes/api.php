@@ -35,7 +35,7 @@ Route::prefix('web')->group(function () {
         Route::get('all-code','App\Http\Controllers\CodeWorkerKindController@index');
         Route::post('change-code-status','App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
 
-        
+
 
     });
     Route::apiResource('district', DistrictController::class);

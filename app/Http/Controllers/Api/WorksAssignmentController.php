@@ -442,10 +442,8 @@ class WorksAssignmentController extends Controller
             return -1;
         } else {
             $seri_imag = '';
-
             if ($request->hasFile('image_work_path')) {
                 $images = $request->file('image_work_path');
-                // dd($images);
                 foreach ($images as $image) {
                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                     $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
@@ -460,6 +458,7 @@ class WorksAssignmentController extends Controller
             }
         }
     }
+
 
     public function insertCancleBook(Request $request)
     {
@@ -476,7 +475,6 @@ class WorksAssignmentController extends Controller
     {
 
         $seri_imag = '';
-
         if ($request->hasFile('image_work_path')) {
             $images = $request->file('image_work_path');
             // dd($images);

@@ -188,6 +188,7 @@ const HuyDialog = ({
         </Dialog>
     );
 };
+
 const KhaoSatDialog = ({
     openKS,
     handleOpenKS,
@@ -312,6 +313,28 @@ const processSeriImages = (data) => {
     const parts = data?.split(",");
     const filteredArray = parts?.filter((item) => item.trim() !== "");
     return filteredArray;
+};
+const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
+    const processedDataKS = processSeriImages(params.seri_imag);
+    return (
+        <Dialog open={openViewKS} handler={handleOpenViewKS}>
+            <div className="flex items-center justify-between">
+                <DialogHeader>Tình Trạng Khảo Sát</DialogHeader>
+            </div>
+            <DialogBody>
+                <div>
+                    {processedDataKS?.map((item, index) => {
+                        return <img src={item} alt={index}/>;
+                    })}
+                </div>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+                <Button variant="gradient" color="red" onClick={handleViewKS}>
+                    Xác nhận
+                </Button>
+            </DialogFooter>
+        </Dialog>
+    );
 };
 const ViewTotalDialog = ({
     openViewTotal,
@@ -470,14 +493,16 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataVT) &&
-                                            processedDataVT.map((item,index) => (
-                                                <img
-                                                    key={index}
-                                                    src={item}
-                                                    alt=""
-                                                    className="w-32 h-32"
-                                                />
-                                            ))}
+                                            processedDataVT.map(
+                                                (item, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={item}
+                                                        alt=""
+                                                        className="w-32 h-32"
+                                                    />
+                                                )
+                                            )}
                                     </>
                                 )}
 
@@ -490,19 +515,25 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataPT) &&
-                                            processedDataPT.map((item,index) => (
-                                                <img
-                                                key={index}
-                                                    src={item}
-                                                    alt=""
-                                                    className="w-32 h-32"
-                                                />
-                                            ))}
+                                            processedDataPT.map(
+                                                (item, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={item}
+                                                        alt=""
+                                                        className="w-32 h-32"
+                                                    />
+                                                )
+                                            )}
                                     </>
                                 )}
                             </div>
                         </div>
-                        <div className={`${ params.warranty == 'KBH'? 'hidden':"block"} pt-3`}>
+                        <div
+                            className={`${
+                                params.warranty == "KBH" ? "hidden" : "block"
+                            } pt-3`}
+                        >
                             <Card className="w-full h-[200px] overflow-scroll">
                                 <table className="w-full text-left table-auto min-w-max">
                                     <thead>
@@ -526,45 +557,48 @@ const ViewTotalDialog = ({
                                     <tbody>
                                         {Array.isArray(params.warranty) &&
                                             params.warranty?.map(
-                                                ( item , index) => {
+                                                (item, index) => {
                                                     return (
                                                         <tr
                                                             key={index}
                                                             className="even:bg-blue-gray-50"
                                                         >
-
-                                                               <><td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                  { params.warranty !== undefined ? item.id :"KBH" }
-                                                                </Typography>
-                                                            </td>
-                                                            <td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                    {
-                                                                        item.warranty_time
-                                                                    }
-                                                                </Typography>
-                                                            </td>
-                                                            <td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                    {
-                                                                        item.warranty_info
-                                                                    }
-                                                                </Typography>
-                                                            </td></>
-
+                                                            <>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {params.warranty !==
+                                                                        undefined
+                                                                            ? item.id
+                                                                            : "KBH"}
+                                                                    </Typography>
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {
+                                                                            item.warranty_time
+                                                                        }
+                                                                    </Typography>
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {
+                                                                            item.warranty_info
+                                                                        }
+                                                                    </Typography>
+                                                                </td>
+                                                            </>
                                                         </tr>
                                                     );
                                                 }
@@ -597,4 +631,5 @@ export {
     BHDialog,
     ViewTotalDialog,
     processSeriImages,
+    KSDialog,
 };

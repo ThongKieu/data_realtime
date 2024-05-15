@@ -359,6 +359,10 @@ function NavbarDefault({ propauth, check }) {
                 fetchDelete(data, check);
                 getDataWorkerSales(data);
             }
+        }); newSocket.on("UpdateDateTable_To_Client", (data) => {
+            if (data) {
+                getDataWorkerSales(data);
+            }
         });
     }, [check]);
     const fetchDelete = async () => {

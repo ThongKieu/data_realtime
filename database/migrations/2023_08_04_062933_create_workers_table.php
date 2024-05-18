@@ -47,7 +47,7 @@ return new class extends Migration
             $table->string('worker_time_start_work')->nullable();
         
             $table->string('worker_path')->nullable();
-            $table -> tinyInteger('worker_kind')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: Đồ gỗ ; 3: NLMT; 4: Xây dựng; 5: Tài Xế; 6: Cơ Khí');
+            $table -> tinyInteger('worker_kind')->default(1)->comment('Kiểm tra, từ bảng code');
             $table -> tinyInteger('worker_has_work')->default(0);
             $table -> tinyInteger('worker_status')->default(0)->comment('0: Đang làm; 1: Nghỉ Phép; 2: Nghỉ luôn ');
             $table-> tinyInteger('worker_check_acc')->default('0');

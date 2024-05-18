@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CodeWorkerKind;
 use App\Models\Warranties;
 use App\Models\Work;
 use App\Models\Worker;
@@ -25,7 +26,57 @@ class WorksAssignmentController extends Controller
         } else {
             $today = date('Y-m-d');
         }
+        // $get_code_id = CodeWorkerKind::where('id','>',0)->get('kind_worker');
 
+        // // dd( );
+        // $data_json = [];
+        // $num_code = count($get_code_id);
+        // for($i=1;$i<$num_code;$i++)
+        // {   $data_json[$i]['kind_worker'] =$get_code_id[$i-1]['kind_worker'];
+        //     $data_json[$i]['data']=DB::table('works_assignments')
+        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
+        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
+        //     ->where('works_assignments.created_at', 'like', $today . '%')
+        //     ->where('works.kind_work', '=', $i)
+        //     ->whereBetween('works_assignments.status_work', [0, 3])
+        //     ->orderBy('workers.worker_code', 'asc')
+        //     ->get(
+        //         [
+        //             "works_assignments.id",
+        //             "works_assignments.id_cus",
+        //             "works_assignments.id_worker",
+        //             "works_assignments.id_phu",
+        //             "works_assignments.real_note",
+        //             "works_assignments.spending_total",
+        //             "works_assignments.income_total",
+        //             "works_assignments.bill_imag",
+        //             "works_assignments.seri_imag",
+        //             "works_assignments.status_work",
+        //             "works_assignments.check_in",
+        //             "works_assignments.seri_number",
+        //             "works.work_content",
+        //             "works.date_book",
+        //             "works.street",
+        //             "works.district",
+        //             "works.phone_number",
+        //             "works.image_work_path",
+        //             "works.kind_work",
+        //             "works.name_cus",
+        //             "workers.worker_full_name",
+        //             // "workers.worker_name",
+        //             "workers.worker_code",
+        //             "workers.worker_address", "workers.worker_phone_company",
+        //             "works_assignments.status_admin_check",
+        //             "works_assignments.flag_check",
+        //         ]
+        //     );
+
+        //    foreach($data_json[$i]['data'] as $item)
+        //    {
+        //      $item ->warranties =WorksAssignmentController::getWarrantiesById($item->id);
+        //    }
+            
+        // }
         // thông tin điện nước
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')
@@ -442,22 +493,49 @@ class WorksAssignmentController extends Controller
             return -1;
         } else {
             $seri_imag = '';
-
-            if ($request->hasFile('image_work_path')) {
-                $images = $request->file('image_work_path');
-                // dd($images);
-                foreach ($images as $image) {
-                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+            $ac = $request->ac ;
+            if($ac == 1)
+            {
+                //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
+                if ($request->hasFile('image_work_path')) {
+                    $images = $request->file('image_work_path');
+                    // dd($images);
+                    foreach ($images as $image) {
+                        $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                        $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                        $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                    }
                 }
+                $info_quote = $request->info_quote;
+                $income_total =  $request->income_total;
+                $update = WorksAssignment::where('id', '=', $request->id)->update([
+                    'status_work' => 3,
+                    'income_total' => $income_total,
+                    'real_note' => $info_quote,
+                    'bill_imag' => $seri_imag
+                    ]);
+                if ($update) {
+                    return 'true';
+                } else {
+                    return 'failed';
+                }
+
             }
-            $update = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3, 'bill_imag' => $seri_imag]);
-            if ($update) {
-                return 'true';
-            } else {
-                return 'failed';
+            elseif($ac == 2)
+            {
+                //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
+                //php Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
+                
             }
+            elseif($ac ==3)
+            {
+                // Thợ ks mà không làm được cty gửi cho thợ khác báo
+            }
+            else
+            {
+                return 'Fail !!!!!!!!!!!!';
+            }
+            
         }
     }
 
@@ -809,32 +887,73 @@ class WorksAssignmentController extends Controller
     public function insertQuoteFlow(Request $request)
     {
 
-        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        // dd($up1);
-        if ($up1 == 1) {
+        // $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        // // dd($up1);
+        // if ($up1 == 1) {
 
-            $seri_imag = '';
+        //     $seri_imag = '';
 
-            if ($request->hasFile('image_work_path')) {
-                $images = $request->file('image_work_path');
-                // dd($images);
-                foreach ($images as $image) {
-                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+        //     if ($request->hasFile('image_work_path')) {
+        //         $images = $request->file('image_work_path');
+        //         // dd($images);
+        //         foreach ($images as $image) {
+        //             $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+        //             $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+        //             $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+        //         }
+        //     }
+
+        //     // dd($seri_imag);
+        //     $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
+
+        //     if ($up == 1) {
+        //         return 'Delete work done !';
+        //     }
+        //     return 'Lỗi !!!!!!!!!';
+        // } else {
+        //     return 'Không tìm thấy';
+        // }
+         $seri_imag = '';
+            $ac = $request->ac ;
+            if($ac == 1)
+            {
+                //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
+                if ($request->hasFile('image_work_path')) {
+                    $images = $request->file('image_work_path');
+                    // dd($images);
+                    foreach ($images as $image) {
+                        $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                        $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                        $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+                    }
                 }
-            }
+                $info_quote = $request->info_quote;
+                $income_total =  $request->income_total;
+                $update = WorksAssignment::where('id', '=', $request->id)->update([
+                    'status_work' => 3,
+                    'income_total' => $income_total,
+                    'real_note' => $info_quote,
+                    'bill_imag' => $seri_imag
+                    ]);
+                if ($update) {
+                    return 'true';
+                } else {
+                    return 'failed';
+                }
 
-            // dd($seri_imag);
-            $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
-
-            if ($up == 1) {
-                return 'Delete work done !';
             }
-            return 'Lỗi !!!!!!!!!';
-        } else {
-            return 'Không tìm thấy';
-        }
+            elseif($ac == 2)
+            {
+                //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
+                // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
+                
+            }
+            elseif($ac ==3)
+            {}
+            else
+            {
+
+            }
     }
 // Lấy thông tin thợ làm ngày tính Ds
 

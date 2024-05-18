@@ -20,18 +20,18 @@ class WorkerController extends Controller
     {
         $imported = Excel::import(new WorkerImport(), $request->file);
         // dd('1111111111111');
-        $worker_update_code = Worker::where('id','>',0)->get(['id','worker_kind','worker_code']);
+        // $worker_update_code = Worker::where('id','>',0)->get(['id','worker_kind','worker_code']);
        
-        foreach ($worker_update_code as $item)
-        {
-            $new_code = WorkerController::findCodeWorker($item->worker_kind,$item->worker_code);
-            // dd($item->worker_kind);
-            if($new_code)
-            {
-                $w_u = Worker::where('id','=',$item->id)->update(['worker_code'=>$new_code]);
-            }
+        // foreach ($worker_update_code as $item)
+        // {
+        //     $new_code = WorkerController::findCodeWorker($item->worker_kind,$item->worker_code);
+        //     // dd($item->worker_kind);
+        //     if($new_code)
+        //     {
+        //         $w_u = Worker::where('id','=',$item->id)->update(['worker_code'=>$new_code]);
+        //     }
 
-        }
+        // }
         if ($imported) {
             return 'Ok';
         } else {
@@ -41,7 +41,7 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
+        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc','kind_worker']);
         $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
         foreach ($workers as $worker) {
             $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');
@@ -51,23 +51,23 @@ class WorkerController extends Controller
         }
         return response()->json($workers);
     }
-    public function getWorkerWithType()
-    {
-        $workerDN = Worker::where('worker_kind', '=', 0)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
-        $workerDL = Worker::where('worker_kind', '=', 1)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
-        $workerDG = Worker::where('worker_kind', '=', 2)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
-        $workerXD = Worker::where('worker_kind', '=', 4)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
-        $workerHX = Worker::where('worker_kind', '=', 6)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
-        $workers = [
-            'workerDN' => $workerDN,
-            'workerXD' => $workerXD,
-            'workerDL' => $workerDL,
-            'workerDG' => $workerDG,
-            'workerHX' => $workerHX,
-        ];
+    // public function getWorkerWithType()
+    // {
+    //     $workerDN = Worker::where('worker_kind', '=', 0)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
+    //     $workerDL = Worker::where('worker_kind', '=', 1)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
+    //     $workerDG = Worker::where('worker_kind', '=', 2)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
+    //     $workerXD = Worker::where('worker_kind', '=', 4)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
+    //     $workerHX = Worker::where('worker_kind', '=', 6)->orderBy('worker_code', 'asc')->get(['id', 'worker_full_name', 'worker_code', 'worker_district', 'worker_status']);
+    //     $workers = [
+    //         'workerDN' => $workerDN,
+    //         'workerXD' => $workerXD,
+    //         'workerDL' => $workerDL,
+    //         'workerDG' => $workerDG,
+    //         'workerHX' => $workerHX,
+    //     ];
 
-        return response()->json($workers);
-    }
+    //     return response()->json($workers);
+    // }
     public function returnName()
     {
 

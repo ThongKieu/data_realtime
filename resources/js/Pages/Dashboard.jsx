@@ -266,7 +266,7 @@ function Dashboard({ auth }) {
         }
     };
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchDataDashboard = async (data,dateBook) => {
+    const fetchDataDashboard = async (data, dateBook) => {
         const url = `api/web/update/work?date_book=${dateBook}`;
         const socketUpdate = "addWorkTo_Server";
         try {
@@ -287,7 +287,7 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const fetchDataWorkDone = async (data,dateBook) => {
+    const fetchDataWorkDone = async (data, dateBook) => {
         const url = `api/web/update/work-continue?date_book=${dateBook}`;
         const socketUpdate = `UpdateDateTable_To_Server`;
         try {
@@ -342,7 +342,7 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-                socketD.emit("UpdateDateTable_To_Server", data,selectedDate);
+                socketD.emit("UpdateDateTable_To_Server", data, selectedDate);
                 socketD.emit("ButtonDisable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -1389,6 +1389,28 @@ function Dashboard({ auth }) {
                             selectedFilesKS[i]
                         );
                     }
+                    const data = {
+                        id_work_has: params.row.id_cus,
+                        id_auth: auth.user.id,
+                        quote_date: params.row.date_book,
+                        quote_info: [
+                            {
+                                info: "sửa bóng đèn ",
+                                unit: "cái",
+                                "quantity ": "1",
+                                "unitPrice ": "50000",
+                                totalPrice: "50000" //=unitPrice*quantity,
+                            },
+                            {
+                                info: "sửa bóng đèn ",
+                                unit: "cái",
+                                "quantity ": "1",
+                                "unitPrice ": "50000",
+                                totalPrice: "50000" //=unitPrice*quantity,
+                            },
+                        ],
+                        quote_total_price: 100000 // tổng totalPrice ,
+                    };
                     const response = await fetch(
                         "api/web/update/work-assignment-quote",
                         {
@@ -1711,63 +1733,7 @@ function Dashboard({ auth }) {
                                     </Button>
                                 ) : (
                                     <>
-                                        <Tooltip
-                                            content="Nhập Thu Chi"
-                                            animate={{
-                                                mount: { scale: 1, y: 0 },
-                                                unmount: {
-                                                    scale: 0,
-                                                    y: 25,
-                                                },
-                                            }}
-                                        >
-                                            <Button
-                                                color="white"
-                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
-                                                onClick={() =>
-                                                    handleOpenSpendingTotalWithDisable()
-                                                }
-                                            >
-                                                <ArrowUpTrayIcon />
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            content="Sửa liên hệ admin"
-                                            animate={{
-                                                mount: { scale: 1, y: 0 },
-                                                unmount: {
-                                                    scale: 0,
-                                                    y: 25,
-                                                },
-                                            }}
-                                        >
-                                            <BookmarkSquareIcon
-                                                className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
-                                                onClick={() =>
-                                                    handleOpenViewTotalWithDisable()
-                                                }
-                                            />
-                                        </Tooltip>
-                                        <Tooltip
-                                            content="Admin Check"
-                                            animate={{
-                                                mount: { scale: 1, y: 0 },
-                                                unmount: {
-                                                    scale: 0,
-                                                    y: 25,
-                                                },
-                                            }}
-                                        >
-                                            <Button
-                                                className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
-                                                onClick={() => {
-                                                    handleOpenAdminCheckWithDisable();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                <EyeIcon />
-                                            </Button>
-                                        </Tooltip>
+                                        {" "}
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
@@ -1854,6 +1820,64 @@ function Dashboard({ auth }) {
                                                 </MenuItem>
                                             </MenuList>
                                         </Menu>
+                                        <Tooltip
+                                            content="Nhập Thu Chi"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <Button
+                                                color="white"
+                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
+                                                onClick={() =>
+                                                    handleOpenSpendingTotalWithDisable()
+                                                }
+                                            >
+                                                <ArrowUpTrayIcon />
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip
+                                            content="Sửa liên hệ admin"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <BookmarkSquareIcon
+                                                className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
+                                                onClick={() =>
+                                                    handleOpenViewTotalWithDisable()
+                                                }
+                                            />
+                                        </Tooltip>
+                                        <Tooltip
+                                            content="Admin Check"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                            className="p-1"
+                                        >
+                                            <Button
+                                                className={`text-blue-500 border-blue-500 hover:bg-blue-500 ${classButtonDaPhan} ${DK1}`}
+                                                onClick={() => {
+                                                    handleOpenAdminCheckWithDisable();
+                                                }}
+                                                variant="outlined"
+                                            >
+                                                <EyeIcon />
+                                            </Button>
+                                        </Tooltip>
                                     </>
                                 )}
                             </div>

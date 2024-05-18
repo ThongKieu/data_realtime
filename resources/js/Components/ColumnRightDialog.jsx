@@ -10,7 +10,7 @@ import {
     Typography,
     Card,
 } from "@material-tailwind/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon,PlusCircleIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 const ThoDialog = ({
@@ -200,106 +200,190 @@ const KhaoSatDialog = ({
     handleFileChange,
     previewImages,
 }) => {
+    const [selectedValue, setSelectedValue] = useState();
+    const [data, setData] = useState(cardExpires);
+    console.log(data);
+    const handleChangeQuote = (e, id) => {
+        const { name, value } = e.target;
+        const updatedData = data.map((item) => {
+            if (item.id === id) {
+                return { ...item, [name]: value };
+            }
+            return item;
+        });
+        setData(updatedData);
+    };
+    const handleClick = () => {
+        // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
+        const maxKey = Math.max(...data.map((item) => item.id));
+        const newId = maxKey + 1;
+        setData((prevData) => [
+            ...prevData,
+            {
+                id: newId,
+                warranty_time: 0,
+                unit: "KBH",
+                warranty_info: "Không Bảo Hành",
+            },
+        ]);
+    };
     return (
-        <Dialog open={openKS} handler={handleOpenKS}>
+        <Dialog open={openKS} handler={handleOpenKS} size="xxl">
             <div className="flex items-center justify-between">
-                <DialogHeader>Lịch Khảo Sát</DialogHeader>
+                <DialogHeader className="text-center">Báo Giá</DialogHeader>
                 <XMarkIcon
                     className="w-5 h-5 mr-3 cursor-pointer"
                     onClick={handleOpenKS}
                 />
             </div>
             <DialogBody divider>
-                <form className="flex flex-col gap-4 mt-2">
-                    {/* Các trường input */}
-                    <div className="flex items-center gap-4 ">
-                        <Input
-                            label="Yêu Cầu Công Việc"
-                            id="work_content"
-                            name="work_content"
-                            value={cardExpires.work_content}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                        <Input
-                            label="Số Điện Thoại"
-                            id="phone_number"
-                            name="phone_number"
-                            value={cardExpires.phone_number}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Input
-                            label="Địa Chỉ"
-                            id="street"
-                            name="street"
-                            value={cardExpires.street}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                        <Input
-                            label="Quận"
-                            id="district"
-                            name="district"
-                            value={cardExpires.district}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Input
-                            label="Tên Khách Hàng"
-                            id="name_cus"
-                            name="name_cus"
-                            value={cardExpires.name_cus}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
+                <div className="grid grid-cols-5">
+                    <div className="col-span-2 ">
+                        <form className="flex flex-col gap-4 mt-2">
+                            {/* Các trường input */}
+                            <div className="gap-4">
+                                {/* <Input
+                                    label="Yêu Cầu Công Việc"
+                                    id="work_content"
+                                    name="work_content"
+                                    value={cardExpires.work_content}
+                                    onChange={handleChange}
+                                    containerProps={{
+                                        className: "min-w-[72px]",
+                                    }}
+                                    className="shadow-none"
+                                /> */}
+                                <Input
+                                    label="Tên Khách Hàng"
+                                    id="name_cus"
+                                    name="name_cus"
+                                    value={cardExpires.name_cus}
+                                    onChange={handleChange}
+                                    containerProps={{
+                                        className: "min-w-[72px]",
+                                    }}
+                                    className="shadow-none"
+                                />
+                                <div className="flex items-center gap-2 my-2">
+                                    <Input
+                                        label="Địa Chỉ"
+                                        id="street"
+                                        name="street"
+                                        value={cardExpires.street}
+                                        onChange={handleChange}
+                                        containerProps={{
+                                            className: "min-w-[72px]",
+                                        }}
+                                        className="shadow-none"
+                                    />
+                                    <Input
+                                        label="Quận"
+                                        id="district"
+                                        name="district"
+                                        value={cardExpires.district}
+                                        onChange={handleChange}
+                                        containerProps={{
+                                            className: "min-w-[72px]",
+                                        }}
+                                        className="shadow-none"
+                                    />{" "}
+                                    <Input
+                                        label="Số Điện Thoại"
+                                        id="phone_number"
+                                        name="phone_number"
+                                        value={cardExpires.phone_number}
+                                        onChange={handleChange}
+                                        containerProps={{
+                                            className: "min-w-[72px]",
+                                        }}
+                                        className="shadow-none"
+                                    />
+                                </div>
 
-                        <Input
-                            label="Ngày Làm"
-                            id="date_book"
-                            name="date_book"
-                            value={cardExpires.date_book}
-                            onChange={handleChange}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                            disabled={disabledAllowed}
-                        />
+                                <div className="grid grid-cols-6 gap-2 mb-2">
+                                    <div className="col-span-3 ">
+                                        <Input
+                                            label="Nội Dung"
+                                            id="street"
+                                            name="street"
+                                            value={cardExpires.street}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="col-span-1 ">
+                                        <Input
+                                            label="Đơn Vị Tính"
+                                            id="district"
+                                            name="district"
+                                            value={cardExpires.district}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="col-span-1 ">
+                                        <Input
+                                            label="Số Lượng"
+                                            id="district"
+                                            name="district"
+                                            value={cardExpires.district}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                    <div className="col-span-1 ">
+                                        <Input
+                                            label="Đơn Giá"
+                                            id="street"
+                                            name="street"
+                                            value={cardExpires.street}
+                                            onChange={handleChange}
+                                            containerProps={{
+                                                className: "min-w-[72px]",
+                                            }}
+                                            className="shadow-none"
+                                        />
+                                    </div>
+                                </div>
+            <Button
+                onClick={handleClick}
+                variant="outlined"
+                color="green"
+                className="px-1 py-1 mb-1"
+            >
+                <PlusCircleIcon className="w-5 h-5" />
+            </Button>
+                                <FileInput
+                                    handleFileChange={handleFileChange}
+                                    previewImages={previewImages}
+                                />
+                            </div>
+                        </form>
                     </div>
-                    <div className="grid gap-6">
-                        <Textarea
-                            label="Tình Trạng Thực Tế"
-                            className="shadow-none"
-                            onChange={(e) => setWorkNote(e.target.value)}
-                        />
+                    <div className="col-span-3 p-2 text-center">
+                        <div className="p-3 border border-black">
+                            <div className="grid grid-cols-5">
+                                <div className="col-span-2 ">
+                                    <img
+                                        src="https://dienmaythoviet.vn/wp-content/uploads/2022/03/logo-R-1-new-2-1.png"
+                                        alt="thoviet"
+                                        className="h-28 "
+                                    />
+                                </div>
+                                <div className="col-span-3 ">asadas</div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center justify-center ">
-                        <FileInput
-                            handleFileChange={handleFileChange}
-                            previewImages={previewImages}
-                        />
-                    </div>
-                </form>
+                </div>
             </DialogBody>
             <DialogFooter className="space-x-2">
                 <Button variant="gradient" color="red" onClick={handleSentKS}>

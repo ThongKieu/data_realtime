@@ -60,8 +60,6 @@ function DynamicTwoInput({ disabledAllowed, sendDataToParent }) {
     const handleDelete = (id) => {
         const updatedData = data.filter((item) => item.id !== id);
         setData(updatedData);
-
-        console.log(updatedData);
     };
     sendDataToParent(data);
     // Trả về dữ liệu JSON

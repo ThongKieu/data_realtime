@@ -94,6 +94,7 @@ function ProfileMenu({ propauthprofile }) {
             console.error("Repair:", error);
         }
     };
+
     useEffect(() => {
         fetchNoti();
         newSocket.on("notication_Client", () => {

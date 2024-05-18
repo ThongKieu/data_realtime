@@ -57,6 +57,7 @@ import {
     ThuHoiDialog,
     ViewTotalDialog,
     processSeriImages,
+    KSDialog,
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -108,12 +109,11 @@ function Dashboard({ auth }) {
 
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
-
     const { width, height } = useWindowSize(100);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
-
+    const [userId, setSetUserId] = useState(0);
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -124,32 +124,29 @@ function Dashboard({ auth }) {
     }, []);
     useEffect(() => {
         if (newSocket) {
+            setSocketD(newSocket, { secure: true });
             newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
                 if (data) {
-                    console.log("130", selectedDate);
-                    fetchDateCheck(selectedDate);
-                    fetchDateDoneCheck(selectedDate);
-                    fetchDataDashboard(selectedDate);
+                    fetchDateCheck(data.date_book);
+                    fetchDateDoneCheck(data.date_book);
+                    fetchDataDashboard(data.date_book);
                 }
             });
-            setSocketD(newSocket, { secure: true });
             newSocket.on("sendAddWorkTo_Client", (jsonData) => {
-                console.log("sendAddWorkTo_Client", jsonData);
-                console.log("139", selectedDate);
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                 }
             });
-
             newSocket.on(
                 "ButtonDisable_To_Client",
-                ({ id, isDisabled, userFix }) => {
+                ({ id, isDisabled, userFix, userID }) => {
                     setRowIdData(id);
                     setIdUserFix(userFix);
                     setIsButtonDisabled(isDisabled);
+                    setSetUserId(userID);
                 }
             );
         }
@@ -161,8 +158,8 @@ function Dashboard({ auth }) {
     }, [newSocket]);
 
     const handleDateChange = (event) => {
-        const selectedDate = event.target.value;
-        setSelectedDate(selectedDate);
+        const newDate = event.target.value;
+        setSelectedDate(newDate);
     };
 
     const handleSearch = (dateCheckSearch) => {
@@ -193,7 +190,6 @@ function Dashboard({ auth }) {
     };
     // ---------------lay du lieu cong viec chua phan ---------
     const fetchDateCheck = async (dateCheck) => {
-        console.log('196',dateCheck);
         try {
             const url = `api/web/works?dateCheck=${dateCheck}`;
             const response = await fetch(url);
@@ -222,7 +218,6 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDateDoneCheck = async (dateCheck) => {
-        console.log('225',dateCheck);
         try {
             const response = await fetch(
                 `/api/web/work-assignment?dateCheck=${dateCheck}`
@@ -271,7 +266,9 @@ function Dashboard({ auth }) {
         }
     };
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchUpdateData = async (data, url, socketUpdate) => {
+    const fetchDataDashboard = async (data,dateBook) => {
+        const url = `api/web/update/work?date_book=${dateBook}`;
+        const socketUpdate = "addWorkTo_Server";
         try {
             const res = await fetch(url, {
                 method: "POST",
@@ -290,15 +287,26 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const fetchDataDashboard = async (data) => {
-        const url = `api/web/update/work`;
-        const socketUpdate = "addWorkTo_Server";
-        fetchUpdateData(data, url, socketUpdate);
-    };
-    const fetchDataWorkDone = async (data) => {
-        const url = "api/web/update/work-continue";
+    const fetchDataWorkDone = async (data,dateBook) => {
+        const url = `api/web/update/work-continue?date_book=${dateBook}`;
         const socketUpdate = `UpdateDateTable_To_Server`;
-        fetchUpdateData(data, url, socketUpdate);
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                socketD?.emit(socketUpdate, data);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
     const fetchDataUpdateThuchi = async (
@@ -334,8 +342,8 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-                socketD.emit("UpdateDateTable_To_Server", formData);
-                socketD.emit("ButtonDisable_To_Server", formData);
+                socketD.emit("UpdateDateTable_To_Server", data,selectedDate);
+                socketD.emit("ButtonDisable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -606,7 +614,8 @@ function Dashboard({ auth }) {
                         auth,
                         socketD,
                         copyTextToClipboard,
-                        handleOpenTho,selectedDate
+                        handleOpenTho,
+                        selectedDate
                     );
                 };
                 const handleSentNhanDoi = async (e) => {
@@ -1212,6 +1221,7 @@ function Dashboard({ auth }) {
                     };
                     return [open, handleOpen];
                 };
+
                 // Sử dụng hàm useToggle
                 const [openHuy, handleOpenHuy] = useToggle(false);
                 const [openKS, handleOpenKS] = useToggle(false);
@@ -1220,7 +1230,13 @@ function Dashboard({ auth }) {
                 const [openSpending_total, handleOpenSpending_total] =
                     useToggle(false);
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
+                const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
+                const hasData = params.row;
+                const filteredArray = processSeriImages(hasData.bill_imag);
+                const [imageVt1, setImageVt1] = useState(filteredArray);
+                const filteredImgPt = processSeriImages(hasData.seri_imag);
+                const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1239,7 +1255,9 @@ function Dashboard({ auth }) {
                         id: rowId,
                         isDisabled: !isOpenState,
                         userFix: auth.user.name,
+                        userID: auth.user.id,
                     });
+
                     switch (actionType) {
                         case "openSpendingTotal":
                             handleOpenFunction(!isOpenState);
@@ -1259,57 +1277,71 @@ function Dashboard({ auth }) {
                         case "openViewTotal":
                             handleOpenFunction(!isOpenState);
                             break;
+                        case "openViewKS":
+                            handleOpenFunction(!isOpenState);
+                            break;
                         default:
                             break;
                     }
                 };
-                const handleOpenSpendingTotalWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenSpendingTotalWithDisable = () => {
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openSpending_total,
                         handleOpenSpending_total,
                         "openSpendingTotal"
                     );
                 };
-                const handleOpenHuyWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenHuyWithDisable = () => {
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openHuy,
                         handleOpenHuy,
                         "openHuy"
                     );
                 };
-                const handleOpenKSWithDisable = (rowId) => {
-                    rowId = params.row.id;
-                    handleButtonAction(rowId, openKS, handleOpenKS, "openKS");
+                const handleOpenKSWithDisable = () => {
+                    handleButtonAction(
+                        params.row.id,
+                        openKS,
+                        handleOpenKS,
+                        "openKS"
+                    );
                 };
                 const handleOpenThuHoiWithDisable = (rowId) => {
-                    rowId = params.row.id;
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openThuHoi,
                         handleOpenThuHoi,
                         "openThuHoi"
                     );
                 };
-                const handleOpenAdminCheckWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenAdminCheckWithDisable = () => {
+                    setCardExpires(params.row);
+                    setImageVt1(filteredArray);
+                    setImagePt1(filteredImgPt);
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openAdminCheck,
                         handleOpenAdminCheck,
                         "openAdminCheck"
                     );
                 };
-                const handleOpenViewTotalWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenViewTotalWithDisable = () => {
+                    setCardExpires(params.row);
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openViewTotal,
                         handleOpenViewTotal,
                         "openViewTotal"
+                    );
+                };
+                const handleOpenViewKSDisable = () => {
+                    handleButtonAction(
+                        params.row.id,
+                        openView_KS,
+                        handleOpenView_KS,
+                        "openViewKS"
                     );
                 };
                 const handleSentDeleteDone = async () => {
@@ -1340,31 +1372,40 @@ function Dashboard({ auth }) {
                     } catch (error) {}
                 };
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
-                const handleSentKS = async () => {
-                    try {
-                        let data = {
-                            id: params.id,
-                            id_cus: params.row.id_cus,
-                            real_note: params.row.real_note,
-                            auth_id: auth.user.id,
-                            image_work_path: selectedFilesKS,
-                        };
-                        const response = await fetch(
-                            "api/web/update/work-assignment-quote",
-                            {
-                                method: "POST",
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                            }
+                const handleSentKS = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData();
+                    formData.append("id", params.id);
+                    formData.append("id_cus", params.row.id_cus);
+                    formData.append("real_note", formData.work_note);
+                    formData.append("auth_id", auth.user.id);
+                    formData.append("work_content", formData.work_content);
+                    formData.append("phone_number", formData.phone_number);
+                    formData.append("name_cus", formData.name_cus);
+                    formData.append("date_book", selectedDate);
+                    for (let i = 0; i < selectedFilesKS.length; i++) {
+                        formData.append(
+                            "image_work_path[]",
+                            selectedFilesKS[i]
                         );
-                        if (response.ok) {
-                            socketD.emit("addWorkTo_Server", "Khảo sát");
-                            handleOpen();
-                            handleOpenKSWithDisable();
+                    }
+                    const response = await fetch(
+                        "api/web/update/work-assignment-quote",
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                            },
+                            mode: "no-cors",
+                            body: formData,
                         }
-                    } catch (error) {}
+                    );
+                    if (response.ok) {
+                        socketD.emit("addWorkTo_Server", "Khảo sát");
+                        handleOpen();
+                        handleOpenKSWithDisable();
+                    }
                 };
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
@@ -1540,9 +1581,7 @@ function Dashboard({ auth }) {
                 const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
-                const hasData = params.row;
-                const filteredArray = processSeriImages(params.row.bill_imag);
-                const [imageVt1, setImageVt1] = useState(filteredArray);
+
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
@@ -1590,9 +1629,6 @@ function Dashboard({ auth }) {
                     }
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
-                const hinhPt = hasData.seri_imag;
-                const filteredImgPt = processSeriImages(hinhPt);
-                const [imagePt1, setImagePt1] = useState(filteredImgPt);
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
@@ -1635,7 +1671,9 @@ function Dashboard({ auth }) {
                 }`;
                 return (
                     <div className="text-center">
-                        {isButtonDisabled && params.row.id === rowIdData ? (
+                        {isButtonDisabled == true &&
+                        params.row.id === rowIdData &&
+                        userId ? (
                             <p className="w-full text-center">{idUserFix}</p>
                         ) : (
                             <div className="flex flex-row justify-center">
@@ -1650,8 +1688,8 @@ function Dashboard({ auth }) {
                                                         ? "hidden"
                                                         : ""
                                                 }`}
-                                                onClick={
-                                                    handleOpenViewTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenViewTotalWithDisable()
                                                 }
                                             />
                                         </Tooltip>
@@ -1663,11 +1701,14 @@ function Dashboard({ auth }) {
                                         Mai Làm Tiếp
                                     </p>
                                 ) : params.row.status_work == 3 ? (
-                                    <p
-                                        className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                    <Button
+                                        className={`p-2 rounded`}
+                                        onClick={() =>
+                                            handleOpenViewKSDisable()
+                                        }
                                     >
                                         Khảo Sát
-                                    </p>
+                                    </Button>
                                 ) : (
                                     <>
                                         <Tooltip
@@ -1683,8 +1724,8 @@ function Dashboard({ auth }) {
                                             <Button
                                                 color="white"
                                                 className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
-                                                onClick={
-                                                    handleOpenSpendingTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenSpendingTotalWithDisable()
                                                 }
                                             >
                                                 <ArrowUpTrayIcon />
@@ -1702,8 +1743,8 @@ function Dashboard({ auth }) {
                                         >
                                             <BookmarkSquareIcon
                                                 className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
-                                                onClick={
-                                                    handleOpenViewTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenViewTotalWithDisable()
                                                 }
                                             />
                                         </Tooltip>
@@ -1750,8 +1791,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <ArrowPathIcon
                                                             className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                            onClick={
-                                                                handleOpenThuHoiWithDisable
+                                                            onClick={() =>
+                                                                handleOpenThuHoiWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1772,8 +1813,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <TrashIcon
                                                             className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                            onClick={
-                                                                handleOpenHuyWithDisable
+                                                            onClick={() =>
+                                                                handleOpenHuyWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1805,8 +1846,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={
-                                                                handleOpenKSWithDisable
+                                                            onClick={() =>
+                                                                handleOpenKSWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1924,6 +1965,12 @@ function Dashboard({ auth }) {
                             handleViewTotal={handleOpenViewTotal}
                             params={params.row}
                         />
+                        <KSDialog
+                            openViewKS={openView_KS}
+                            handleOpenViewKS={handleOpenView_KS}
+                            handleViewKS={handleOpenViewKSDisable}
+                            params={params.row}
+                        />
                     </div>
                 );
             },
@@ -1945,14 +1992,14 @@ function Dashboard({ auth }) {
     };
     // ----------------------------ket thuc nut scrollView trong bang --------------------------
     const dataBtnFixed = [
-        { id: 0, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
-        { id: 1, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
-        { id: 2, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
-        { id: 3, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
-        { id: 4, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
-        { id: 5, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
-        { id: 6, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
-        { id: 7, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
+        { id: 1, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
+        { id: 2, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
+        { id: 3, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
+        { id: 4, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
+        { id: 5, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
+        { id: 6, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
+        { id: 7, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
+        { id: 8, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
     const dataGridLichChuaPhan = [
         {
@@ -2092,7 +2139,11 @@ function Dashboard({ auth }) {
                             </table>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
-                                    <div key={index} id={result.id}>
+                                    <div
+                                        key={index}
+                                        id={result.id}
+                                        ref={result.ref}
+                                    >
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>
@@ -2101,7 +2152,7 @@ function Dashboard({ auth }) {
                                                 height:
                                                     result.rowsDataGrid == ""
                                                         ? 40
-                                                        : "fit-content",
+                                                        : 1,
                                                 width: "100%",
                                             }}
                                         >
@@ -2186,7 +2237,7 @@ function Dashboard({ auth }) {
                                                 height:
                                                     result.rowsDataGrid == ""
                                                         ? 40
-                                                        : "fit-content",
+                                                        : 1,
                                                 width: "100%",
                                             }}
                                         >

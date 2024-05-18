@@ -22,7 +22,7 @@ const sendPhanThoRequest = async (
     };
 
     try {
-        const response = await fetch(`api/web/work-assignment`, {
+        const response = await fetch(`api/web/work-assignment?dateCheck=${selectedDate}`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {

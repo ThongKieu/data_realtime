@@ -46,22 +46,6 @@ function AdminCheckDialog({
     socketD,
     handleSearch,
 }) {
-    useEffect(() => {
-        // Lắng nghe sự kiện từ socket và cập nhật dữ liệu khi có thay đổi
-        if (socketD) {
-            socketD.on("UpdateDateTable_To_Client", () => {
-                // Gọi lại hàm handleSearch để cập nhật dữ liệu
-                handleSearch();
-            });
-        }
-
-        // Hủy lắng nghe khi component unmount
-        return () => {
-            if (socketD) {
-                socketD.off("UpdateDateTable_To_Client");
-            }
-        };
-    }, [socketD, handleSearch]);
     const [activePt, setActivePt] = useState({
         inputSPT: false,
         inputBH: false,
@@ -210,7 +194,6 @@ function AdminCheckDialog({
                     id_work_has: params.row.id,
                     info_warranties: modifiedData,
                 };
-                console.log(dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {
@@ -263,11 +246,7 @@ function AdminCheckDialog({
             if (res.ok) {
                 handleSearch();
                 handleOpenAdminCheck();
-                socketD.emit(
-                    "UpdateDateTable_To_Server",
-                    "Cập Nhật trạng thái AdminCheck",
-                    check_admin
-                );
+                socketD.emit("UpdateDateTable_To_Server", check_admin.data);
             } else {
                 console.error(
                     "Lỗi thay đổi trạng thái AdminCheck:",
@@ -282,6 +261,7 @@ function AdminCheckDialog({
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
+        setDataBH(params.row.warranty);
     };
     return (
         <Dialog
@@ -405,9 +385,9 @@ function AdminCheckDialog({
                                                 <div>
                                                     <Select
                                                         value={item.unit}
-                                                        defaultValue={
-                                                            selectedValue
-                                                        }
+                                                        // defaultValue={
+                                                        //     selectedValue
+                                                        // }
                                                         label="Bảo Hành"
                                                         onChange={(
                                                             selectedValue
@@ -749,7 +729,7 @@ function AdminCheckDialog({
                             id="spending_total"
                             name="spending_total"
                             value={cardExpires.spending_total}
-                            defaultValue={params.row.spending_total}
+                            // defaultValue={params.row.spending_total}
                             onChange={handleChange}
                             containerProps={containerProps}
                             disabled={!activePt.inputThuChi}
@@ -764,7 +744,7 @@ function AdminCheckDialog({
                             id="income_total"
                             name="income_total"
                             value={cardExpires.income_total}
-                            defaultValue={params.row.income_total}
+                            // defaultValue={params.row.income_total}
                             onChange={handleChange}
                             containerProps={containerProps}
                             disabled={!activePt.inputThuChi}

@@ -47,7 +47,7 @@ class QuotationController extends Controller
     //     $pdf = FacadePdf::loadView('pdf.pdftemplate', array('users' =>  $users))
     //     ->setPaper('a4', 'portrait');
 
-    //     return $pdf->download('pdftemplate.pdf');   
+    //     return $pdf->download('pdftemplate.pdf');
     // // return $pdf = ::loadView('pdf.pdftemplate', array('users' =>  $users));
 
     // //  $pdf->stream();

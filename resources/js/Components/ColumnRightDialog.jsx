@@ -10,7 +10,7 @@ import {
     Typography,
     Card,
 } from "@material-tailwind/react";
-import { XMarkIcon,PlusCircleIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 const ThoDialog = ({
@@ -354,14 +354,14 @@ const KhaoSatDialog = ({
                                         />
                                     </div>
                                 </div>
-            <Button
-                onClick={handleClick}
-                variant="outlined"
-                color="green"
-                className="px-1 py-1 mb-1"
-            >
-                <PlusCircleIcon className="w-5 h-5" />
-            </Button>
+                                <Button
+                                    onClick={handleClick}
+                                    variant="outlined"
+                                    color="green"
+                                    className="px-1 py-1 mb-1"
+                                >
+                                    <PlusCircleIcon className="w-5 h-5" />
+                                </Button>
                                 <FileInput
                                     handleFileChange={handleFileChange}
                                     previewImages={previewImages}

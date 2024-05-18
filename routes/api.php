@@ -142,7 +142,7 @@ Route::prefix('web')->group(function () {
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(
-            maxAttempts: 300,
+            maxAttempts: 3000,
             decayMinutes: 1
         )
     );
@@ -178,6 +178,9 @@ Route::prefix('fuel-ot')->group(function () {
 // Report Worker
 Route::post('report-worker', 'App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
 Route::get('report-worker-web', 'App\Http\Controllers\Api\ReportWorkerController@getAllWorker');
+Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
+//quote_create
+Route::post('quote_create', 'App\Http\Controllers\QuotationController@create');
 
 // --------------------------------------------------------------------------//
 // Application

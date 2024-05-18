@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('quotations', function (Blueprint $table) {
+            $table->id();
+            //'id_work_has' 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status',
+            $table->tinyInteger('id_work_has');
+            $table->tinyInteger('id_auth');
+            $table->string('quote_date');
+            $table->string('quote_info',5000);
+            $table->integer('quote_total_price');
+            $table->tinyInteger('quote_status')->default(0);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('quotations');
+    }
+};

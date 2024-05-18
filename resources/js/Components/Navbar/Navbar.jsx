@@ -342,12 +342,16 @@ function NavList({ active = false }) {
 
 function NavbarDefault({ propauth, check }) {
     const { width, height } = useWindowSize(200);
-    const [isNavOpen, setIsNavOpen] = useState(false);
-    const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     const [socketDelete, setSocketDelete] = useState();
     const [countDelete, setCountDelete] = useState(0);
+    const [jobs, setJobs] = useState([]);
+    const [isNavOpen, setIsNavOpen] = useState(false);
+    const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
     const [openWorker, setOpenWorker] = useState(false);
     const handleOpenWorker = () => setOpenWorker(!openWorker);
+    const [openSpending, setOpenSpending] = useState(
+        Array(jobs.length).fill(false)
+    );
     useEffect(() => {
         fetchDelete();
         getDataWorkerSales();
@@ -357,11 +361,12 @@ function NavbarDefault({ propauth, check }) {
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
-                getDataWorkerSales(data);
+                getDataWorkerSales(data, check);
             }
-        }); newSocket.on("UpdateDateTable_To_Client", (data) => {
+        });
+        newSocket.on("UpdateDateTable_To_Client", (data) => {
             if (data) {
-                getDataWorkerSales(data);
+                getDataWorkerSales(data, check);
             }
         });
     }, [check]);
@@ -390,12 +395,9 @@ function NavbarDefault({ propauth, check }) {
         { code: 6, name: " Vận Chuyển" },
         { code: 7, name: "Cơ Khí" },
     ];
-    const [openSpending, setOpenSpending] = useState(false);
-    const handleOpenSpending = () => setOpenSpending(!openSpending);
-    const [jobs, setJobs] = useState([]);
 
     const getDataWorkerSales = async () => {
-        const uri = "api/report-worker-web";
+        const uri = `api/report-worker-web?dateCheck=${check}`;
         try {
             const res = await fetch(uri);
             const jsonData = await res.json();
@@ -408,19 +410,14 @@ function NavbarDefault({ propauth, check }) {
             console.error("Error fetching data:", error);
         }
     };
+    const handleOpenSpending = (index) => {
+        setOpenSpending((prevOpenSpending) => {
+            const updatedOpenSpending = [...prevOpenSpending];
+            updatedOpenSpending[index] = !updatedOpenSpending[index];
+            return updatedOpenSpending;
+        });
+    };
     const renderWorkerGroup = (prefix, status) => {
-        const [openSpending, setOpenSpending] = useState(
-            Array(jobs.length).fill(false)
-        );
-
-        const handleOpenSpending = (index) => {
-            setOpenSpending((prevOpenSpending) => {
-                const updatedOpenSpending = [...prevOpenSpending];
-                updatedOpenSpending[index] = !updatedOpenSpending[index];
-                return updatedOpenSpending;
-            });
-        };
-
         return (
             <div className="w-full p-1" key={`${prefix}-${status}`}>
                 <p className="border-b-[3px] border-b-blue-500 text-center w-full">
@@ -470,7 +467,7 @@ function NavbarDefault({ propauth, check }) {
                                     <Dialog
                                         key={index}
                                         open={openSpending[index]}
-                                        handler={() =>
+                                        onClose={() =>
                                             handleOpenSpending(index)
                                         }
                                     >
@@ -516,7 +513,6 @@ function NavbarDefault({ propauth, check }) {
         currency: "VND",
     });
     function JobTable({ data, handleClose }) {
-        console.log(data);
         const [jobTable, setJobTable] = useState([data]);
         const handleMoneyChange = (
             jobIndex,
@@ -576,7 +572,7 @@ function NavbarDefault({ propauth, check }) {
                     },
                 });
                 if (response.status === 200) {
-                    newSocket.emit('addWorkTo_Server',data)
+                    newSocket.emit("addWorkTo_Server", data);
                     // setJobTable();
                     handleClose();
                 }
@@ -748,7 +744,7 @@ function NavbarDefault({ propauth, check }) {
                             })}
                     </tbody>
                 </table>
-                <div className="p-4 mt-1">
+                <div className="flex flex-row justify-between gap-2 p-4 mt-1">
                     <Button
                         className="w-full"
                         color="green"
@@ -756,6 +752,14 @@ function NavbarDefault({ propauth, check }) {
                         onClick={handleAccept}
                     >
                         Cập Nhật
+                    </Button>
+                    <Button
+                        className="w-full"
+                        color="red"
+                        variant="outlined"
+                        onClick={handleClose}
+                    >
+                        Đóng
                     </Button>
                 </div>
             </Card>

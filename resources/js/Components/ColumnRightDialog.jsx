@@ -315,17 +315,62 @@ const processSeriImages = (data) => {
     return filteredArray;
 };
 const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
-    const processedDataKS = processSeriImages(params.seri_imag);
+    const processedDataKS = processSeriImages(params.bill_imag);
     return (
         <Dialog open={openViewKS} handler={handleOpenViewKS}>
             <div className="flex items-center justify-between">
                 <DialogHeader>Tình Trạng Khảo Sát</DialogHeader>
             </div>
             <DialogBody>
-                <div>
-                    {processedDataKS?.map((item, index) => {
-                        return <img src={item} alt={index}/>;
-                    })}
+                <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Công Việc:
+                        </h2>
+                        <span>{params.work_content}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Địa Chỉ:</h2>
+                        <span>{params.street}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Quận:</h2>
+                        <span>{params.district}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Số Điện Thoại:
+                        </h2>
+                        <span>{params.phone_number}</span>
+                    </div>
+                    <div className="mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Khảo Sát Thực Tế:
+                        </h2>
+                        <span>{params.real_note}</span>
+                    </div>
+                </div>
+                <div className="mb-2">
+                    <h2 className="text-lg font-semibold">
+                        Hình Ảnh Khảo Sát Thực Tế:
+                    </h2>
+                    {params.bill_imag == null || processedDataKS == false ? (
+                        <p className="flex items-center justify-center w-32 h-32 border border-green-500">
+                            Not Image
+                        </p>
+                    ) : (
+                        <span className="flex justify-between">
+                            {Array.isArray(processedDataKS) &&
+                                processedDataKS.map((item, index) => (
+                                    <img
+                                        key={index}
+                                        src={item}
+                                        alt=""
+                                        className="w-40 h-40"
+                                    />
+                                ))}
+                        </span>
+                    )}
                 </div>
             </DialogBody>
             <DialogFooter className="space-x-2">

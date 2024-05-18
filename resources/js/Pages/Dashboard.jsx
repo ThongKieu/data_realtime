@@ -109,13 +109,11 @@ function Dashboard({ auth }) {
 
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
-
     const { width, height } = useWindowSize(100);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
     const [userId, setSetUserId] = useState(0);
-
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -126,16 +124,15 @@ function Dashboard({ auth }) {
     }, []);
     useEffect(() => {
         if (newSocket) {
+            setSocketD(newSocket, { secure: true });
             newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
                 if (data) {
-                    console.log("130", selectedDate);
-                    fetchDateCheck(selectedDate);
-                    fetchDateDoneCheck(selectedDate);
-                    fetchDataDashboard(selectedDate);
+                    fetchDateCheck(data.date_book);
+                    fetchDateDoneCheck(data.date_book);
+                    fetchDataDashboard(data.date_book);
                 }
             });
-            setSocketD(newSocket, { secure: true });
             newSocket.on("sendAddWorkTo_Client", (jsonData) => {
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
@@ -143,7 +140,6 @@ function Dashboard({ auth }) {
                     fetchDateDoneCheck(selectedDate);
                 }
             });
-
             newSocket.on(
                 "ButtonDisable_To_Client",
                 ({ id, isDisabled, userFix, userID }) => {
@@ -154,8 +150,6 @@ function Dashboard({ auth }) {
                 }
             );
         }
-
-        console.log(userId);
         return () => {
             if (newSocket) {
                 newSocket.disconnect();
@@ -164,8 +158,8 @@ function Dashboard({ auth }) {
     }, [newSocket]);
 
     const handleDateChange = (event) => {
-        const selectedDate = event.target.value;
-        setSelectedDate(selectedDate);
+        const newDate = event.target.value;
+        setSelectedDate(newDate);
     };
 
     const handleSearch = (dateCheckSearch) => {
@@ -272,7 +266,9 @@ function Dashboard({ auth }) {
         }
     };
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchUpdateData = async (data, url, socketUpdate) => {
+    const fetchDataDashboard = async (data,dateBook) => {
+        const url = `api/web/update/work?date_book=${dateBook}`;
+        const socketUpdate = "addWorkTo_Server";
         try {
             const res = await fetch(url, {
                 method: "POST",
@@ -291,15 +287,26 @@ function Dashboard({ auth }) {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
-    const fetchDataDashboard = async (data) => {
-        const url = `api/web/update/work`;
-        const socketUpdate = "addWorkTo_Server";
-        fetchUpdateData(data, url, socketUpdate);
-    };
-    const fetchDataWorkDone = async (data) => {
-        const url = "api/web/update/work-continue";
+    const fetchDataWorkDone = async (data,dateBook) => {
+        const url = `api/web/update/work-continue?date_book=${dateBook}`;
         const socketUpdate = `UpdateDateTable_To_Server`;
-        fetchUpdateData(data, url, socketUpdate);
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                socketD?.emit(socketUpdate, data);
+            } else {
+                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching data lỗi rồi:", error);
+        }
     };
     // ---------------------su dung nut di chuyen trong bang--------------------
     const fetchDataUpdateThuchi = async (
@@ -335,8 +342,8 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-                socketD.emit("UpdateDateTable_To_Server", formData);
-                socketD.emit("ButtonDisable_To_Server", formData);
+                socketD.emit("UpdateDateTable_To_Server", data,selectedDate);
+                socketD.emit("ButtonDisable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -1230,7 +1237,6 @@ function Dashboard({ auth }) {
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const filteredImgPt = processSeriImages(hasData.seri_imag);
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
-                console.log('imagePt1',imagePt1);
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
@@ -1251,6 +1257,7 @@ function Dashboard({ auth }) {
                         userFix: auth.user.name,
                         userID: auth.user.id,
                     });
+
                     switch (actionType) {
                         case "openSpendingTotal":
                             handleOpenFunction(!isOpenState);
@@ -1277,62 +1284,61 @@ function Dashboard({ auth }) {
                             break;
                     }
                 };
-                const handleOpenSpendingTotalWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenSpendingTotalWithDisable = () => {
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openSpending_total,
                         handleOpenSpending_total,
                         "openSpendingTotal"
                     );
                 };
-                const handleOpenHuyWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenHuyWithDisable = () => {
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openHuy,
                         handleOpenHuy,
                         "openHuy"
                     );
                 };
-                const handleOpenKSWithDisable = (rowId) => {
-                    rowId = params.row.id;
-                    handleButtonAction(rowId, openKS, handleOpenKS, "openKS");
+                const handleOpenKSWithDisable = () => {
+                    handleButtonAction(
+                        params.row.id,
+                        openKS,
+                        handleOpenKS,
+                        "openKS"
+                    );
                 };
                 const handleOpenThuHoiWithDisable = (rowId) => {
-                    rowId = params.row.id;
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openThuHoi,
                         handleOpenThuHoi,
                         "openThuHoi"
                     );
                 };
-                const handleOpenAdminCheckWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenAdminCheckWithDisable = () => {
                     setCardExpires(params.row);
                     setImageVt1(filteredArray);
                     setImagePt1(filteredImgPt);
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openAdminCheck,
                         handleOpenAdminCheck,
                         "openAdminCheck"
                     );
                 };
-                const handleOpenViewTotalWithDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenViewTotalWithDisable = () => {
+                    setCardExpires(params.row);
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openViewTotal,
                         handleOpenViewTotal,
                         "openViewTotal"
                     );
                 };
-                const handleOpenViewKSDisable = (rowId) => {
-                    rowId = params.row.id;
+                const handleOpenViewKSDisable = () => {
                     handleButtonAction(
-                        rowId,
+                        params.row.id,
                         openView_KS,
                         handleOpenView_KS,
                         "openViewKS"
@@ -1371,8 +1377,12 @@ function Dashboard({ auth }) {
                     const formData = new FormData();
                     formData.append("id", params.id);
                     formData.append("id_cus", params.row.id_cus);
-                    formData.append("real_note", params.row.real_note);
+                    formData.append("real_note", formData.work_note);
                     formData.append("auth_id", auth.user.id);
+                    formData.append("work_content", formData.work_content);
+                    formData.append("phone_number", formData.phone_number);
+                    formData.append("name_cus", formData.name_cus);
+                    formData.append("date_book", selectedDate);
                     for (let i = 0; i < selectedFilesKS.length; i++) {
                         formData.append(
                             "image_work_path[]",
@@ -1619,7 +1629,6 @@ function Dashboard({ auth }) {
                     }
                 };
                 // ------------- cắt chuỗi hình phieu thu----------------
-
                 const handleImagePtDelete = async (index) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
@@ -1679,8 +1688,8 @@ function Dashboard({ auth }) {
                                                         ? "hidden"
                                                         : ""
                                                 }`}
-                                                onClick={
-                                                    handleOpenViewTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenViewTotalWithDisable()
                                                 }
                                             />
                                         </Tooltip>
@@ -1694,7 +1703,9 @@ function Dashboard({ auth }) {
                                 ) : params.row.status_work == 3 ? (
                                     <Button
                                         className={`p-2 rounded`}
-                                        onClick={handleOpenViewKSDisable}
+                                        onClick={() =>
+                                            handleOpenViewKSDisable()
+                                        }
                                     >
                                         Khảo Sát
                                     </Button>
@@ -1713,8 +1724,8 @@ function Dashboard({ auth }) {
                                             <Button
                                                 color="white"
                                                 className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
-                                                onClick={
-                                                    handleOpenSpendingTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenSpendingTotalWithDisable()
                                                 }
                                             >
                                                 <ArrowUpTrayIcon />
@@ -1732,8 +1743,8 @@ function Dashboard({ auth }) {
                                         >
                                             <BookmarkSquareIcon
                                                 className={`text-green-500 border hover:bg-green-500  border-green-500 cursor-help ${classButtonDaPhan} ${DK3}`}
-                                                onClick={
-                                                    handleOpenViewTotalWithDisable
+                                                onClick={() =>
+                                                    handleOpenViewTotalWithDisable()
                                                 }
                                             />
                                         </Tooltip>
@@ -1780,8 +1791,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <ArrowPathIcon
                                                             className={`text-blue-500 border border-blue-500  hover:bg-blue-500 ${classButtonDaPhan} `}
-                                                            onClick={
-                                                                handleOpenThuHoiWithDisable
+                                                            onClick={() =>
+                                                                handleOpenThuHoiWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1802,8 +1813,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <TrashIcon
                                                             className={`text-red-500 border border-red-500 hover:bg-red-500 ${classButtonDaPhan}`}
-                                                            onClick={
-                                                                handleOpenHuyWithDisable
+                                                            onClick={() =>
+                                                                handleOpenHuyWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1835,8 +1846,8 @@ function Dashboard({ auth }) {
                                                     >
                                                         <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={
-                                                                handleOpenKSWithDisable
+                                                            onClick={() =>
+                                                                handleOpenKSWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1956,7 +1967,8 @@ function Dashboard({ auth }) {
                         />
                         <KSDialog
                             openViewKS={openView_KS}
-                            handleOpenViewKS={handleOpenView_KS} handleViewKS={handleOpenViewKSDisable}
+                            handleOpenViewKS={handleOpenView_KS}
+                            handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
                         />
                     </div>
@@ -2127,7 +2139,11 @@ function Dashboard({ auth }) {
                             </table>
                             {dataGridLichChuaPhan.map((result, index) => {
                                 return (
-                                    <div key={index} id={result.id}>
+                                    <div
+                                        key={index}
+                                        id={result.id}
+                                        ref={result.ref}
+                                    >
                                         <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
                                             {result.contentDataGird}
                                         </Typography>

@@ -96,14 +96,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->id }}</td>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at->format('d-m-Y') }}</td>
-                </tr>
-                @endforeach --}}
+             
                     <tr>
                         <td class="c-center">1</td>
                         <td> THỢ VIỆT NGƯỜI THỢ CỦA GIA ĐÌNH VIỆT SINCE 2011<br>

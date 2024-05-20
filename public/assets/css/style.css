@@ -1,0 +1,25 @@
+body {
+    max-width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.logo {
+    max-width: 150px;
+}
+
+.info-quote {
+    border: 2px solid black;
+    border-radius: 10px;
+
+}
+
+.info-quote p {
+    padding: 5px 0 0 5px;
+}
+
+.c-center {
+    vertical-align: inherit;
+    text-align: center;
+}

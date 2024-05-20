@@ -2,45 +2,59 @@
 <html>
 
 <head>
-    <title>Bảng Báo Giá Dịch Vụ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    {{-- <title>Bảng Báo Giá Dịch Vụ</title> --}}
+    {{-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"> --}}
     {{-- <link rel="stylesheet" href="{{ asset("assets/css/style.css")}}"> --}}
+    {{-- <link href="{{public_path('assets/css/style.css')}}" rel="stylesheet" media="all"> --}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Export Notes List PDF - Tutsmake.com</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+
 </head>
 <style>
-  
- body{
-    max-width: 90%;
-    margin: auto;
-    margin-top: 20px;
-    font-family: 'Time New Romand', sans-serif;
- }
- .logo {
-    max-width: 150px;
-}
+    body {
+        max-width: 90%;
+        margin: auto;
+        margin-top: 20px;
+        font-family: DejaVu Sans, sans-serif;
+    }
 
-.info-quote {
-    border: 2px solid black;
-    border-radius: 10px;
+    .logo {
+        max-width: 150px;
+    }
 
-}
+    .info-quote {
+        border: 2px solid black;
+        border-radius: 10px;
 
-.info-quote p {
-    padding: 5px 0 0 5px;
-}
+    }
 
-.c-center {
-    vertical-align: inherit;
-    text-align: center;
-}
+    .info-quote p {
+        padding: 5px 0 0 5px;
+    }
+
+    .row-c {
+       
+       
+    }
+
+    .c-center {
+        vertical-align: inherit;
+        text-align: center;
+    }
 </style>
 
 <body>
 
 
-    <div class="row">
+    <div class="row-c">
         <div class="col-2">
-            {{-- <img class="logo" src="{{ asset('assets/pdf/logo.jpg') }}" alt=""> --}}
+            <img class="logo" src="assets/pdf/logo.jpg" alt="">
         </div>
         <div class="col-8 text-center">
             <p><span style="font-size: 20px;font-weight: 700"> CÔNG TY TNHH DỊCH VỤ KỸ THUẬT THỢ VIỆT </span> <br>
@@ -127,7 +141,7 @@
                     </tr>
                 </tbody>
                 <tfoot>
-                   
+
                 </tfoot>
             </table>
             <p>
@@ -141,7 +155,7 @@
 
                 </li>
             </ul>
-            
+
             </p>
         </div>
     </div>

@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/test', function () {return Inertia::render('test');})->name('test');
     Route::get('/quoteflow', function () {return Inertia::render('QuoteFlow');})->name('quoteflow');
     Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
-    // Route::get('generate-pdf', function(){return view('pdf.pdftemplate');});
+    Route::get('generate-pdf2', function(){return view('pdf.pdftemplate');});
 
 
 

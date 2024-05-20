@@ -35,8 +35,9 @@ class QuotationController extends Controller
             'date' => date('m/d/Y'),
             'users' => $users
         ];
-
         $pdf = FacadePdf::loadView('pdf.pdftemplate', $data);
+        // $pdf->setOptions(['dpi' => 150]);
+        $pdf->setBasePath(public_path());
         return $pdf->stream('users-lists.pdf');
     }
     // public function generatePDF()

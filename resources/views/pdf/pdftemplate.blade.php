@@ -5,32 +5,34 @@
     <title>Bảng Báo Giá Dịch Vụ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    {{-- <link rel="stylesheet" href="{{ asset("assets/css/style.css")}}"> --}}
 </head>
 <style>
-    body {
-        max-width: 90%;
-        margin: auto;
-        margin-top: 20px;
-    }
+  
+ body{
+    max-width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    font-family: 'Time New Romand', sans-serif;
+ }
+ .logo {
+    max-width: 150px;
+}
 
-    .logo {
-        max-width: 150px;
-    }
+.info-quote {
+    border: 2px solid black;
+    border-radius: 10px;
 
-    .info-quote {
-        border: 2px solid black;
-        border-radius: 10px;
+}
 
-    }
+.info-quote p {
+    padding: 5px 0 0 5px;
+}
 
-    .info-quote p {
-        padding: 5px 0 0 5px;
-    }
-
-    .c-center {
-        vertical-align: inherit;
-        text-align: center;
-    }
+.c-center {
+    vertical-align: inherit;
+    text-align: center;
+}
 </style>
 
 <body>
@@ -38,7 +40,7 @@
 
     <div class="row">
         <div class="col-2">
-            <img class="logo" src="{{ asset('assets/pdf/logo.jpg') }}" alt="">
+            {{-- <img class="logo" src="{{ asset('assets/pdf/logo.jpg') }}" alt=""> --}}
         </div>
         <div class="col-8 text-center">
             <p><span style="font-size: 20px;font-weight: 700"> CÔNG TY TNHH DỊCH VỤ KỸ THUẬT THỢ VIỆT </span> <br>

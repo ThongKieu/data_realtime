@@ -192,41 +192,51 @@ const HuyDialog = ({
 const KhaoSatDialog = ({
     openKS,
     handleOpenKS,
-    setWorkNote,
     handleSentKS,
     cardExpires,
     handleChange,
     disabledAllowed,
     handleFileChange,
     previewImages,
+    sendDataToParent,
 }) => {
-    const [selectedValue, setSelectedValue] = useState();
-    const [data, setData] = useState(cardExpires);
-    console.log(data);
+    const [data, setData] = useState([
+        {
+            ...cardExpires,
+            info: "sửa bóng đèn ",
+            unit: "cái",
+            quantity: "1",
+            unitPrice: "50000",
+            totalPrice: "50000",
+        },
+    ]);
     const handleChangeQuote = (e, id) => {
         const { name, value } = e.target;
-        const updatedData = data.map((item) => {
-            if (item.id === id) {
+        const updatedData = data.map((item, index) => {
+            if (index === id) {
                 return { ...item, [name]: value };
             }
             return item;
         });
         setData(updatedData);
+        sendDataToParent(updatedData);
     };
+
     const handleClick = () => {
-        // Tìm key lớn nhất hiện có và tăng lên 1 để tạo key mới
-        const maxKey = Math.max(...data.map((item) => item.id));
-        const newId = maxKey + 1;
+        // Thêm mục mới vào mảng dữ liệu
         setData((prevData) => [
             ...prevData,
             {
-                id: newId,
-                warranty_time: 0,
-                unit: "KBH",
-                warranty_info: "Không Bảo Hành",
+                info: "sửa bóng đèn ",
+                unit: "cái",
+                quantity: "1",
+                unitPrice: "50000",
+                totalPrice: "50000",
             },
         ]);
     };
+
+    console.log("sss", data);
     return (
         <Dialog open={openKS} handler={handleOpenKS} size="xxl">
             <div className="flex items-center justify-between">
@@ -240,133 +250,130 @@ const KhaoSatDialog = ({
                 <div className="grid grid-cols-5">
                     <div className="col-span-2 ">
                         <form className="flex flex-col gap-4 mt-2">
-                            {/* Các trường input */}
-                            <div className="gap-4">
-                                {/* <Input
-                                    label="Yêu Cầu Công Việc"
-                                    id="work_content"
-                                    name="work_content"
-                                    value={cardExpires.work_content}
-                                    onChange={handleChange}
-                                    containerProps={{
-                                        className: "min-w-[72px]",
-                                    }}
-                                    className="shadow-none"
-                                /> */}
+                            <Input
+                                label="Tên Khách Hàng"
+                                id="name_cus"
+                                name="name_cus"
+                                value={cardExpires.name_cus}
+                                onChange={(e) => handleChange(e)}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+                            <div className="flex items-center gap-2 my-2">
                                 <Input
-                                    label="Tên Khách Hàng"
-                                    id="name_cus"
-                                    name="name_cus"
-                                    value={cardExpires.name_cus}
-                                    onChange={handleChange}
+                                    label="Địa Chỉ"
+                                    id="street"
+                                    name="street"
+                                    value={cardExpires.street}
+                                    onChange={(e) => handleChange(e)}
                                     containerProps={{
                                         className: "min-w-[72px]",
                                     }}
                                     className="shadow-none"
                                 />
-                                <div className="flex items-center gap-2 my-2">
-                                    <Input
-                                        label="Địa Chỉ"
-                                        id="street"
-                                        name="street"
-                                        value={cardExpires.street}
-                                        onChange={handleChange}
-                                        containerProps={{
-                                            className: "min-w-[72px]",
-                                        }}
-                                        className="shadow-none"
-                                    />
-                                    <Input
-                                        label="Quận"
-                                        id="district"
-                                        name="district"
-                                        value={cardExpires.district}
-                                        onChange={handleChange}
-                                        containerProps={{
-                                            className: "min-w-[72px]",
-                                        }}
-                                        className="shadow-none"
-                                    />{" "}
-                                    <Input
-                                        label="Số Điện Thoại"
-                                        id="phone_number"
-                                        name="phone_number"
-                                        value={cardExpires.phone_number}
-                                        onChange={handleChange}
-                                        containerProps={{
-                                            className: "min-w-[72px]",
-                                        }}
-                                        className="shadow-none"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-6 gap-2 mb-2">
-                                    <div className="col-span-3 ">
-                                        <Input
-                                            label="Nội Dung"
-                                            id="street"
-                                            name="street"
-                                            value={cardExpires.street}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="col-span-1 ">
-                                        <Input
-                                            label="Đơn Vị Tính"
-                                            id="district"
-                                            name="district"
-                                            value={cardExpires.district}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="col-span-1 ">
-                                        <Input
-                                            label="Số Lượng"
-                                            id="district"
-                                            name="district"
-                                            value={cardExpires.district}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                    <div className="col-span-1 ">
-                                        <Input
-                                            label="Đơn Giá"
-                                            id="street"
-                                            name="street"
-                                            value={cardExpires.street}
-                                            onChange={handleChange}
-                                            containerProps={{
-                                                className: "min-w-[72px]",
-                                            }}
-                                            className="shadow-none"
-                                        />
-                                    </div>
-                                </div>
-                                <Button
-                                    onClick={handleClick}
-                                    variant="outlined"
-                                    color="green"
-                                    className="px-1 py-1 mb-1"
-                                >
-                                    <PlusCircleIcon className="w-5 h-5" />
-                                </Button>
-                                <FileInput
-                                    handleFileChange={handleFileChange}
-                                    previewImages={previewImages}
+                                <Input
+                                    label="Quận"
+                                    id="district"
+                                    name="district"
+                                    value={cardExpires.district}
+                                    onChange={(e) => handleChange(e)}
+                                    containerProps={{
+                                        className: "min-w-[72px]",
+                                    }}
+                                    className="shadow-none"
+                                />
+                                <Input
+                                    label="Số Điện Thoại"
+                                    id="phone_number"
+                                    name="phone_number"
+                                    value={cardExpires.phone_number}
+                                    onChange={(e) => handleChange(e)}
+                                    containerProps={{
+                                        className: "min-w-[72px]",
+                                    }}
+                                    className="shadow-none"
                                 />
                             </div>
+                            {data.map((item, index) => (
+                                <div key={index} className="gap-4">
+                                    <div className="grid grid-cols-6 gap-2 mb-2">
+                                        <div className="col-span-3 ">
+                                            <Input
+                                                label="Nội Dung"
+                                                id="info"
+                                                name="info"
+                                                value={item.info}
+                                                onChange={(e) =>
+                                                    handleChangeQuote(e, index)
+                                                }
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                        <div className="col-span-1 ">
+                                            <Input
+                                                label="Đơn Vị Tính"
+                                                id="unit"
+                                                name="unit"
+                                                value={item.unit}
+                                                onChange={(e) =>
+                                                    handleChangeQuote(e, index)
+                                                }
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                        <div className="col-span-1 ">
+                                            <Input
+                                                label="Số Lượng"
+                                                id="quantity"
+                                                name="quantity"
+                                                value={item.quantity}
+                                                onChange={(e) =>
+                                                    handleChangeQuote(e, index)
+                                                }
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                        <div className="col-span-1 ">
+                                            <Input
+                                                label="Đơn Giá"
+                                                id="unitPrice"
+                                                name="unitPrice"
+                                                value={item.unitPrice}
+                                                onChange={(e) =>
+                                                    handleChangeQuote(e, index)
+                                                }
+                                                containerProps={{
+                                                    className: "min-w-[72px]",
+                                                }}
+                                                className="shadow-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button
+                                onClick={handleClick}
+                                variant="outlined"
+                                color="green"
+                                className="px-1 py-1 mb-1"
+                            >
+                                <PlusCircleIcon className="w-5 h-5" />
+                            </Button>
+                            <FileInput
+                                handleFileChange={handleFileChange}
+                                previewImages={previewImages}
+                            />
                         </form>
                     </div>
                     <div className="col-span-3 p-2 text-center">

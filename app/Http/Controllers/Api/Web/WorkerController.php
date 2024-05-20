@@ -21,7 +21,7 @@ class WorkerController extends Controller
         $imported = Excel::import(new WorkerImport(), $request->file);
         // dd('1111111111111');
         // $worker_update_code = Worker::where('id','>',0)->get(['id','worker_kind','worker_code']);
-       
+
         // foreach ($worker_update_code as $item)
         // {
         //     $new_code = WorkerController::findCodeWorker($item->worker_kind,$item->worker_code);
@@ -41,7 +41,7 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc','kind_worker']);
+        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
         $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
         foreach ($workers as $worker) {
             $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');

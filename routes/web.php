@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
 
     });
-
+    Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');

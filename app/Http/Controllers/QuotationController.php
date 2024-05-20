@@ -5,7 +5,6 @@ use App\Models\Quotation;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
-use Spatie\LaravelPdf\Facades\Pdf;
 
 class QuotationController extends Controller
 {
@@ -35,9 +34,8 @@ class QuotationController extends Controller
             'date' => date('m/d/Y'),
             'users' => $users
         ];
-        $pdf = FacadePdf::loadView('pdf.pdftemplate', $data);
-        // $pdf->setOptions(['dpi' => 150]);
-        $pdf->setBasePath(public_path());
+
+        $pdf = FacadePdf::loadView('pdf.pdftemplate', $data)-> setOption(['dpi' => 150, 'defaultFont' => ' Times New Roman, Times, serif', ])->setPaper('a4', 'vertical');
         return $pdf->stream('users-lists.pdf');
     }
     // public function generatePDF()

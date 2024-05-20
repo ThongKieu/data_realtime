@@ -2,9 +2,9 @@
 <html>
 
 <head>
-    {{-- <title>Bảng Báo Giá Dịch Vụ</title> --}}
-    {{-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"> --}}
+    <title>Bảng Báo Giá Dịch Vụ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     {{-- <link rel="stylesheet" href="{{ asset("assets/css/style.css")}}"> --}}
     {{-- <link href="{{public_path('assets/css/style.css')}}" rel="stylesheet" media="all"> --}}
     <meta charset="UTF-8">
@@ -17,44 +17,39 @@
 
 </head>
 <style>
-    body {
-        max-width: 90%;
-        margin: auto;
-        margin-top: 20px;
-        font-family: DejaVu Sans, sans-serif;
-    }
+  
+ body{
+    max-width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    font-family: 'Time New Romand', sans-serif;
+ }
+ .logo {
+    max-width: 150px;
+}
 
-    .logo {
-        max-width: 150px;
-    }
+.info-quote {
+    border: 2px solid black;
+    border-radius: 10px;
 
-    .info-quote {
-        border: 2px solid black;
-        border-radius: 10px;
+}
 
-    }
+.info-quote p {
+    padding: 5px 0 0 5px;
+}
 
-    .info-quote p {
-        padding: 5px 0 0 5px;
-    }
-
-    .row-c {
-       
-       
-    }
-
-    .c-center {
-        vertical-align: inherit;
-        text-align: center;
-    }
+.c-center {
+    vertical-align: inherit;
+    text-align: center;
+}
 </style>
 
 <body>
 
 
-    <div class="row-c">
+    <div class="row">
         <div class="col-2">
-            <img class="logo" src="assets/pdf/logo.jpg" alt="">
+            {{-- <img class="logo" src="{{ asset('assets/pdf/logo.jpg') }}" alt=""> --}}
         </div>
         <div class="col-8 text-center">
             <p><span style="font-size: 20px;font-weight: 700"> CÔNG TY TNHH DỊCH VỤ KỸ THUẬT THỢ VIỆT </span> <br>
@@ -141,7 +136,7 @@
                     </tr>
                 </tbody>
                 <tfoot>
-
+                   
                 </tfoot>
             </table>
             <p>
@@ -155,14 +150,16 @@
 
                 </li>
             </ul>
-
+            
             </p>
         </div>
     </div>
-
-
-
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>

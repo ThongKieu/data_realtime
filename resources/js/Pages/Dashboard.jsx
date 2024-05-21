@@ -58,6 +58,7 @@ import {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
+    KhaoSatDialogWeb,
 } from "@/Components/ColumnRightDialog";
 import SpendingDialog from "@/Components/SpendingDialog";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -1214,6 +1215,7 @@ function Dashboard({ auth }) {
             cellClassName: "actions",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
+                const [cardExpiresWeb, setCardExpiresWeb] = useState(params.row);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
@@ -1225,6 +1227,7 @@ function Dashboard({ auth }) {
                 // Sử dụng hàm useToggle
                 const [openHuy, handleOpenHuy] = useToggle(false);
                 const [openKS, handleOpenKS] = useToggle(false);
+                const [openKSWeb, handleOpenKSWeb] = useToggle(false);
                 const [openThuHoi, handleOpenThuHoi] = useToggle(false);
                 const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);
                 const [openSpending_total, handleOpenSpending_total] =
@@ -1237,12 +1240,23 @@ function Dashboard({ auth }) {
                 const [imageVt1, setImageVt1] = useState(filteredArray);
                 const filteredImgPt = processSeriImages(hasData.seri_imag);
                 const [imagePt1, setImagePt1] = useState(filteredImgPt);
+                const handleChangeWeb = (e) => {
+                    const { name, value } = e.target;
+                    setCardExpiresWeb((prevData) => ({
+                        ...prevData,
+                        [name]: value,
+                    }));
+                };
                 const handleChange = (e) => {
                     const { name, value } = e.target;
                     setCardExpires((prevData) => ({
                         ...prevData,
                         [name]: value,
                     }));
+                };
+                const [dataFromChildKS, setDataFromChildKS] = useState([]);
+                const handleDataFromChildKS = (data) => {
+                    setDataFromChildKS(data);
                 };
                 const handleButtonAction = (
                     rowId,
@@ -1266,6 +1280,9 @@ function Dashboard({ auth }) {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openKS":
+                            handleOpenFunction(!isOpenState);
+                            break;
+                        case "openKSWeb":
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openThuHoi":
@@ -1306,6 +1323,14 @@ function Dashboard({ auth }) {
                         openKS,
                         handleOpenKS,
                         "openKS"
+                    );
+                };
+                const handleOpenKSWebWithDisable = () => {
+                    handleButtonAction(
+                        params.row.id,
+                        openKSWeb,
+                        handleOpenKSWeb,
+                        "openKSWeb"
                     );
                 };
                 const handleOpenThuHoiWithDisable = (rowId) => {
@@ -1399,18 +1424,53 @@ function Dashboard({ auth }) {
                                 unit: "cái",
                                 "quantity ": "1",
                                 "unitPrice ": "50000",
-                                totalPrice: "50000" //=unitPrice*quantity,
+                                totalPrice: "50000", //=unitPrice*quantity,
                             },
                             {
                                 info: "sửa bóng đèn ",
                                 unit: "cái",
                                 "quantity ": "1",
                                 "unitPrice ": "50000",
-                                totalPrice: "50000" //=unitPrice*quantity,
+                                totalPrice: "50000", //=unitPrice*quantity,
                             },
                         ],
-                        quote_total_price: 100000 // tổng totalPrice ,
+                        quote_total_price: 100000, // tổng totalPrice ,
                     };
+                    // const response = await fetch(
+                    //     "api/web/update/work-assignment-quote",
+                    //     {
+                    //         method: "POST",
+                    //         headers: {
+                    //             Accept: "application/json",
+                    //             "Content-Type": "application/json",
+                    //         },
+                    //         mode: "no-cors",
+                    //         body: formData,
+                    //     }
+                    // );
+                    // if (response.ok) {
+                    //     socketD.emit("addWorkTo_Server", "Khảo sát");
+                    //     handleOpen();
+                    //     handleOpenKSWithDisable();
+                    // }
+                };
+                const handleSentKSWeb = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData();
+                    formData.append("id", params.id);
+                    formData.append("id_cus", params.row.id_cus);
+                    formData.append("real_note", work_note);
+                    formData.append("auth_id", auth.user.id);
+                    formData.append("work_content", cardExpiresWeb.work_content);
+                    formData.append("phone_number", cardExpiresWeb.phone_number);
+                    formData.append("name_cus", cardExpiresWeb.name_cus);
+                    formData.append("date_book", selectedDate);
+                    for (let i = 0; i < selectedFilesKS.length; i++) {
+                        formData.append(
+                            "image_work_path[]",
+                            selectedFilesKS[i]
+                        );
+                    }
                     const response = await fetch(
                         "api/web/update/work-assignment-quote",
                         {
@@ -1426,7 +1486,7 @@ function Dashboard({ auth }) {
                     if (response.ok) {
                         socketD.emit("addWorkTo_Server", "Khảo sát");
                         handleOpen();
-                        handleOpenKSWithDisable();
+                        handleOpenKSWebWithDisable();
                     }
                 };
                 // --------- thu chi ----------------------------
@@ -1691,6 +1751,7 @@ function Dashboard({ auth }) {
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
+
                 return (
                     <div className="text-center">
                         {isButtonDisabled == true &&
@@ -1733,7 +1794,6 @@ function Dashboard({ auth }) {
                                     </Button>
                                 ) : (
                                     <>
-                                        {" "}
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
@@ -1813,7 +1873,7 @@ function Dashboard({ auth }) {
                                                         <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
                                                             onClick={() =>
-                                                                handleOpenKSWithDisable()
+                                                                handleOpenKSWebWithDisable()
                                                             }
                                                         />
                                                     </Tooltip>
@@ -1958,6 +2018,25 @@ function Dashboard({ auth }) {
                                 )
                             }
                             previewImages={previewImgKS}
+                            sendDataToParent={handleDataFromChildKS}
+                        />
+                        <KhaoSatDialogWeb
+                            openKSWeb={openKSWeb}
+                            handleOpenKSWeb={handleOpenKSWebWithDisable}
+                            setWorkNoteWeb={setWorkNote}
+                            handleSentKSWeb={handleSentKSWeb}
+                            cardExpiresWeb={cardExpiresWeb}
+                            handleChangeWeb={handleChangeWeb}
+                            vatCardWeb={vatCard}
+                            disabledAllowedWeb={isAllowed}
+                            handleFileChangeWeb={(e) =>
+                                handleFileChange(
+                                    e,
+                                    setPreviewImgKS,
+                                    setSelectedFilesKS
+                                )
+                            }
+                            previewImagesWeb={previewImgKS}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <SpendingDialog

@@ -188,7 +188,126 @@ const HuyDialog = ({
         </Dialog>
     );
 };
+const KhaoSatDialogWeb = ({
+    openKSWeb,
+    handleOpenKSWeb,
+    setWorkNoteWeb,
+    handleSentKSWeb,
+    cardExpiresWeb,
+    handleChangeWeb,
+    disabledAllowedWeb,
+    handleFileChangeWeb,
+    previewImagesWeb,
+}) => {
+    return (
+        <Dialog open={openKSWeb} handler={handleOpenKSWeb}>
+            <div className="flex items-center justify-between">
+                <DialogHeader>Lịch Khảo Sát</DialogHeader>
+                <XMarkIcon
+                    className="w-5 h-5 mr-3 cursor-pointer"
+                    onClick={handleOpenKSWeb}
+                />
+            </div>
+            <DialogBody divider>
+                <form className="flex flex-col gap-4 mt-2">
+                    {/* Các trường input */}
+                    <div className="flex items-center gap-4 ">
+                        <Input
+                            label="Yêu Cầu Công Việc"
+                            id="work_content"
+                            name="work_content"
+                            value={cardExpiresWeb.work_content}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                        <Input
+                            label="Số Điện Thoại"
+                            id="phone_number"
+                            name="phone_number"
+                            value={cardExpiresWeb.phone_number}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Input
+                            label="Địa Chỉ"
+                            id="street"
+                            name="street"
+                            value={cardExpiresWeb.street}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                        <Input
+                            label="Quận"
+                            id="district"
+                            name="district"
+                            value={cardExpiresWeb.district}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Input
+                            label="Tên Khách Hàng"
+                            id="name_cus"
+                            name="name_cus"
+                            value={cardExpiresWeb.name_cus}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
 
+                        <Input
+                            label="Ngày Làm"
+                            id="date_book"
+                            name="date_book"
+                            value={cardExpiresWeb.date_book}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                            disabled={disabledAllowedWeb}
+                        />
+                    </div>
+                    <div className="grid gap-6">
+                        <Textarea
+                            label="Tình Trạng Thực Tế"
+                            className="shadow-none"
+                            onChange={(e) => setWorkNoteWeb(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex items-center justify-center ">
+                        <FileInput
+                            handleFileChange={handleFileChangeWeb}
+                            previewImages={previewImagesWeb}
+                        />
+                    </div>
+                </form>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+                <Button variant="gradient" color="red" onClick={handleSentKSWeb}>
+                    Xác nhận
+                </Button>
+            </DialogFooter>
+        </Dialog>
+    );
+};
 const KhaoSatDialog = ({
     openKS,
     handleOpenKS,
@@ -234,9 +353,8 @@ const KhaoSatDialog = ({
                 totalPrice: "50000",
             },
         ]);
+        sendDataToParent(data);
     };
-
-    console.log("sss", data);
     return (
         <Dialog open={openKS} handler={handleOpenKS} size="xxl">
             <div className="flex items-center justify-between">
@@ -456,7 +574,7 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
                                     <img
                                         key={index}
                                         src={item}
-                                        alt=""
+                                        alt={`hinhKS_${index}`}
                                         className="w-40 h-40"
                                     />
                                 ))}
@@ -767,5 +885,5 @@ export {
     BHDialog,
     ViewTotalDialog,
     processSeriImages,
-    KSDialog,
+    KSDialog,KhaoSatDialogWeb
 };

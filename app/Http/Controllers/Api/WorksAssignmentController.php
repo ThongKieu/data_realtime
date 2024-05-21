@@ -75,7 +75,7 @@ class WorksAssignmentController extends Controller
         //    {
         //      $item ->warranties =WorksAssignmentController::getWarrantiesById($item->id);
         //    }
-            
+
         // }
         // thông tin điện nước
         $dien_nuoc = DB::table('works_assignments')
@@ -525,7 +525,7 @@ class WorksAssignmentController extends Controller
             {
                 //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
                 //php Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
-                
+
             }
             elseif($ac ==3)
             {
@@ -535,7 +535,7 @@ class WorksAssignmentController extends Controller
             {
                 return 'Fail !!!!!!!!!!!!';
             }
-            
+
         }
     }
 
@@ -946,7 +946,7 @@ class WorksAssignmentController extends Controller
             {
                 //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
                 // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
-                
+
             }
             elseif($ac ==3)
             {}

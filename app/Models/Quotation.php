@@ -9,6 +9,6 @@ class Quotation extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_work_has', 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status',
+        'id_work_has', 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status'
     ];
 }

@@ -17,7 +17,7 @@ class WorkerImport implements ToModel
         return new Worker([
 
             'worker_full_name' => $row[0], // Họ và tên
-            'worker_code' => null, // Mã nhân viên
+            'worker_code' => $row[1], // Mã nhân viên
             'worker_BHXH' => $row[2], // Mã bảo hiểm xã hội (BHXH)
             'worker_BHXH_time' => $row[3], // Thời gian tham gia BHXH
             'worker_BHBV' => $row[4], // Bảo hiểm bảo việt (BHBV)

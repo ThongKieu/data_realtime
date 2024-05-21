@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->integer('permission')->default(0);
+            $table->string('position')->nullable();
+            $table->string('phone')->nullable();
             $table->integer('is_online')->default(0);
             $table->string('code')->nullable();
             $table->string('avatar')->default('assets/avatar/avata1.png');

@@ -126,10 +126,16 @@ function Dashboard({ auth }) {
             setSocketD(newSocket, { secure: true });
             newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
-                if (data) {
+                if (data.date_book || data.date_book != 'undefine') {
+                    console.log('if',data);
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
+                } else {
+                    console.log('else',data);
+                    fetchDateCheck(selectedDate);
+                    fetchDateDoneCheck(selectedDate);
+                    fetchDataDashboard(selectedDate);
                 }
             });
             newSocket.on("sendAddWorkTo_Client", (jsonData) => {

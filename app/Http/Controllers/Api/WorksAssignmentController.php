@@ -886,74 +886,73 @@ class WorksAssignmentController extends Controller
     // lich khao sat hoac bao gia
     public function insertQuoteFlow(Request $request)
     {
+        $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
+        // dd($up1);
+        if ($up1 == 1) {
 
-        // $up1 = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 3]);
-        // // dd($up1);
-        // if ($up1 == 1) {
+            $seri_imag = '';
 
-        //     $seri_imag = '';
-
-        //     if ($request->hasFile('image_work_path')) {
-        //         $images = $request->file('image_work_path');
-        //         // dd($images);
-        //         foreach ($images as $image) {
-        //             $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-        //             $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-        //             $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
-        //         }
-        //     }
-
-        //     // dd($seri_imag);
-        //     $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
-
-        //     if ($up == 1) {
-        //         return 'Delete work done !';
-        //     }
-        //     return 'Lỗi !!!!!!!!!';
-        // } else {
-        //     return 'Không tìm thấy';
-        // }
-         $seri_imag = '';
-            $ac = $request->ac ;
-            if($ac == 1)
-            {
-                //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
-                if ($request->hasFile('image_work_path')) {
-                    $images = $request->file('image_work_path');
-                    // dd($images);
-                    foreach ($images as $image) {
-                        $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                        $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-                        $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
-                    }
+            if ($request->hasFile('image_work_path')) {
+                $images = $request->file('image_work_path');
+                // dd($images);
+                foreach ($images as $image) {
+                    $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                    $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+                    $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
                 }
-                $info_quote = $request->info_quote;
-                $income_total =  $request->income_total;
-                $update = WorksAssignment::where('id', '=', $request->id)->update([
-                    'status_work' => 3,
-                    'income_total' => $income_total,
-                    'real_note' => $info_quote,
-                    'bill_imag' => $seri_imag
-                    ]);
-                if ($update) {
-                    return 'true';
-                } else {
-                    return 'failed';
-                }
-
             }
-            elseif($ac == 2)
-            {
-                //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
-                // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
 
-            }
-            elseif($ac ==3)
-            {}
-            else
-            {
+            // dd($seri_imag);
+            $up = WorksAssignment::where('id', '=', $request->id)->update(['bill_imag' => $seri_imag]);
 
+            if ($up == 1) {
+                return 'Delete work done !';
             }
+            return 'Lỗi !!!!!!!!!';
+        } else {
+            return 'Không tìm thấy';
+        }
+    //      $seri_imag = '';
+    //         $ac = $request->ac ;
+    //         if($ac == 1)
+    //         {
+    //             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
+    //             if ($request->hasFile('image_work_path')) {
+    //                 $images = $request->file('image_work_path');
+    //                 // dd($images);
+    //                 foreach ($images as $image) {
+    //                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+    //                     $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+    //                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+    //                 }
+    //             }
+    //             $info_quote = $request->info_quote;
+    //             $income_total =  $request->income_total;
+    //             $update = WorksAssignment::where('id', '=', $request->id)->update([
+    //                 'status_work' => 3,
+    //                 'income_total' => $income_total,
+    //                 'real_note' => $info_quote,
+    //                 'bill_imag' => $seri_imag
+    //                 ]);
+    //             if ($update) {
+    //                 return 'true';
+    //             } else {
+    //                 return 'failed';
+    //             }
+
+    //         }
+    //         elseif($ac == 2)
+    //         {
+    //             //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
+    //             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
+
+    //         }
+    //         elseif($ac ==3)
+    //         {}
+    //         else
+    //         {
+
+    //         }
     }
 // Lấy thông tin thợ làm ngày tính Ds
 

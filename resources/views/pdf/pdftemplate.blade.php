@@ -81,32 +81,31 @@
             <div class="headerTitle_right" style="position: absolute; top:30px; right: 30px; text-align:center;">
                 <p style="font-size: 20px;"> <span style="font-size:30px;
                     font-style: bold;">CÔNG
-                        TY TNHH DỊCH VỤ KỸ THUẬT THỢ VIỆT</span><br>ĐC: 25/6 Phùng Văn Cung, Phường 2, Quận Phú Nhuận,
-                    TP. HCM<br>Tel:
+                        TY TNHH DỊCH VỤ KỸ
+                        THUẬT THỢ VIỆT</span><br>ĐC: 25/6 Phùng Văn Cung, Phường 2, Quận Phú Nhuận., TP. HCM<br>Tel:
                     028.36202538 - 0903532938; Website: www.thoviet.com.vn</p>
             </div>
         </section>
-        <section class="headerTitle" style="margin-bottom: -3%">
-            <div style="font-style: bold;  text-align: center; padding-top: 150px">
-                <p style="padding: -10px; margin: -10px;">----</p>
-                <p style="padding: -10px; margin: -10px; font-size: 30px;">BẢNG BÁO GIÁ</p>
-                <p style="font-style: italic">(V/v: sửa máy lạnh)</p>
-            </div>
+        <section class="headerTitle">
+            <p style="font-style: bold; font-size: 30px; text-align: center; padding-top: 135px">
+                <i>----</i> <br> BẢNG BÁO GIÁ <br>
+                <i style="font-size: 18px; padding-top: 0; margin: 0px;">(V/v: sửa máy lạnh)</i>
+            </p>
         </section>
         <section style="position: relative; margin-top: -10px">
             <div>
                 <div class="info-quote" style="width: 500px;">
                     <p><b>Người liên hệ: Quý Khách hàng</b><br>
-                        Địa chỉ: <br>
+                        Địa chỉ : <br>
                         Email: <br>
-                        ĐT: 0347578964 <br>
+                        ĐT : 0347578964 <br>
                     </p>
                 </div>
                 <div class="info-quote" style="width: 500px; position: absolute; top:0; right: 0;">
                     <p><b>Từ: Ngô Văn Thông</b><br>
-                        Chức vụ: Phó Phòng Kinh Doanh<br>
+                        Chức vụ : Phó Phòng Kinh Doanh<br>
                         Email: lienhe@thoviet.com.vn<br>
-                        ĐT: 0914439118 - 0912747218<br>
+                        ĐT : 0914439118 - 0912747218<br>
                     </p>
                 </div>
             </div>
@@ -138,12 +137,13 @@
                                 Công ty Thợ Việt rất vui khi nhận được yêu cầu của Quý công ty.<br>
                                 Chúng tôi hân hạnh gửi đến Quý Công ty bảng báo giá sau:<br>
                             </td>
-                            <td class="td-c">Cái</td>
-                            <td class="td-c">1</td>
-                            <td class="td-c">500,000</td>
-                            <td class="td-c">500,000</td>
-                            <td class="td-c"></td>
+                            <td>Cái</td>
+                            <td>1</td>
+                            <td>500,000</td>
+                            <td>5,000,000</td>
+                            <td></td>
                         </tr>
+                        @endforeach
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Cộng</td>

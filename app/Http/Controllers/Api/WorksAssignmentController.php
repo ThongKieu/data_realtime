@@ -506,7 +506,7 @@ class WorksAssignmentController extends Controller
                         $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
                     }
                 }
-                $info_quote = $request->info_quote;
+                $info_quote = $request->real_note;
                 $income_total =  $request->income_total;
                 $update = WorksAssignment::where('id', '=', $request->id)->update([
                     'status_work' => 3,

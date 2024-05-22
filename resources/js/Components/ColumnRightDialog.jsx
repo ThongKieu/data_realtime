@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
     Button,
     Dialog,
@@ -289,6 +289,8 @@ const KhaoSatDialogWeb = ({
                         <Textarea
                             label="Tình Trạng Thực Tế"
                             className="shadow-none"
+                            id="real_note"
+                            name="real_note"
                             onChange={(e) => setWorkNoteWeb(e.target.value)}
                         />
                     </div>
@@ -301,217 +303,11 @@ const KhaoSatDialogWeb = ({
                 </form>
             </DialogBody>
             <DialogFooter className="space-x-2">
-                <Button variant="gradient" color="red" onClick={handleSentKSWeb}>
-                    Xác nhận
-                </Button>
-            </DialogFooter>
-        </Dialog>
-    );
-};
-const KhaoSatDialog = ({
-    openKS,
-    handleOpenKS,
-    handleSentKS,
-    cardExpires,
-    handleChange,
-    disabledAllowed,
-    handleFileChange,
-    previewImages,
-    sendDataToParent,
-}) => {
-    const [data, setData] = useState([
-        {
-            ...cardExpires,
-            info: "sửa bóng đèn ",
-            unit: "cái",
-            quantity: "1",
-            unitPrice: "50000",
-            totalPrice: "50000",
-        },
-    ]);
-    const handleChangeQuote = (e, id) => {
-        const { name, value } = e.target;
-        const updatedData = data.map((item, index) => {
-            if (index === id) {
-                return { ...item, [name]: value };
-            }
-            return item;
-        });
-        setData(updatedData);
-        sendDataToParent(updatedData);
-    };
-
-    const handleClick = () => {
-        // Thêm mục mới vào mảng dữ liệu
-        setData((prevData) => [
-            ...prevData,
-            {
-                info: "sửa bóng đèn ",
-                unit: "cái",
-                quantity: "1",
-                unitPrice: "50000",
-                totalPrice: "50000",
-            },
-        ]);
-        sendDataToParent(data);
-    };
-    return (
-        <Dialog open={openKS} handler={handleOpenKS} size="xxl">
-            <div className="flex items-center justify-between">
-                <DialogHeader className="text-center">Báo Giá</DialogHeader>
-                <XMarkIcon
-                    className="w-5 h-5 mr-3 cursor-pointer"
-                    onClick={handleOpenKS}
-                />
-            </div>
-            <DialogBody divider>
-                <div className="grid grid-cols-5">
-                    <div className="col-span-2 ">
-                        <form className="flex flex-col gap-4 mt-2">
-                            <Input
-                                label="Tên Khách Hàng"
-                                id="name_cus"
-                                name="name_cus"
-                                value={cardExpires.name_cus}
-                                onChange={(e) => handleChange(e)}
-                                containerProps={{
-                                    className: "min-w-[72px]",
-                                }}
-                                className="shadow-none"
-                            />
-                            <div className="flex items-center gap-2 my-2">
-                                <Input
-                                    label="Địa Chỉ"
-                                    id="street"
-                                    name="street"
-                                    value={cardExpires.street}
-                                    onChange={(e) => handleChange(e)}
-                                    containerProps={{
-                                        className: "min-w-[72px]",
-                                    }}
-                                    className="shadow-none"
-                                />
-                                <Input
-                                    label="Quận"
-                                    id="district"
-                                    name="district"
-                                    value={cardExpires.district}
-                                    onChange={(e) => handleChange(e)}
-                                    containerProps={{
-                                        className: "min-w-[72px]",
-                                    }}
-                                    className="shadow-none"
-                                />
-                                <Input
-                                    label="Số Điện Thoại"
-                                    id="phone_number"
-                                    name="phone_number"
-                                    value={cardExpires.phone_number}
-                                    onChange={(e) => handleChange(e)}
-                                    containerProps={{
-                                        className: "min-w-[72px]",
-                                    }}
-                                    className="shadow-none"
-                                />
-                            </div>
-                            {data.map((item, index) => (
-                                <div key={index} className="gap-4">
-                                    <div className="grid grid-cols-6 gap-2 mb-2">
-                                        <div className="col-span-3 ">
-                                            <Input
-                                                label="Nội Dung"
-                                                id="info"
-                                                name="info"
-                                                value={item.info}
-                                                onChange={(e) =>
-                                                    handleChangeQuote(e, index)
-                                                }
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                        <div className="col-span-1 ">
-                                            <Input
-                                                label="Đơn Vị Tính"
-                                                id="unit"
-                                                name="unit"
-                                                value={item.unit}
-                                                onChange={(e) =>
-                                                    handleChangeQuote(e, index)
-                                                }
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                        <div className="col-span-1 ">
-                                            <Input
-                                                label="Số Lượng"
-                                                id="quantity"
-                                                name="quantity"
-                                                value={item.quantity}
-                                                onChange={(e) =>
-                                                    handleChangeQuote(e, index)
-                                                }
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                        <div className="col-span-1 ">
-                                            <Input
-                                                label="Đơn Giá"
-                                                id="unitPrice"
-                                                name="unitPrice"
-                                                value={item.unitPrice}
-                                                onChange={(e) =>
-                                                    handleChangeQuote(e, index)
-                                                }
-                                                containerProps={{
-                                                    className: "min-w-[72px]",
-                                                }}
-                                                className="shadow-none"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            <Button
-                                onClick={handleClick}
-                                variant="outlined"
-                                color="green"
-                                className="px-1 py-1 mb-1"
-                            >
-                                <PlusCircleIcon className="w-5 h-5" />
-                            </Button>
-                            <FileInput
-                                handleFileChange={handleFileChange}
-                                previewImages={previewImages}
-                            />
-                        </form>
-                    </div>
-                    <div className="col-span-3 p-2 text-center">
-                        <div className="p-3 border border-black">
-                            <div className="grid grid-cols-5">
-                                <div className="col-span-2 ">
-                                    <img
-                                        src="https://dienmaythoviet.vn/wp-content/uploads/2022/03/logo-R-1-new-2-1.png"
-                                        alt="thoviet"
-                                        className="h-28 "
-                                    />
-                                </div>
-                                <div className="col-span-3 ">asadas</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </DialogBody>
-            <DialogFooter className="space-x-2">
-                <Button variant="gradient" color="red" onClick={handleSentKS}>
+                <Button
+                    variant="gradient"
+                    color="red"
+                    onClick={handleSentKSWeb}
+                >
                     Xác nhận
                 </Button>
             </DialogFooter>
@@ -524,7 +320,38 @@ const processSeriImages = (data) => {
     return filteredArray;
 };
 const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [scale, setScale] = useState(1);
+    const handleZoomIn = () => {
+        setScale(prevScale => prevScale + 0.1);
+      };
+
+      const handleZoomOut = () => {
+        setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+      };
+
+      const handleWheel = (event) => {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+          setScale(prevScale => prevScale + 0.1);
+        } else {
+          setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+        }
+      };
+
+      const handleClose = () => {
+        setSelectedImage(null);
+        setScale(1);
+      };
     const processedDataKS = processSeriImages(params.bill_imag);
+    useEffect(() => {
+        if (selectedImage) {
+          window.addEventListener('wheel', handleWheel);
+        }
+        return () => {
+          window.removeEventListener('wheel', handleWheel);
+        };
+      }, [selectedImage]);
     return (
         <Dialog open={openViewKS} handler={handleOpenViewKS}>
             <div className="flex items-center justify-between">
@@ -576,14 +403,57 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
                                         src={item}
                                         alt={`hinhKS_${index}`}
                                         className="w-40 h-40"
+                                        onClick={() => {
+                                            setSelectedImage(item);
+                                            setScale(1);
+                                        }}
                                     />
                                 ))}
+                            {selectedImage && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
+                                    <div className="relative">
+                                        <button
+                                            className="absolute z-40 text-2xl text-white top-2 right-2"
+                                            onClick={handleClose}
+                                        >
+                                            &times;
+                                        </button>
+                                        <div className="absolute flex flex-col space-y-2 top-2 left-2">
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomIn}
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomOut}
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                        <img
+                                            src={selectedImage}
+                                            className="max-w-full max-h-full"
+                                            style={{
+                                                transform: `scale(${scale})`,
+                                            }}
+                                            alt="Selected"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </span>
                     )}
                 </div>
             </DialogBody>
             <DialogFooter className="space-x-2">
-                <Button variant="gradient" color="red" onClick={handleViewKS}>
+                <Button
+                    variant="outlined"
+                    className="px-5 py-2"
+                    color="red"
+                    onClick={handleViewKS}
+                >
                     Xác nhận
                 </Button>
             </DialogFooter>
@@ -881,9 +751,9 @@ export {
     ReasonDialog,
     ThuHoiDialog,
     HuyDialog,
-    KhaoSatDialog,
     BHDialog,
     ViewTotalDialog,
     processSeriImages,
-    KSDialog,KhaoSatDialogWeb
+    KSDialog,
+    KhaoSatDialogWeb,
 };

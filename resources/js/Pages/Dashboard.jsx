@@ -42,7 +42,6 @@ import { host } from "@/Utils/UrlApi";
 import Divider from "@mui/material/Divider";
 import {
     url_API,
-    url_API_District,
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
@@ -52,7 +51,6 @@ import { copyTextToClipboard } from "@/Components/HandleEvent/Handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
 import {
     ThoDialog,
-    KhaoSatDialog,
     ReasonDialog,
     ThuHoiDialog,
     ViewTotalDialog,
@@ -1215,7 +1213,9 @@ function Dashboard({ auth }) {
             cellClassName: "actions",
             renderCell: (params) => {
                 const [cardExpires, setCardExpires] = useState(params.row);
-                const [cardExpiresWeb, setCardExpiresWeb] = useState(params.row);
+                const [cardExpiresWeb, setCardExpiresWeb] = useState(
+                    params.row
+                );
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
@@ -1235,6 +1235,7 @@ function Dashboard({ auth }) {
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
                 const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
+                const [work_noteWeb, setWorkNoteWeb] = useState();
                 const hasData = params.row;
                 const filteredArray = processSeriImages(hasData.bill_imag);
                 const [imageVt1, setImageVt1] = useState(filteredArray);
@@ -1253,10 +1254,6 @@ function Dashboard({ auth }) {
                         ...prevData,
                         [name]: value,
                     }));
-                };
-                const [dataFromChildKS, setDataFromChildKS] = useState([]);
-                const handleDataFromChildKS = (data) => {
-                    setDataFromChildKS(data);
                 };
                 const handleButtonAction = (
                     rowId,
@@ -1277,9 +1274,6 @@ function Dashboard({ auth }) {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openHuy":
-                            handleOpenFunction(!isOpenState);
-                            break;
-                        case "openKS":
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openKSWeb":
@@ -1315,14 +1309,6 @@ function Dashboard({ auth }) {
                         openHuy,
                         handleOpenHuy,
                         "openHuy"
-                    );
-                };
-                const handleOpenKSWithDisable = () => {
-                    handleButtonAction(
-                        params.row.id,
-                        openKS,
-                        handleOpenKS,
-                        "openKS"
                     );
                 };
                 const handleOpenKSWebWithDisable = () => {
@@ -1397,74 +1383,30 @@ function Dashboard({ auth }) {
                     } catch (error) {}
                 };
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
-                const handleSentKS = async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData();
-                    formData.append("id", params.id);
-                    formData.append("id_cus", params.row.id_cus);
-                    formData.append("real_note", formData.work_note);
-                    formData.append("auth_id", auth.user.id);
-                    formData.append("work_content", formData.work_content);
-                    formData.append("phone_number", formData.phone_number);
-                    formData.append("name_cus", formData.name_cus);
-                    formData.append("date_book", selectedDate);
-                    for (let i = 0; i < selectedFilesKS.length; i++) {
-                        formData.append(
-                            "image_work_path[]",
-                            selectedFilesKS[i]
-                        );
-                    }
-                    const data = {
-                        id_work_has: params.row.id_cus,
-                        id_auth: auth.user.id,
-                        quote_date: params.row.date_book,
-                        quote_info: [
-                            {
-                                info: "sửa bóng đèn ",
-                                unit: "cái",
-                                "quantity ": "1",
-                                "unitPrice ": "50000",
-                                totalPrice: "50000", //=unitPrice*quantity,
-                            },
-                            {
-                                info: "sửa bóng đèn ",
-                                unit: "cái",
-                                "quantity ": "1",
-                                "unitPrice ": "50000",
-                                totalPrice: "50000", //=unitPrice*quantity,
-                            },
-                        ],
-                        quote_total_price: 100000, // tổng totalPrice ,
-                    };
-                    // const response = await fetch(
-                    //     "api/web/update/work-assignment-quote",
-                    //     {
-                    //         method: "POST",
-                    //         headers: {
-                    //             Accept: "application/json",
-                    //             "Content-Type": "application/json",
-                    //         },
-                    //         mode: "no-cors",
-                    //         body: formData,
-                    //     }
-                    // );
-                    // if (response.ok) {
-                    //     socketD.emit("addWorkTo_Server", "Khảo sát");
-                    //     handleOpen();
-                    //     handleOpenKSWithDisable();
-                    // }
-                };
+
                 const handleSentKSWeb = async (e) => {
                     e.preventDefault();
                     const formData = new FormData();
+                    formData.append("ac", 1);
                     formData.append("id", params.id);
                     formData.append("id_cus", params.row.id_cus);
-                    formData.append("real_note", work_note);
+                    formData.append("real_note", work_noteWeb);
                     formData.append("auth_id", auth.user.id);
-                    formData.append("work_content", cardExpiresWeb.work_content);
-                    formData.append("phone_number", cardExpiresWeb.phone_number);
+                    formData.append(
+                        "work_content",
+                        cardExpiresWeb.work_content
+                    );
+                    formData.append(
+                        "phone_number",
+                        cardExpiresWeb.phone_number
+                    );
                     formData.append("name_cus", cardExpiresWeb.name_cus);
                     formData.append("date_book", selectedDate);
+                    formData.append("status_work", cardExpiresWeb.status_work);
+                    formData.append(
+                        "income_total",
+                        cardExpiresWeb.income_total
+                    );
                     for (let i = 0; i < selectedFilesKS.length; i++) {
                         formData.append(
                             "image_work_path[]",
@@ -1492,7 +1434,6 @@ function Dashboard({ auth }) {
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
-                // const [selectedFiles, setSelectedFiles] = useState([]);
                 const [selectedFilesPT, setSelectedFilesPT] = useState([]);
                 const [selectedFilesVT, setSelectedFilesVT] = useState([]);
                 const [previewImgVt, setPreviewImgVt] = useState([]);
@@ -1663,7 +1604,6 @@ function Dashboard({ auth }) {
                 const DK2 = spending !== 0 || income !== 0 ? "hidden" : "";
                 const DK3 = spending !== 0 || income !== 0 ? "" : "hidden";
                 // ------------- cắt chuỗi hình phieu mua vat tu ----------------
-
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
@@ -2001,29 +1941,10 @@ function Dashboard({ auth }) {
                             handleSentDeleteDone={handleSentDeleteDone}
                         />
                         {/*----------------------------- dialog form KS ----------- */}
-                        <KhaoSatDialog
-                            openKS={openKS}
-                            handleOpenKS={handleOpenKSWithDisable}
-                            setWorkNote={setWorkNote}
-                            handleSentKS={handleSentKS}
-                            cardExpires={cardExpires}
-                            handleChange={handleChange}
-                            vatCard={vatCard}
-                            disabledAllowed={isAllowed}
-                            handleFileChange={(e) =>
-                                handleFileChange(
-                                    e,
-                                    setPreviewImgKS,
-                                    setSelectedFilesKS
-                                )
-                            }
-                            previewImages={previewImgKS}
-                            sendDataToParent={handleDataFromChildKS}
-                        />
                         <KhaoSatDialogWeb
                             openKSWeb={openKSWeb}
                             handleOpenKSWeb={handleOpenKSWebWithDisable}
-                            setWorkNoteWeb={setWorkNote}
+                            setWorkNoteWeb={setWorkNoteWeb}
                             handleSentKSWeb={handleSentKSWeb}
                             cardExpiresWeb={cardExpiresWeb}
                             handleChangeWeb={handleChangeWeb}
@@ -2070,7 +1991,7 @@ function Dashboard({ auth }) {
                         />
                         <KSDialog
                             openViewKS={openView_KS}
-                            handleOpenViewKS={handleOpenView_KS}
+                            handleOpenViewKS={handleOpenViewKSDisable}
                             handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
                         />

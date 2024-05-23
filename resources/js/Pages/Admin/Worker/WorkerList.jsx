@@ -201,7 +201,7 @@ function WorkerList({ auth }) {
         {
             field: "id",
             headerName: "ID",
-            width: 70,
+            width: 50,
             renderCell: (params) => {
                 return <span className="text-center">{params.id}</span>;
             },
@@ -453,6 +453,30 @@ function WorkerList({ auth }) {
             // editable: true,
         },
         {
+            field: "worker_daily_sales",
+            headerName: "Doanh Số",
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return <p>{formatter.format(params.row.worker_daily_sales)}</p>;
+            },
+            width: 70,
+            // editable: true,
+        }, {
+            field: "worker_daily_o_t_by_hour",
+            headerName: "Tăng Ca",
+            renderCell: (params) => {const formatter = new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+            });
+                return <p>{formatter.format(params.row.worker_daily_o_t_by_hour)}</p>;
+            },
+            width: 70,
+            // editable: true,
+        },
+        {
             field: "worker_check_acc",
             headerName: "Tài Khoản",
             align: "center",
@@ -496,7 +520,7 @@ function WorkerList({ auth }) {
                         console.error("Lỗi khi gửi dữ liệu:", error);
                     }
                 };
-                if (params.field === "worker_check_acc") {
+                if (params.field == "worker_check_acc") {
                     switch (params.value) {
                         case 0:
                             return (

@@ -126,13 +126,11 @@ function Dashboard({ auth }) {
             setSocketD(newSocket, { secure: true });
             newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book || data.date_book != 'undefine') {
-                    console.log('if',data);
+                if (data.date_book || data.date_book != "undefine") {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
-                } else {
-                    console.log('else',data);
+                } else if (data) {
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
@@ -1232,7 +1230,6 @@ function Dashboard({ auth }) {
 
                 // Sử dụng hàm useToggle
                 const [openHuy, handleOpenHuy] = useToggle(false);
-                const [openKS, handleOpenKS] = useToggle(false);
                 const [openKSWeb, handleOpenKSWeb] = useToggle(false);
                 const [openThuHoi, handleOpenThuHoi] = useToggle(false);
                 const [openAdminCheck, handleOpenAdminCheck] = useToggle(false);

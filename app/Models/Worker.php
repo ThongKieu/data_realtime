@@ -41,12 +41,13 @@ class Worker extends Model
         'worker_profile',              // Hồ sơ xin việc
         'worker_presenter',            // Người giới thiệu
         'worker_time_start_work',      // Thời gian bắt đầu làm việc
-
-        'worker_path',
+        'worker_path',                 // Địa chỉ lưu hình
         'worker_kind',
         'worker_has_work',
         'worker_status',
         'worker_check_acc',
-        'worker_avatar'
+        'worker_avatar',
+        'worker_daily_sales',           // Doanh số ngày
+        'worker_daily_o_t_by_hour'      // Hệ số tăng ca   
     ];
 }

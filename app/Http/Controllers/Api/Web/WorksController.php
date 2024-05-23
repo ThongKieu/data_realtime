@@ -8,9 +8,9 @@ use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
 use App\Models\WorksAssignment;
 use Carbon\Carbon;
-// use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class WorksController extends Controller
 {
@@ -184,6 +184,13 @@ class WorksController extends Controller
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
+
+
+                // Test image resize
+                // $image = ImageManager::imagick()->read($file);
+                // $image->scaleDown(width:600);
+
+                // dd($image);
                 $file->move('assets/images/work/' . $id, $name);
                 $files = $files . 'assets/images/work/' . $id . '/' . $name . ',';
             }

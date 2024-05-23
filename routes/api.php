@@ -210,6 +210,10 @@ Route::prefix('app')->group(function () {
         Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
         // need work
         Route::post('needWork', 'App\Http\Controllers\Api\NoticationAllController@needWorkFromWorker');
+        // info Worker by ID
+        Route::post('info-worker', 'App\Http\Controllers\Api\Web\WorksController@infoWorkerToApp');
+        Route::post('update-worker', 'App\Http\Controllers\Api\Web\WorksController@updateInfoWorkerToApp');
+
     });
     // Customer
     Route::prefix('customer')->group(function () {

@@ -270,7 +270,7 @@ function Dashboard({ auth }) {
     };
     // -----------------------------fetch api update du lieu trong bang---------------------------
     const fetchDataDashboard = async (data, dateBook) => {
-        const url = `api/web/update/work?date_book=${dateBook}`;
+        const url = `api/web/update/work?dateCheck=${dateBook}`;
         const socketUpdate = "addWorkTo_Server";
         try {
             const res = await fetch(url, {
@@ -291,7 +291,7 @@ function Dashboard({ auth }) {
         }
     };
     const fetchDataWorkDone = async (data, dateBook) => {
-        const url = `api/web/update/work-continue?date_book=${dateBook}`;
+        const url = `api/web/update/work-continue?dateCheck=${dateBook}`;
         const socketUpdate = `UpdateDateTable_To_Server`;
         try {
             const res = await fetch(url, {

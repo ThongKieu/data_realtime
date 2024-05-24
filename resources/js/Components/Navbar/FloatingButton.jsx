@@ -135,7 +135,6 @@ function FloatingButton() {
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
-
         try {
             const response = await fetch(
                 host + `api/web/works?dateCheck=${selectedDate}`,

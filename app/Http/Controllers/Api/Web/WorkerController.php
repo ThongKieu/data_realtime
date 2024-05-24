@@ -41,7 +41,7 @@ class WorkerController extends Controller
     }
     public function getAllWorkers()
     {
-        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc']);
+        $workers = Worker::where('worker_kind', '!=', 0)->get(['id', 'worker_phone_company', 'worker_code', 'worker_full_name', 'worker_status', 'worker_address', 'worker_avatar', 'worker_phone_personal','worker_check_acc','worker_daily_sales','worker_daily_o_t_by_hour']);
         $now = Carbon::now()->tz('Asia/Ho_Chi_Minh');
         foreach ($workers as $worker) {
             $last_active = AccountionWorker::where('id_worker', '=', $worker->id)->value('last_active');

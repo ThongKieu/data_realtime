@@ -350,6 +350,7 @@ class WorkersController extends Controller
             return 'Chek Info Sent';
     }
     public function updateInfoWorkerToApp(Request $request) {
+        
         $update_info = Worker::where('id','=',$request->id)->update([
             'worker_full_name'=>$request->worker_full_name,'worker_phone_personal'=> $request->worker_phone_personal
         ]);

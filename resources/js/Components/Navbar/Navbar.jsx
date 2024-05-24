@@ -355,7 +355,7 @@ function NavbarDefault({ propauth, check }) {
     );
     useEffect(() => {
         fetchDelete();
-        getDataWorkerSales();
+        getDataWorkerSales(check);
     }, [check]);
     useEffect(() => {
         setSocketDelete(newSocket, { secure: true });
@@ -398,7 +398,7 @@ function NavbarDefault({ propauth, check }) {
     ];
 
     const getDataWorkerSales = async () => {
-        const uri = `api/report-worker-web?dateCheck=${check}`;
+        const uri = `${host}api/report-worker-web?dateCheck=${check}`;
         try {
             const res = await fetch(uri);
             const jsonData = await res.json();
@@ -677,7 +677,7 @@ function NavbarDefault({ propauth, check }) {
                                                                     const currentIndex =
                                                                         index +
                                                                         i +
-                                                                        2;
+                                                                        4;
                                                                     return (
                                                                         <tr
                                                                             key={`${index}-${i}`}
@@ -693,7 +693,7 @@ function NavbarDefault({ propauth, check }) {
                                                                                 "CX"
                                                                                     ? "Chi Xăng"
                                                                                     : fuel.fuel_o_t_workers_content ==
-                                                                                      "CP"
+                                                                                      "TP"
                                                                                     ? "Chi Phụ"
                                                                                     : " Tăng Ca"}
                                                                             </td>

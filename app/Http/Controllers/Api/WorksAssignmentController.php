@@ -26,22 +26,21 @@ class WorksAssignmentController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        // $get_code_id = CodeWorkerKind::where('id','>',0)->get('kind_worker');
+        $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
 
-        // // dd( );
-        // $data_json = [];
+        // dd( );
+        $data_json = [];
         // $num_code = count($get_code_id);
-        // for($i=1;$i<$num_code;$i++)
-        // {   $data_json[$i]['kind_worker'] =$get_code_id[$i-1]['kind_worker'];
-        //     $data_json[$i]['data']=DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', $i)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->orderBy('workers.worker_code', 'asc')
-        //     ->get(
-        //         [
+        // foreach ($workerKinds as $kindId => $kindWorker) {
+        //     $data_json[$kindId]['kind_worker'] = $kindWorker;
+        //     $data_json[$kindId]['data'] = DB::table('works_assignments')
+        //         ->join('works', 'works_assignments.id_cus', '=', 'works.id')
+        //         ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
+        //         ->where('works_assignments.created_at', 'like', $today . '%')
+        //         ->where('works.kind_work', '=', $kindId)
+        //         ->whereBetween('works_assignments.status_work', [0, 3])
+        //         ->orderBy('workers.worker_code', 'asc')
+        //         ->get([
         //             "works_assignments.id",
         //             "works_assignments.id_cus",
         //             "works_assignments.id_worker",
@@ -63,20 +62,19 @@ class WorksAssignmentController extends Controller
         //             "works.kind_work",
         //             "works.name_cus",
         //             "workers.worker_full_name",
-        //             // "workers.worker_name",
         //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
+        //             "workers.worker_address",
+        //             "workers.worker_phone_company",
         //             "works_assignments.status_admin_check",
         //             "works_assignments.flag_check",
-        //         ]
-        //     );
-
-        //    foreach($data_json[$i]['data'] as $item)
-        //    {
-        //      $item ->warranties =WorksAssignmentController::getWarrantiesById($item->id);
-        //    }
-
+        //         ]);
+    
+        //     // Lấy thông tin bảo hành cho mỗi công việc được giao
+        //     foreach ($data_json[$kindId]['data'] as $item) {
+        //         $item->warranties = WorksAssignmentController::getWarrantiesById($item->id);
+        //     }
         // }
+        // dd($data_json);
         // thông tin điện nước
         $dien_nuoc = DB::table('works_assignments')
             ->join('works', 'works_assignments.id_cus', '=', 'works.id')

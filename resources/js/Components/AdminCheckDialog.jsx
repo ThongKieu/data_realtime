@@ -235,6 +235,8 @@ function AdminCheckDialog({
                 seri_number: cardExpires.seri_number,
             },
         };
+
+    // console.log(check_admin);
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",

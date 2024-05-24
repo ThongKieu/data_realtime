@@ -10,7 +10,7 @@ const EditableInput = ({
     onChange,
     containerProps,
     disabled,
-    classNameChild,
+    classNameChild,defaultValue
 }) => {
     const [editableInput, setEditableInput] = useState(null);
     const handleEditStart = (id) => {
@@ -31,6 +31,7 @@ const EditableInput = ({
                 id={id}
                 name={name}
                 value={value || ''}
+                defaultValue={defaultValue || ''}
                 color="green"
                 ref={inputRef}
                 autoFocus={editableInput === id} // Đặt autoFocus dựa trên điều kiện

@@ -1,27 +1,63 @@
-import React, { useState, useRef } from "react";
- 
+import FileInput from '@/Components/FileInputImage'
+import { host } from '@/Utils/UrlApi';
+import React from 'react'
+import { useState } from 'react';
 
-const Box = () => { const [isFire, setIsFire] = useState(false); const boxRef = useRef(null);
+function test() {
+  const [fileList, setFileList] = useState();
+  const handleFileChange = (e) => {
+    setFileList(e.target.files);
+  };
+const handleUploadClick = async () => {
+  if (!fileList) {
+    return;
+  }
 
-const handleMouseDown = (event) => { const shiftX = event.clientX - boxRef.current.getBoundingClientRect().left; const shiftY = event.clientY - boxRef.current.getBoundingClientRect().top;
+  // 👇 Create new FormData object and append files
+  const data = new FormData();
+  files.forEach((file, i) => {
+    data.append(`file-${i}`, file, file.name);
+  });
 
-boxRef.current.style.position = "absolute"; boxRef.current.style.zIndex = 1000; document.body.append(boxRef.current);
+  // 👇 Uploading the files using the fetch API to the server
+  try {
+    const response = await fetch("api/quoteWork", {
+        method: "POST",
+        body: data, // Gửi dữ liệu dưới dạng JSON
+        headers: {
+            "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+        },
+    });
+    // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+    if (response.ok) {
+        // const responseData = await response.json(); // Convert response to JSON
+        // setDataReturn(responseData);
+        window.history.back();
+    } else {
+        console.error("Error:", response.status, response.statusText);
+    }
+} catch (error) {
+    console.log("hihi", error);
+}
+};
 
-moveAt(event.pageX, event.pageY);
+// 👇 files is not an array, but it's iterable, spread to get an array of files
+const files = fileList ? [...fileList] : [];
 
-function moveAt(pageX, pageY) { boxRef.current.style.left = pageX - shiftX + "px"; boxRef.current.style.top = pageY - shiftY + "px"; }
+  return (
+    <div>
+      <input type="file" onChange={handleFileChange} multiple />
+      <ul>
+        {files.map((file, i) => (
+          <li key={i}>
+            {file.name} - {file.type}
+          </li>
+        ))}
+      </ul>
 
-function onMouseMove(event) { moveAt(event.pageX, event.pageY); }
+      <button onClick={handleUploadClick}>Upload</button>
+    </div>
+  )
+}
 
-document.addEventListener("mousemove", onMouseMove);
-
-boxRef.current.onmouseup = function() { document.removeEventListener("mousemove", onMouseMove); boxRef.current.onmouseup = null; };
-
-boxRef.current.ondragstart = function() { return false; };
-
-boxRef.current.onclick = function() { setIsFire(true); }; };
-
-return (
-
-  <div ref={boxRef} onMouseDown={handleMouseDown} style={{ position: "absolute", backgroundColor: isFire ? "red" : "lightblue", width: "100px", height: "100px", cursor: "pointer", transition: "transform 0.3s", }} > <div style={{ position: "absolute", top: "0", right: "0", backgroundColor: "red", width: "20px", height: "20px", borderRadius: "50%" }}> {isFire && <div>!</div>} </div> </div> ); };
-  export default Box;
+export default test

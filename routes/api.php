@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\Web\WorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +29,10 @@ Route::prefix('web')->group(function () {
         // ------------------------------------------------------------------------------------------
         Route::post('/updateActive', 'App\Http\Controllers\AccountionWorkerController@updateActive');
         //----------------------------------------------
-        Route::post('code-worker','App\Http\Controllers\CodeWorkerKindController@store');
-        Route::post('check-code-worker','App\Http\Controllers\CodeWorkerKindController@checkCode');
-        Route::get('all-code','App\Http\Controllers\CodeWorkerKindController@index');
-        Route::post('change-code-status','App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
-
-        
+        Route::post('code-worker', 'App\Http\Controllers\CodeWorkerKindController@store');
+        Route::post('check-code-worker', 'App\Http\Controllers\CodeWorkerKindController@checkCode');
+        Route::get('all-code', 'App\Http\Controllers\CodeWorkerKindController@index');
+        Route::post('change-code-status', 'App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
 
     });
     Route::apiResource('district', DistrictController::class);
@@ -142,7 +139,7 @@ Route::prefix('web')->group(function () {
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(
-            maxAttempts: 300,
+            maxAttempts: 3000,
             decayMinutes: 1
         )
     );
@@ -178,6 +175,9 @@ Route::prefix('fuel-ot')->group(function () {
 // Report Worker
 Route::post('report-worker', 'App\Http\Controllers\Api\ReportWorkerController@getByIdWorker');
 Route::get('report-worker-web', 'App\Http\Controllers\Api\ReportWorkerController@getAllWorker');
+Route::post('quoteWork', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
+//quote_create
+Route::post('quote_create', 'App\Http\Controllers\QuotationController@create');
 
 // --------------------------------------------------------------------------//
 // Application
@@ -207,6 +207,10 @@ Route::prefix('app')->group(function () {
         Route::post('sendWorkToCompanyByWorker', 'App\Http\Controllers\Api\Web\WorksController@store');
         // need work
         Route::post('needWork', 'App\Http\Controllers\Api\NoticationAllController@needWorkFromWorker');
+        // info Worker by ID
+        Route::post('info-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@infoWorkerToApp');
+        Route::post('update-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateInfoWorkerToApp');
+
     });
     // Customer
     Route::prefix('customer')->group(function () {

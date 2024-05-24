@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/lich-huy', function () {return Inertia::render('CancelBooking');})->name('CancelBooking');
     Route::get('/test', function () {return Inertia::render('test');})->name('test');
     Route::get('/quoteflow', function () {return Inertia::render('QuoteFlow');})->name('quoteflow');
+    Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
+    Route::get('generate-pdf2', function(){return view('pdf.pdftemplate');});
 
 
 
@@ -78,7 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
 
     });
-
+    Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
     Route::prefix('workers')->group(function(){
         Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');
@@ -93,5 +95,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
-Route::get('/test-page',function(){return view('welcome');});
+// Route::prefix('test')->group(function(){
+//     Route::get('/',function(){return view('welcome');});
+//     Route::post('/',function(){return App/Http/Api/WorksAssignmentController::class;});
+// });
 require __DIR__.'/auth.php';

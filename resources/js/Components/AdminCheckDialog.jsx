@@ -84,7 +84,6 @@ function AdminCheckDialog({
     );
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
-
     const [selectedValue, setSelectedValue] = useState();
     const handleSelectChange = (selectedValue, id) => {
         const updatedData = dataBH.map((item) => {
@@ -195,7 +194,6 @@ function AdminCheckDialog({
                     id_work_has: params.row.id,
                     info_warranties: modifiedData,
                 };
-                console.log(dataBh);
                 const res = await fetch("api/web/update/check-admin", {
                     method: "POST",
                     headers: {
@@ -248,11 +246,7 @@ function AdminCheckDialog({
             if (res.ok) {
                 handleSearch();
                 handleOpenAdminCheck();
-                socketD.emit(
-                    "UpdateDateTable_To_Server",
-                    "Cập Nhật trạng thái AdminCheck",
-                    check_admin
-                );
+                socketD.emit("UpdateDateTable_To_Server", check_admin.data);
             } else {
                 console.error(
                     "Lỗi thay đổi trạng thái AdminCheck:",
@@ -267,7 +261,7 @@ function AdminCheckDialog({
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
-        // setOldDataBH(id);
+        setDataBH(params.row.warranty);
     };
     return (
         <Dialog
@@ -391,9 +385,9 @@ function AdminCheckDialog({
                                                 <div>
                                                     <Select
                                                         value={item.unit}
-                                                        defaultValue={
-                                                            selectedValue
-                                                        }
+                                                        // defaultValue={
+                                                        //     selectedValue
+                                                        // }
                                                         label="Bảo Hành"
                                                         onChange={(
                                                             selectedValue
@@ -638,7 +632,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputYCCV}
                             active={activePt.inputYCCV}
                             handleSetActive={() => handleSetActive("inputYCCV")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -651,7 +644,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputSDT}
                             active={activePt.inputSDT}
                             handleSetActive={() => handleSetActive("inputSDT")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -668,7 +660,6 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputDiaChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -681,7 +672,6 @@ function AdminCheckDialog({
                             disabled={!activePt.inputQuan}
                             active={activePt.inputQuan}
                             handleSetActive={() => handleSetActive("inputQuan")}
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
@@ -698,7 +688,6 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputTenKH")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                         <EditableInput
@@ -730,7 +719,6 @@ function AdminCheckDialog({
                                 handleSetActive={() =>
                                     handleSetActive("inputGhiChu")
                                 }
-                                // handleEdit={handleEdit}
                                 classNameChild={classNameChild}
                             />
                         </div>
@@ -741,7 +729,7 @@ function AdminCheckDialog({
                             id="spending_total"
                             name="spending_total"
                             value={cardExpires.spending_total}
-                            defaultValue={params.row.spending_total}
+                            // defaultValue={params.row.spending_total}
                             onChange={handleChange}
                             containerProps={containerProps}
                             disabled={!activePt.inputThuChi}
@@ -749,16 +737,14 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
-
                         <EditableInput
                             label="Tiền Thu"
                             id="income_total"
                             name="income_total"
                             value={cardExpires.income_total}
-                            defaultValue={params.row.income_total}
+                            // defaultValue={params.row.income_total}
                             onChange={handleChange}
                             containerProps={containerProps}
                             disabled={!activePt.inputThuChi}
@@ -766,13 +752,11 @@ function AdminCheckDialog({
                             handleSetActive={() =>
                                 handleSetActive("inputThuChi")
                             }
-                            // handleEdit={handleEdit}
                             classNameChild={classNameChild}
                         />
                     </div>
                 </form>
             </DialogBody>
-            {/* <Divider className="pt-2" /> */}
             {auth.user.permission == 1 || auth.user.permission == 0 ? (
                 <div className="flex flex-row justify-center py-2">
                     <Typography className="font-medium text-red-700">

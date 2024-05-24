@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
     Button,
     Dialog,
@@ -10,10 +10,9 @@ import {
     Typography,
     Card,
 } from "@material-tailwind/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
-import { host } from "@/Utils/UrlApi";
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -189,24 +188,24 @@ const HuyDialog = ({
         </Dialog>
     );
 };
-const KhaoSatDialog = ({
-    openKS,
-    handleOpenKS,
-    setWorkNote,
-    handleSentKS,
-    cardExpires,
-    handleChange,
-    disabledAllowed,
-    handleFileChange,
-    previewImages,
+const KhaoSatDialogWeb = ({
+    openKSWeb,
+    handleOpenKSWeb,
+    setWorkNoteWeb,
+    handleSentKSWeb,
+    cardExpiresWeb,
+    handleChangeWeb,
+    disabledAllowedWeb,
+    handleFileChangeWeb,
+    previewImagesWeb,
 }) => {
     return (
-        <Dialog open={openKS} handler={handleOpenKS}>
+        <Dialog open={openKSWeb} handler={handleOpenKSWeb}>
             <div className="flex items-center justify-between">
                 <DialogHeader>Lịch Khảo Sát</DialogHeader>
                 <XMarkIcon
                     className="w-5 h-5 mr-3 cursor-pointer"
-                    onClick={handleOpenKS}
+                    onClick={handleOpenKSWeb}
                 />
             </div>
             <DialogBody divider>
@@ -217,8 +216,8 @@ const KhaoSatDialog = ({
                             label="Yêu Cầu Công Việc"
                             id="work_content"
                             name="work_content"
-                            value={cardExpires.work_content}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.work_content}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
@@ -228,8 +227,8 @@ const KhaoSatDialog = ({
                             label="Số Điện Thoại"
                             id="phone_number"
                             name="phone_number"
-                            value={cardExpires.phone_number}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.phone_number}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
@@ -241,8 +240,8 @@ const KhaoSatDialog = ({
                             label="Địa Chỉ"
                             id="street"
                             name="street"
-                            value={cardExpires.street}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.street}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
@@ -252,8 +251,8 @@ const KhaoSatDialog = ({
                             label="Quận"
                             id="district"
                             name="district"
-                            value={cardExpires.district}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.district}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
@@ -265,8 +264,8 @@ const KhaoSatDialog = ({
                             label="Tên Khách Hàng"
                             id="name_cus"
                             name="name_cus"
-                            value={cardExpires.name_cus}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.name_cus}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
@@ -277,32 +276,38 @@ const KhaoSatDialog = ({
                             label="Ngày Làm"
                             id="date_book"
                             name="date_book"
-                            value={cardExpires.date_book}
-                            onChange={handleChange}
+                            value={cardExpiresWeb.date_book}
+                            onChange={handleChangeWeb}
                             containerProps={{
                                 className: "min-w-[72px]",
                             }}
                             className="shadow-none"
-                            disabled={disabledAllowed}
+                            disabled={disabledAllowedWeb}
                         />
                     </div>
                     <div className="grid gap-6">
                         <Textarea
                             label="Tình Trạng Thực Tế"
                             className="shadow-none"
-                            onChange={(e) => setWorkNote(e.target.value)}
+                            id="real_note"
+                            name="real_note"
+                            onChange={(e) => setWorkNoteWeb(e.target.value)}
                         />
                     </div>
                     <div className="flex items-center justify-center ">
                         <FileInput
-                            handleFileChange={handleFileChange}
-                            previewImages={previewImages}
+                            handleFileChange={handleFileChangeWeb}
+                            previewImages={previewImagesWeb}
                         />
                     </div>
                 </form>
             </DialogBody>
             <DialogFooter className="space-x-2">
-                <Button variant="gradient" color="red" onClick={handleSentKS}>
+                <Button
+                    variant="gradient"
+                    color="red"
+                    onClick={handleSentKSWeb}
+                >
                     Xác nhận
                 </Button>
             </DialogFooter>
@@ -313,6 +318,147 @@ const processSeriImages = (data) => {
     const parts = data?.split(",");
     const filteredArray = parts?.filter((item) => item.trim() !== "");
     return filteredArray;
+};
+const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [scale, setScale] = useState(1);
+    const handleZoomIn = () => {
+        setScale(prevScale => prevScale + 0.1);
+      };
+
+      const handleZoomOut = () => {
+        setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+      };
+
+      const handleWheel = (event) => {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+          setScale(prevScale => prevScale + 0.1);
+        } else {
+          setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+        }
+      };
+
+      const handleClose = () => {
+        setSelectedImage(null);
+        setScale(1);
+      };
+    const processedDataKS = processSeriImages(params.bill_imag);
+    useEffect(() => {
+        if (selectedImage) {
+          window.addEventListener('wheel', handleWheel);
+        }
+        return () => {
+          window.removeEventListener('wheel', handleWheel);
+        };
+      }, [selectedImage]);
+    return (
+        <Dialog open={openViewKS} handler={handleOpenViewKS}>
+            <div className="flex items-center justify-between">
+                <DialogHeader>Tình Trạng Khảo Sát</DialogHeader>
+            </div>
+            <DialogBody>
+                <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Công Việc:
+                        </h2>
+                        <span>{params.work_content}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Địa Chỉ:</h2>
+                        <span>{params.street}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Quận:</h2>
+                        <span>{params.district}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Số Điện Thoại:
+                        </h2>
+                        <span>{params.phone_number}</span>
+                    </div>
+                    <div className="mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Khảo Sát Thực Tế:
+                        </h2>
+                        <span>{params.real_note}</span>
+                    </div>
+                </div>
+                <div className="mb-2">
+                    <h2 className="text-lg font-semibold">
+                        Hình Ảnh Khảo Sát Thực Tế:
+                    </h2>
+                    {params.bill_imag == null || processedDataKS == false ? (
+                        <p className="flex items-center justify-center w-32 h-32 border border-green-500">
+                            Not Image
+                        </p>
+                    ) : (
+                        <span className="flex justify-between">
+                            {Array.isArray(processedDataKS) &&
+                                processedDataKS.map((item, index) => (
+                                    <img
+                                        key={index}
+                                        src={item}
+                                        alt={`hinhKS_${index}`}
+                                        className="w-40 h-40"
+                                        onClick={() => {
+                                            setSelectedImage(item);
+                                            setScale(1);
+                                        }}
+                                    />
+                                ))}
+                            {selectedImage && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
+                                    <div className="relative">
+                                        <button
+                                            className="absolute z-40 text-2xl text-white top-2 right-2"
+                                            onClick={handleClose}
+                                        >
+                                            &times;
+                                        </button>
+                                        <div className="absolute flex flex-col space-y-2 top-2 left-2">
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomIn}
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomOut}
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                        <img
+                                            src={selectedImage}
+                                            className="max-w-full max-h-full"
+                                            style={{
+                                                transform: `scale(${scale})`,
+                                            }}
+                                            alt="Selected"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </span>
+                    )}
+                </div>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+                <Button
+                    variant="outlined"
+                    className="px-5 py-2"
+                    color="red"
+                    onClick={handleViewKS}
+                >
+                    Xác nhận
+                </Button>
+            </DialogFooter>
+        </Dialog>
+    );
 };
 const ViewTotalDialog = ({
     openViewTotal,
@@ -471,14 +617,16 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataVT) &&
-                                            processedDataVT.map((item,index) => (
-                                                <img
-                                                    key={index}
-                                                    src={item}
-                                                    alt=""
-                                                    className="w-32 h-32"
-                                                />
-                                            ))}
+                                            processedDataVT.map(
+                                                (item, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={item}
+                                                        alt=""
+                                                        className="w-32 h-32"
+                                                    />
+                                                )
+                                            )}
                                     </>
                                 )}
 
@@ -491,19 +639,25 @@ const ViewTotalDialog = ({
                                 ) : (
                                     <>
                                         {Array.isArray(processedDataPT) &&
-                                            processedDataPT.map((item,index) => (
-                                                <img
-                                                key={index}
-                                                    src={item}
-                                                    alt=""
-                                                    className="w-32 h-32"
-                                                />
-                                            ))}
+                                            processedDataPT.map(
+                                                (item, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={item}
+                                                        alt=""
+                                                        className="w-32 h-32"
+                                                    />
+                                                )
+                                            )}
                                     </>
                                 )}
                             </div>
                         </div>
-                        <div className={`${ params.warranty == 'KBH'? 'hidden':"block"} pt-3`}>
+                        <div
+                            className={`${
+                                params.warranty == "KBH" ? "hidden" : "block"
+                            } pt-3`}
+                        >
                             <Card className="w-full h-[200px] overflow-scroll">
                                 <table className="w-full text-left table-auto min-w-max">
                                     <thead>
@@ -527,45 +681,48 @@ const ViewTotalDialog = ({
                                     <tbody>
                                         {Array.isArray(params.warranty) &&
                                             params.warranty?.map(
-                                                ( item , index) => {
+                                                (item, index) => {
                                                     return (
                                                         <tr
                                                             key={index}
                                                             className="even:bg-blue-gray-50"
                                                         >
-
-                                                               <><td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                  { params.warranty !== undefined ? item.id :"KBH" }
-                                                                </Typography>
-                                                            </td>
-                                                            <td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                    {
-                                                                        item.warranty_time
-                                                                    }
-                                                                </Typography>
-                                                            </td>
-                                                            <td className="p-4">
-                                                                <Typography
-                                                                    variant="small"
-                                                                    color="blue-gray"
-                                                                    className="font-normal"
-                                                                >
-                                                                    {
-                                                                        item.warranty_info
-                                                                    }
-                                                                </Typography>
-                                                            </td></>
-
+                                                            <>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {params.warranty !==
+                                                                        undefined
+                                                                            ? item.id
+                                                                            : "KBH"}
+                                                                    </Typography>
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {
+                                                                            item.warranty_time
+                                                                        }
+                                                                    </Typography>
+                                                                </td>
+                                                                <td className="p-4">
+                                                                    <Typography
+                                                                        variant="small"
+                                                                        color="blue-gray"
+                                                                        className="font-normal"
+                                                                    >
+                                                                        {
+                                                                            item.warranty_info
+                                                                        }
+                                                                    </Typography>
+                                                                </td>
+                                                            </>
                                                         </tr>
                                                     );
                                                 }
@@ -594,8 +751,9 @@ export {
     ReasonDialog,
     ThuHoiDialog,
     HuyDialog,
-    KhaoSatDialog,
     BHDialog,
     ViewTotalDialog,
     processSeriImages,
+    KSDialog,
+    KhaoSatDialogWeb,
 };

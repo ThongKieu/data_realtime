@@ -53,7 +53,7 @@ class WorkerImport implements ToModel
             'worker_has_work' => $row[34],
             'worker_status' => $row[35],
             'worker_check_acc' => $row[36],
-            'worker_avatar' => $row[37],
+           
         ]);
     }
 }

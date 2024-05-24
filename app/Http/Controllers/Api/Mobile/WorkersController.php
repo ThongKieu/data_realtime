@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Mobile;
 
+use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Api\WorksAssignmentController;
 use App\Http\Controllers\Controller;
 use App\Models\AccountionWorker;
@@ -298,7 +299,7 @@ class WorkersController extends Controller
                         if ($device == $req->device_key) {
                             return 1;
                         } else {
-                            AccountWorkers::where('id_worker', '=', $req->id)->update(['active' => 2, 'device_key' => $req->device_key, 'FCM_token' => $req->fcm_token]);
+                            AccountionWorker::where('id_worker', '=', $req->id)->update(['active' => 2, 'device_key' => $req->device_key, 'FCM_token' => $req->fcm_token]);
                             return 2;
                         }
                         break;
@@ -336,5 +337,28 @@ class WorkersController extends Controller
         }
         return $history;
     }
+    public function infoWorkerToApp(Request $request)
+    {
+        // Yêu cầu cung cấp ID Thợ
+        $info_worker = Worker::where('id','=',$request->id)->get(['worker_full_name','worker_code', 'worker_phone_personal', 'worker_phone_company', 'worker_avatar',  'worker_daily_sales','worker_daily_o_t_by_hour'  ]);
 
+        if($info_worker)
+        {
+            return response()->json($info_worker);
+        }
+        else
+            return 'Chek Info Sent';
+    }
+    public function updateInfoWorkerToApp(Request $request) {
+        $update_info = Worker::where('id','=',$request->id)->update([
+            'worker_full_name'=>$request->worker_full_name,'worker_phone_personal'=> $request->worker_phone_personal
+        ]);
+        
+        if($update_info)
+        {
+            return response()->json($update_info);
+        }
+        else
+            return 'Chek Info Sent';
+    }
 }

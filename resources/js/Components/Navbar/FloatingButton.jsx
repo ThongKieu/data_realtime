@@ -58,14 +58,14 @@ function FloatingButton() {
         work_note: "",
         street: "",
         member_read: 1,
-        kind_work: 0,
+        kind_work: 1,
         status_cus: 0,
         from_cus: 0,
         flag_status: 1,
     });
     // ---------------------- select quan --------------------------------
-    // const [selectedOptionDistrict, setSelectedOptionDistrict] = useState('');
     const [optionsDistrict, setOptionsDistrict] = useState([]);
+    const [kindWorker, setKindWorker] = useState([]);
     const [selectedOption, setSelectedOption] = useState("khác");
     const handleOptionChangeDistrict = (event) => {
         setSelectedOption(event.target.value);
@@ -77,6 +77,7 @@ function FloatingButton() {
     };
     useEffect(() => {
         fetchData();
+        fetchDataKindWorker();
         return () => {
             newSocket.disconnect();
         };
@@ -90,14 +91,22 @@ function FloatingButton() {
             console.error("Error fetching data:", error);
         }
     };
+    const fetchDataKindWorker = async () => {
+        try {
+            const response = await fetch(host + "api/web/workers/all-code");
+            const jsonData = await response.json();
+            setKindWorker(jsonData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
     //-------------- change value input form -----------
     const handleChange = (e) => {
-         const { name, value } = e.target;
-            setFormData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
     //----------- change value input file image form -------------------
     const handleFileChange = (e) => {
@@ -128,28 +137,32 @@ function FloatingButton() {
         formData1.append("member_read", formData.member_read);
 
         try {
-            const response = await fetch(host + `api/web/works?dateCheck=${selectedDate}`, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-                mode: "no-cors",
-                body: formData1,
-            });
+            const response = await fetch(
+                host + `api/web/works?dateCheck=${selectedDate}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    mode: "no-cors",
+                    body: formData1,
+                }
+            );
             if (response.status === 200) {
                 newSocket.emit("addWorkTo_Server", formData);
                 handleOpen();
                 setFormData({
                     member_read: 1,
-                    kind_work: 0,
+                    kind_work: 1,
                     status_cus: 0,
                     from_cus: 0,
                     flag_status: 1,
-
                 });
-            } else if (response.status === 422 ){
-                alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`)
+            } else if (response.status === 422) {
+                alert(
+                    `Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`
+                );
             }
         } catch (error) {
             console.log(error);
@@ -188,7 +201,6 @@ function FloatingButton() {
                                     name="phone_number"
                                     className="shadow-none required"
                                     onChange={handleChange}
-
                                 />
                             </div>
                             <div className="my-2">
@@ -275,65 +287,23 @@ function FloatingButton() {
                                 />
                             </div>
                             <div className="items-center justify-center gap-4 my-4 text-xs ">
-                                <div className="flex justify-between w-full">
-                                    <Radio
-                                        id="DN"
-                                        name="kind_work"
-                                        label="Điện Nước"
-                                        value="1"
-                                        checked={formData.kind_work === "1"}
-                                        onChange={handleChange}
-                                    />
-                                    <Radio
-                                        id="DL"
-                                        name="kind_work"
-                                        label="Điện Lạnh"
-                                        value="2"
-                                        checked={formData.kind_work === "2"}
-                                        onChange={handleChange}
-                                    />
-                                    <Radio
-                                        id="DG"
-                                        name="kind_work"
-                                        label="Đồ Gỗ"
-                                        value="3"
-                                        checked={formData.kind_work === "3"}
-                                        onChange={handleChange}
-                                    />
-                                    <Radio
-                                        id="NLMT"
-                                        name="kind_work"
-                                        label="Năng Lượng"
-                                        value="4"
-                                        checked={formData.kind_work === "4"}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="flex justify-between w-full">
-                                    <Radio
-                                        id="XD"
-                                        name="kind_work"
-                                        label="Xây Dựng"
-                                        value="5"
-                                        checked={formData.kind_work === "5"}
-                                        onChange={handleChange}
-                                    />
-                                    <Radio
-                                        id="TX"
-                                        name="kind_work"
-                                        label="Tài Xế"
-                                        value="6"
-                                        checked={formData.kind_work === "6"}
-                                        onChange={handleChange}
-                                    />
-                                    <Radio
-                                        id="HX"
-                                        name="kind_work"
-                                        label="Cơ Khí"
-                                        value="7"
-                                        checked={formData.kind_work === "7"}
-                                        onChange={handleChange}
-                                    />
+                                <div className="grid grid-cols-4 gap-2">
+                                    {kindWorker.map((item, index) => {
+                                        return (
+                                            <Radio
+                                                key={index}
+                                                id={item.code_worker}
+                                                name="kind_work"
+                                                label={item.kind_worker}
+                                                value={item.id}
+                                                checked={
+                                                    formData.kind_work ===
+                                                    item.id
+                                                }
+                                                onChange={handleChange}
+                                            />
+                                        );
+                                    })}
                                 </div>
                             </div>
                             <div className="flex items-center justify-center ">

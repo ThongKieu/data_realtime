@@ -22,7 +22,7 @@ const sendPhanThoRequest = async (
     };
 
     try {
-        const response = await fetch(`api/web/work-assignment`, {
+        const response = await fetch(`api/web/work-assignment?dateCheck=${selectedDate}`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
@@ -71,7 +71,7 @@ const sendDoiThoRequest = async (
         id_work_as: params.id,
         id_cus: params.row.id_cus,
         real_note: `${params.row.real_note} + ${
-            reasonMessage !== "undefined"
+            reasonMessage != "undefined"
                 ? reasonMessage
                 : "Chưa nhập thông tin"
         }`,

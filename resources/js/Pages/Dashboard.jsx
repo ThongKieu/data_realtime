@@ -229,18 +229,19 @@ function Dashboard({ auth }) {
                 throw new Error("Network response was not ok");
             }
             const jsonData = await response.json();
-            if (jsonData) {
-                setWorkDataDN_done(jsonData.dien_nuoc_done);
-                setWorkDataDL_done(jsonData.dien_lanh_done);
-                setWorkDataDG_done(jsonData.do_go_done);
-                setWorkDataNLMT_done(jsonData.nlmt_done);
-                setWorkDataXD_done(jsonData.xay_dung_done);
-                setWorkDataVC_done(jsonData.tai_xe_done);
-                setWorkDataHX_done(jsonData.co_khi_done);
-                setIsLoading(false);
-            } else {
-                console.log("Data lỗi không tồn tại!!");
-            }
+            console.log(jsonData);
+            // if (jsonData) {
+            //     setWorkDataDN_done(jsonData.dien_nuoc_done);
+            //     setWorkDataDL_done(jsonData.dien_lanh_done);
+            //     setWorkDataDG_done(jsonData.do_go_done);
+            //     setWorkDataNLMT_done(jsonData.nlmt_done);
+            //     setWorkDataXD_done(jsonData.xay_dung_done);
+            //     setWorkDataVC_done(jsonData.tai_xe_done);
+            //     setWorkDataHX_done(jsonData.co_khi_done);
+            //     setIsLoading(false);
+            // } else {
+            //     console.log("Data lỗi không tồn tại!!");
+            // }
         } catch (error) {
             console.error("Lỗi khi fetch dữ liệu:", error);
             // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)

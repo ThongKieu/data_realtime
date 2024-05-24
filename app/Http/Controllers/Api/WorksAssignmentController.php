@@ -31,7 +31,9 @@ class WorksAssignmentController extends Controller
         // dd( );
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {
-            $data_json[$kindId]['kind_worker'] = $kindWorker;
+            $data_json[$kindId]['kind_worker'] = new \stdClass();
+
+            $data_json[$kindId]['kind_worker']->nameKind = $kindWorker->kind_worker;
             $data_json[$kindId]['data'] = DB::table('works_assignments')
                 ->join('works', 'works_assignments.id_cus', '=', 'works.id')
                 ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
@@ -73,7 +75,7 @@ class WorksAssignmentController extends Controller
                 $item->warranties = WorksAssignmentController::getWarrantiesById($item->id);
 
             }
-            $data_json[$kindId]['data']->numberOfWork = count($data_json[$kindId]['data']);
+            $data_json[$kindId]['kind_worker']->numberOfWork = count($data_json[$kindId]['data']);
             // dd($data_json[$kindId]['data']);
         }
         // dd($data_json);

@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\Web\WorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +29,10 @@ Route::prefix('web')->group(function () {
         // ------------------------------------------------------------------------------------------
         Route::post('/updateActive', 'App\Http\Controllers\AccountionWorkerController@updateActive');
         //----------------------------------------------
-        Route::post('code-worker','App\Http\Controllers\CodeWorkerKindController@store');
-        Route::post('check-code-worker','App\Http\Controllers\CodeWorkerKindController@checkCode');
-        Route::get('all-code','App\Http\Controllers\CodeWorkerKindController@index');
-        Route::post('change-code-status','App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
-
-
+        Route::post('code-worker', 'App\Http\Controllers\CodeWorkerKindController@store');
+        Route::post('check-code-worker', 'App\Http\Controllers\CodeWorkerKindController@checkCode');
+        Route::get('all-code', 'App\Http\Controllers\CodeWorkerKindController@index');
+        Route::post('change-code-status', 'App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
 
     });
     Route::apiResource('district', DistrictController::class);
@@ -214,8 +211,8 @@ Route::prefix('app')->group(function () {
         // need work
         Route::post('needWork', 'App\Http\Controllers\Api\NoticationAllController@needWorkFromWorker');
         // info Worker by ID
-        Route::post('info-worker', 'App\Http\Controllers\Api\Web\WorksController@infoWorkerToApp');
-        Route::post('update-worker', 'App\Http\Controllers\Api\Web\WorksController@updateInfoWorkerToApp');
+        Route::post('info-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@infoWorkerToApp');
+        Route::post('update-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateInfoWorkerToApp');
 
     });
     // Customer

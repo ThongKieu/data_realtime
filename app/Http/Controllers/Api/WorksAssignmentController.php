@@ -32,7 +32,6 @@ class WorksAssignmentController extends Controller
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {
             $data_json[$kindId]['kind_worker'] = new \stdClass();
-
             $data_json[$kindId]['kind_worker']->nameKind = $kindWorker->kind_worker;
             $data_json[$kindId]['data'] = DB::table('works_assignments')
                 ->join('works', 'works_assignments.id_cus', '=', 'works.id')
@@ -78,7 +77,7 @@ class WorksAssignmentController extends Controller
             $data_json[$kindId]['kind_worker']->numberOfWork = count($data_json[$kindId]['data']);
             // dd($data_json[$kindId]['data']);
         }
-       
+
         return response()->json($data_json);
 
     }
@@ -107,14 +106,12 @@ class WorksAssignmentController extends Controller
         $id_worker = $request->get('id_worker');
         $id_phu = $request->get('id_phu');
         $his_work = $request->his_work;
-        // dd($id_worker[0]);
-
+        // dd($his_work);
         $work_note = Work::where('id', '=', $id_cus)
             ->value('work_note');
-
-        // dd($request);
         $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
+
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
             // dd(json_encode($id_phu));
@@ -125,7 +122,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work'=> $his_work
+                'his_work'=> json_encode($his_work)
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -134,9 +131,10 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work'=> $his_work
+                'his_work'=>json_encode($his_work)
             ]);
         }
+
         $workHas->save();
 
         // $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
@@ -150,6 +148,8 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+              // Thêm phần lịch sử thay đổi
+            WorksAssignmentController::insertHisWork($request->id,$request->his_work);
             if (isset($request->from_app)) {
 
                 NoticationAllController::create('3', $note, '');
@@ -669,14 +669,14 @@ class WorksAssignmentController extends Controller
             if (is_array($his_on_table)) {
                 $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
                 $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
-        
+
                 $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
                 $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
             }
         } else {
             // Handle the case where his_on_table is null or not valid JSON
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
-        
+
         }
         if($up_his)
             {

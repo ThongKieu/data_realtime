@@ -32,7 +32,11 @@ function CardMain() {
         try {
             const response = await fetch(host+"api/web/works");
             const jsonData = await response.json();
-            setWorkDataCountOrder(jsonData.dem_lich);
+            const workData = jsonData.map(item => ({
+                nameKind: item.kind_worker.nameKind,
+                numberOfWork: item.kind_worker.numberOfWork
+              }));
+            setWorkDataCountOrder(workData.numberOfWork);
             if (socketDelete) {
                 socketDelete.emit("addWorkTo_Server", jsonData.num_can);
             }

@@ -37,19 +37,19 @@ class AccountionWorkerController extends Controller
         // dd('1111111111111');
         // $all = AccountionWorker::all();
         $all = DB::table('accountion_workers')
-        ->leftJoin('workers','accountion_workers.id_worker','workers.id')
-        ->where('workers.worker_check_acc','!=',0)
-        ->get([
-            'worker_full_name',
-            'acc_worker',
-            'last_active',
-            'device_key',
-            'time_log',
-            'avatar',
-            'active',
-            'worker_code',
-            'id_worker','accountion_workers.id'
-        ]);
+            ->leftJoin('workers', 'accountion_workers.id_worker', 'workers.id')
+            ->where('workers.worker_check_acc', '!=', 0)
+            ->get([
+                'worker_full_name',
+                'acc_worker',
+                'last_active',
+                'device_key',
+                'time_log',
+                'avatar',
+                'active',
+                'worker_code',
+                'id_worker', 'accountion_workers.id',
+            ]);
 
         return $all;
     }
@@ -199,8 +199,11 @@ class AccountionWorkerController extends Controller
                             $a[4] = $i->worker_code;
                             $a[5] = $i->worker_phone_personal;
                             $a[6] = $i->worker_phone_company;
+                            $a[7] = $i->worker_avatar;
+                            $a[8] = $i->worker_daily_sales;
+                            $a[9] = $i->worker_daily_o_t_by_hour;
                         }
-                        $a[7] = $device_key;
+                        $a[10] = $device_key;
                         AccountionWorker::where('acc_worker', '=', $acc_worker)->update(['time_log' => '0', 'device_key' => $device_key, 'FCM_token' => $request->fcm_token, 'last_active' => date('y-m-d H:i:s')]);
                         return $a;
                     } else {
@@ -258,24 +261,23 @@ class AccountionWorkerController extends Controller
         } else if ($ac != 0) {
             if ($ac == 1) {
                 $id_worker = $request->id_worker;
-                $f_code = Worker::where ('id','=',$id_worker)->value('worker_code');
-                $newAcc = $f_code.$request->worker_phone_company;
-                $check_acc = AccountionWorker::where('acc_worker','=',$newAcc)->get('id');
-                if(count($check_acc) == 0)
-                {
-                    $u_phone = Worker::where('id','=',$id_worker)->update(['worker_phone_company'=>$request->worker_phone_company]);
+                $f_code = Worker::where('id', '=', $id_worker)->value('worker_code');
+                $newAcc = $f_code . $request->worker_phone_company;
+                $check_acc = AccountionWorker::where('acc_worker', '=', $newAcc)->get('id');
+                if (count($check_acc) == 0) {
+                    $u_phone = Worker::where('id', '=', $id_worker)->update(['worker_phone_company' => $request->worker_phone_company]);
                     $u = AccountionWorker::where('id_worker', '=', $id_worker)->update(['acc_worker' => $newAcc]);
                     return response()->json($newAcc);
+                } else {
+                    return response()->json('Vui lòng chọn số khác');
                 }
-                else return response()->json('Vui lòng chọn số khác');
 
             } else {
                 $length = 8; // Độ dài chuỗi mong muốn
                 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $randomString = substr(str_shuffle($characters), 0, $length);
-                $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' =>  Hash::make($randomString)]);
-                if($u){return response()->json($randomString);}
-                else{return response()->json('Fail!');}
+                $u = AccountionWorker::where('id', '=', $id)->update(['pass_worker' => Hash::make($randomString)]);
+                if ($u) {return response()->json($randomString);} else {return response()->json('Fail!');}
             }
         }
         return response()->json('Vui lòng cung cấp thông tin');

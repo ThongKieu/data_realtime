@@ -316,7 +316,7 @@ function WorkerList({ auth }) {
         {
             field: "status_worker",
             headerName: "Tinh trạng",
-            width: 300,
+            width: 250,
             editable: false,
             renderCell: (params) => {
                 const handleChangeva = (event) => {
@@ -341,6 +341,37 @@ function WorkerList({ auth }) {
                     </select>
                 );
             },
+        },
+
+        {
+            field: "worker_daily_sales",
+            headerName: "Doanh Số",
+            width: 70,
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return <p>{formatter.format(params.row.worker_daily_sales)}</p>;
+            },
+            // editable: true,
+        },
+        {
+            field: "worker_daily_o_t_by_hour",
+            headerName: "Tăng Ca",
+            width: 70,
+            renderCell: (params) => {
+                const formatter = new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                });
+                return (
+                    <p>
+                        {formatter.format(params.row.worker_daily_o_t_by_hour)}
+                    </p>
+                );
+            },
+            // editable: true,
         },
         {
             field: "avatar",
@@ -450,30 +481,6 @@ function WorkerList({ auth }) {
                 }
             },
             width: 150,
-            // editable: true,
-        },
-        {
-            field: "worker_daily_sales",
-            headerName: "Doanh Số",
-            renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
-                return <p>{formatter.format(params.row.worker_daily_sales)}</p>;
-            },
-            width: 70,
-            // editable: true,
-        }, {
-            field: "worker_daily_o_t_by_hour",
-            headerName: "Tăng Ca",
-            renderCell: (params) => {const formatter = new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-            });
-                return <p>{formatter.format(params.row.worker_daily_o_t_by_hour)}</p>;
-            },
-            width: 70,
             // editable: true,
         },
         {

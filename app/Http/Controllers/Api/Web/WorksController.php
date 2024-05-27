@@ -35,7 +35,6 @@ class WorksController extends Controller
         $dc2 = $oldday2->subDay(7)->isoFormat('YYYY-MM-DD');
         // dd($dc1);
         $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
-
         // dd( );
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {
@@ -51,8 +50,8 @@ class WorksController extends Controller
             ->where('status_cus', '=', 0)
             ->get();
         }
-       
-     
+
+
         return response()->json($data_json);
     }
     public function indexSetWork(Request $request)
@@ -65,7 +64,7 @@ class WorksController extends Controller
         }
 
         $dataWorkDone = Work::whereBetween('kind_work', [1, 7])->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-       
+
         return response()->json(count($dataWorkDone));
     }
     public function getCancleBook(Request $request)

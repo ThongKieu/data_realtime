@@ -107,16 +107,12 @@ class FuelOTWorkerController extends Controller
                     }
                 }
             }
-            // dd($c_a);
-
         }
         return 1;
     }
     public static function checkFuelOTByAdmin($id_fuel, $id_admin_check)
     {
-
         $up = FuelOTWorker::where('id', '=', $id_fuel)->update(['fuel_o_t_workers_flag' => 1, 'fuel_o_t_id_admin_check' => $id_admin_check]);
-
         if ($up) {
             return 1;
         }

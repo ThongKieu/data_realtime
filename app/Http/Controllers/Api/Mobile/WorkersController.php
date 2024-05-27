@@ -254,7 +254,7 @@ class WorkersController extends Controller
             ->where('works_assignments.status_work', '=', 0)
             ->orderByDesc('id')
             ->limit(100)
-            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.real_note', 'works_assignments.status_work', 'works_assignments.check_in']);
+            ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works.image_work_path', 'works_assignments.real_note', 'works_assignments.status_work', 'works_assignments.check_in']);
         return $findWork;
         // return $date;
     }

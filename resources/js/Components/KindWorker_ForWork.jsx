@@ -43,12 +43,7 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                 {kindWorker.kind_worker.nameKind} (Số lịch:
                 {kindWorker.kind_worker.numberOfWork})
             </Typography>
-            <div
-                style={{
-                    height: rows == "" ? 400 : "fit-content",
-                    width: "100%",
-                }}
-            >
+
                 <DataGrid
                     sx={{
                         "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
@@ -68,7 +63,6 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                         columnHeaders: () => null,
                     }}
                 />
-            </div>
         </Box>
     );
 };

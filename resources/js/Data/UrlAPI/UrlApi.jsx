@@ -1,6 +1,52 @@
 const url_API = "api/web/works";
 const url_API_District = "api/web/district";
 
+const getFirstName = (fullName) => {
+    if (fullName != undefined) {
+        const parts = fullName.split(" ");
+        return parts.length >= 2
+            ? parts.slice(1).join(" ")
+            : parts.length >= 3
+            ? parts.slice(2).join(" ")
+            : parts.length >= 1
+            ? parts.slice(0).join(" ")
+            : "";
+    }
+};
+const getFormattedToday = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${year}-${month}-${day}`;
+};const getFormattedTIME = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    const h = today.getHours();
+    const m = today.getMinutes();
+    return `${year}-${month}-${day} ${h}:${m}`;
+};
+const getFormattedTodayDDMMYYYY = () => {
+
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${day}-${month}-${year}`;
+};
+const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    const formattedHours = hours > 0 ? `${hours} giờ ` : "";
+    const formattedMinutes = minutes > 0 ? `${minutes} phút ` : "";
+    const formattedSeconds = `${remainingSeconds} giây`;
+
+    return formattedHours + formattedMinutes + formattedSeconds;
+};
 const sendPhanThoRequest = async (
     params,
     selectPhanTho,
@@ -19,16 +65,16 @@ const sendPhanThoRequest = async (
         id_phu: id_phu,
         work_note: params.row.work_note,
         auth_id: auth.user.id,
-        // his_work: [
-        //     {
-        //      id_auth:auth.user.id,
-        //      id_worker: null,
-        //      action:'Gửi Lịch Thợ',
-        //      time: '2024-05-24 09:00 thời gian bắt theo của máy'
-        //    },
-        // ]
+        his_work: [
+            {
+             id_auth:auth.user.id,
+             id_worker: null,
+             action:'Gửi Lịch Thợ',
+             time: getFormattedTIME()
+           },
+        ]
     };
-
+    // console.log(data);
     try {
         const response = await fetch(`api/web/work-assignment?dateCheck=${selectedDate}`, {
             method: "POST",
@@ -105,44 +151,6 @@ const sendDoiThoRequest = async (
         console.log("lỗi", error);
     }
 };
-const getFirstName = (fullName) => {
-    if (fullName != undefined) {
-        const parts = fullName.split(" ");
-        return parts.length >= 2
-            ? parts.slice(1).join(" ")
-            : parts.length >= 3
-            ? parts.slice(2).join(" ")
-            : parts.length >= 1
-            ? parts.slice(0).join(" ")
-            : "";
-    }
-};
-const getFormattedToday = () => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    return `${year}-${month}-${day}`;
-};
-const getFormattedTodayDDMMYYYY = () => {
-
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    return `${day}-${month}-${year}`;
-};
-const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-
-    const formattedHours = hours > 0 ? `${hours} giờ ` : "";
-    const formattedMinutes = minutes > 0 ? `${minutes} phút ` : "";
-    const formattedSeconds = `${remainingSeconds} giây`;
-
-    return formattedHours + formattedMinutes + formattedSeconds;
-};
 export {
     getFormattedToday,
     getFirstName,
@@ -151,5 +159,5 @@ export {
     formatTime,
     url_API,
     url_API_District,
-    getFormattedTodayDDMMYYYY,
+    getFormattedTodayDDMMYYYY,getFormattedTIME
 };

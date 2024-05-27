@@ -32,7 +32,6 @@ class WorksAssignmentController extends Controller
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {
             $data_json[$kindId]['kind_worker'] = new \stdClass();
-
             $data_json[$kindId]['kind_worker']->nameKind = $kindWorker->kind_worker;
             $data_json[$kindId]['data'] = DB::table('works_assignments')
                 ->join('works', 'works_assignments.id_cus', '=', 'works.id')
@@ -78,325 +77,7 @@ class WorksAssignmentController extends Controller
             $data_json[$kindId]['kind_worker']->numberOfWork = count($data_json[$kindId]['data']);
             // dd($data_json[$kindId]['data']);
         }
-        // dd($data_json);
-        // // thông tin điện nước
-        // $dien_nuoc = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 1)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->orderBy('workers.worker_code', 'asc')
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "works.name_cus",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //         ]
-        //     );
 
-        // $dien_lanh = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 2)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.name_cus",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "workers.worker_code",
-        //             "workers.worker_address",
-        //             "workers.worker_phone_company",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //         ]
-        //     );
-        // $do_go = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 3)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "works.name_cus",
-        //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //         ]
-        //     );
-        // $nlmt = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 4)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.name_cus",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //         ]
-        //     );
-        // $xay_dung = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 5)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "works.name_cus",
-        //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //         ]
-        //     );
-        // $tai_xe = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 6)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "works.name_cus",
-        //             "workers.worker_code",
-        //             "workers.worker_address", "workers.worker_phone_company",
-        //         ]
-        //     );
-        // $co_khi = DB::table('works_assignments')
-        //     ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-        //     ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-        //     ->where('works_assignments.created_at', 'like', $today . '%')
-        //     ->where('works.kind_work', '=', 7)
-        //     ->whereBetween('works_assignments.status_work', [0, 3])
-        //     ->get(
-        //         [
-        //             "works_assignments.id",
-        //             "works_assignments.id_cus",
-        //             "works_assignments.id_worker",
-        //             "works_assignments.id_phu",
-        //             "works_assignments.real_note",
-        //             "works_assignments.spending_total",
-        //             "works_assignments.income_total",
-        //             "works_assignments.bill_imag",
-        //             "works_assignments.seri_imag",
-        //             "works_assignments.status_work",
-        //             "works_assignments.check_in",
-        //             "works_assignments.seri_number",
-        //             "works_assignments.status_admin_check",
-        //             "works_assignments.flag_check",
-        //             "works.work_content",
-        //             "works.date_book",
-        //             "works.street",
-        //             "works.district",
-        //             "works.phone_number",
-        //             "works.image_work_path",
-        //             "works.kind_work",
-        //             "workers.worker_full_name",
-        //             // "workers.worker_name",
-        //             "works.name_cus",
-        //             "workers.worker_code",
-        //             "workers.worker_address",
-        //             "workers.worker_phone_company",
-        //         ]
-        //     );
-        // if (count($dien_nuoc) > 0) {
-        //     foreach ($dien_nuoc as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($dien_lanh) > 0) {
-        //     foreach ($dien_lanh as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($do_go) > 0) {
-        //     foreach ($do_go as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($nlmt) > 0) {
-        //     foreach ($nlmt as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($xay_dung) > 0) {
-        //     foreach ($xay_dung as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($tai_xe) > 0) {
-        //     foreach ($tai_xe as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-        // if (count($co_khi) > 0) {
-        //     foreach ($co_khi as $item) {
-        //         $warranty = WorksAssignmentController::getWarrantiesById($item->id);
-        //         $item->warranty = $warranty;
-        //     }
-        // }
-
-        // $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
-
-        // $dataWorkDone = [
-        //     'dien_nuoc_done' => $dien_nuoc,
-        //     'dien_lanh_done' => $dien_lanh,
-        //     'do_go_done' => $do_go,
-        //     'nlmt_done' => $nlmt,
-        //     'xay_dung_done' => $xay_dung,
-        //     'tai_xe_done' => $tai_xe,
-        //     'co_khi_done' => $co_khi,
-        //     'dem_lich_done' => $number,
-        // ];
         return response()->json($data_json);
 
     }
@@ -424,14 +105,13 @@ class WorksAssignmentController extends Controller
         $id_cus = $request->get('id_cus');
         $id_worker = $request->get('id_worker');
         $id_phu = $request->get('id_phu');
-        // dd($id_worker[0]);
-
+        $his_work = $request->his_work;
+        // dd($his_work);
         $work_note = Work::where('id', '=', $id_cus)
             ->value('work_note');
-
-        // dd($request);
         $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
+
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
             // dd(json_encode($id_phu));
@@ -442,6 +122,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
+                'his_work'=> json_encode($his_work)
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -450,11 +131,13 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
+                'his_work'=>json_encode($his_work)
             ]);
         }
+
         $workHas->save();
 
-        $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
+        // $id_work_has = WorksAssignment::where('id_cus', '=', $id_cus)->where('id_worker', '=', $id_worker)->value('id');
         return 'OK';
     }
     public function returnWorkFromAssignment(Request $request)
@@ -465,6 +148,8 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
+              // Thêm phần lịch sử thay đổi
+            WorksAssignmentController::insertHisWork($request->id,$request->his_work);
             if (isset($request->from_app)) {
 
                 NoticationAllController::create('3', $note, '');
@@ -682,6 +367,7 @@ class WorksAssignmentController extends Controller
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
                         'work_done_date' => date('d-m-Y'),
+
                     ]);
                 // if($request->datainput != null || $request->datainput != '')
                 // {
@@ -841,15 +527,16 @@ class WorksAssignmentController extends Controller
     // Return Work is assign
     public function returnWork(Request $request)
     {
-        $id_work_as = $request->id_work_as;
+        $id_work_has = $request->id_work_has;
         $id_cus = $request->id_cus;
         $real_note = $request->real_note;
         $id_worker = $request->id_worker;
 
-        $up_w_a = WorksAssignment::where('id', '=', $id_work_as)->update(['status_work' => 4]);
+        $up_w_a = WorksAssignment::where('id', '=', $id_work_has)->update(['status_work' => 4]);
         $w_e = Worker::where('id', '=', $id_worker)->value('worker_kind');
         $up_w_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $w_e, 'member_read' => $request->auth_id]);
-
+        // Thêm phần lịch sử thay đổi
+        WorksAssignmentController::insertHisWork($id_work_has,$request->his_work);
         if ($request->id_phu) {
 
             $w_a_n = new WorksAssignment([
@@ -955,6 +642,49 @@ class WorksAssignmentController extends Controller
 
     //         }
     }
-// Lấy thông tin thợ làm ngày tính Ds
+// Lấy thông tin lịch sử xử lý lịch
+    public function sectionWorkAss (Request $request)
+    {
+        $id_work_has = $request->id_work_has;
+        // dd($id_work_has);
+        $his_work = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
 
+        return response()->json($his_work);
+    }
+    public static function  insertHisWork ($id_work_has,$his_work)
+    {
+    //     $id_work_has = $request->id_work_has;
+        $his_work=json_encode($his_work);
+        $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
+        if($his_on_table && $his_on_table == '')
+        {
+
+         $up_his = WorksAssignment::where('id','=',$id_work_has)->update(['his_work'=>$his_work]);
+
+        }
+        elseif($his_on_table && $his_on_table != '')
+        {
+            $his_on_table = json_decode($his_on_table, true); // Decode the existing JSON array into a PHP array
+
+            if (is_array($his_on_table)) {
+                $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
+                $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
+
+                $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
+                $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
+            }
+        } else {
+            // Handle the case where his_on_table is null or not valid JSON
+            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
+
+        }
+        if($up_his)
+            {
+                return 1;
+            }
+        else
+        {
+            return 0;
+        }
+    }
 }

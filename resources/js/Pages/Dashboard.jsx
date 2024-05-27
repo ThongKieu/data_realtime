@@ -45,7 +45,7 @@ import {
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
-    getFormattedToday,
+    getFormattedToday,getFormattedTIME
 } from "@/Data/UrlAPI/UrlApi";
 import { copyTextToClipboard } from "@/Components/HandleEvent/Handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
@@ -1516,7 +1516,7 @@ function Dashboard({ auth }) {
                             id_auth:auth.user.id,
                             id_worker: null,
                             action:'Thu hồi lịch',
-                            time: '2024-05-24 09:00 thời gian bắt theo của máy'
+                            time: getFormattedTIME()
                           },
                     };
                     try {

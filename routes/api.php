@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\Web\WorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +29,10 @@ Route::prefix('web')->group(function () {
         // ------------------------------------------------------------------------------------------
         Route::post('/updateActive', 'App\Http\Controllers\AccountionWorkerController@updateActive');
         //----------------------------------------------
-        Route::post('code-worker','App\Http\Controllers\CodeWorkerKindController@store');
-        Route::post('check-code-worker','App\Http\Controllers\CodeWorkerKindController@checkCode');
-        Route::get('all-code','App\Http\Controllers\CodeWorkerKindController@index');
-        Route::post('change-code-status','App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
-
-
+        Route::post('code-worker', 'App\Http\Controllers\CodeWorkerKindController@store');
+        Route::post('check-code-worker', 'App\Http\Controllers\CodeWorkerKindController@checkCode');
+        Route::get('all-code', 'App\Http\Controllers\CodeWorkerKindController@index');
+        Route::post('change-code-status', 'App\Http\Controllers\CodeWorkerKindController@changeCodeStatus');
 
     });
     Route::apiResource('district', DistrictController::class);
@@ -45,7 +42,7 @@ Route::prefix('web')->group(function () {
         Route::post('worker', 'App\Http\Controllers\Api\Web\WorkerController@updateWorker');
         Route::post('work', 'App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-continue', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
-        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
+        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');//thu hồi lịch trên web
         Route::post('work-assignment-cancle', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('work-assignment-quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWorkFromAssignment');
         Route::post('work-assignment-warranties', 'App\Http\Controllers\Api\WarrantiesController@insertWarranties');
@@ -58,9 +55,12 @@ Route::prefix('web')->group(function () {
     });
 
     Route::get('works_done', 'App\Http\Controllers\Api\Web\WorksController@indexSetWork');
+    Route::get('his_work', 'App\Http\Controllers\Api\WorksAssignmentController@sectionWorkAss');
+    Route::post('his_work', 'App\Http\Controllers\Api\WorksAssignmentController@insertHisWork');
+
 
     Route::prefix('work-assignment')->group(function () {
-        Route::post('', 'App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
+        Route::post('', 'App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');//api phân thợ
         Route::get('', 'App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties', 'App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
         Route::post('/quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');
@@ -211,8 +211,8 @@ Route::prefix('app')->group(function () {
         // need work
         Route::post('needWork', 'App\Http\Controllers\Api\NoticationAllController@needWorkFromWorker');
         // info Worker by ID
-        Route::post('info-worker', 'App\Http\Controllers\Api\Web\WorksController@infoWorkerToApp');
-        Route::post('update-worker', 'App\Http\Controllers\Api\Web\WorksController@updateInfoWorkerToApp');
+        Route::post('info-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@infoWorkerToApp');
+        Route::post('update-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateInfoWorkerToApp');
 
     });
     // Customer

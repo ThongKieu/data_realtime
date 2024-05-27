@@ -21,7 +21,8 @@ class WorksAssignment extends Model
         'admin_check',
         'check_admin_check',
         'kind_work_assign',
-        'status_work'
+        'status_work',
+        'his_work'
         ];
     public function warranty()
     {

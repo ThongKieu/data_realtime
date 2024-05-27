@@ -41,15 +41,16 @@ class WorksController extends Controller
             $data_json[$kindId]['kind_worker'] = new \stdClass();
             $data_json[$kindId]['kind_worker']->nameKind = $kindWorker->kind_worker;
             $data_json[$kindId]['data'] = Work::where('date_book', '=', $today)
-            ->where('kind_work', '=', $kindId + 1)
+            ->where('kind_work', '=', $kindId+1)
             ->where('status_cus', '=', 0)
             ->get();
             $data_json[$kindId]['kind_worker']->numberOfWork =count($data_json[$kindId]['data']);
             $data_json[$kindId]['oldWork']=Work::whereBetween('date_book', [$dc2, $dc1])
-            ->where('kind_work', '=',  $kindId + 1)
+            ->where('kind_work', '=',  $kindId+1)
             ->where('status_cus', '=', 0)
             ->get();
         }
+
 
         return response()->json($data_json);
     }
@@ -62,25 +63,9 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
 
-        $dien_nuoc = Work::where('kind_work', '=', '1')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $dien_lanh = Work::where('kind_work', '=', '2')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $do_go = Work::where('kind_work', '=', '3')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $nlmt = Work::where('kind_work', '=', '4')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $xay_dung = Work::where('kind_work', '=', '5')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $tai_xe = Work::where('kind_work', '=', '6')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $co_khi = Work::where('kind_work', '=', '7')->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
-        $number = count($dien_nuoc) + count($dien_lanh) + count($do_go) + count($nlmt) + count($xay_dung) + count($tai_xe) + count($co_khi);
-        $dataWorkDone = [
-            'dien_nuoc_done' => $dien_nuoc,
-            'dien_lanh_done' => $dien_lanh,
-            'do_go_done' => $do_go,
-            'nlmt_done' => $nlmt,
-            'xay_dung_done' => $xay_dung,
-            'tai_xe_done' => $tai_xe,
-            'co_khi_done' => $co_khi,
-            'dem_lich_done' => $number,
-        ];
-        return response()->json($dataWorkDone);
+        $dataWorkDone = Work::whereBetween('kind_work', [1, 7])->where('status_cus', '=', 1)->where('date_book', '=', $today)->get();
+
+        return response()->json(count($dataWorkDone));
     }
     public function getCancleBook(Request $request)
     {

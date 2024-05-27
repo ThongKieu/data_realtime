@@ -187,7 +187,6 @@ function AdminCheckDialog({
                             : { ...item, warranty_create: 1 }; // Thêm mới
                     })
                     .filter(Boolean);
-
                 const dataBh = {
                     ac: 1,
                     auth_id: auth.user.id,

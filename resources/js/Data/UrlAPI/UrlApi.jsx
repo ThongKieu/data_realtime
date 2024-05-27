@@ -19,6 +19,14 @@ const sendPhanThoRequest = async (
         id_phu: id_phu,
         work_note: params.row.work_note,
         auth_id: auth.user.id,
+        // his_work: [
+        //     {
+        //      id_auth:auth.user.id,
+        //      id_worker: null,
+        //      action:'Gửi Lịch Thợ',
+        //      time: '2024-05-24 09:00 thời gian bắt theo của máy'
+        //    },
+        // ]
     };
 
     try {
@@ -35,7 +43,6 @@ const sendPhanThoRequest = async (
             socketD.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();
-
             try {
                 const response = await fetch("api/app/worker/send-fcm", {
                     method: "POST",
@@ -118,6 +125,7 @@ const getFormattedToday = () => {
     return `${year}-${month}-${day}`;
 };
 const getFormattedTodayDDMMYYYY = () => {
+
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");

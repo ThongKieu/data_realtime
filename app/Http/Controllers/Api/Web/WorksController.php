@@ -35,19 +35,22 @@ class WorksController extends Controller
         $dc2 = $oldday2->subDay(7)->isoFormat('YYYY-MM-DD');
         // dd($dc1);
         $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
-
         // dd( );
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {
             $data_json[$kindId]['kind_worker'] = new \stdClass();
             $data_json[$kindId]['kind_worker']->nameKind = $kindWorker->kind_worker;
             $data_json[$kindId]['data'] = Work::where('date_book', '=', $today)
-            ->where('kind_work', '=', $kindId)
+            ->where('kind_work', '=', $kindId + 1)
             ->where('status_cus', '=', 0)
             ->get();
             $data_json[$kindId]['kind_worker']->numberOfWork =count($data_json[$kindId]['data']);
+            $data_json[$kindId]['oldWork']=Work::whereBetween('date_book', [$dc2, $dc1])
+            ->where('kind_work', '=',  $kindId + 1)
+            ->where('status_cus', '=', 0)
+            ->get();
         }
-     
+
         return response()->json($data_json);
     }
     public function indexSetWork(Request $request)

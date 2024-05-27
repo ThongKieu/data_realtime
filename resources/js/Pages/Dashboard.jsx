@@ -63,6 +63,7 @@ import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
 import Select from "react-select";
 import useWindowSize from "@/Core/Resize";
+import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 
 // ----
 
@@ -70,42 +71,12 @@ function Dashboard({ auth }) {
     const [socketD, setSocketD] = useState();
     const [message, setMessage] = useState(auth.user.id);
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
-    // table left
-    const [workDataDN, setWorkDataDN] = useState([]);
-    const [workDataDL, setWorkDataDL] = useState([]);
-    const [workDataDG, setWorkDataDG] = useState([]);
-    const [workDataNLMT, setWorkDataNLMT] = useState([]);
-    const [workDataXD, setWorkDataXD] = useState([]);
-    const [workDataVC, setWorkDataVC] = useState([]);
-    const [workDataHX, setWorkDataHX] = useState([]);
-    //---- Lịch Chưa Xử Lý Của Ngày Hôm Trước-------------------
-    const [workDataDN_cu, setWorkDataDN_cu] = useState([]);
-    const [workDataDL_cu, setWorkDataDL_cu] = useState([]);
-    const [workDataDG_cu, setWorkDataDG_cu] = useState([]);
-    const [workDataNLMT_cu, setWorkDataNLMT_cu] = useState([]);
-    const [workDataXD_cu, setWorkDataXD_cu] = useState([]);
-    const [workDataVC_cu, setWorkDataVC_cu] = useState([]);
-    const [workDataHX_cu, setWorkDataHX_cu] = useState([]);
     // ---- Gộp Data--------------
-    const totalArray = workDataDN_cu.concat(
-        workDataDL_cu,
-        workDataDG_cu,
-        workDataNLMT_cu,
-        workDataXD_cu,
-        workDataVC_cu,
-        workDataHX_cu
-    );
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
-    const [workDataDN_done, setWorkDataDN_done] = useState([]);
-    const [workDataDL_done, setWorkDataDL_done] = useState([]);
-    const [workDataDG_done, setWorkDataDG_done] = useState([]);
-    const [workDataNLMT_done, setWorkDataNLMT_done] = useState([]);
-    const [workDataXD_done, setWorkDataXD_done] = useState([]);
-    const [workDataVC_done, setWorkDataVC_done] = useState([]);
-    const [workDataHX_done, setWorkDataHX_done] = useState([]);
-
+    const [workData_Work, setWorkData_Work] = useState([]);
+    const [workData_Assign, setWorkData_Assign] = useState([]);
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const { width, height } = useWindowSize(100);
@@ -200,26 +171,15 @@ function Dashboard({ auth }) {
                 throw new Error("Response not OK");
             }
             const jsonData = await response.json();
-            setWorkDataDN(jsonData.dien_nuoc);
-            setWorkDataDL(jsonData.dien_lanh);
-            setWorkDataDG(jsonData.do_go);
-            setWorkDataNLMT(jsonData.nlmt);
-            setWorkDataXD(jsonData.xay_dung);
-            setWorkDataVC(jsonData.tai_xe);
-            setWorkDataHX(jsonData.co_khi);
-            setWorkDataDN_cu(jsonData.dien_nuoc_cu);
-            setWorkDataDL_cu(jsonData.dien_lanh_cu);
-            setWorkDataDG_cu(jsonData.do_go_cu);
-            setWorkDataNLMT_cu(jsonData.nlmt_cu);
-            setWorkDataXD_cu(jsonData.xay_dung_cu);
-            setWorkDataVC_cu(jsonData.tai_xe_cu);
-            setWorkDataHX_cu(jsonData.co_khi_cu);
+            console.log(jsonData);
+            setWorkData_Work(jsonData);
             setIsLoading(false);
         } catch (error) {
             console.error("Fetch error:", error.message);
             setIsLoading(false);
         }
     };
+    console.log("workData_Work", workData_Work);
     const fetchDateDoneCheck = async (dateCheck) => {
         try {
             const response = await fetch(
@@ -229,25 +189,18 @@ function Dashboard({ auth }) {
                 throw new Error("Network response was not ok");
             }
             const jsonData = await response.json();
-            console.log(jsonData);
-            // if (jsonData) {
-            //     setWorkDataDN_done(jsonData.dien_nuoc_done);
-            //     setWorkDataDL_done(jsonData.dien_lanh_done);
-            //     setWorkDataDG_done(jsonData.do_go_done);
-            //     setWorkDataNLMT_done(jsonData.nlmt_done);
-            //     setWorkDataXD_done(jsonData.xay_dung_done);
-            //     setWorkDataVC_done(jsonData.tai_xe_done);
-            //     setWorkDataHX_done(jsonData.co_khi_done);
-            //     setIsLoading(false);
-            // } else {
-            //     console.log("Data lỗi không tồn tại!!");
-            // }
+            if (jsonData) {
+                setWorkData_Assign(jsonData);
+                setIsLoading(false);
+            } else {
+                console.log("Data lỗi không tồn tại!!");
+            }
         } catch (error) {
             console.error("Lỗi khi fetch dữ liệu:", error);
             // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
         }
     };
-
+    // console.log(workData);
     // ----------------------------lay thong tin tho ----------------------------
     const fetchInfoWorker = async (e) => {
         try {
@@ -1559,6 +1512,12 @@ function Dashboard({ auth }) {
                         // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
+                        his_work: {
+                            id_auth:auth.user.id,
+                            id_worker: null,
+                            action:'Thu hồi lịch',
+                            time: '2024-05-24 09:00 thời gian bắt theo của máy'
+                          },
                     };
                     try {
                         const response = await fetch(
@@ -2029,94 +1988,7 @@ function Dashboard({ auth }) {
         { id: 7, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
         { id: 8, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
-    const dataGridLichChuaPhan = [
-        {
-            id: "workDNCu",
-            rowsDataGrid: totalArray,
-            contentDataGird: "Lịch Ngày Trước Chưa Xử Lý",
-            ref: DNCU,
-        },
-        {
-            id: "workDN",
-            rowsDataGrid: workDataDN,
-            contentDataGird: "Điện Nước",
-            ref: DN,
-        },
-        {
-            id: "workDL",
-            rowsDataGrid: workDataDL,
-            contentDataGird: "Điện Lạnh",
-            ref: DL,
-        },
-        {
-            id: "workDG",
-            rowsDataGrid: workDataDG,
-            contentDataGird: "Đồ Gỗ",
-            ref: DG,
-        },
-        {
-            id: "workNLMT",
-            rowsDataGrid: workDataNLMT,
-            contentDataGird: "Năng Lượng Mặt Trời",
-            ref: NLMT,
-        },
-        {
-            id: "workXD",
-            rowsDataGrid: workDataXD,
-            contentDataGird: "Xây Dựng",
-            ref: XD,
-        },
-        {
-            id: "workVC",
-            rowsDataGrid: workDataVC,
-            contentDataGird: "Vận Chuyển",
-            ref: VC,
-        },
-        {
-            id: "workHX",
-            rowsDataGrid: workDataHX,
-            contentDataGird: "Cơ Khí",
-            ref: HX,
-        },
-    ];
-    const dataGrid = [
-        {
-            id: "workDN",
-            rowsDataGrid: workDataDN_done,
-            contentDataGird: "Điện Nước",
-        },
-        {
-            id: "workDL",
-            rowsDataGrid: workDataDL_done,
-            contentDataGird: "Điện Lạnh",
-        },
-        {
-            id: "workDG",
-            rowsDataGrid: workDataDG_done,
-            contentDataGird: "Đồ Gỗ",
-        },
-        {
-            id: "workNLMT",
-            rowsDataGrid: workDataNLMT_done,
-            contentDataGird: "Năng Lượng Mặt Trời",
-        },
-        {
-            id: "workXD",
-            rowsDataGrid: workDataXD_done,
-            contentDataGird: "Xây Dựng",
-        },
-        {
-            id: "workVC",
-            rowsDataGrid: workDataVC_done,
-            contentDataGird: "Vận Chuyển",
-        },
-        {
-            id: "workHX",
-            rowsDataGrid: workDataHX_done,
-            contentDataGird: "Cơ Khí",
-        },
-        // Thêm các mục khác tương tự ở đây
-    ];
+
     return (
         <AuthenticatedLayout
             children={auth.user}
@@ -2165,56 +2037,13 @@ function Dashboard({ auth }) {
                                     </tr>
                                 </thead>
                             </table>
-                            {dataGridLichChuaPhan.map((result, index) => {
+                            {workData_Work.map((result, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        id={result.id}
-                                        ref={result.ref}
-                                    >
-                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
-                                            {result.contentDataGird}
-                                        </Typography>
-                                        <Box
-                                            sx={{
-                                                height:
-                                                    result.rowsDataGrid == ""
-                                                        ? 40
-                                                        : 1,
-                                                width: "100%",
-                                            }}
-                                        >
-                                            <DataGrid
-                                                sx={{
-                                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
-                                                        {
-                                                            outline:
-                                                                "none !important",
-                                                        },
-                                                    ".MuiDataGrid-withBorderColor":
-                                                        {
-                                                            borderRight:
-                                                                "1px solid #e0e0e0",
-                                                        },
-                                                }}
-                                                rows={result.rowsDataGrid}
-                                                columns={columns}
-                                                hideFooterPagination={true}
-                                                autoHeight
-                                                containerProps={{
-                                                    className: "hidden",
-                                                }}
-                                                rowHeight={40}
-                                                disableRowSelectionOnClick
-                                                slots={{
-                                                    columnHeaders: () => null,
-                                                    pagination: () => null,
-                                                }}
-                                                slotProps={{
-                                                    cell: { border: "red" },
-                                                }}
-                                            />
-                                        </Box>
+                                    <div key={index} id={result.id}>
+                                        <KindWorker_ForWork
+                                            kindWorker={result}
+                                            column={columns}
+                                        />
                                     </div>
                                 );
                             })}
@@ -2254,46 +2083,13 @@ function Dashboard({ auth }) {
                                     </tr>
                                 </thead>
                             </table>
-                            {dataGrid.map((result, index) => {
+                            {workData_Assign.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
-                                        <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
-                                            {result.contentDataGird}
-                                        </Typography>
-                                        <Box
-                                            sx={{
-                                                height:
-                                                    result.rowsDataGrid == ""
-                                                        ? 40
-                                                        : 1,
-                                                width: "100%",
-                                            }}
-                                        >
-                                            <DataGrid
-                                                key={index}
-                                                sx={{
-                                                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
-                                                        {
-                                                            outline:
-                                                                "none !important",
-                                                        },
-                                                    ".MuiDataGrid-withBorderColor":
-                                                        {
-                                                            borderRight:
-                                                                "1px solid #e0e0e0",
-                                                        },
-                                                }}
-                                                width={100}
-                                                rows={result.rowsDataGrid}
-                                                columns={columnsright}
-                                                hideFooterPagination={false}
-                                                rowHeight={40}
-                                                disableRowSelectionOnClick
-                                                slots={{
-                                                    columnHeaders: () => null,
-                                                }}
-                                            />
-                                        </Box>
+                                        <KindWorker_ForWork
+                                            kindWorker={result}
+                                            column={columnsright}
+                                        />
                                     </div>
                                 );
                             })}

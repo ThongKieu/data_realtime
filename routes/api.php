@@ -45,7 +45,7 @@ Route::prefix('web')->group(function () {
         Route::post('worker', 'App\Http\Controllers\Api\Web\WorkerController@updateWorker');
         Route::post('work', 'App\Http\Controllers\Api\Web\WorksController@updateWork');
         Route::post('work-continue', 'App\Http\Controllers\Api\WorksAssignmentController@continueWorkAss');
-        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');
+        Route::post('work-assignment-return', 'App\Http\Controllers\Api\WorksAssignmentController@returnWorkFromAssignment');//thu hồi lịch trên web
         Route::post('work-assignment-cancle', 'App\Http\Controllers\Api\WorksAssignmentController@cancelWorkFromAssignment');
         Route::post('work-assignment-quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWorkFromAssignment');
         Route::post('work-assignment-warranties', 'App\Http\Controllers\Api\WarrantiesController@insertWarranties');
@@ -58,9 +58,12 @@ Route::prefix('web')->group(function () {
     });
 
     Route::get('works_done', 'App\Http\Controllers\Api\Web\WorksController@indexSetWork');
+    Route::get('his_work', 'App\Http\Controllers\Api\WorksAssignmentController@sectionWorkAss');
+    Route::post('his_work', 'App\Http\Controllers\Api\WorksAssignmentController@insertHisWork');
+
 
     Route::prefix('work-assignment')->group(function () {
-        Route::post('', 'App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');
+        Route::post('', 'App\Http\Controllers\Api\WorksAssignmentController@workAssignWorker');//api phân thợ
         Route::get('', 'App\Http\Controllers\Api\WorksAssignmentController@allWorkAssign');
         Route::get('/warranties', 'App\Http\Controllers\Api\WarrantiesController@getAllWarranties');
         Route::post('/quote', 'App\Http\Controllers\Api\WorksAssignmentController@insertQuoteWork');

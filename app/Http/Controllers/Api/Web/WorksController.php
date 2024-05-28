@@ -102,19 +102,15 @@ class WorksController extends Controller
     {
         Work::create($request->validated());
         // dd($request->all());
-
         $id = Work::where('phone_number', '=', $request->phone_number)->where('work_content', '=', $request->work_content)->orderBy('id', 'asc')->limit(1)->value('id');
         $files = '';
 
         if ($request->hasfile('image_work_path')) {
             foreach ($request->file('image_work_path') as $file) {
                 $name = $id . '-' . time() . rand(10, 100) . '.' . $file->extension();
-
-
                 // Test image resize
                 // $image = ImageManager::imagick()->read($file);
                 // $image->scaleDown(width:600);
-
                 // dd($image);
                 $file->move('assets/images/work/' . $id, $name);
                 $files = $files . 'assets/images/work/' . $id . '/' . $name . ',';

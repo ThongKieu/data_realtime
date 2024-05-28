@@ -341,7 +341,12 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({ propauth, check }) {
+function NavbarDefault({
+    propauth,
+    check,
+    data_Work,
+    data_Work_Assign,socket_Card
+}) {
     const { width, height } = useWindowSize(200);
     const [socketDelete, setSocketDelete] = useState();
     const [countDelete, setCountDelete] = useState(0);
@@ -788,7 +793,11 @@ function NavbarDefault({ propauth, check }) {
                     <NavList />
                 </div>
                 <div className="flex flex-row items-center">
-                    <CardMain />
+                    <CardMain
+                        data_Work={data_Work}
+                        data_Work_Assign={data_Work_Assign}
+                        socket_Card={socket_Card}
+                    />
                     <NavLink
                         href={route("CancelBooking")}
                         className="font-normal"

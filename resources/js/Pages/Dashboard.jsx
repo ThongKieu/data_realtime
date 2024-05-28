@@ -45,7 +45,8 @@ import {
     sendPhanThoRequest,
     sendDoiThoRequest,
     getFirstName,
-    getFormattedToday,getFormattedTIME
+    getFormattedToday,
+    getFormattedTIME,
 } from "@/Data/UrlAPI/UrlApi";
 import { copyTextToClipboard } from "@/Components/HandleEvent/Handles";
 import AdminCheckDialog from "@/Components/AdminCheckDialog";
@@ -100,7 +101,7 @@ function Dashboard({ auth }) {
                 if (data.date_book || data.date_book != "undefine") {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
-                    fetchDataDashboard(data.date_book);
+                    // fetchDataDashboard(data.date_book);
                 } else if (data) {
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
@@ -171,7 +172,6 @@ function Dashboard({ auth }) {
                 throw new Error("Response not OK");
             }
             const jsonData = await response.json();
-            console.log(jsonData);
             setWorkData_Work(jsonData);
             setIsLoading(false);
         } catch (error) {
@@ -179,7 +179,6 @@ function Dashboard({ auth }) {
             setIsLoading(false);
         }
     };
-    console.log("workData_Work", workData_Work);
     const fetchDateDoneCheck = async (dateCheck) => {
         try {
             const response = await fetch(
@@ -223,8 +222,8 @@ function Dashboard({ auth }) {
         }
     };
     // -----------------------------fetch api update du lieu trong bang---------------------------
-    const fetchDataDashboard = async (data, dateBook) => {
-        const url = `api/web/update/work?dateCheck=${dateBook}`;
+    const fetchDataDashboard = async (data) => {
+        const url = `api/web/update/work?dateCheck=${selectedDate}`;
         const socketUpdate = "addWorkTo_Server";
         try {
             const res = await fetch(url, {
@@ -578,12 +577,15 @@ function Dashboard({ auth }) {
                 const handleSentNhanDoi = async (e) => {
                     // Lấy dữ liệu từ params.row
                     const originalData = params.row;
-
                     // Tạo bản sao của dữ liệu ban đầu và đặt ID thành null (hoặc một giá trị mới nếu cần)
                     const duplicatedData = {
                         ...originalData,
                         id: null,
                         work_content: params.row.work_content + " " + "(copy)",
+                        member_read: 1,
+                        status_cus: 0,
+                        from_cus: 0,
+                        flag_status: 1,
                     };
 
                     try {
@@ -594,13 +596,22 @@ function Dashboard({ auth }) {
                                 "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                             },
                         });
+
                         if (response.ok) {
-                            socketD.emit("addWorkTo_Server", duplicatedData);
+                            // const responseData = await response.json();
+                            socketD.emit("addWorkTo_Server", response.ok);
+                        } else {
+                            console.error(
+                                "Server responded with:",
+                                response.status,
+                                response.statusText
+                            );
                         }
                     } catch (error) {
-                        console.log(error);
+                        console.log("Fetch error:", error);
                     }
                 };
+
                 return (
                     <div className="flex flex-row justify-center">
                         <Tooltip
@@ -1181,7 +1192,6 @@ function Dashboard({ auth }) {
                     };
                     return [open, handleOpen];
                 };
-
                 // Sử dụng hàm useToggle
                 const [openHuy, handleOpenHuy] = useToggle(false);
                 const [openKSWeb, handleOpenKSWeb] = useToggle(false);
@@ -1340,7 +1350,6 @@ function Dashboard({ auth }) {
                     } catch (error) {}
                 };
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
-
                 const handleSentKSWeb = async (e) => {
                     e.preventDefault();
                     const formData = new FormData();
@@ -1506,18 +1515,21 @@ function Dashboard({ auth }) {
                 };
 
                 const handleThuHoi = async (e) => {
+                    let data_hisWork = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "thuhoi",
+                            time: getFormattedTIME(),
+                        },
+                    ];
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
                         // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
-                        his_work: {
-                            id_auth:auth.user.id,
-                            id_worker: null,
-                            action:'Thu hồi lịch',
-                            time: getFormattedTIME()
-                          },
+                        his_work: JSON.stringify(data_hisWork),
                     };
                     try {
                         const response = await fetch(
@@ -1988,13 +2000,15 @@ function Dashboard({ auth }) {
         { id: 7, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
         { id: 8, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
     ];
-
     return (
         <AuthenticatedLayout
             children={auth.user}
             user={auth.user}
             checkDate={selectedDate}
             workerInfo={infoWorkerDashboard}
+            data_Work={workData_Work}
+            data_Work_Assign={workData_Assign}
+            socket_Card={socketD}
         >
             <Head title="Lịch Hẹn" />
             <div
@@ -2037,6 +2051,7 @@ function Dashboard({ auth }) {
                                     </tr>
                                 </thead>
                             </table>
+
                             {workData_Work.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>

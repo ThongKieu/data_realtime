@@ -44,25 +44,25 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                 {kindWorker.kind_worker.numberOfWork})
             </Typography>
 
-                <DataGrid
-                    sx={{
-                        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-                            outline: "none !important",
-                        },
-                        ".MuiDataGrid-withBorderColor": {
-                            borderRight: "1px solid #e0e0e0",
-                        },
-                    }}
-                    width={100}
-                    rows={rows}
-                    columns={column}
-                    hideFooterPagination={false}
-                    rowHeight={40}
-                    disableRowSelectionOnClick
-                    slots={{
-                        columnHeaders: () => null,
-                    }}
-                />
+            <DataGrid
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                    ".MuiDataGrid-withBorderColor": {
+                        borderRight: "1px solid #e0e0e0",
+                    },
+                }}
+                width={100}
+                rows={rows}
+                columns={column}
+                hideFooterPagination={false}
+                rowHeight={40}
+                disableRowSelectionOnClick
+                slots={{
+                    columnHeaders: () => null,
+                }}
+            />
         </Box>
     );
 };

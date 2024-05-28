@@ -111,10 +111,8 @@ class WorksAssignmentController extends Controller
             ->value('work_note');
         $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
-
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
-            // dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker,
@@ -122,7 +120,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work'=> json_encode($his_work)
+                'his_work'=> $his_work
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -131,7 +129,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work'=>json_encode($his_work)
+                'his_work'=>$his_work
             ]);
         }
 
@@ -142,7 +140,8 @@ class WorksAssignmentController extends Controller
     }
     public function returnWorkFromAssignment(Request $request)
     {
-        if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->worker_name == null) {
+        // || $request->real_note == null
+        if ($request->id == null || $request->id_cus == null  || $request->worker_name == null) {
             return -1;
         } else {
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
@@ -654,37 +653,78 @@ class WorksAssignmentController extends Controller
     public static function  insertHisWork ($id_work_has,$his_work)
     {
     //     $id_work_has = $request->id_work_has;
-        $his_work=json_encode($his_work);
-        $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
-        if($his_on_table && $his_on_table == '')
-        {
+    $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
+    // dd(json_decode($his_work, true));
 
-         $up_his = WorksAssignment::where('id','=',$id_work_has)->update(['his_work'=>$his_work]);
+    if ($his_on_table === null || $his_on_table == '') {
+        // Nếu không có dữ liệu hiện có hoặc dữ liệu là một chuỗi rỗng, cập nhật với mục nhập mới
+        $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
+    } else {
+        // Giải mã mảng JSON hiện có thành một mảng PHP
+        $his_on_table = json_decode($his_on_table, true);
 
+        if (!is_array($his_on_table)) {
+            // Nếu giải mã không trả về mảng, tạo một mảng mới
+            $his_on_table = [];
         }
-        elseif($his_on_table && $his_on_table != '')
-        {
-            $his_on_table = json_decode($his_on_table, true); // Decode the existing JSON array into a PHP array
 
-            if (is_array($his_on_table)) {
-                $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
-                $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
+        // Giải mã mục nhập mới và gộp với mảng hiện có
+        $new_entry = json_decode($his_work, true);
+        $his_on_table = array_merge($his_on_table, $new_entry);
 
-                $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
-                $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
-            }
-        } else {
-            // Handle the case where his_on_table is null or not valid JSON
+        // Mã hóa lại mảng đã cập nhật thành một chuỗi JSON
+        $updated_json = json_encode($his_on_table);
+
+        // Cập nhật cơ sở dữ liệu với chuỗi JSON mới
+        $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
+        // dd(json_encode($updated_json));
+    }
+
+    // Trả về kết quả của hoạt động cập nhật
+    if (isset($up_his) && $up_his) {
+        return 1;
+    } else {
+        return 0;
+    }
+    }
+    public  function  insertHisWorkMobile (Request $request)
+    {
+        $id_work_has = $request->id_work_has;
+        $his_work= $request-> his_work;
+        // $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
+
+        $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
+        // dd(json_decode($his_work, true));
+
+        if ($his_on_table === null || $his_on_table == '') {
+            // Nếu không có dữ liệu hiện có hoặc dữ liệu là một chuỗi rỗng, cập nhật với mục nhập mới
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
+        } else {
+            // Giải mã mảng JSON hiện có thành một mảng PHP
+            $his_on_table = json_decode($his_on_table, true);
 
-        }
-        if($up_his)
-            {
-                return 1;
+            if (!is_array($his_on_table)) {
+                // Nếu giải mã không trả về mảng, tạo một mảng mới
+                $his_on_table = [];
             }
-        else
-        {
+
+            // Giải mã mục nhập mới và gộp với mảng hiện có
+            $new_entry = json_decode($his_work, true);
+            $his_on_table = array_merge($his_on_table, $new_entry);
+
+            // Mã hóa lại mảng đã cập nhật thành một chuỗi JSON
+            $updated_json = json_encode($his_on_table);
+
+            // Cập nhật cơ sở dữ liệu với chuỗi JSON mới
+            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
+            // dd(json_encode($updated_json));
+        }
+
+        // Trả về kết quả của hoạt động cập nhật
+        if (isset($up_his) && $up_his) {
+            return 1;
+        } else {
             return 0;
         }
-    }
+        }
 }

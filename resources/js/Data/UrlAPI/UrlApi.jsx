@@ -26,7 +26,7 @@ const getFormattedToday = () => {
     const year = today.getFullYear();
     const h = today.getHours();
     const m = today.getMinutes();
-    return `${year}-${month}-${day} ${h}:${m}`;
+    return `${year}${month}${day}-${h}:${m}`;
 };
 const getFormattedTodayDDMMYYYY = () => {
 
@@ -58,21 +58,21 @@ const sendPhanThoRequest = async (
 ) => {
     const id_worker = selectPhanTho.shift();
     const id_phu = selectPhanTho.map((item) => item.value);
-
+    let data_hisWork = [
+        {
+         id_auth:auth.user.id,
+         id_worker: null,
+         action:'guitho',
+         time: getFormattedTIME()
+       },
+    ]
     const data = {
         id_cus: params.row.id,
         id_worker: id_worker.value,
         id_phu: id_phu,
         work_note: params.row.work_note,
         auth_id: auth.user.id,
-        his_work: [
-            {
-             id_auth:auth.user.id,
-             id_worker: null,
-             action:'Gửi Lịch Thợ',
-             time: getFormattedTIME()
-           },
-        ]
+        his_work: JSON.stringify(data_hisWork)
     };
     // console.log(data);
     try {

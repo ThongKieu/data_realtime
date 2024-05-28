@@ -676,28 +676,38 @@ class WorksAssignmentController extends Controller
     public function insertHisWorkMobile(Request $request)
     {
         $id_work_has = $request->id_work_has;
-        $his_work = json_encode($request->his_work);
+        $his_work = $request->his_work;
+        // $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
+
         $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
-        if ($his_on_table && $his_on_table == '') {
+        // dd(json_decode($his_work, true));
 
+        if ($his_on_table === null || $his_on_table == '') {
+            // Nếu không có dữ liệu hiện có hoặc dữ liệu là một chuỗi rỗng, cập nhật với mục nhập mới
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
-
-        } elseif ($his_on_table && $his_on_table != '') {
-            $his_on_table = json_decode($his_on_table, true); // Decode the existing JSON array into a PHP array
-
-            if (is_array($his_on_table)) {
-                $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
-                $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
-
-                $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
-                $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
-            }
         } else {
-            // Handle the case where his_on_table is null or not valid JSON
-            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
+            // Giải mã mảng JSON hiện có thành một mảng PHP
+            $his_on_table = json_decode($his_on_table, true);
 
+            if (!is_array($his_on_table)) {
+                // Nếu giải mã không trả về mảng, tạo một mảng mới
+                $his_on_table = [];
+            }
+
+            // Giải mã mục nhập mới và gộp với mảng hiện có
+            $new_entry = json_decode($his_work, true);
+            $his_on_table = array_merge($his_on_table, $new_entry);
+
+            // Mã hóa lại mảng đã cập nhật thành một chuỗi JSON
+            $updated_json = json_encode($his_on_table);
+
+            // Cập nhật cơ sở dữ liệu với chuỗi JSON mới
+            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
+            // dd(json_encode($updated_json));
         }
-        if ($up_his) {
+
+        // Trả về kết quả của hoạt động cập nhật
+        if (isset($up_his) && $up_his) {
             return 1;
         } else {
             return 0;

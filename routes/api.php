@@ -138,6 +138,8 @@ Route::prefix('web')->group(function () {
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
         // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
+    Route::post('/ig','App\Http\Controllers\ImageCustomController@optimizeImage');
+
 })->withoutMiddleware("throttle:api")
     ->middleware(
         \Illuminate\Routing\Middleware\ThrottleRequests::with(

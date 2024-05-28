@@ -26,7 +26,7 @@ class WorksAssignmentController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $workerKinds = CodeWorkerKind::where('id','>',0)->where('status_code_worker','=',1)->get('kind_worker');
+        $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
 
         // dd( );
         $data_json = [];
@@ -37,7 +37,7 @@ class WorksAssignmentController extends Controller
                 ->join('works', 'works_assignments.id_cus', '=', 'works.id')
                 ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
                 ->where('works_assignments.created_at', 'like', $today . '%')
-                ->where('works.kind_work', '=', $kindId + 1)
+                ->where('works.kind_work', '=', $kindId+1)
                 ->whereBetween('works_assignments.status_work', [0, 3])
                 ->orderBy('workers.worker_code', 'asc')
                 ->get([
@@ -68,7 +68,7 @@ class WorksAssignmentController extends Controller
                     "works_assignments.status_admin_check",
                     "works_assignments.flag_check",
                 ]);
-            // dd($data_json[$kindId]['data']);
+                // dd($data_json[$kindId]['data']);
             // Lấy thông tin bảo hành cho mỗi công việc được giao
             foreach ($data_json[$kindId]['data'] as $item) {
                 $item->warranties = WorksAssignmentController::getWarrantiesById($item->id);
@@ -109,12 +109,10 @@ class WorksAssignmentController extends Controller
         // dd($his_work);
         $work_note = Work::where('id', '=', $id_cus)
             ->value('work_note');
-        $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
+        $worker_kind = Worker::where('id', '=', $id_worker)->where('status_code_worker','=',1)->value('worker_kind');
         // Update kind work by kind worker
-
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
-            // dd(json_encode($id_phu));
             $workHas = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker,
@@ -122,7 +120,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work' => json_encode($his_work),
+                'his_work'=> json_encode($his_work)
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -131,7 +129,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work' => json_encode($his_work),
+                'his_work'=>json_encode($his_work)
             ]);
         }
 
@@ -148,8 +146,8 @@ class WorksAssignmentController extends Controller
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 0, 'work_note' => $note]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 4]);
-            // Thêm phần lịch sử thay đổi
-            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
+              // Thêm phần lịch sử thay đổi
+            WorksAssignmentController::insertHisWork($request->id,$request->his_work);
             if (isset($request->from_app)) {
 
                 NoticationAllController::create('3', $note, '');
@@ -180,8 +178,9 @@ class WorksAssignmentController extends Controller
             return -1;
         } else {
             $seri_imag = '';
-            $ac = $request->ac;
-            if ($ac == 1) {
+            $ac = $request->ac ;
+            if($ac == 1)
+            {
                 //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
                 if ($request->hasFile('image_work_path')) {
                     $images = $request->file('image_work_path');
@@ -193,31 +192,38 @@ class WorksAssignmentController extends Controller
                     }
                 }
                 $info_quote = $request->real_note;
-                $income_total = $request->income_total;
+                $income_total =  $request->income_total;
                 $update = WorksAssignment::where('id', '=', $request->id)->update([
                     'status_work' => 3,
                     'income_total' => $income_total,
                     'real_note' => $info_quote,
-                    'bill_imag' => $seri_imag,
-                ]);
+                    'bill_imag' => $seri_imag
+                    ]);
                 if ($update) {
                     return 'true';
                 } else {
                     return 'failed';
                 }
 
-            } elseif ($ac == 2) {
+            }
+            elseif($ac == 2)
+            {
                 //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
                 //php Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
 
-            } elseif ($ac == 3) {
+            }
+            elseif($ac ==3)
+            {
                 // Thợ ks mà không làm được cty gửi cho thợ khác báo
-            } else {
+            }
+            else
+            {
                 return 'Fail !!!!!!!!!!!!';
             }
 
         }
     }
+
 
     public function insertCancleBook(Request $request)
     {
@@ -528,7 +534,7 @@ class WorksAssignmentController extends Controller
         $w_e = Worker::where('id', '=', $id_worker)->value('worker_kind');
         $up_w_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $w_e, 'member_read' => $request->auth_id]);
         // Thêm phần lịch sử thay đổi
-        WorksAssignmentController::insertHisWork($id_work_has, $request->his_work);
+        WorksAssignmentController::insertHisWork($id_work_has,$request->his_work);
         if ($request->id_phu) {
 
             $w_a_n = new WorksAssignment([
@@ -592,67 +598,70 @@ class WorksAssignmentController extends Controller
         } else {
             return 'Không tìm thấy';
         }
-        //      $seri_imag = '';
-        //         $ac = $request->ac ;
-        //         if($ac == 1)
-        //         {
-        //             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
-        //             if ($request->hasFile('image_work_path')) {
-        //                 $images = $request->file('image_work_path');
-        //                 // dd($images);
-        //                 foreach ($images as $image) {
-        //                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-        //                     $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
-        //                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
-        //                 }
-        //             }
-        //             $info_quote = $request->info_quote;
-        //             $income_total =  $request->income_total;
-        //             $update = WorksAssignment::where('id', '=', $request->id)->update([
-        //                 'status_work' => 3,
-        //                 'income_total' => $income_total,
-        //                 'real_note' => $info_quote,
-        //                 'bill_imag' => $seri_imag
-        //                 ]);
-        //             if ($update) {
-        //                 return 'true';
-        //             } else {
-        //                 return 'failed';
-        //             }
+    //      $seri_imag = '';
+    //         $ac = $request->ac ;
+    //         if($ac == 1)
+    //         {
+    //             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
+    //             if ($request->hasFile('image_work_path')) {
+    //                 $images = $request->file('image_work_path');
+    //                 // dd($images);
+    //                 foreach ($images as $image) {
+    //                     $name = $request->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+    //                     $image->move('assets/images/work_assignment/' . $request->id . '/quote', $name);
+    //                     $seri_imag .= 'assets/images/work_assignment/' . $request->id . '/quote/' . $name . ',';
+    //                 }
+    //             }
+    //             $info_quote = $request->info_quote;
+    //             $income_total =  $request->income_total;
+    //             $update = WorksAssignment::where('id', '=', $request->id)->update([
+    //                 'status_work' => 3,
+    //                 'income_total' => $income_total,
+    //                 'real_note' => $info_quote,
+    //                 'bill_imag' => $seri_imag
+    //                 ]);
+    //             if ($update) {
+    //                 return 'true';
+    //             } else {
+    //                 return 'failed';
+    //             }
 
-        //         }
-        //         elseif($ac == 2)
-        //         {
-        //             //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
-        //             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
+    //         }
+    //         elseif($ac == 2)
+    //         {
+    //             //Khảo sát chờ báo giá ( tạo file PDF theo trường  -> gửi cho khách link file qua zalo hoặc SMS
+    //             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành
 
-        //         }
-        //         elseif($ac ==3)
-        //         {}
-        //         else
-        //         {
+    //         }
+    //         elseif($ac ==3)
+    //         {}
+    //         else
+    //         {
 
-        //         }
+    //         }
     }
 // Lấy thông tin lịch sử xử lý lịch
-    public function sectionWorkAss(Request $request)
+    public function sectionWorkAss (Request $request)
     {
         $id_work_has = $request->id_work_has;
         // dd($id_work_has);
-        $his_work = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
+        $his_work = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
 
         return response()->json($his_work);
     }
-    public static function insertHisWork($id_work_has, $his_work)
+    public static function  insertHisWork ($id_work_has,$his_work)
     {
-        //     $id_work_has = $request->id_work_has;
-        $his_work = json_encode($his_work);
-        $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
-        if ($his_on_table && $his_on_table == '') {
+    //     $id_work_has = $request->id_work_has;
+        $his_work=json_encode($his_work);
+        $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
+        if($his_on_table && $his_on_table == '')
+        {
 
-            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
+         $up_his = WorksAssignment::where('id','=',$id_work_has)->update(['his_work'=>$his_work]);
 
-        } elseif ($his_on_table && $his_on_table != '') {
+        }
+        elseif($his_on_table && $his_on_table != '')
+        {
             $his_on_table = json_decode($his_on_table, true); // Decode the existing JSON array into a PHP array
 
             if (is_array($his_on_table)) {
@@ -667,40 +676,54 @@ class WorksAssignmentController extends Controller
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
 
         }
-        if ($up_his) {
-            return 1;
-        } else {
+        if($up_his)
+            {
+                return 1;
+            }
+        else
+        {
             return 0;
         }
     }
-    public function insertHisWorkMobile(Request $request)
+    public  function  insertHisWorkMobile (Request $request)
     {
         $id_work_has = $request->id_work_has;
-        $his_work = json_encode($request->his_work);
+        $his_work= $request-> his_work;
+        // $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
+
         $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
-        if ($his_on_table && $his_on_table == '') {
+        // dd(json_decode($his_work, true));
 
+        if ($his_on_table === null || $his_on_table == '') {
+            // Nếu không có dữ liệu hiện có hoặc dữ liệu là một chuỗi rỗng, cập nhật với mục nhập mới
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
-
-        } elseif ($his_on_table && $his_on_table != '') {
-            $his_on_table = json_decode($his_on_table, true); // Decode the existing JSON array into a PHP array
-
-            if (is_array($his_on_table)) {
-                $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
-                $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
-
-                $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
-                $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
-            }
         } else {
-            // Handle the case where his_on_table is null or not valid JSON
-            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);
-
+            // Giải mã mảng JSON hiện có thành một mảng PHP
+            $his_on_table = json_decode($his_on_table, true);
+        
+            if (!is_array($his_on_table)) {
+                // Nếu giải mã không trả về mảng, tạo một mảng mới
+                $his_on_table = [];
+            }
+        
+            // Giải mã mục nhập mới và gộp với mảng hiện có
+            $new_entry = json_decode($his_work, true);
+            $his_on_table = array_merge($his_on_table, $new_entry);
+        
+            // Mã hóa lại mảng đã cập nhật thành một chuỗi JSON
+            $updated_json = json_encode($his_on_table);
+        
+            // Cập nhật cơ sở dữ liệu với chuỗi JSON mới
+            $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
+            // dd(json_encode($updated_json));
         }
-        if ($up_his) {
+        
+        // Trả về kết quả của hoạt động cập nhật
+        if (isset($up_his) && $up_his) {
             return 1;
         } else {
             return 0;
         }
-    }
+        }
+
 }

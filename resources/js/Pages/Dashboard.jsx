@@ -1512,12 +1512,12 @@ function Dashboard({ auth }) {
                         // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
-                        his_work: {
+                        his_work: [{
                             id_auth:auth.user.id,
                             id_worker: null,
                             action:'Thu hồi lịch',
                             time: getFormattedTIME()
-                          },
+                          }],
                     };
                     try {
                         const response = await fetch(

@@ -78,6 +78,7 @@ function Dashboard({ auth }) {
     const [selectedDate, setSelectedDate] = useState(formattedToday);
     const [workData_Work, setWorkData_Work] = useState([]);
     const [workData_Assign, setWorkData_Assign] = useState([]);
+    const [mergedOldWorks, setMergedOldWorks] = useState([]);
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const { width, height } = useWindowSize(100);
@@ -91,8 +92,13 @@ function Dashboard({ auth }) {
         fetchDateDoneCheck(selectedDate);
     }, [selectedDate]);
     useEffect(() => {
-        pushOn();
-    }, []);
+        pushOn(); const mergedWorks = workData_Work.reduce((acc, currentItem) => {
+            // Sử dụng concat để gộp mảng oldWork của mỗi đối tượng vào mảng acc
+            return acc.concat(currentItem.oldWork);
+        }, []);
+        // Cập nhật state với mảng đã gộp
+        setMergedOldWorks(mergedWorks);
+    }, [workData_Work]);
     useEffect(() => {
         if (newSocket) {
             setSocketD(newSocket, { secure: true });
@@ -1986,20 +1992,10 @@ function Dashboard({ auth }) {
     // ----------------------------nut scrollView trong bang --------------------------
     const scrollView = (ref) => {
         if (ref && ref.current) {
+            console.log(ref);
             ref.current.scrollIntoView({ behavior: "smooth" });
         }
     };
-    // ----------------------------ket thuc nut scrollView trong bang --------------------------
-    const dataBtnFixed = [
-        { id: 1, idFixedBtn: DNCU, contentBtnFixed: "Lịch Cũ" },
-        { id: 2, idFixedBtn: DN, contentBtnFixed: "Điện Nước" },
-        { id: 3, idFixedBtn: DL, contentBtnFixed: "Điện Lạnh" },
-        { id: 4, idFixedBtn: DG, contentBtnFixed: "Đồ Gỗ" },
-        { id: 5, idFixedBtn: NLMT, contentBtnFixed: "Năng Lượng Mặt Trời" },
-        { id: 6, idFixedBtn: XD, contentBtnFixed: "Xây Dựng" },
-        { id: 7, idFixedBtn: VC, contentBtnFixed: "Vận Chuyển" },
-        { id: 8, idFixedBtn: HX, contentBtnFixed: "Cơ Khí" },
-    ];
     return (
         <AuthenticatedLayout
             children={auth.user}
@@ -2051,7 +2047,48 @@ function Dashboard({ auth }) {
                                     </tr>
                                 </thead>
                             </table>
-
+                            <Box
+                                sx={{
+                                    height:
+                                        mergedOldWorks.length === 0 ? 40 : 1, // Kiểm tra nếu mảng rỗng thì đặt chiều cao là 40, ngược lại là 1
+                                    width: "100%",
+                                }}
+                            >
+                                <Typography
+                                    id={
+                                        workData_Work.length > 0
+                                            ? workData_Work[0].kind_worker
+                                                  .nameKind
+                                            : ""
+                                    }
+                                    className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium"
+                                >
+                                   Lịch Chưa Xử Lý (Số lịch: {mergedOldWorks.length})
+                                </Typography>
+                                <div>
+                                    <DataGrid
+                                        sx={{
+                                            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
+                                                {
+                                                    outline: "none !important",
+                                                },
+                                            ".MuiDataGrid-withBorderColor": {
+                                                borderRight:
+                                                    "1px solid #e0e0e0",
+                                            },
+                                        }}
+                                        width={100}
+                                        rows={mergedOldWorks} // Sử dụng mảng đã gộp thay vì mảng ban đầu
+                                        columns={columns}
+                                        hideFooterPagination={false}
+                                        rowHeight={40}
+                                        disableRowSelectionOnClick
+                                        slots={{
+                                            columnHeaders: () => null,
+                                        }}
+                                    />
+                                </div>
+                            </Box>
                             {workData_Work.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>
@@ -2114,18 +2151,19 @@ function Dashboard({ auth }) {
             </div>
             <div className="fixed z-30 flex mt-1">
                 <>
-                    {dataBtnFixed.map((result, index) => {
+                    {workData_Work.map((result, index) => {
+                        console.log(result);
                         return (
                             <Button
                                 key={index}
-                                id={result.id}
+                                id={result.kind_worker.nameKind}
                                 className={`p-2 mx-1 text-green-700 border border-green-700 rounded-tr-none rounded-bl-none shadow-none focus:bg-green-700 focus:text-white `}
                                 onClick={() => {
-                                    scrollView(result.idFixedBtn);
+                                    scrollView(result.kind_worker.nameKind);
                                 }}
                                 variant="outlined"
                             >
-                                {result.contentBtnFixed}
+                                {result.kind_worker.nameKind}
                             </Button>
                         );
                     })}

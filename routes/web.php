@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
         // Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
         //banner
         Route::get('/popup-discount',function(){return Inertia::render('Admin/PopupDiscount');})->name('admin/popup-discount');
+        Route::get('/ig','App\Http\Controllers\ImageCustomController@index');
 
     });
     Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');

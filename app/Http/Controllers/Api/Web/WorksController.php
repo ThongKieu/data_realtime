@@ -34,7 +34,7 @@ class WorksController extends Controller
         $dc1 = $oldday2->subDay(1)->isoFormat('YYYY-MM-DD');
         $dc2 = $oldday2->subDay(7)->isoFormat('YYYY-MM-DD');
         // dd($dc1);
-        $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
+        $workerKinds = CodeWorkerKind::where('id','>',0)->where('status_code_worker','=',1)->get('kind_worker');
         // dd( );
         $data_json = [];
         foreach ($workerKinds as $kindId => $kindWorker) {

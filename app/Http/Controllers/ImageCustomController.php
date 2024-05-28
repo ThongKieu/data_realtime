@@ -28,22 +28,24 @@ class ImageCustomController extends Controller
         // dd($image);
 
         // Tạo instance của ImageManager
-        $manager = new ImageManager(new Driver());
-
-        // reading jpeg image
-        $image = $manager->read($image);
-        // encode as the originally read image format
-        // $encoded = $image->encodeByExtension(quality: 10);
-        $encoded = $image->encode(new WebpEncoder(quality: 65));
-        // Mở hình ảnh
-        // $image = $manager->make($image->getRealPath());
-
-        // Tối ưu hóa hình ảnh
-        // $image->optimize();
-
-        // Lưu hình ảnh đã tối ưu hóa
-        $image->save('im_op.jpg');
-
+        if (!$request->hasFile('file-0')) {
+            return response()->json(['error' => 'Vui lòng chọn ít nhất một hình ảnh để tối ưu hóa'], 400);
+        }
+    
+        // Lặp qua mỗi file gửi lên và tối ưu hóa
+        foreach ($request->file() as $key => $file) {
+            // Tạo instance của ImageManager
+            $manager = new ImageManager(new Driver());
+    
+            // Đọc hình ảnh
+            $image = $manager->read($file);
+    
+            // Tối ưu hóa hình ảnh dưới dạng WebP với chất lượng 65
+            $encoded = $image->encode(new WebpEncoder(quality: 65));
+    
+            // Lưu hình ảnh đã tối ưu hóa với tên mới
+            $image->save('im_op_'.$key.'.webp');
+        }
         return response()->json(['message' => 'Hình ảnh đã được tối ưu hóa thành công'], 200);
     
     }

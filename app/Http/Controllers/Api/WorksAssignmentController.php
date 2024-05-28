@@ -120,7 +120,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work' => json_encode($his_work),
+                'his_work' => $his_work,
             ]);
         } else {
             $workHas = new WorksAssignment([
@@ -129,7 +129,7 @@ class WorksAssignmentController extends Controller
                 'real_note' => $work_note,
                 'admin_check' => $request->auth_id,
                 'kind_work_assign' => $worker_kind,
-                'his_work' => json_encode($his_work),
+                'his_work' => $his_work,
             ]);
         }
 

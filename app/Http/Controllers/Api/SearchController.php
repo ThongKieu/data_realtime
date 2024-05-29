@@ -68,7 +68,7 @@ class SearchController extends Controller
                     "check_in",
                     "seri_number",
                     "status_admin_check",
-                    "flag_check"
+                    "flag_check",'his_work'
                 ]
             );
         return $data;
@@ -137,7 +137,7 @@ class SearchController extends Controller
                     "check_in",
                     "seri_number",
                     "status_admin_check",
-                    "flag_check"
+                    "flag_check",'his_work'
                 ]);
                 // dd($data);
             return response()->json($data);
@@ -190,7 +190,7 @@ class SearchController extends Controller
                     "check_in",
                     "seri_number",
                     "status_admin_check",
-                    "flag_check"
+                    "flag_check",'his_work'
                 ]);
 
             return response()->json($data);

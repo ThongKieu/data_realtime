@@ -27,6 +27,7 @@ const TABLE_HEAD = [
     "Tổng thu",
     "Số phiếu thu",
     "Yêu Cầu Bảo Hành",
+    "Lịch Sử",
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
@@ -46,6 +47,7 @@ function Search({ auth }) {
             seri_number: 123564,
             status_admin_check: 1,
             flag_check: 0,
+            his_work: `[{\"id_auth\":1,\"id_worker\":null,\"action\":\"G\\u1eedi L\\u1ecbch Th\\u1ee3\",\"time\":\"2024-05-27 15:20\"}]`,
             work: {
                 id: 1,
                 work_content: 'Sửa máy  lạnh 1500k',
@@ -97,6 +99,7 @@ function Search({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
+
             // console.log("XIN CHAO DATA ACTIVE:",response.ok);
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
@@ -152,6 +155,8 @@ function Search({ auth }) {
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [openDialogHis, setOpenDialogHis] = useState(false);
+
     const handleOpenDialogBH = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialog(!openDialog);
@@ -159,6 +164,10 @@ function Search({ auth }) {
     const handleOpenDialogNote = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialogNote(!openDialogNote);
+    };
+    const handleOpenDialogHis = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialogHis(!openDialogHis);
     };
     const [dataWan, setDataWan] = useState();
     const [imgNote, setImgNote] = useState([]);
@@ -205,6 +214,56 @@ function Search({ auth }) {
             </div>
         );
     };
+    // useEffect(() => {
+    //     // Chuỗi JSON bạn muốn giải mã
+    //     const jsonString = '[{"id_auth":1,"id_worker":null,"action":"G\\u1eedi L\\u1ecbch Th\\u1ee3","time":"2024-05-27 15:20"}]';
+
+    //     // Giải mã chuỗi JSON
+    //     const decodedData = JSON.parse(jsonString);
+    //     decodeHis(decodedData);
+    //     // Cập nhật state với dữ liệu giải mã
+    //     // setData(decodedData);
+    //   }, []);
+    // const decodeHis = () => {
+    // console.log(hi);
+    // const his_work = JSON.parse(hi);
+    // console.log(his_work);
+    // return (
+    //     <div>
+    //         {
+    //             his_work.map((item,
+    //                 index) => {
+    //                     return (
+
+    //                         <div
+    //                             key={
+    //                                 index
+    //                             }
+    //                             className="p-2 mb-2 border border-green-500 rounded-md"
+    //                         >
+    //                             <div>
+
+    //                             </div>
+    //                             <div>
+    //                                 <span className="pr-2">
+    //                                     Nội
+    //                                     Dung:
+    //                                 </span>
+    //                                 <span>
+    //                                     {
+    //                                         item.id_auth
+    //                                     }
+    //                                 </span>
+    //                             </div>
+    //                         </div>
+    //                     );
+
+    //             }
+    //             )
+    //         }
+    //     </div>
+    // );
+    // }
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Tìm Kiếm Khách Hàng" />
@@ -264,6 +323,11 @@ function Search({ auth }) {
                                         }
                                     );
                                     const maxLength = 50;
+                                    // // if (item.his_work != undefined) {
+                                    //     const cleanJsonString = item.his_work?.slice(1, -1);
+                                    //     const jsonParse = JSON?.parse(cleanJsonString);
+                                    //     console.log(jsonParse);
+                                    // // }
                                     return (
                                         <tr
                                             key={index}
@@ -344,22 +408,22 @@ function Search({ auth }) {
                                                                                             <div>
                                                                                                 <span className="pr-2">
                                                                                                     Bảo
-                                                                                                    Hành: {item.warranty_time} 
+                                                                                                    Hành: {item.warranty_time}
                                                                                                 </span>
                                                                                                 <span>
                                                                                                     {item.unit ===
-                                                                                                            "d"
-                                                                                                            ? "ngày"
+                                                                                                        "d"
+                                                                                                        ? "ngày"
+                                                                                                        : item.unit ===
+                                                                                                            "w"
+                                                                                                            ? "tuần"
                                                                                                             : item.unit ===
-                                                                                                                "w"
-                                                                                                                ? "tuần"
+                                                                                                                "m"
+                                                                                                                ? "tháng"
                                                                                                                 : item.unit ===
-                                                                                                                    "m"
-                                                                                                                    ? "tháng"
-                                                                                                                    : item.unit ===
-                                                                                                                        "y"
-                                                                                                                        ? "năm"
-                                                                                                                        : ""
+                                                                                                                    "y"
+                                                                                                                    ? "năm"
+                                                                                                                    : ""
                                                                                                     }
                                                                                                 </span>
                                                                                             </div>
@@ -566,6 +630,74 @@ function Search({ auth }) {
                                                 >
                                                     Bảo Hành
                                                 </Button>
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[90px]`}
+                                            > <Button
+                                                className="p-1 text-orange-400 border border-orange-400 rounded-sm"
+                                                onClick={() => {
+                                                    if (!openDialogHis) {
+                                                        handleOpenDialogHis(
+                                                            item.id_cus
+                                                        );
+
+                                                    } else {
+                                                        handleOpenDialogHis(
+                                                            item.id_cus
+                                                        );
+                                                    }
+                                                }}
+                                                variant="outlined"
+                                            >
+                                                    Lịch Sử
+                                                </Button>
+                                                {openDialogHis &&
+                                                    selectedItemId ===
+                                                    item.id_cus && (
+                                                        <Dialog
+                                                            open={
+                                                                openDialogHis
+                                                            }
+                                                            handler={
+                                                                handleOpenDialogHis
+                                                            }
+                                                        >
+                                                            <DialogHeader>
+                                                                Lịch sử
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                <span className="pr-2 italic underline">
+                                                                    {
+                                                                        // decodeHis(item.his_work)
+                                                                        //    parseJson(item.his_work)
+                                                                    }
+                                                                </span>
+                                                                <span>
+
+                                                                </span>
+                                                                <Divider className="mb-2" />
+                                                                <div>
+
+                                                                </div>
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogHis
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Thoát
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
                                             </td>
                                         </tr>
                                     );

@@ -74,6 +74,7 @@ function Search({ auth }) {
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
                 setDataReturn(responseData);
+                console.log(responseData);
             } else {
                 console.error("Error:", response.status, response.statusText);
             }
@@ -81,6 +82,7 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
+
     const handelBH = async (id, id_cus, worker_full_name,code) => {
         let data = {
             id: id,
@@ -122,6 +124,7 @@ function Search({ auth }) {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
+    console.log(dataReturn);
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);

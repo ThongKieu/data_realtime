@@ -666,6 +666,9 @@ function NavbarDefault({
                                                                 <td className="p-4">
                                                                     {formatter.format(
                                                                         jobReport.work_expenditure
+
+
+
                                                                     )}
                                                                 </td>
                                                             </tr>
@@ -675,6 +678,7 @@ function NavbarDefault({
                                                                         index +
                                                                         i +
                                                                         4;
+                                                                        console.log(fuel);
                                                                     return (
                                                                         <tr
                                                                             key={`${index}-${i}`}
@@ -788,7 +792,7 @@ function NavbarDefault({
                     <CardMain
                         data_Work={data_Work}
                         data_Work_Assign={data_Work_Assign}
-                        // socket_Card={socket_Card}
+                        socket_Card={socket_Card}
                     />
                     <NavLink
                         href={route("CancelBooking")}

@@ -17,37 +17,11 @@ class SearchController extends Controller
     {
 
         // $data = WorksAssignment::where('id','!=','0')->orderBy('id','desc')->limit(100)->get();
-        $data = DB::table('works_assignments')
-            ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-            ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->where('works_assignments.id','>','0')
-            ->orderBy('works_assignments.id','desc')
-            ->limit(100)->get([
-                "works_assignments.id",
-                "works_assignments.id_cus",
-                "works_assignments.id_worker",
-                "works_assignments.id_phu",
-                "works_assignments.real_note",
-                "works_assignments.spending_total",
-                "works_assignments.income_total",
-                "works_assignments.bill_imag",
-                "works_assignments.seri_imag",
-                "works_assignments.status_work",
-                "works_assignments.check_in",
-                "works_assignments.seri_number",
-                "works_assignments.status_admin_check",
-                "works_assignments.flag_check",
-                "works.work_content",
-                "works.date_book",
-                "works.street",
-                "works.district",
-                "works.phone_number",
-                "works.image_work_path",
-                "works.kind_work",
-                "workers.worker_full_name",
-                "workers.worker_code",
-                // "workers.worker_name",
-                "works.name_cus"]);
+        $data = WorksAssignment::with(['work', 'worker'])
+        ->where('id', '>', 0)
+        ->orderBy('id', 'desc')
+        ->limit(100)
+        ->get();
         return $data;
     }
     public function searchAjax(Request $request)

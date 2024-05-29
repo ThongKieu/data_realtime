@@ -3,8 +3,8 @@ import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import newSocket from "@/Utils/Socket";
 import { host } from "@/Utils/UrlApi";
-function CardMain({ data_Work, data_Work_Assign }) {
-    // const [socketCard, setSocketCard] = useState();
+function CardMain({ data_Work, data_Work_Assign,socket_Card }) {
+    const [socketCard, setSocketCard] = useState();
     const [hasLoaded, setHasLoaded] = useState(false);
     const [dataWork, setDataWork] = useState([]);
     const [dataWork_Assign, setDataWork_Assign] = useState([]);
@@ -12,25 +12,25 @@ function CardMain({ data_Work, data_Work_Assign }) {
     useEffect(() => {
         getNumberOfWork(data_Work);
         getNumberOfWork_Assign(data_Work_Assign);
+        setSocketCard(socket_Card);
         if (!hasLoaded) {
-            // setSocketCard(socket_Card);
             fetchDelete();
             getNumberOfWork(data_Work);
             getNumberOfWork_Assign(data_Work_Assign);
-            newSocket.on("sendAddWorkTo_Client", (data) => {
+            socketCard?.on("sendAddWorkTo_Client", (data) => {
                 fetchDelete(data);
                 getNumberOfWork(data_Work);
                 getNumberOfWork_Assign(data_Work_Assign);
             });
             setHasLoaded(true);
         }
-        // lắng nghe server
-        return () => {
-            if (newSocket) {
-                newSocket.disconnect();
-            }
-        };
-    }, [hasLoaded,newSocket, data_Work, data_Work_Assign]);
+        // // lắng nghe server
+        // return () => {
+        //     if (socketCard) {
+        //         socketCard.disconnect();
+        //     }
+        // };
+    }, [hasLoaded,newSocket,socket_Card, data_Work, data_Work_Assign]);
     const getNumberOfWork = async (data_Work) => {
         if (data_Work) {
             const totalWork =

@@ -33,7 +33,8 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
         warranties: work.warranties,
     }));
     return (
-        <Box
+
+            <Box
             sx={{
                 height: rows == "" ? 40 : 1,
                 width: "100%",

@@ -26,7 +26,7 @@ class WorksAssignmentController extends Controller
         } else {
             $today = date('Y-m-d');
         }
-        $workerKinds = CodeWorkerKind::where('id','>',0)->get('kind_worker');
+        $workerKinds = CodeWorkerKind::where('id','>',0)->where('status_code_worker','=',1)->get('kind_worker');
 
         // dd( );
         $data_json = [];

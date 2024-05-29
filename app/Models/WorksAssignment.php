@@ -28,4 +28,11 @@ class WorksAssignment extends Model
     {
         return $this->hasOne(Warranties::class);
     }
+    public function work() {
+        return $this->belongsTo(Work::class, 'id_cus', 'id');
+    }
+    
+    public function worker() {
+        return $this->belongsTo(Worker::class, 'id_worker', 'id');
+    }
 }

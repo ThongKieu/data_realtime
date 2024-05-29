@@ -51,7 +51,7 @@ const sendPhanThoRequest = async (
     params,
     selectPhanTho,
     auth,
-    socketD,
+    socket,
     copyTextToClipboard,
     handleOpenTho,
     selectedDate
@@ -74,7 +74,6 @@ const sendPhanThoRequest = async (
         auth_id: auth.user.id,
         his_work: JSON.stringify(data_hisWork),
     };
-    console.log(data);
     try {
         const response = await fetch(
             `api/web/work-assignment?dateCheck=${selectedDate}`,
@@ -87,9 +86,9 @@ const sendPhanThoRequest = async (
             }
         );
 
-        if (response.ok) {
-            socketD.emit("addWorkTo_Server", selectedDate);
-            socketD.emit("sendWorkWebToServer", id_worker.value);
+        if (response.ok ) {
+            socket.emit("addWorkTo_Server", selectedDate);
+            socket.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();
             try {
@@ -103,7 +102,7 @@ const sendPhanThoRequest = async (
                     },
                 });
                 if (response.ok) {
-                    socketD.emit("addWorkTo_Server", id_worker.value);
+                    socket.emit("addWorkTo_Server", id_worker.value);
                 }
             } catch (error) {
                 console.log("lỗi", error);

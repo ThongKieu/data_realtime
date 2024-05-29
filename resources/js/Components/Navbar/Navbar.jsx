@@ -14,11 +14,8 @@ import {
     CardBody,
     Tooltip,
     Dialog,
-    DialogHeader,
     DialogBody,
     DialogFooter,
-    Input,
-    Radio,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -29,11 +26,8 @@ import {
     IdentificationIcon,
     ListBulletIcon,
     CurrencyDollarIcon,
-    ExclamationCircleIcon,
     ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
@@ -41,8 +35,6 @@ import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
 import {
     getFirstName,
-    getFormattedToday,
-    getFormattedTodayDDMMYYYY,
 } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
@@ -796,7 +788,7 @@ function NavbarDefault({
                     <CardMain
                         data_Work={data_Work}
                         data_Work_Assign={data_Work_Assign}
-                        socket_Card={socket_Card}
+                        // socket_Card={socket_Card}
                     />
                     <NavLink
                         href={route("CancelBooking")}
@@ -885,38 +877,6 @@ function NavbarDefault({
                                                 // handleOpenSpending
                                             )
                                         )}
-                                        {/* <Dialog
-                                            key={1}
-                                            open={openSpending}
-                                            handler={handleOpenSpending}
-                                        >
-                                            <DialogBody>
-                                                <div className="relative w-full p-2 pt-3 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
-                                                    <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
-                                                        <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
-                                                            Tổng Thu Chi Cuối
-                                                            Ngày
-                                                        </h2>
-                                                        {jobs.map(
-                                                            (job, index) => {
-                                                                return (
-                                                                    <>
-                                                                        {job.report !=
-                                                                            "" && (
-                                                                            <JobTable
-                                                                                data={
-                                                                                    job.report
-                                                                                }
-                                                                            />
-                                                                        )}
-                                                                    </>
-                                                                );
-                                                            }
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </DialogBody>
-                                        </Dialog> */}
                                     </div>
                                 </div>
                                 <div className="w-full">

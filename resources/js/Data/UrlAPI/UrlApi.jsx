@@ -19,17 +19,17 @@ const getFormattedToday = () => {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
-};const getFormattedTIME = () => {
+};
+const getFormattedTIME = () => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     const h = today.getHours();
     const m = today.getMinutes();
-    return `${year}${month}${day}-${h}:${m}`;
+    return `${year}-${month}-${day} ${h}:${m}`;
 };
 const getFormattedTodayDDMMYYYY = () => {
-
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -60,29 +60,32 @@ const sendPhanThoRequest = async (
     const id_phu = selectPhanTho.map((item) => item.value);
     let data_hisWork = [
         {
-         id_auth:auth.user.id,
-         id_worker: null,
-         action:'guitho',
-         time: getFormattedTIME()
-       },
-    ]
+            id_auth: auth.user.id,
+            id_worker: null,
+            action: "guitho",
+            time: getFormattedTIME(),
+        },
+    ];
     const data = {
         id_cus: params.row.id,
         id_worker: id_worker.value,
         id_phu: id_phu,
         work_note: params.row.work_note,
         auth_id: auth.user.id,
-        his_work: JSON.stringify(data_hisWork)
+        his_work: JSON.stringify(data_hisWork),
     };
-    // console.log(data);
+    console.log(data);
     try {
-        const response = await fetch(`api/web/work-assignment?dateCheck=${selectedDate}`, {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await fetch(
+            `api/web/work-assignment?dateCheck=${selectedDate}`,
+            {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         if (response.ok) {
             socketD.emit("addWorkTo_Server", selectedDate);
@@ -99,6 +102,9 @@ const sendPhanThoRequest = async (
                         "Content-Type": "application/json",
                     },
                 });
+                if (response.ok) {
+                    socketD.emit("addWorkTo_Server", id_worker.value);
+                }
             } catch (error) {
                 console.log("lỗi", error);
             }
@@ -124,9 +130,7 @@ const sendDoiThoRequest = async (
         id_work_as: params.id,
         id_cus: params.row.id_cus,
         real_note: `${params.row.real_note} + ${
-            reasonMessage != "undefined"
-                ? reasonMessage
-                : "Chưa nhập thông tin"
+            reasonMessage != "undefined" ? reasonMessage : "Chưa nhập thông tin"
         }`,
         id_worker: id_worker.value,
         id_phu: id_phu,
@@ -159,5 +163,6 @@ export {
     formatTime,
     url_API,
     url_API_District,
-    getFormattedTodayDDMMYYYY,getFormattedTIME
+    getFormattedTodayDDMMYYYY,
+    getFormattedTIME,
 };

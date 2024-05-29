@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import newSocket from "@/Utils/Socket";
 import { getFormattedToday } from "@/Data/UrlAPI/UrlApi";
+import useWindowSize from "@/Core/Resize";
 const columns = [
     {
         field: "work_content",
@@ -174,19 +175,16 @@ function CancelBooking({ auth }) {
         try {
             const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
+            console.log(jsonData);
             setDeleteBooking(jsonData.info_can);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 180,
-    });
-    var heightScreenTV = screenSize.height;
+
+const { width, height } = useWindowSize(100);
     // Sử dụng useState để lưu trữ giá trị của input date
     const [todayBook, setTodayBook] = useState("");
-
     // Hàm xử lý sự kiện khi giá trị của input thay đổi
     const handleDateChange = (event) => {
         setTodayBook(event.target.value);
@@ -210,10 +208,10 @@ function CancelBooking({ auth }) {
                         />
                     </Typography>
                     {/* bang ben trai  */}
-                    <Box sx={{ width: 1, height: heightScreenTV }}>
+                    <Box sx={{ width: 1, height: height }}>
                         <DataGrid
                             autoHeight
-                            {...heightScreenTV}
+                            {...height}
                             rows={deleteBooking}
                             columns={columns}
                             disableColumnFilter

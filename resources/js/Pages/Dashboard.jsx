@@ -92,7 +92,8 @@ function Dashboard({ auth }) {
         fetchDateDoneCheck(selectedDate);
     }, [selectedDate]);
     useEffect(() => {
-        pushOn(); const mergedWorks = workData_Work.reduce((acc, currentItem) => {
+        pushOn();
+        const mergedWorks = workData_Work.reduce((acc, currentItem) => {
             // Sử dụng concat để gộp mảng oldWork của mỗi đối tượng vào mảng acc
             return acc.concat(currentItem.oldWork);
         }, []);
@@ -1532,7 +1533,6 @@ function Dashboard({ auth }) {
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
-                        // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
                         his_work: JSON.stringify(data_hisWork),
@@ -2004,7 +2004,7 @@ function Dashboard({ auth }) {
             workerInfo={infoWorkerDashboard}
             data_Work={workData_Work}
             data_Work_Assign={workData_Assign}
-            socket_Card={socketD}
+            // socket_Card={socketD}
         >
             <Head title="Lịch Hẹn" />
             <div
@@ -2046,26 +2046,30 @@ function Dashboard({ auth }) {
                                         ))}
                                     </tr>
                                 </thead>
-                            </table>
-                            <Box
-                                sx={{
-                                    height:
-                                        mergedOldWorks.length === 0 ? 40 : 1, // Kiểm tra nếu mảng rỗng thì đặt chiều cao là 40, ngược lại là 1
-                                    width: "100%",
-                                }}
-                            >
-                                <Typography
-                                    id={
-                                        workData_Work.length > 0
-                                            ? workData_Work[0].kind_worker
-                                                  .nameKind
-                                            : ""
-                                    }
-                                    className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium"
+                            </table>{" "}
+                            <div>
+                                <Box
+                                    sx={{
+                                        height:
+                                            mergedOldWorks.length === 0
+                                                ? 40
+                                                : 1, // Kiểm tra nếu mảng rỗng thì đặt chiều cao là 40, ngược lại là 1
+                                        width: "100%",
+                                    }}
                                 >
-                                   Lịch Chưa Xử Lý (Số lịch: {mergedOldWorks.length})
-                                </Typography>
-                                <div>
+                                    <Typography
+                                        id={
+                                            workData_Work.length > 0
+                                                ? workData_Work[0].kind_worker
+                                                      .nameKind
+                                                : ""
+                                        }
+                                        className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium"
+                                    >
+                                        Lịch Chưa Xử Lý (Số lịch:{" "}
+                                        {mergedOldWorks.length})
+                                    </Typography>
+
                                     <DataGrid
                                         sx={{
                                             "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
@@ -2087,8 +2091,8 @@ function Dashboard({ auth }) {
                                             columnHeaders: () => null,
                                         }}
                                     />
-                                </div>
-                            </Box>
+                                </Box>{" "}
+                            </div>
                             {workData_Work.map((result, index) => {
                                 return (
                                     <div key={index} id={result.id}>

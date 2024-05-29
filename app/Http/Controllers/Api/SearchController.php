@@ -18,36 +18,36 @@ class SearchController extends Controller
 
         // $data = WorksAssignment::where('id','!=','0')->orderBy('id','desc')->limit(100)->get();
         $data = WorksAssignment::with([
-            'work' => function ($query) {
-                $query->select(
-                    'id',
-                    'work_content',
-                    'work_note',
-                    'name_cus',
-                    'date_book',
-                    'phone_number',
-                    'street',
-                    'district',
-                    'member_read',
-                );
-            },
-            'worker' => function ($query) {
-                $query->select(
-                    'id',
-                    'worker_full_name',
-                    'worker_code',
-                );
-            },
-            'warranty' => function ($query) {
-                $query->select(
-                    'id',
-                    'id_work_has',
-                    'warranty_time',
-                    'warranty_info',
-                    'unit'
-                );
-            }
-        ])
+                'work' => function ($query) {
+                    $query->select(
+                        'id',
+                        'work_content',
+                        'work_note',
+                        'name_cus',
+                        'date_book',
+                        'phone_number',
+                        'street',
+                        'district',
+                        'member_read',
+                    );
+                },
+                'worker' => function ($query) {
+                    $query->select(
+                        'id',
+                        'worker_full_name',
+                        'worker_code',
+                    );
+                },
+                'warranty' => function ($query) {
+                    $query->select(
+                        'id',
+                        'id_work_has',
+                        'warranty_time',
+                        'warranty_info',
+                        'unit'
+                    );
+                }
+            ])
             ->whereBetween('status_work', [1, 3])
             ->where('id', '>', 0)
             ->where('status_work', '=', 2)
@@ -83,19 +83,18 @@ class SearchController extends Controller
 
             // Sử dụng Eloquent để truy vấn với các quan hệ
             $data = WorksAssignment::with([
-                'work' => function ($query) use ($key) {
-                    $query->where('phone_number', 'like', $key)
-                        ->orWhere('street', 'like', $key)
-                        ->select(
-                            'id',
-                            'work_content',
-                            'work_note',
-                            'name_cus',
-                            'date_book',
-                            'phone_number',
-                            'street',
-                            'district',
-                        );
+                'work' => function ($query) {
+                    $query->select(
+                        'id',
+                        'work_content',
+                        'work_note',
+                        'name_cus',
+                        'date_book',
+                        'phone_number',
+                        'street',
+                        'district',
+                        'member_read',
+                    );
                 },
                 'worker' => function ($query) {
                     $query->select(
@@ -114,10 +113,17 @@ class SearchController extends Controller
                     );
                 }
             ])
-                ->whereBetween('status_work', [1, 3])
-                ->orderBy('id', 'desc')
-                ->limit(100)
-                ->get([
+            ->whereHas('work', function ($query) use ($key) {
+                $query->where('phone_number', 'like', $key)
+                      ->orWhere('street', 'like', $key);
+            })
+            ->whereBetween('status_work', [1, 3])
+            ->where('id', '>', 0)
+            ->where('status_work', '=', 2)
+            ->orderBy('id', 'desc')
+            ->limit(100)
+            ->get(
+                [
                     "id",
                     "id_cus",
                     "id_worker",
@@ -131,9 +137,9 @@ class SearchController extends Controller
                     "check_in",
                     "seri_number",
                     "status_admin_check",
-                    "flag_check", 'his_work'
+                    "flag_check"
                 ]);
-
+                // dd($data);
             return response()->json($data);
         } else {
             $data = WorksAssignment::with([
@@ -193,6 +199,7 @@ class SearchController extends Controller
 
     public function createWarrantyFromSearch(Request $request)
     {
+        // dd($request->all());
         $id_cus = $request->id_cus;
         $data = Work::where('id', '=', $id_cus)->get();
         $date = date('Y-m-d');
@@ -203,6 +210,7 @@ class SearchController extends Controller
             } else {
                 $note = $item->date_book . '-' . $request->worker_full_name;
             }
+            // dd($note);
             $w = new Work([
                 'work_content' => $work_content,
                 'work_note' => $note,
@@ -212,7 +220,7 @@ class SearchController extends Controller
                 'street' => $item->street,
                 'district' => $item->district,
                 'kind_work' => $item->kind_work,
-                'status_cus' => $item->status_cus,
+                'status_cus' => 0,
                 'image_work_path' => $item->image_work_path
             ]);
             $w->save();

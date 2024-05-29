@@ -24,9 +24,9 @@ class WorksAssignment extends Model
         'status_work',
         'his_work'
         ];
-    public function warranty()
-    {
-        return $this->hasOne(Warranties::class);
+    // WorksAssignment model 
+    public function warranty() {
+        return $this->hasMany(Warranties::class, 'id_work_has', 'id');
     }
     public function work() {
         return $this->belongsTo(Work::class, 'id_cus', 'id');
@@ -35,4 +35,16 @@ class WorksAssignment extends Model
     public function worker() {
         return $this->belongsTo(Worker::class, 'id_worker', 'id');
     }
+    // //Warranties model
+    // public function workAssignment() {
+    //     return $this->belongsTo(WorksAssignment::class, 'id_work_has', 'id');
+    // }
+    // //worker model
+    // public function assignments() {
+    //     return $this->hasMany(WorksAssignment::class, 'id_worker', 'id');
+    // } 
+    // //work model
+    // public function assignments() {
+    //     return $this->hasMany(WorksAssignment::class, 'id_cus', 'id');
+    // }
 }

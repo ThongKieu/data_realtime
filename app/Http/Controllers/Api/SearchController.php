@@ -17,90 +17,148 @@ class SearchController extends Controller
     {
 
         // $data = WorksAssignment::where('id','!=','0')->orderBy('id','desc')->limit(100)->get();
-        $data = WorksAssignment::with(['work', 'worker'])
+        $data = WorksAssignment::with([
+        'work'=>function($query){
+            $query->select('id', 
+             'work_content',
+            'work_note',
+            'name_cus',
+            'date_book',
+            'phone_number',
+            'street',
+            'district',
+            'member_read', );
+         },
+        'worker'=>function($query){
+            $query->select('id', 
+            'worker_full_name',      
+            'worker_code', );
+         },
+        'warranty' => function($query) {
+             $query->select(
+                 'id','id_work_has','warranty_time','warranty_info','unit'
+             );
+         }])
         ->where('id', '>', 0)
+        ->where('status_work','=',2)
         ->orderBy('id', 'desc')
         ->limit(100)
-        ->get();
+        ->get(
+            [
+                "id",
+                "id_cus",
+                "id_worker",
+                "id_phu",
+                "real_note",
+                "spending_total",
+                "income_total",
+                "bill_imag",
+                "seri_imag",
+                "status_work",
+                "check_in",
+                "seri_number",
+                "status_admin_check",
+                "flag_check"
+            ]
+        );
         return $data;
     }
     public function searchAjax(Request $request)
     {
         // dd($request->all());
-        if($request ->keySearch || $request->keySearch != null || $request->keySearch != '' || $request->keySearch != [] )
-        {
-            $key= '%'.$request->keySearch.'%';
-            $data = DB::table('works_assignments')
-            ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-            ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->where('works_assignments.id','>','0')
-            ->where('works.phone_number','like',$key)
-            ->orWhere('works.street','like',$key)
-            ->orderBy('works_assignments.id','desc')
-            ->limit(100)->get([
-                "works_assignments.id",
-                "works_assignments.id_cus",
-                "works_assignments.id_worker",
-                "works_assignments.id_phu",
-                "works_assignments.real_note",
-                "works_assignments.spending_total",
-                "works_assignments.income_total",
-                "works_assignments.bill_imag",
-                "works_assignments.seri_imag",
-                "works_assignments.status_work",
-                "works_assignments.check_in",
-                "works_assignments.seri_number",
-                "works_assignments.status_admin_check",
-                "works_assignments.flag_check",
-                "works.work_content",
-                "works.date_book",
-                "works.street",
-                "works.district",
-                "works.phone_number",
-                "works.image_work_path",
-                "works.kind_work",
-                "workers.worker_full_name",
-                "workers.worker_code",
-                // "workers.worker_name",
-                "works.name_cus"]);
+        $key = $request->keySearch;
+
+        if ($key !== null && $key !== '') {
+            $key = '%' . $key . '%';
+    
+            // Sử dụng Eloquent để truy vấn với các quan hệ
+            $data = WorksAssignment::with(['work' => function($query) use ($key) {
+                    $query->where('phone_number', 'like', $key)
+                          ->orWhere('street', 'like', $key)
+                          ->select('id', 
+                          'work_content',
+                          'work_note',
+                          'name_cus',
+                          'date_book',
+                          'phone_number',
+                          'street',
+                          'district',);
+                },
+                'worker'=>function($query){
+                   $query->select('id', 
+                   'worker_full_name',      
+                   'worker_code', );
+                },
+                'warranty' => function($query) {
+                    $query->select(
+                        'id','id_work_has','warranty_time','warranty_info','unit'
+                    );
+                }])
+                ->orderBy('id', 'desc')
+                ->limit(100)
+                ->get([
+                    "id",
+                    "id_cus",
+                    "id_worker",
+                    "id_phu",
+                    "real_note",
+                    "spending_total",
+                    "income_total",
+                    "bill_imag",
+                    "seri_imag",
+                    "status_work",
+                    "check_in",
+                    "seri_number",
+                    "status_admin_check",
+                    "flag_check"
+                ]);
+    
+            return response()->json($data);
+        } else {
+            $data = WorksAssignment::with([
+                'work'=>function($query){
+                $query->select('id', 
+                'work_content',
+                'work_note',
+                'name_cus',
+                'date_book',
+                'phone_number',
+                'street',
+                'district',
+                'member_read', );
+                },
+                'worker'=>function($query){
+                    $query->select('id', 
+                    'worker_full_name',      
+                    'worker_code', );
+                },
+                'warranty' => function($query) {
+                    $query->select(
+                        'id','id_work_has','warranty_time','warranty_info','unit'
+                    );
+                }])
+                ->orderBy('id', 'desc')
+                ->limit(100)
+                ->get([
+                    "id",
+                    "id_cus",
+                    "id_worker",
+                    "id_phu",
+                    "real_note",
+                    "spending_total",
+                    "income_total",
+                    "bill_imag",
+                    "seri_imag",
+                    "status_work",
+                    "check_in",
+                    "seri_number",
+                    "status_admin_check",
+                    "flag_check"
+                ]);
+    
             return response()->json($data);
         }
-       else
-       {
-            $data = DB::table('works_assignments')
-            ->join('works', 'works_assignments.id_cus', '=', 'works.id')
-            ->join('workers', 'works_assignments.id_worker', '=', 'workers.id')
-            ->join('warranties','works_assignments.id', '=', 'warranties.id_work_has')
-            ->where('works_assignments.id','>','0')
-            ->orderBy('works_assignments.id','desc')
-            ->limit(100)->get([
-                "works_assignments.id",
-                "works_assignments.id_cus",
-                "works_assignments.id_worker",
-                "works_assignments.id_phu",
-                "works_assignments.real_note",
-                "works_assignments.spending_total",
-                "works_assignments.income_total",
-                "works_assignments.bill_imag",
-                "works_assignments.seri_imag",
-                "works_assignments.status_work",
-                "works_assignments.check_in",
-                "works_assignments.seri_number",
-                "works_assignments.status_admin_check",
-                "works_assignments.flag_check",
-                "works.work_content",
-                "works.date_book",
-                "works.street",
-                "works.district",
-                "works.phone_number",
-                "works.image_work_path",
-                "works.kind_work",
-                "workers.worker_full_name",
-                "workers.worker_code",
-                // "workers.worker_name",
-                "works.name_cus"]);
-        return response()->json($data);
-       }
+       
     }
 
    public function createWarrantyFromSearch(Request $request )

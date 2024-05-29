@@ -109,7 +109,7 @@ class WorksAssignmentController extends Controller
         // dd($his_work);
         $work_note = Work::where('id', '=', $id_cus)
             ->value('work_note');
-        $worker_kind = Worker::where('id', '=', $id_worker)->where('status_code_worker','=',1)->value('worker_kind');
+        $worker_kind = Worker::where('id', '=', $id_worker)->value('worker_kind');
         // Update kind work by kind worker
         $work_u_k = Work::where('id', '=', $id_cus)->update(['kind_work' => $worker_kind, 'status_cus' => 1, 'date_book' => date('Y-m-d')]);
         if ($id_phu != null) {
@@ -653,7 +653,8 @@ class WorksAssignmentController extends Controller
     public static function  insertHisWork ($id_work_has,$his_work)
     {
     //     $id_work_has = $request->id_work_has;
-        $his_work=json_encode($his_work);
+        // $his_work=json_encode($his_work);
+        // dd($his_work);
         $his_on_table = WorksAssignment::where('id','=',$id_work_has)->value('his_work');
         if($his_on_table && $his_on_table == '')
         {

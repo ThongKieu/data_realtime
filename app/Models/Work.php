@@ -24,4 +24,7 @@ class Work extends Model
         'from_cus',
         'image_work_path'
     ];
+    public function assignmentsWork() {
+        return $this->hasMany(WorksAssignment::class, 'id_cus', 'id');
+    }
 }

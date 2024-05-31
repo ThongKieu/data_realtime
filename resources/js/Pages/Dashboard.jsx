@@ -1,8 +1,11 @@
-import AuthenticatedLayout, {
-    SocketContext,
-} from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Select from "react-select";
+import Divider from "@mui/material/Divider";
+// -------
+import { DataGrid } from "@mui/x-data-grid";
+import Box from "@mui/material/Box";
 import {
     Button,
     Card,
@@ -20,9 +23,6 @@ import {
     MenuList,
     MenuItem,
 } from "@material-tailwind/react";
-// -------
-import { DataGrid } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
 // -----
 import {
     TrashIcon,
@@ -39,9 +39,6 @@ import {
     CheckCircleIcon,
     BookmarkSquareIcon,
 } from "@heroicons/react/24/outline";
-import newSocket from "@/Utils/Socket";
-import { host } from "@/Utils/UrlApi";
-import Divider from "@mui/material/Divider";
 import {
     url_API,
     sendPhanThoRequest,
@@ -61,17 +58,18 @@ import {
     KSDialog,
     KhaoSatDialogWeb,
 } from "@/Components/ColumnRightDialog";
-import SpendingDialog from "@/Components/SpendingDialog";
+import { host } from "@/Utils/UrlApi";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import Select from "react-select";
+import newSocket from "@/Utils/Socket";
 import useWindowSize from "@/Core/Resize";
+import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 
 // ----
 
-function Dashboard({ auth }) {
-    const [message, setMessage] = useState(auth.user.id);
+const Dashboard = ({ auth }) => {
+    const [socket_Dash, setSocket_Dash] = useState();
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
     // ---- Gộp Data--------------
     // format date Định dạng lại ngày
@@ -87,8 +85,6 @@ function Dashboard({ auth }) {
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
     const [userId, setSetUserId] = useState(0);
-    // test --====================================
-    const socket = useContext(SocketContext);
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -96,35 +92,32 @@ function Dashboard({ auth }) {
     }, [selectedDate]);
     useEffect(() => {
         pushOn();
-        const mergedWorks = workData_Work.reduce((acc, currentItem) => {
-            // Sử dụng concat để gộp mảng oldWork của mỗi đối tượng vào mảng acc
-            return acc.concat(currentItem.oldWork);
-        }, []);
-        // Cập nhật state với mảng đã gộp
-        setMergedOldWorks(mergedWorks);
-    }, [workData_Work]);
+    }, []);
     useEffect(() => {
-        if (socket) {
-            socket.emit("pushOnline", message);
-            socket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book || data.date_book != "undefine") {
+        if (newSocket) {
+            setSocket_Dash(newSocket, { secure: true });
+            newSocket.emit("pushOnline", auth.user.id);
+            newSocket.on("UpdateDateTable_To_Client", (data) => {
+                if (data.date_book != undefined) {
+                    console.log("undefined", data, data.date_book);
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
-                    // fetchDataDashboard(data.date_book);
+                    fetchDataDashboard(data.date_book);
                 } else if (data) {
+                    console.log("data", data, selectedDate);
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                 }
             });
-            socket.on("sendAddWorkTo_Client", (jsonData) => {
+            newSocket.on("sendAddWorkTo_Client", (jsonData) => {
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                 }
             });
-            socket.on(
+            newSocket.on(
                 "ButtonDisable_To_Client",
                 ({ id, isDisabled, userFix, userID }) => {
                     setRowIdData(id);
@@ -135,23 +128,19 @@ function Dashboard({ auth }) {
             );
         }
         return () => {
-            if (socket) {
-                socket.disconnect();
+            if (newSocket) {
+                newSocket.disconnect();
             }
         };
-    }, [socket]);
+    }, [newSocket]);
 
-    const handleDateChange = (event) => {
-        const newDate = event.target.value;
-        setSelectedDate(newDate);
-    };
+    useEffect(() => {
+        const mergedWorks = workData_Work.reduce((acc, currentItem) => {
+            return acc.concat(currentItem.oldWork);
+        }, []);
+        setMergedOldWorks(mergedWorks);
+    }, [workData_Work]);
 
-    const handleSearch = (dateCheckSearch) => {
-        fetchDateCheck(dateCheckSearch);
-        fetchDateDoneCheck(dateCheckSearch);
-    };
-
-    // --------------------------kiem tra socket io tai khoan online -----------------------------
     const pushOn = async () => {
         try {
             let data = {
@@ -172,56 +161,64 @@ function Dashboard({ auth }) {
             console.log("push on Loi", error);
         }
     };
-    // ---------------lay du lieu cong viec chua phan ---------
     const fetchDateCheck = async (dateCheck) => {
         try {
-            const url = `api/web/works?dateCheck=${dateCheck}`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error("Response not OK");
-            }
+            const response = await fetch(
+                `api/web/works?dateCheck=${dateCheck}`
+            );
             const jsonData = await response.json();
-            setWorkData_Work(jsonData);
-            setIsLoading(false);
+            if (jsonData) {
+                setWorkData_Work(jsonData);
+                setIsLoading(false);
+            } else {
+                console.log("Data lỗi không tồn tại!!");
+                setIsLoading(false); // Đảm bảo setIsLoading được gọi ngay cả khi jsonData trống
+            }
         } catch (error) {
             console.error("Fetch error:", error.message);
             setIsLoading(false);
         }
     };
+
     const fetchDateDoneCheck = async (dateCheck) => {
         try {
             const response = await fetch(
                 `/api/web/work-assignment?dateCheck=${dateCheck}`
             );
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
             const jsonData = await response.json();
             if (jsonData) {
-                setWorkData_Assign(jsonData);
-                setIsLoading(false);
+                setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
+                setIsLoading(false); // Optional chaining để gọi hàm nếu nó tồn tại
             } else {
                 console.log("Data lỗi không tồn tại!!");
+                setIsLoading(false); // Đảm bảo setIsLoading được gọi ngay cả khi jsonData trống
             }
         } catch (error) {
             console.error("Lỗi khi fetch dữ liệu:", error);
-            // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
+            setIsLoading(false); // Đảm bảo setIsLoading được gọi trong trường hợp có lỗi
         }
     };
-    // console.log(workData);
+
+    const handleDateChange = (event) => {
+        const newDate = event.target.value;
+        setSelectedDate(newDate);
+    };
+
+    const handleSearch = (dateCheckSearch) => {
+        fetchDateCheck(dateCheckSearch);
+        fetchDateDoneCheck(dateCheckSearch);
+    };
     // ----------------------------lay thong tin tho ----------------------------
-    const fetchInfoWorker = async (e) => {
+    const fetchInfoWorker = async () => {
         try {
-            const response = await fetch(host + "api/web/workers");
+            const response = await fetch(`${host}api/web/workers`);
+            if (!response.ok) {
+                throw new Error("Response not OK");
+            }
             const jsonData = await response.json();
             const formatJson = jsonData.map((item) => ({
                 value: item.id,
-                label:
-                    "(" +
-                    item.worker_code +
-                    ")" +
-                    " - " +
-                    item.worker_full_name,
+                label: `(${item.worker_code}) - ${item.worker_full_name}`,
                 workerCode: item.worker_code,
                 workerStatus: item.worker_status,
             }));
@@ -244,7 +241,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                socket?.emit(socketUpdate, data);
+                socket_Dash?.emit(socketUpdate, data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -265,7 +262,7 @@ function Dashboard({ auth }) {
             });
 
             if (res.ok) {
-                socket?.emit(socketUpdate, data);
+                socket_Dash?.emit(socketUpdate, data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -307,8 +304,12 @@ function Dashboard({ auth }) {
 
             if (res.ok) {
                 console.log(`Cập nhật thông tin ${data.ac}`, data);
-                socket.emit("UpdateDateTable_To_Server", data, selectedDate);
-                socket.emit("ButtonDisable_To_Server", data);
+                socket_Dash.emit(
+                    "UpdateDateTable_To_Server",
+                    data,
+                    selectedDate
+                );
+                socket_Dash.emit("ButtonDisable_To_Server", data);
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -563,7 +564,7 @@ function Dashboard({ auth }) {
                             },
                         });
                         if (response.ok) {
-                            socket.emit("addWorkTo_Server", "xoalich");
+                            socket_Dash.emit("addWorkTo_Server", "xoalich");
                             handleOpen();
                             console.log("Xóa thành Công");
                         }
@@ -573,15 +574,24 @@ function Dashboard({ auth }) {
                 };
 
                 const handleSentPhanTho = async (e) => {
+                    if (!socket_Dash) {
+                        console.error("Socket không khả dụng");
+                        return;
+                    }
+
+                    try {
                         await sendPhanThoRequest(
                             params,
                             selectPhanTho,
                             auth,
-                            socket,
+                            socket_Dash,
                             copyTextToClipboard,
                             handleOpenTho,
                             selectedDate
                         );
+                    } catch (error) {
+                        console.error("Lỗi trong handleSentPhanTho:", error);
+                    }
                 };
                 const handleSentNhanDoi = async (e) => {
                     // Lấy dữ liệu từ params.row
@@ -608,7 +618,7 @@ function Dashboard({ auth }) {
 
                         if (response.ok) {
                             // const responseData = await response.json();
-                            socket.emit("addWorkTo_Server", response.ok);
+                            socket_Dash.emit("addWorkTo_Server", response.ok);
                         } else {
                             console.error(
                                 "Server responded with:",
@@ -989,7 +999,7 @@ function Dashboard({ auth }) {
                         params,
                         selectPhanTho,
                         auth,
-                        socket,
+                        socket_Dash,
                         copyTextToClipboard,
                         handleOpenTho,
                         reasonMessage
@@ -1238,7 +1248,7 @@ function Dashboard({ auth }) {
                     actionType
                 ) => {
                     // Gửi thông điệp đến server để thông báo về việc disable button
-                    socket.emit("ButtonDisable_To_Server", {
+                    socket_Dash.emit("ButtonDisable_To_Server", {
                         id: rowId,
                         isDisabled: !isOpenState,
                         userFix: auth.user.name,
@@ -1350,7 +1360,10 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socket.emit("addWorkTo_Server", "Xóa lịch đã phân");
+                            socket_Dash.emit(
+                                "addWorkTo_Server",
+                                "Xóa lịch đã phân"
+                            );
                             handleOpen();
                         }
                     } catch (error) {}
@@ -1398,7 +1411,7 @@ function Dashboard({ auth }) {
                         }
                     );
                     if (response.ok) {
-                        socket.emit("addWorkTo_Server", "Khảo sát");
+                        socket_Dash.emit("addWorkTo_Server", "Khảo sát");
                         handleOpen();
                         handleOpenKSWebWithDisable();
                     }
@@ -1456,7 +1469,7 @@ function Dashboard({ auth }) {
                             });
 
                             if (res.ok) {
-                                socket.emit(
+                                socket_Dash.emit(
                                     "UpdateDateTable_To_Server",
                                     formData
                                 );
@@ -1549,8 +1562,11 @@ function Dashboard({ auth }) {
                             }
                         );
                         if (response.ok) {
-                            socket.emit("addWorkTo_Server", "Thu hoi lich");
-                            socket.emit(
+                            socket_Dash.emit(
+                                "addWorkTo_Server",
+                                "Thu hoi lich"
+                            );
+                            socket_Dash.emit(
                                 "returnWorkWebToServer",
                                 params.row.id_worker
                             );
@@ -1658,7 +1674,10 @@ function Dashboard({ auth }) {
                                 "Hình đã được xóa thành công từ máy chủ",
                                 dataBody
                             );
-                            socket.emit("addWorkTo_Server", "Xóa hình ảnh");
+                            socket_Dash.emit(
+                                "addWorkTo_Server",
+                                "Xóa hình ảnh"
+                            );
                         } else {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
@@ -1904,7 +1923,7 @@ function Dashboard({ auth }) {
                             handleSendImageVT={() =>
                                 handleImageSubmit(selectedFilesVT, 2)
                             }
-                            socket={socket}
+                            socket={socket_Dash}
                             handleSearch={() => handleSearch(selectedDate)}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
@@ -2004,7 +2023,6 @@ function Dashboard({ auth }) {
             workerInfo={infoWorkerDashboard}
             data_Work={workData_Work}
             data_Work_Assign={workData_Assign}
-            // socket_Card={socket}
         >
             <Head title="Lịch Hẹn" />
             <div
@@ -2091,7 +2109,7 @@ function Dashboard({ auth }) {
                                             columnHeaders: () => null,
                                         }}
                                     />
-                                </Box>{" "}
+                                </Box>
                             </div>
                             {workData_Work.map((result, index) => {
                                 return (
@@ -2198,5 +2216,5 @@ function Dashboard({ auth }) {
             </div>
         </AuthenticatedLayout>
     );
-}
+};
 export default Dashboard;

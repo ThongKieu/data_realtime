@@ -27,33 +27,65 @@ const TABLE_HEAD = [
     "Tổng thu",
     "Số phiếu thu",
     "Yêu Cầu Bảo Hành",
+    "Lịch Sử",
 ];
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
     const [dataReturn, setDataReturn] = useState([
         {
-            id: 6,
-            id_cus: 22,
-            id_phu: "0",
-            id_worker: 20,
-            work_content: "Sửa máy  lạnh",
-            date_book: "2024-01-25",
-            street: "sư vạn hạnh",
-            district: "khác",
-            image_work_path: null,
-            income_total: 0,
-            name_cus: "Thống Kiều",
-            phone_number: "947613923",
+            id: 1,
+            id_cus: 1,
+            id_worker: 2,
+            id_phu: 0,
             real_note: "cần thang",
-            seri_imag: null,
+            spending_total: 150000,
+            income_total: 1500000,
             bill_imag: null,
-            seri_number: null,
-            spending_total: 0,
-            status_admin_check: 0,
-            worker_full_name: "Nguyễn Thế Minh",
+            seri_imag:
+                "assets/images/work_assignment/1/seri_imag/1-171636579648.jpg,",
+            status_work: 2,
+            check_in: 0,
+            seri_number: 123564,
+            status_admin_check: 1,
+            flag_check: 0,
+            his_work:
+                '[{"id_auth":1,"id_worker":null,"action":"G\\u1eedi L\\u1ecbch Th\\u1ee3","time":"2024-05-27 15:20"}]',
+            work: {
+                id: 1,
+                work_content: "Sửa máy  lạnh 1500k",
+                work_note: "cần thang",
+                name_cus: "Thống Kiều",
+                date_book: "2024-05-24",
+                phone_number: "0947613923",
+                street: "400 Sư Vạn Hạnh Nối Dài",
+                district: "q10",
+                member_read: 1,
+            },
+            worker: {
+                id: 2,
+                worker_full_name: " Nguyễn Thế Minh",
+                worker_code: "A04",
+            },
+            warranty: [
+                {
+                    id: 1,
+                    id_work_has: 1,
+                    warranty_time: 3,
+                    warranty_info: "Không Bảo Hành",
+                    unit: "m",
+                },
+                {
+                    id: 2,
+                    id_work_has: 1,
+                    warranty_time: 2,
+                    warranty_info: "12aaaaaaaaaaaa312",
+                    unit: "m",
+                },
+            ],
         },
     ]);
     const [keySearch, setKey] = useState("");
+    const [userAuth, setUserAuth] = useState("");
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
@@ -70,11 +102,10 @@ function Search({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
+
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
                 setDataReturn(responseData);
-                console.log(responseData);
             } else {
                 console.error("Error:", response.status, response.statusText);
             }
@@ -82,13 +113,21 @@ function Search({ auth }) {
             console.log("hihi", error);
         }
     };
-
-    const handelBH = async (id, id_cus, worker_full_name,code) => {
+    const fetchUser = async () => {
+        try {
+            const response = await fetch("/api/web/users");
+            const jsonData = await response.json();
+            setUserAuth(jsonData.users);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const handelBH = async (id, id_cus, worker_full_name, code) => {
         let data = {
             id: id,
             id_cus: id_cus,
             worker_full_name: worker_full_name,
-            worker_code:code,
+            worker_code: code,
         };
         console.log(data);
         try {
@@ -99,7 +138,6 @@ function Search({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
             if (response.ok) {
                 // const responseData = await response.json(); // Convert response to JSON
                 // setDataReturn(responseData);
@@ -119,15 +157,17 @@ function Search({ auth }) {
             });
         };
         fetchSearch();
+        fetchUser();
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
-    console.log(dataReturn);
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [openDialogHis, setOpenDialogHis] = useState(false);
+
     const handleOpenDialogBH = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialog(!openDialog);
@@ -135,6 +175,10 @@ function Search({ auth }) {
     const handleOpenDialogNote = (id_cus) => {
         setSelectedItemId(id_cus);
         setOpenDialogNote(!openDialogNote);
+    };
+    const handleOpenDialogHis = (id_cus) => {
+        setSelectedItemId(id_cus);
+        setOpenDialogHis(!openDialogHis);
     };
     const [dataWan, setDataWan] = useState();
     const [imgNote, setImgNote] = useState([]);
@@ -240,6 +284,10 @@ function Search({ auth }) {
                                         }
                                     );
                                     const maxLength = 50;
+                                    const jsonParse = JSON?.parse(
+                                        item.his_work
+                                    );
+                                    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300'
                                     return (
                                         <tr
                                             key={index}
@@ -254,10 +302,15 @@ function Search({ auth }) {
                                                 className={`${classes} w-[200px]`}
                                             >
                                                 {maxLength < 30 ? (
-                                                    <p>{item.work_content}</p>
+                                                    <p>
+                                                        {item.work.work_content}
+                                                    </p>
                                                 ) : (
                                                     <ReadMore
-                                                        text={item.work_content}
+                                                        text={
+                                                            item.work
+                                                                .work_content
+                                                        }
                                                         maxLength={maxLength}
                                                     />
                                                 )}
@@ -266,7 +319,7 @@ function Search({ auth }) {
                                             <td
                                                 className={`${classes} w-[60px]`}
                                             >
-                                                {item.date_book}
+                                                {item.work.date_book}
                                             </td>
                                             <td
                                                 className={`${classes} text-center w-[50px]`}
@@ -299,63 +352,66 @@ function Search({ auth }) {
                                                                 Hành
                                                             </DialogHeader>
                                                             <Divider />
-                                                            {dataWan !==
+                                                            {item.warranty !==
                                                             undefined ? (
                                                                 <DialogBody>
-                                                                    {dataWan.map(
-                                                                        (
-                                                                            item,
-                                                                            index
-                                                                        ) => {
-                                                                            return (
-                                                                                <div
-                                                                                    key={
-                                                                                        index
-                                                                                    }
-                                                                                    className="p-2 mb-2 border border-green-500 rounded-md"
-                                                                                >
-                                                                                    <div>
-                                                                                        <span className="pr-2">
-                                                                                            Bảo
-                                                                                            Hành:
-                                                                                        </span>
-                                                                                        <span>
-                                                                                            {item.warranty_time ===
-                                                                                            0
-                                                                                                ? "kbh"
-                                                                                                : `${
-                                                                                                      item.warranty_time
-                                                                                                  } ${
-                                                                                                      item.unit ===
-                                                                                                      "d"
-                                                                                                          ? "ngày"
-                                                                                                          : item.unit ===
-                                                                                                            "w"
-                                                                                                          ? "tuần"
-                                                                                                          : item.unit ===
-                                                                                                            "m"
-                                                                                                          ? "tháng"
-                                                                                                          : item.unit ===
-                                                                                                            "y"
-                                                                                                          ? "năm"
-                                                                                                          : ""
-                                                                                                  }`}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        <span className="pr-2">
-                                                                                            Nội
-                                                                                            Dung:
-                                                                                        </span>
-                                                                                        <span>
-                                                                                            {
-                                                                                                item.warranty_info
+                                                                    {item.warranty ==
+                                                                    "" ? (
+                                                                        "Không bảo hành"
+                                                                    ) : (
+                                                                        <>
+                                                                            {item.warranty.map(
+                                                                                (
+                                                                                    item,
+                                                                                    index
+                                                                                ) => {
+                                                                                    return (
+                                                                                        <div
+                                                                                            key={
+                                                                                                index
                                                                                             }
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            );
-                                                                        }
+                                                                                            className="p-2 mb-2 border border-green-500 rounded-md"
+                                                                                        >
+                                                                                            <div>
+                                                                                                <span className="pr-2">
+                                                                                                    Bảo
+                                                                                                    Hành:{" "}
+                                                                                                    {
+                                                                                                        item.warranty_time
+                                                                                                    }
+                                                                                                </span>
+                                                                                                <span>
+                                                                                                    {item.unit ===
+                                                                                                    "d"
+                                                                                                        ? "ngày"
+                                                                                                        : item.unit ===
+                                                                                                          "w"
+                                                                                                        ? "tuần"
+                                                                                                        : item.unit ===
+                                                                                                          "m"
+                                                                                                        ? "tháng"
+                                                                                                        : item.unit ===
+                                                                                                          "y"
+                                                                                                        ? "năm"
+                                                                                                        : ""}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="pr-2">
+                                                                                                    Nội
+                                                                                                    Dung:
+                                                                                                </span>
+                                                                                                <span>
+                                                                                                    {
+                                                                                                        item.warranty_info
+                                                                                                    }
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </>
                                                                     )}
                                                                 </DialogBody>
                                                             ) : (
@@ -387,17 +443,18 @@ function Search({ auth }) {
                                             <td
                                                 className={`${classes} w-[100px]`}
                                             >
-                                                {item.name_cus}
+                                                {item.work.name_cus}
                                             </td>
                                             <td
                                                 className={`${classes} w-[200px]`}
                                             >
-                                                {item.street} - {item.district}
+                                                {item.work.street} -{" "}
+                                                {item.work.district}
                                             </td>
                                             <td
                                                 className={`${classes} w-[60px]`}
                                             >
-                                                {item.phone_number}
+                                                {item.work.phone_number}
                                             </td>
                                             <td
                                                 className={`${classes} w-[60px]`}
@@ -497,9 +554,9 @@ function Search({ auth }) {
                                             <td
                                                 className={`${classes} w-[100px]`}
                                             >
-                                                ({item.worker_code})-
+                                                ({item.worker.worker_code})-
                                                 {getFirstName(
-                                                    item.worker_full_name
+                                                    item.worker.worker_full_name
                                                 )}
                                             </td>
                                             <td
@@ -535,14 +592,140 @@ function Search({ auth }) {
                                                     onClick={() =>
                                                         handelBH(
                                                             item.id,
-                                                            item.id_cus,
-                                                            item.worker_full_name,
-                                                            item.worker_code
+                                                            item.work.id,
+                                                            item.worker
+                                                                .worker_full_name,
+                                                            item.worker
+                                                                .worker_code
                                                         )
                                                     }
                                                 >
                                                     Bảo Hành
                                                 </Button>
+                                            </td>
+                                            <td
+                                                className={`${classes} w-[90px]`}
+                                            >
+                                                <Button
+                                                    className="p-1 text-orange-400 border border-orange-400 rounded-sm"
+                                                    onClick={() => {
+                                                        if (!openDialogHis) {
+                                                            handleOpenDialogHis(
+                                                                item.id_cus
+                                                            );
+                                                        } else {
+                                                            handleOpenDialogHis(
+                                                                item.id_cus
+                                                            );
+                                                        }
+                                                    }}
+                                                    variant="outlined"
+                                                >
+                                                    Lịch Sử
+                                                </Button>
+                                                {openDialogHis &&
+                                                    selectedItemId ===
+                                                        item.id_cus && (
+                                                        <Dialog
+                                                            open={openDialogHis}
+                                                            handler={
+                                                                handleOpenDialogHis
+                                                            }
+                                                        >
+                                                            <DialogHeader>
+                                                                Lịch sử
+                                                            </DialogHeader>
+                                                            <Divider />
+                                                            <DialogBody>
+                                                                <table className="min-w-full bg-white">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className={classTableHistory}>
+                                                                                Người
+                                                                                Xử
+                                                                                Lý
+                                                                            </th>
+                                                                            <th className={classTableHistory}>
+                                                                                Action
+                                                                            </th>
+                                                                            <th className={classTableHistory}>
+                                                                                Time
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {jsonParse.map(
+                                                                            (
+                                                                                itemJson,
+                                                                                index
+                                                                            ) => {
+                                                                                const correspondingAuth =
+                                                                                    userAuth.find(
+                                                                                        (
+                                                                                            userAuth
+                                                                                        ) =>
+                                                                                            userAuth.id ===
+                                                                                            itemJson.id_auth
+                                                                                    );
+                                                                                const correspondingWorker =
+                                                                                    item
+                                                                                        .worker
+                                                                                        .id ===
+                                                                                    itemJson.id_worker
+                                                                                        ? item
+                                                                                              .worker
+                                                                                              .worker_full_name
+                                                                                        : "Unknown";
+                                                                                const workerFullName =
+                                                                                    correspondingAuth
+                                                                                        ? correspondingAuth.name
+                                                                                        : `(${item.worker.worker_code})- ${correspondingWorker}`;
+
+                                                                                return (
+                                                                                    <tr
+                                                                                        key={
+                                                                                            index
+                                                                                        }
+                                                                                    >
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                workerFullName
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                itemJson.action
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                itemJson.time
+                                                                                            }
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                    </tbody>
+                                                                </table>
+                                                            </DialogBody>
+                                                            <Divider />
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={
+                                                                        handleOpenDialogHis
+                                                                    }
+                                                                    className="mr-1"
+                                                                >
+                                                                    <span>
+                                                                        Thoát
+                                                                    </span>
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </Dialog>
+                                                    )}
                                             </td>
                                         </tr>
                                     );

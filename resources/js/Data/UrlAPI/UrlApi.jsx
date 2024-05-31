@@ -1,6 +1,7 @@
+import { host } from "@/Utils/UrlApi";
+
 const url_API = "api/web/works";
 const url_API_District = "api/web/district";
-
 const getFirstName = (fullName) => {
     if (fullName != undefined) {
         const parts = fullName.split(" ");
@@ -74,6 +75,7 @@ const sendPhanThoRequest = async (
         auth_id: auth.user.id,
         his_work: JSON.stringify(data_hisWork),
     };
+
     try {
         const response = await fetch(
             `api/web/work-assignment?dateCheck=${selectedDate}`,
@@ -86,11 +88,12 @@ const sendPhanThoRequest = async (
             }
         );
 
-        if (response.ok ) {
+        if (response.ok) {
             socket.emit("addWorkTo_Server", selectedDate);
             socket.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();
+
             try {
                 const response = await fetch("api/app/worker/send-fcm", {
                     method: "POST",
@@ -101,18 +104,22 @@ const sendPhanThoRequest = async (
                         "Content-Type": "application/json",
                     },
                 });
+
                 if (response.ok) {
                     socket.emit("addWorkTo_Server", id_worker.value);
+                } else {
+                    console.error("Lỗi gửi FCM");
                 }
             } catch (error) {
-                console.log("lỗi", error);
+                console.log("Lỗi trong gửi FCM:", error);
             }
+        } else {
+            console.error("Lỗi trong phản hồi từ API");
         }
     } catch (error) {
-        console.log("lỗi", error);
+        console.log("Lỗi trong gửi yêu cầu:", error);
     }
 };
-
 const sendDoiThoRequest = async (
     params,
     selectPhanTho,
@@ -163,5 +170,5 @@ export {
     url_API,
     url_API_District,
     getFormattedTodayDDMMYYYY,
-    getFormattedTIME,
+    getFormattedTIME
 };

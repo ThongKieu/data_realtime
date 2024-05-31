@@ -336,11 +336,9 @@ function NavList({ active = false }) {
 function NavbarDefault({
     propauth,
     check,
-    data_Work,
-    data_Work_Assign,socket_Card
 }) {
     const { width, height } = useWindowSize(200);
-    const [socketDelete, setSocketDelete] = useState();
+    const [socketCard, setSocketCard] = useState();
     const [countDelete, setCountDelete] = useState(0);
     const [jobs, setJobs] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false);
@@ -355,7 +353,7 @@ function NavbarDefault({
         getDataWorkerSales(check);
     }, [check]);
     useEffect(() => {
-        setSocketDelete(newSocket, { secure: true });
+        setSocketCard(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
@@ -375,8 +373,8 @@ function NavbarDefault({
             );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
-            if (socketDelete) {
-                socketDelete.emit("addWorkTo_Server", jsonData.num_can);
+            if (socketCard) {
+                socketCard.emit("addWorkTo_Server", jsonData.num_can);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -790,9 +788,7 @@ function NavbarDefault({
                 </div>
                 <div className="flex flex-row items-center">
                     <CardMain
-                        data_Work={data_Work}
-                        data_Work_Assign={data_Work_Assign}
-                        socket_Card={socket_Card}
+                        dateCheck={check}
                     />
                     <NavLink
                         href={route("CancelBooking")}

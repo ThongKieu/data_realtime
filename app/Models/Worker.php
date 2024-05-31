@@ -50,7 +50,7 @@ class Worker extends Model
         'worker_daily_sales',           // Doanh số ngày
         'worker_daily_o_t_by_hour'      // Hệ số tăng ca   
     ];
-    public function assignments() {
+    public function assignmentsWorker() {
         return $this->hasMany(WorksAssignment::class, 'id_worker', 'id');
     } 
 }

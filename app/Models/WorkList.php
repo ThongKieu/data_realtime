@@ -15,7 +15,5 @@ class WorkList extends Model
         "work_phone",
         "work_name_cus",
     ];
-    public function assignments() {
-        return $this->hasMany(WorksAssignment::class, 'id_cus', 'id');
-    }
+   
 }

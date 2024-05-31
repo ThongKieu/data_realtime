@@ -158,31 +158,35 @@ const columns = [
 ];
 function CancelBooking({ auth }) {
     const [deleteBooking, setDeleteBooking] = useState([]);
-    const [socketDelete, setSocketDelete] = useState("");
-
+    const [socketCard, setSocketCard] = useState("");
+    const [hasLoaded, setHasLoaded] = useState(false);
     useEffect(() => {
-        fetchDelete();
-        console.log(deleteBooking);
+        if (!hasLoaded) {
+            fetchDelete();
+        setSocketCard(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             fetchDelete(data);
         });
+        setHasLoaded(true);
+        }
         // lắng nghe server
-        // return () => {
-        //     newSocket.disconnect();
-        // };
-    }, []);
+        return () => {
+            if (socketCard) {
+                socketCard.disconnect();
+            }
+        };
+    }, [socketCard]);
     const fetchDelete = async () => {
         try {
             const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
-            console.log(jsonData);
             setDeleteBooking(jsonData.info_can);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-const { width, height } = useWindowSize(100);
+    const { width, height } = useWindowSize(100);
     // Sử dụng useState để lưu trữ giá trị của input date
     const [todayBook, setTodayBook] = useState("");
     // Hàm xử lý sự kiện khi giá trị của input thay đổi

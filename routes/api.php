@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::prefix('web')->group(function () {
+    Route::post('/insertLocation', 'App\Http\Controllers\TestLocationController@insertLocation');
+    Route::post('/getLocation', 'App\Http\Controllers\TestLocationController@getLocation');
+
     Route::apiResource('works', WorksController::class);
     Route::prefix('workers')->group(function () {
         Route::get('/', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
@@ -138,7 +141,7 @@ Route::prefix('web')->group(function () {
         // Route::post('store', 'App\Http\Controllers\PopupDiscountController@store');
         // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
-    Route::post('/ig','App\Http\Controllers\ImageCustomController@optimizeImage');
+    Route::post('/ig', 'App\Http\Controllers\ImageCustomController@optimizeImage');
 
 })->withoutMiddleware("throttle:api")
     ->middleware(

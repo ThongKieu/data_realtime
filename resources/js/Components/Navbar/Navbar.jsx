@@ -14,11 +14,8 @@ import {
     CardBody,
     Tooltip,
     Dialog,
-    DialogHeader,
     DialogBody,
     DialogFooter,
-    Input,
-    Radio,
 } from "@material-tailwind/react";
 import {
     HomeIcon,
@@ -29,11 +26,8 @@ import {
     IdentificationIcon,
     ListBulletIcon,
     CurrencyDollarIcon,
-    ExclamationCircleIcon,
     ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
@@ -41,8 +35,6 @@ import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
 import {
     getFirstName,
-    getFormattedToday,
-    getFormattedTodayDDMMYYYY,
 } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
@@ -344,11 +336,9 @@ function NavList({ active = false }) {
 function NavbarDefault({
     propauth,
     check,
-    data_Work,
-    data_Work_Assign,socket_Card
 }) {
     const { width, height } = useWindowSize(200);
-    const [socketDelete, setSocketDelete] = useState();
+    const [socketCard, setSocketCard] = useState();
     const [countDelete, setCountDelete] = useState(0);
     const [jobs, setJobs] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false);
@@ -363,7 +353,7 @@ function NavbarDefault({
         getDataWorkerSales(check);
     }, [check]);
     useEffect(() => {
-        setSocketDelete(newSocket, { secure: true });
+        setSocketCard(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             if (data != "") {
                 fetchDelete(data, check);
@@ -383,8 +373,8 @@ function NavbarDefault({
             );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
-            if (socketDelete) {
-                socketDelete.emit("addWorkTo_Server", jsonData.num_can);
+            if (socketCard) {
+                socketCard.emit("addWorkTo_Server", jsonData.num_can);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -674,6 +664,9 @@ function NavbarDefault({
                                                                 <td className="p-4">
                                                                     {formatter.format(
                                                                         jobReport.work_expenditure
+
+
+
                                                                     )}
                                                                 </td>
                                                             </tr>
@@ -683,6 +676,7 @@ function NavbarDefault({
                                                                         index +
                                                                         i +
                                                                         4;
+                                                                        console.log(fuel);
                                                                     return (
                                                                         <tr
                                                                             key={`${index}-${i}`}
@@ -794,9 +788,7 @@ function NavbarDefault({
                 </div>
                 <div className="flex flex-row items-center">
                     <CardMain
-                        data_Work={data_Work}
-                        data_Work_Assign={data_Work_Assign}
-                        socket_Card={socket_Card}
+                        dateCheck={check}
                     />
                     <NavLink
                         href={route("CancelBooking")}
@@ -885,38 +877,6 @@ function NavbarDefault({
                                                 // handleOpenSpending
                                             )
                                         )}
-                                        {/* <Dialog
-                                            key={1}
-                                            open={openSpending}
-                                            handler={handleOpenSpending}
-                                        >
-                                            <DialogBody>
-                                                <div className="relative w-full p-2 pt-3 text-white shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-gray-900 to-gray-800 shadow-gray-900/20">
-                                                    <div className="relative pb-2 m-0 overflow-hidden text-gray-700 bg-transparent shadow-none rounded-xl bg-clip-border border-white/10">
-                                                        <h2 className="block pb-4 font-sans antialiased font-normal leading-normal text-center text-white uppercase">
-                                                            Tổng Thu Chi Cuối
-                                                            Ngày
-                                                        </h2>
-                                                        {jobs.map(
-                                                            (job, index) => {
-                                                                return (
-                                                                    <>
-                                                                        {job.report !=
-                                                                            "" && (
-                                                                            <JobTable
-                                                                                data={
-                                                                                    job.report
-                                                                                }
-                                                                            />
-                                                                        )}
-                                                                    </>
-                                                                );
-                                                            }
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </DialogBody>
-                                        </Dialog> */}
                                     </div>
                                 </div>
                                 <div className="w-full">

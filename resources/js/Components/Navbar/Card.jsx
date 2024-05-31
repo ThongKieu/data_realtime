@@ -3,24 +3,22 @@ import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import newSocket from "@/Utils/Socket";
 import { host } from "@/Utils/UrlApi";
-function CardMain({ data_Work, data_Work_Assign,socket_Card }) {
+function CardMain() {
     const [socketCard, setSocketCard] = useState();
     const [hasLoaded, setHasLoaded] = useState(false);
-    const [dataWork, setDataWork] = useState([]);
-    const [dataWork_Assign, setDataWork_Assign] = useState([]);
+    const [dataWork, setData_Work] = useState(0);
+    const [dataWork_Assign, setDataWork_Assign] = useState(0);
     const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
     useEffect(() => {
-        getNumberOfWork(data_Work);
-        getNumberOfWork_Assign(data_Work_Assign);
         if (!hasLoaded) {
-            setSocketCard(socket_Card);
+            setSocketCard(newSocket, { secure: true });
             fetchDelete();
-            getNumberOfWork(data_Work);
-            getNumberOfWork_Assign(data_Work_Assign);
+            getNumberOfWork();
+            getNumberOfWork_Assign();
             newSocket.on("sendAddWorkTo_Client", (data) => {
-                fetchDelete(data);
-                getNumberOfWork(data_Work);
-                getNumberOfWork_Assign(data_Work_Assign);
+                fetchDelete();
+                getNumberOfWork();
+                getNumberOfWork_Assign();
             });
             setHasLoaded(true);
         }
@@ -30,27 +28,35 @@ function CardMain({ data_Work, data_Work_Assign,socket_Card }) {
                 socketCard.disconnect();
             }
         };
-    }, [hasLoaded,newSocket,socketCard, data_Work, data_Work_Assign]);
-    const getNumberOfWork = async (data_Work) => {
-        if (data_Work) {
-            const totalWork =
-                Array.isArray(data_Work) &&
-                data_Work.reduce(
-                    (total, item) => total + item.kind_worker.numberOfWork,
-                    0
-                );
-            setDataWork(totalWork);
+    }, [hasLoaded, socketCard]);
+    const getNumberOfWork = async () => {
+        try {
+            const response = await fetch(host + "api/web/works");
+            const jsonData = await response.json();
+            const totalNumberOfWork = jsonData.reduce((total, item) => {
+                return total + (item.kind_worker?.numberOfWork || 0);
+            }, 0);
+            setData_Work(totalNumberOfWork);
+            if (socketCard) {
+                socketCard.emit("addWorkTo_Server", totalNumberOfWork);
+            }
+        } catch (error) {
+            console.error("Fetch error:", error.message);
         }
     };
-    const getNumberOfWork_Assign = async (data_Work_Assign) => {
-        if (data_Work_Assign) {
-            const totalWork_Assign =
-                Array.isArray(data_Work_Assign) &&
-                data_Work_Assign.reduce(
-                    (total, item) => total + item.kind_worker.numberOfWork,
-                    0
-                );
-                setDataWork_Assign(totalWork_Assign);
+    const getNumberOfWork_Assign = async () => {
+        try {
+            const response = await fetch(host + "api/web/work-assignment");
+            const jsonData = await response.json();
+            const totalNumberOfWork = jsonData.reduce((total, item) => {
+                return total + (item.kind_worker?.numberOfWork || 0);
+            }, 0);
+            setDataWork_Assign(totalNumberOfWork);
+            if (socketCard) {
+                socketCard.emit("addWorkTo_Server", totalNumberOfWork);
+            }
+        } catch (error) {
+            console.error("Fetch error:", error.message);
         }
     };
     const fetchDelete = async () => {
@@ -69,10 +75,7 @@ function CardMain({ data_Work, data_Work_Assign,socket_Card }) {
         {
             id: 1,
             title: "Tổng Lịch",
-            count:
-            dataWork_Assign +
-                dataWork +
-                workDataCountDelete,
+            count: dataWork_Assign + dataWork + workDataCountDelete,
             typographyColor: "text-center text-blue-600 text-sm",
             cardBorderColor:
                 "m-1  border border-solid cursor-auto shadow-blue-400  border-blue-600 justify-center w-28 rounded",

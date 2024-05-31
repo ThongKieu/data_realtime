@@ -33,13 +33,17 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
         warranties: work.warranties,
     }));
     return (
-        <Box
+
+            <Box
             sx={{
                 height: rows == "" ? 40 : 1,
                 width: "100%",
             }}
         >
-            <Typography className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium">
+            <Typography
+                id={kindWorker.kind_worker.nameKind}
+                className="w-full p-1 font-bold text-center bg-blue-400 rounded-none shadow-lg text-medium"
+            >
                 {kindWorker.kind_worker.nameKind} (Số lịch:
                 {kindWorker.kind_worker.numberOfWork})
             </Typography>

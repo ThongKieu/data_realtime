@@ -1,6 +1,7 @@
+import { host } from "@/Utils/UrlApi";
+
 const url_API = "api/web/works";
 const url_API_District = "api/web/district";
-
 const getFirstName = (fullName) => {
     if (fullName != undefined) {
         const parts = fullName.split(" ");
@@ -19,17 +20,17 @@ const getFormattedToday = () => {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
-};const getFormattedTIME = () => {
+};
+const getFormattedTIME = () => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     const h = today.getHours();
     const m = today.getMinutes();
-    return `${year}${month}${day}-${h}:${m}`;
+    return `${year}-${month}-${day} ${h}:${m}`;
 };
 const getFormattedTodayDDMMYYYY = () => {
-
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
     const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -51,7 +52,7 @@ const sendPhanThoRequest = async (
     params,
     selectPhanTho,
     auth,
-    socketD,
+    socket,
     copyTextToClipboard,
     handleOpenTho,
     selectedDate
@@ -60,35 +61,39 @@ const sendPhanThoRequest = async (
     const id_phu = selectPhanTho.map((item) => item.value);
     let data_hisWork = [
         {
-         id_auth:auth.user.id,
-         id_worker: null,
-         action:'guitho',
-         time: getFormattedTIME()
-       },
-    ]
+            id_auth: auth.user.id,
+            id_worker: null,
+            action: "guitho",
+            time: getFormattedTIME(),
+        },
+    ];
     const data = {
         id_cus: params.row.id,
         id_worker: id_worker.value,
         id_phu: id_phu,
         work_note: params.row.work_note,
         auth_id: auth.user.id,
-        his_work: JSON.stringify(data_hisWork)
+        his_work: JSON.stringify(data_hisWork),
     };
-    // console.log(data);
+
     try {
-        const response = await fetch(`api/web/work-assignment?dateCheck=${selectedDate}`, {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await fetch(
+            `api/web/work-assignment?dateCheck=${selectedDate}`,
+            {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         if (response.ok) {
-            socketD.emit("addWorkTo_Server", selectedDate);
-            socketD.emit("sendWorkWebToServer", id_worker.value);
+            socket.emit("addWorkTo_Server", selectedDate);
+            socket.emit("sendWorkWebToServer", id_worker.value);
             copyTextToClipboard(params.row);
             handleOpenTho();
+
             try {
                 const response = await fetch("api/app/worker/send-fcm", {
                     method: "POST",
@@ -99,15 +104,22 @@ const sendPhanThoRequest = async (
                         "Content-Type": "application/json",
                     },
                 });
+
+                if (response.ok) {
+                    socket.emit("addWorkTo_Server", id_worker.value);
+                } else {
+                    console.error("Lỗi gửi FCM");
+                }
             } catch (error) {
-                console.log("lỗi", error);
+                console.log("Lỗi trong gửi FCM:", error);
             }
+        } else {
+            console.error("Lỗi trong phản hồi từ API");
         }
     } catch (error) {
-        console.log("lỗi", error);
+        console.log("Lỗi trong gửi yêu cầu:", error);
     }
 };
-
 const sendDoiThoRequest = async (
     params,
     selectPhanTho,
@@ -124,9 +136,7 @@ const sendDoiThoRequest = async (
         id_work_as: params.id,
         id_cus: params.row.id_cus,
         real_note: `${params.row.real_note} + ${
-            reasonMessage != "undefined"
-                ? reasonMessage
-                : "Chưa nhập thông tin"
+            reasonMessage != "undefined" ? reasonMessage : "Chưa nhập thông tin"
         }`,
         id_worker: id_worker.value,
         id_phu: id_phu,
@@ -159,5 +169,6 @@ export {
     formatTime,
     url_API,
     url_API_District,
-    getFormattedTodayDDMMYYYY,getFormattedTIME
+    getFormattedTodayDDMMYYYY,
+    getFormattedTIME
 };

@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import newSocket from "@/Utils/Socket";
 import { getFormattedToday } from "@/Data/UrlAPI/UrlApi";
+import useWindowSize from "@/Core/Resize";
 const columns = [
     {
         field: "work_content",
@@ -157,19 +158,24 @@ const columns = [
 ];
 function CancelBooking({ auth }) {
     const [deleteBooking, setDeleteBooking] = useState([]);
-    const [socketDelete, setSocketDelete] = useState("");
-
+    const [socketCard, setSocketCard] = useState("");
+    const [hasLoaded, setHasLoaded] = useState(false);
     useEffect(() => {
-        fetchDelete();
-        console.log(deleteBooking);
+        if (!hasLoaded) {
+            fetchDelete();
+        setSocketCard(newSocket, { secure: true });
         newSocket.on("sendAddWorkTo_Client", (data) => {
             fetchDelete(data);
         });
+        setHasLoaded(true);
+        }
         // lắng nghe server
-        // return () => {
-        //     newSocket.disconnect();
-        // };
-    }, []);
+        return () => {
+            if (socketCard) {
+                socketCard.disconnect();
+            }
+        };
+    }, [socketCard]);
     const fetchDelete = async () => {
         try {
             const response = await fetch("api/web/cancle/works");
@@ -179,14 +185,10 @@ function CancelBooking({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 180,
-    });
-    var heightScreenTV = screenSize.height;
+
+    const { width, height } = useWindowSize(100);
     // Sử dụng useState để lưu trữ giá trị của input date
     const [todayBook, setTodayBook] = useState("");
-
     // Hàm xử lý sự kiện khi giá trị của input thay đổi
     const handleDateChange = (event) => {
         setTodayBook(event.target.value);
@@ -210,10 +212,10 @@ function CancelBooking({ auth }) {
                         />
                     </Typography>
                     {/* bang ben trai  */}
-                    <Box sx={{ width: 1, height: heightScreenTV }}>
+                    <Box sx={{ width: 1, height: height }}>
                         <DataGrid
                             autoHeight
-                            {...heightScreenTV}
+                            {...height}
                             rows={deleteBooking}
                             columns={columns}
                             disableColumnFilter

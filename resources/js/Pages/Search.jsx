@@ -37,52 +37,54 @@ function Search({ auth }) {
             id_cus: 1,
             id_worker: 2,
             id_phu: 0,
-            real_note: 'cần thang',
+            real_note: "cần thang",
             spending_total: 150000,
             income_total: 1500000,
             bill_imag: null,
-            seri_imag: 'assets/images/work_assignment/1/seri_imag/1-171636579648.jpg,',
+            seri_imag:
+                "assets/images/work_assignment/1/seri_imag/1-171636579648.jpg,",
             status_work: 2,
             check_in: 0,
             seri_number: 123564,
             status_admin_check: 1,
             flag_check: 0,
-            his_work: "[{\"id_auth\":1,\"id_worker\":null,\"action\":\"G\\u1eedi L\\u1ecbch Th\\u1ee3\",\"time\":\"2024-05-27 15:20\"}]",
+            his_work: `[{\"id_auth\":1,\"id_worker\":null,\"action\":\"G\\u1eedi L\\u1ecbch Th\\u1ee3\",\"time\":\"2024-05-27 15:20\"}]`,
             work: {
                 id: 1,
-                work_content: 'Sửa máy  lạnh 1500k',
-                work_note: 'cần thang',
-                name_cus: 'Thống Kiều',
-                date_book: '2024-05-24',
-                phone_number: '0947613923',
-                street: '400 Sư Vạn Hạnh Nối Dài',
-                district: 'q10',
-                member_read: 1
+                work_content: "Sửa máy  lạnh 1500k",
+                work_note: "cần thang",
+                name_cus: "Thống Kiều",
+                date_book: "2024-05-24",
+                phone_number: "0947613923",
+                street: "400 Sư Vạn Hạnh Nối Dài",
+                district: "q10",
+                member_read: 1,
             },
             worker: {
                 id: 2,
-                worker_full_name: ' Nguyễn Thế Minh',
-                worker_code: 'A04'
+                worker_full_name: " Nguyễn Thế Minh",
+                worker_code: "A04",
             },
             warranty: [
                 {
                     id: 1,
                     id_work_has: 1,
                     warranty_time: 3,
-                    warranty_info: 'Không Bảo Hành',
-                    unit: 'm'
+                    warranty_info: "Không Bảo Hành",
+                    unit: "m",
                 },
                 {
                     id: 2,
                     id_work_has: 1,
                     warranty_time: 2,
-                    warranty_info: '12aaaaaaaaaaaa312',
-                    unit: 'm'
-                }
-            ]
+                    warranty_info: "12aaaaaaaaaaaa312",
+                    unit: "m",
+                },
+            ],
         },
     ]);
     const [keySearch, setKey] = useState("");
+    const [userAuth, setUserAuth] = useState("");
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
@@ -100,7 +102,6 @@ function Search({ auth }) {
                 },
             });
 
-            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
             if (response.ok) {
                 const responseData = await response.json(); // Convert response to JSON
                 setDataReturn(responseData);
@@ -109,6 +110,15 @@ function Search({ auth }) {
             }
         } catch (error) {
             console.log("hihi", error);
+        }
+    };
+    const fetchUser = async () => {
+        try {
+            const response = await fetch("/api/web/users");
+            const jsonData = await response.json();
+            setUserAuth(jsonData.users);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
     };
     const handelBH = async (id, id_cus, worker_full_name, code) => {
@@ -127,7 +137,6 @@ function Search({ auth }) {
                     "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
                 },
             });
-            // console.log("XIN CHAO DATA ACTIVE:",response.ok);
             if (response.ok) {
                 // const responseData = await response.json(); // Convert response to JSON
                 // setDataReturn(responseData);
@@ -147,6 +156,7 @@ function Search({ auth }) {
             });
         };
         fetchSearch();
+        fetchUser();
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
@@ -214,56 +224,6 @@ function Search({ auth }) {
             </div>
         );
     };
-    // useEffect(() => {
-    //     // Chuỗi JSON bạn muốn giải mã
-    //     const jsonString = '[{"id_auth":1,"id_worker":null,"action":"G\\u1eedi L\\u1ecbch Th\\u1ee3","time":"2024-05-27 15:20"}]';
-
-    //     // Giải mã chuỗi JSON
-    //     const decodedData = JSON.parse(jsonString);
-    //     decodeHis(decodedData);
-    //     // Cập nhật state với dữ liệu giải mã
-    //     // setData(decodedData);
-    //   }, []);
-    // const decodeHis = () => {
-    // console.log(hi);
-    // const his_work = JSON.parse(hi);
-    // console.log(his_work);
-    // return (
-    //     <div>
-    //         {
-    //             his_work.map((item,
-    //                 index) => {
-    //                     return (
-
-    //                         <div
-    //                             key={
-    //                                 index
-    //                             }
-    //                             className="p-2 mb-2 border border-green-500 rounded-md"
-    //                         >
-    //                             <div>
-
-    //                             </div>
-    //                             <div>
-    //                                 <span className="pr-2">
-    //                                     Nội
-    //                                     Dung:
-    //                                 </span>
-    //                                 <span>
-    //                                     {
-    //                                         item.id_auth
-    //                                     }
-    //                                 </span>
-    //                             </div>
-    //                         </div>
-    //                     );
-
-    //             }
-    //             )
-    //         }
-    //     </div>
-    // );
-    // }
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Tìm Kiếm Khách Hàng" />
@@ -287,7 +247,7 @@ function Search({ auth }) {
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                // style={{ height: `${screenSize.height - 50}px` }}
+                    // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
@@ -324,9 +284,9 @@ function Search({ auth }) {
                                     );
                                     const maxLength = 50;
                                     // // if (item.his_work != undefined) {
-                                        const cleanJsonString = item.his_work?.slice(1, -1);
-                                        const jsonParse = JSON?.parse(cleanJsonString);
-                                        console.log(jsonParse);
+                                    //     const cleanJsonString = item.his_work?.slice(1, -1);
+                                    //     const jsonParse = JSON?.parse(cleanJsonString);
+                                    //     console.log(jsonParse);
                                     // // }
                                     return (
                                         <tr
@@ -342,10 +302,15 @@ function Search({ auth }) {
                                                 className={`${classes} w-[200px]`}
                                             >
                                                 {maxLength < 30 ? (
-                                                    <p>{item.work.work_content}</p>
+                                                    <p>
+                                                        {item.work.work_content}
+                                                    </p>
                                                 ) : (
                                                     <ReadMore
-                                                        text={item.work.work_content}
+                                                        text={
+                                                            item.work
+                                                                .work_content
+                                                        }
                                                         maxLength={maxLength}
                                                     />
                                                 )}
@@ -375,7 +340,7 @@ function Search({ auth }) {
                                                 </Button>
                                                 {openDialog &&
                                                     selectedItemId ===
-                                                    item.id_cus && (
+                                                        item.id_cus && (
                                                         <Dialog
                                                             open={openDialog}
                                                             handler={
@@ -388,9 +353,12 @@ function Search({ auth }) {
                                                             </DialogHeader>
                                                             <Divider />
                                                             {item.warranty !==
-                                                                undefined ? (
+                                                            undefined ? (
                                                                 <DialogBody>
-                                                                    {item.warranty == '' ? "Không bảo hành" :
+                                                                    {item.warranty ==
+                                                                    "" ? (
+                                                                        "Không bảo hành"
+                                                                    ) : (
                                                                         <>
                                                                             {item.warranty.map(
                                                                                 (
@@ -398,7 +366,6 @@ function Search({ auth }) {
                                                                                     index
                                                                                 ) => {
                                                                                     return (
-
                                                                                         <div
                                                                                             key={
                                                                                                 index
@@ -408,23 +375,25 @@ function Search({ auth }) {
                                                                                             <div>
                                                                                                 <span className="pr-2">
                                                                                                     Bảo
-                                                                                                    Hành: {item.warranty_time}
+                                                                                                    Hành:{" "}
+                                                                                                    {
+                                                                                                        item.warranty_time
+                                                                                                    }
                                                                                                 </span>
                                                                                                 <span>
                                                                                                     {item.unit ===
-                                                                                                        "d"
+                                                                                                    "d"
                                                                                                         ? "ngày"
                                                                                                         : item.unit ===
-                                                                                                            "w"
-                                                                                                            ? "tuần"
-                                                                                                            : item.unit ===
-                                                                                                                "m"
-                                                                                                                ? "tháng"
-                                                                                                                : item.unit ===
-                                                                                                                    "y"
-                                                                                                                    ? "năm"
-                                                                                                                    : ""
-                                                                                                    }
+                                                                                                          "w"
+                                                                                                        ? "tuần"
+                                                                                                        : item.unit ===
+                                                                                                          "m"
+                                                                                                        ? "tháng"
+                                                                                                        : item.unit ===
+                                                                                                          "y"
+                                                                                                        ? "năm"
+                                                                                                        : ""}
                                                                                                 </span>
                                                                                             </div>
                                                                                             <div>
@@ -443,7 +412,7 @@ function Search({ auth }) {
                                                                                 }
                                                                             )}
                                                                         </>
-                                                                    }
+                                                                    )}
                                                                 </DialogBody>
                                                             ) : (
                                                                 <DialogBody>
@@ -479,7 +448,8 @@ function Search({ auth }) {
                                             <td
                                                 className={`${classes} w-[200px]`}
                                             >
-                                                {item.work.street} - {item.work.district}
+                                                {item.work.street} -{" "}
+                                                {item.work.district}
                                             </td>
                                             <td
                                                 className={`${classes} w-[60px]`}
@@ -511,7 +481,7 @@ function Search({ auth }) {
                                                 </Button>
                                                 {openDialogNote &&
                                                     selectedItemId ===
-                                                    item.id_cus && (
+                                                        item.id_cus && (
                                                         <Dialog
                                                             open={
                                                                 openDialogNote
@@ -623,8 +593,10 @@ function Search({ auth }) {
                                                         handelBH(
                                                             item.id,
                                                             item.work.id,
-                                                            item.worker.worker_full_name,
-                                                            item.worker.worker_code
+                                                            item.worker
+                                                                .worker_full_name,
+                                                            item.worker
+                                                                .worker_code
                                                         )
                                                     }
                                                 >
@@ -633,31 +605,29 @@ function Search({ auth }) {
                                             </td>
                                             <td
                                                 className={`${classes} w-[90px]`}
-                                            > <Button
-                                                className="p-1 text-orange-400 border border-orange-400 rounded-sm"
-                                                onClick={() => {
-                                                    if (!openDialogHis) {
-                                                        handleOpenDialogHis(
-                                                            item.id_cus
-                                                        );
-
-                                                    } else {
-                                                        handleOpenDialogHis(
-                                                            item.id_cus
-                                                        );
-                                                    }
-                                                }}
-                                                variant="outlined"
                                             >
+                                                <Button
+                                                    className="p-1 text-orange-400 border border-orange-400 rounded-sm"
+                                                    onClick={() => {
+                                                        if (!openDialogHis) {
+                                                            handleOpenDialogHis(
+                                                                item.id_cus
+                                                            );
+                                                        } else {
+                                                            handleOpenDialogHis(
+                                                                item.id_cus
+                                                            );
+                                                        }
+                                                    }}
+                                                    variant="outlined"
+                                                >
                                                     Lịch Sử
                                                 </Button>
                                                 {openDialogHis &&
                                                     selectedItemId ===
-                                                    item.id_cus && (
+                                                        item.id_cus && (
                                                         <Dialog
-                                                            open={
-                                                                openDialogHis
-                                                            }
+                                                            open={openDialogHis}
                                                             handler={
                                                                 handleOpenDialogHis
                                                             }
@@ -667,19 +637,77 @@ function Search({ auth }) {
                                                             </DialogHeader>
                                                             <Divider />
                                                             <DialogBody>
-                                                                <span className="pr-2 italic underline">
-                                                                    {
-                                                                        // decodeHis(item.his_work)
-                                                                        //    parseJson(item.his_work)
-                                                                    }
-                                                                </span>
-                                                                <span>
+                                                                <table className="min-w-full bg-white">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className={classTableHistory}>
+                                                                                Người
+                                                                                Xử
+                                                                                Lý
+                                                                            </th>
+                                                                            <th className={classTableHistory}>
+                                                                                Action
+                                                                            </th>
+                                                                            <th className={classTableHistory}>
+                                                                                Time
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {jsonParse.map(
+                                                                            (
+                                                                                itemJson,
+                                                                                index
+                                                                            ) => {
+                                                                                const correspondingAuth =
+                                                                                    userAuth.find(
+                                                                                        (
+                                                                                            userAuth
+                                                                                        ) =>
+                                                                                            userAuth.id ===
+                                                                                            itemJson.id_auth
+                                                                                    );
+                                                                                const correspondingWorker =
+                                                                                    item
+                                                                                        .worker
+                                                                                        .id ===
+                                                                                    itemJson.id_worker
+                                                                                        ? item
+                                                                                              .worker
+                                                                                              .worker_full_name
+                                                                                        : "Unknown";
+                                                                                const workerFullName =
+                                                                                    correspondingAuth
+                                                                                        ? correspondingAuth.name
+                                                                                        : `(${item.worker.worker_code})- ${correspondingWorker}`;
 
-                                                                </span>
-                                                                <Divider className="mb-2" />
-                                                                <div>
-
-                                                                </div>
+                                                                                return (
+                                                                                    <tr
+                                                                                        key={
+                                                                                            index
+                                                                                        }
+                                                                                    >
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                workerFullName
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                itemJson.action
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td className="px-6 py-4 border-b border-gray-500">
+                                                                                            {
+                                                                                                itemJson.time
+                                                                                            }
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                    </tbody>
+                                                                </table>
                                                             </DialogBody>
                                                             <Divider />
                                                             <DialogFooter>

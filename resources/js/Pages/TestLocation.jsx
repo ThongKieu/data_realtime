@@ -21,7 +21,7 @@ function TestLocation() {
             });
 
             const jsonData = await response.json();
-            setData(jsonData.reverse());
+            setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }

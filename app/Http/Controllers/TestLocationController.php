@@ -39,7 +39,7 @@ class TestLocationController extends Controller
     public function getLocation(Request $request)
     {
         // $testLocation = TestLocation::where('id_worker', '=', $request->idWorker)->get();
-        $testLocation = DB::table('test_locations')->where('id_worker', '=', $request->idWorker)->get();
+        $testLocation = DB::table('test_locations')->where('id_worker', '=', $request->idWorker)->orderBy('id', 'desc')->limit(100)->get();
         return $testLocation;
     }
 }

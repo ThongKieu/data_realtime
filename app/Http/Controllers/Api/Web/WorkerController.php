@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Web;
 
+use App\Http\Controllers\AccountionWorkerController;
 use App\Http\Controllers\Api\MapsWorkerController;
 use App\Http\Controllers\Controller;
 use App\Imports\WorkerImport;
@@ -83,6 +84,8 @@ class WorkerController extends Controller
                 if($re->status == 2)
                 {
                     MapsWorkerController::updateDismissal($re->id);
+                    AccountionWorker::where('id','=',$re->id)->update(['active'=>2]);
+                   
                 }
                 return response()->json('Change Status');
             case 'avatar_change_worker':

@@ -48,8 +48,7 @@ function Search({ auth }) {
             seri_number: 123564,
             status_admin_check: 1,
             flag_check: 0,
-            his_work:
-                '[{"id_auth":1,"id_worker":null,"action":"G\\u1eedi L\\u1ecbch Th\\u1ee3","time":"2024-05-27 15:20"}]',
+            his_work: `[{\"id_auth\":1,\"id_worker\":null,\"action\":\"G\\u1eedi L\\u1ecbch Th\\u1ee3\",\"time\":\"2024-05-27 15:20\"}]`,
             work: {
                 id: 1,
                 work_content: "Sửa máy  lạnh 1500k",
@@ -284,10 +283,11 @@ function Search({ auth }) {
                                         }
                                     );
                                     const maxLength = 50;
-                                    const jsonParse = JSON?.parse(
-                                        item.his_work
-                                    );
-                                    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300'
+                                    // // if (item.his_work != undefined) {
+                                    //     const cleanJsonString = item.his_work?.slice(1, -1);
+                                    //     const jsonParse = JSON?.parse(cleanJsonString);
+                                    //     console.log(jsonParse);
+                                    // // }
                                     return (
                                         <tr
                                             key={index}

@@ -22,15 +22,11 @@ const TestLocation = () => {
                     body: JSON.stringify(requestBody),
                 });
 
-                const jsonData = await response.json();
-                setData(jsonData.reverse());
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+            const jsonData = await response.json();
+            setData(jsonData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
-    };
-    const handleLocal_Worker = () => {
-        fetchData(changeInput);
     };
     return (
         <div>

@@ -18,9 +18,9 @@ export default defineConfig({
         // host: ["192.168.0.44"],
         // port: 5173,
         // hmr: {host: ["192.168.0.44"],},
-        host: ["192.168.0.44"],
+        host: ["192.168.0.231"],
         port: 5173,
-        hmr: {host: ["192.168.0.44"],},
+        hmr: {host: ["192.168.0.231"],},
     },
     build:{
         chunkSizeWarningLimit: 32000,

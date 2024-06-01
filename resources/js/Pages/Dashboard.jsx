@@ -1921,7 +1921,7 @@ const Dashboard = ({ auth }) => {
                             handleSendImageVT={() =>
                                 handleImageSubmit(selectedFilesVT, 2)
                             }
-                            socket={socket_Dash}
+                            socketD={socket_Dash}
                             handleSearch={() => handleSearch(selectedDate)}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}

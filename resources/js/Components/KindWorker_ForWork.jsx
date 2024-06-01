@@ -31,6 +31,7 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
         status_admin_check: work.status_admin_check,
         flag_check: work.flag_check,
         warranties: work.warranties,
+        his_work: work.his_work,
     }));
     return (
 

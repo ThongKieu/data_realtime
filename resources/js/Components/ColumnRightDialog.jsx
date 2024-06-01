@@ -460,6 +460,146 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         </Dialog>
     );
 };
+const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [scale, setScale] = useState(1);
+    const handleZoomIn = () => {
+        setScale(prevScale => prevScale + 0.1);
+      };
+      const handleZoomOut = () => {
+        setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+      };
+
+      const handleWheel = (event) => {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+          setScale(prevScale => prevScale + 0.1);
+        } else {
+          setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+        }
+      };
+
+      const handleClose = () => {
+        setSelectedImage(null);
+        setScale(1);
+      };
+    const processedDataKS = processSeriImages(params.bill_imag);
+    useEffect(() => {
+        if (selectedImage) {
+          window.addEventListener('wheel', handleWheel);
+        }
+        return () => {
+          window.removeEventListener('wheel', handleWheel);
+        };
+      }, [selectedImage]);
+    return (
+        <Dialog open={openViewHis} handler={handleOpenViewHis}>
+            <div className="flex items-center justify-between">
+                <DialogHeader> Thông tin lịch xử</DialogHeader>
+            </div>
+            <DialogBody>
+                <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Công Việc:
+                        </h2>
+                        <span>{params.his_work}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Địa Chỉ:</h2>
+                        <span>{params.street}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">Quận:</h2>
+                        <span>{params.district}</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Số Điện Thoại:
+                        </h2>
+                        <span>{params.phone_number}</span>
+                    </div>
+                    <div className="mb-2">
+                        <h2 className="text-lg font-semibold">
+                            Nội Dung Khảo Sát Thực Tế:
+                        </h2>
+                        <span>{params.real_note}</span>
+                    </div>
+                </div>
+                <div className="mb-2">
+                    <h2 className="text-lg font-semibold">
+                        Hình Ảnh Khảo Sát Thực Tế:
+                    </h2>
+                    {/* {params.bill_imag == null || processedDataKS == false ? (
+                        <p className="flex items-center justify-center w-32 h-32 border border-green-500">
+                            Not Image
+                        </p>
+                    ) : (
+                        <span className="flex justify-between">
+                            {Array.isArray(processedDataKS) &&
+                                processedDataKS.map((item, index) => (
+                                    <img
+                                        key={index}
+                                        src={item}
+                                        alt={`hinhKS_${index}`}
+                                        className="w-40 h-40"
+                                        onClick={() => {
+                                            setSelectedImage(item);
+                                            setScale(1);
+                                        }}
+                                    />
+                                ))}
+                            {selectedImage && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
+                                    <div className="relative">
+                                        <button
+                                            className="absolute z-40 text-2xl text-white top-2 right-2"
+                                            onClick={handleClose}
+                                        >
+                                            &times;
+                                        </button>
+                                        <div className="absolute flex flex-col space-y-2 top-2 left-2">
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomIn}
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
+                                                onClick={handleZoomOut}
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                        <img
+                                            src={selectedImage}
+                                            className="max-w-full max-h-full"
+                                            style={{
+                                                transform: `scale(${scale})`,
+                                            }}
+                                            alt="Selected"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </span>
+                    )} */}
+                </div>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+                <Button
+                    variant="outlined"
+                    className="px-5 py-2"
+                    color="red"
+                    onClick={handleViewHis}
+                >
+                    Xác nhận
+                </Button>
+            </DialogFooter>
+        </Dialog>
+    );
+};
 const ViewTotalDialog = ({
     openViewTotal,
     handleOpenViewTotal,
@@ -755,5 +895,5 @@ export {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb,
+    KhaoSatDialogWeb,HisDialog
 };

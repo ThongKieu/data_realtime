@@ -654,7 +654,7 @@ function Search({ auth }) {
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {jsonParse.map(
+                                                                        {jsonParse?.map(
                                                                             (
                                                                                 itemJson,
                                                                                 index

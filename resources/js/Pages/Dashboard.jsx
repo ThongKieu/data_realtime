@@ -71,6 +71,7 @@ import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 const Dashboard = ({ auth }) => {
     const [socket_Dash, setSocket_Dash] = useState();
     const [infoWorkerDashboard, setInfoWorkerDashboard] = useState([]);
+    const [message, setMessage] = useState(auth.user.id);
     // ---- Gộp Data--------------
     // format date Định dạng lại ngày
     const formattedToday = getFormattedToday();
@@ -96,15 +97,13 @@ const Dashboard = ({ auth }) => {
     useEffect(() => {
         if (newSocket) {
             setSocket_Dash(newSocket, { secure: true });
-            newSocket.emit("pushOnline", auth.user.id);
+            newSocket.emit("pushOnline", message);
             newSocket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book != undefined) {
-                    console.log("undefined", data, data.date_book);
+                if (data.date_book || data.date_book != undefined) {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
                 } else if (data) {
-                    console.log("data", data, selectedDate);
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
@@ -133,7 +132,6 @@ const Dashboard = ({ auth }) => {
             }
         };
     }, [newSocket]);
-
     useEffect(() => {
         const mergedWorks = workData_Work.reduce((acc, currentItem) => {
             return acc.concat(currentItem.oldWork);

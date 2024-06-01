@@ -365,6 +365,11 @@ function NavbarDefault({
                 getDataWorkerSales(data, check);
             }
         });
+        // return () => {
+        //     if (socketCard) {
+        //         socketCard.disconnect();
+        //     }
+        // };
     }, [check]);
     const fetchDelete = async () => {
         try {

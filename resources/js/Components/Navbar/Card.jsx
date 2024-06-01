@@ -16,9 +16,9 @@ function CardMain() {
             getNumberOfWork();
             getNumberOfWork_Assign();
             newSocket.on("sendAddWorkTo_Client", (data) => {
-                fetchDelete();
-                getNumberOfWork();
-                getNumberOfWork_Assign();
+                fetchDelete(data);
+                getNumberOfWork(data);
+                getNumberOfWork_Assign(data);
             });
             setHasLoaded(true);
         }

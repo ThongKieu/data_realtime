@@ -1,46 +1,58 @@
 import { Head } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
-import { Card, Typography } from "@material-tailwind/react";
+import { Button, Card, Typography, Input } from "@material-tailwind/react";
 import { host } from "@/Utils/UrlApi";
 
-function TestLocation() {
+const TestLocation = () => {
     const TABLE_HEAD = ["Address", "Lat", "Lng", "Time"];
     const [data, setData] = useState(null);
+    const [changeInput, setChangeInput] = useState();
+    const fetchData = async (id_Worker) => {
+        if (id_Worker) {
+            console.log(id_Worker);
+ 		const requestBody = {
+                idWorker: id_Worker,
+            	};
+            try {
+                const response = await fetch(host + "api/web/getLocation", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestBody),
+                });
 
-    const fetchData = async () => {
-        try {
-            const requestBody = {
-                idWorker: 3,
-            };
-            const response = await fetch(host + "api/web/getLocation", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            const jsonData = await response.json();
-            setData(jsonData.reverse());
-        } catch (error) {
-            console.error("Error fetching data:", error);
+                const jsonData = await response.json();
+                setData(jsonData.reverse());
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
     };
-    useEffect(() => {
-        fetchData();
-    }, []);
-
+    const handleLocal_Worker = () => {
+        fetchData(changeInput);
+    };
     return (
         <div>
             <Head title="Test Location" />
-            <Card className="h-full w-full overflow-scroll">
-                <table className="w-full min-w-max table-auto text-left">
+            <Card className="flex flex-row m-2">
+                <Input
+                    type="text"
+                    name=""
+                    onChange={(e) => setChangeInput(e.target.value)}
+                    className="pr-2 border-none"
+                    labelProps={{className: 'hidden '}}
+                />
+                <Button onClick={handleLocal_Worker}>Tìm</Button>
+            </Card>
+            <Card className="w-full h-full overflow-scroll">
+                <table className="w-full text-left table-auto min-w-max">
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head) => (
                                 <th
                                     key={head}
-                                    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                                    className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                                 >
                                     <Typography
                                         variant="small"
@@ -110,5 +122,5 @@ function TestLocation() {
             </Card>
         </div>
     );
-}
+};
 export default TestLocation;

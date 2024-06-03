@@ -13,6 +13,7 @@ import {
 import { Box, Divider } from "@mui/material";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
+import { ARRAY_ACTION } from "@/Data/Table/Data";
 const TABLE_HEAD = [
     "Mã CV",
     "Nội dung",
@@ -247,7 +248,7 @@ function Search({ auth }) {
             >
                 <table
                     className={`w-full p-2 text-left border border-green-500 table-auto min-w-max`}
-                    // style={{ height: `${screenSize.height - 50}px` }}
+                // style={{ height: `${screenSize.height - 50}px` }}
                 >
                     <thead>
                         <tr>
@@ -343,7 +344,7 @@ function Search({ auth }) {
                                                 </Button>
                                                 {openDialog &&
                                                     selectedItemId ===
-                                                        item.id_cus && (
+                                                    item.id_cus && (
                                                         <Dialog
                                                             open={openDialog}
                                                             handler={
@@ -356,10 +357,10 @@ function Search({ auth }) {
                                                             </DialogHeader>
                                                             <Divider />
                                                             {item.warranty !==
-                                                            undefined ? (
+                                                                undefined ? (
                                                                 <DialogBody>
                                                                     {item.warranty ==
-                                                                    "" ? (
+                                                                        "" ? (
                                                                         "Không bảo hành"
                                                                     ) : (
                                                                         <>
@@ -385,18 +386,18 @@ function Search({ auth }) {
                                                                                                 </span>
                                                                                                 <span>
                                                                                                     {item.unit ===
-                                                                                                    "d"
+                                                                                                        "d"
                                                                                                         ? "ngày"
                                                                                                         : item.unit ===
-                                                                                                          "w"
-                                                                                                        ? "tuần"
-                                                                                                        : item.unit ===
-                                                                                                          "m"
-                                                                                                        ? "tháng"
-                                                                                                        : item.unit ===
-                                                                                                          "y"
-                                                                                                        ? "năm"
-                                                                                                        : ""}
+                                                                                                            "w"
+                                                                                                            ? "tuần"
+                                                                                                            : item.unit ===
+                                                                                                                "m"
+                                                                                                                ? "tháng"
+                                                                                                                : item.unit ===
+                                                                                                                    "y"
+                                                                                                                    ? "năm"
+                                                                                                                    : ""}
                                                                                                 </span>
                                                                                             </div>
                                                                                             <div>
@@ -484,7 +485,7 @@ function Search({ auth }) {
                                                 </Button>
                                                 {openDialogNote &&
                                                     selectedItemId ===
-                                                        item.id_cus && (
+                                                    item.id_cus && (
                                                         <Dialog
                                                             open={
                                                                 openDialogNote
@@ -628,7 +629,7 @@ function Search({ auth }) {
                                                 </Button>
                                                 {openDialogHis &&
                                                     selectedItemId ===
-                                                        item.id_cus && (
+                                                    item.id_cus && (
                                                         <Dialog
                                                             open={openDialogHis}
                                                             handler={
@@ -674,16 +675,18 @@ function Search({ auth }) {
                                                                                     item
                                                                                         .worker
                                                                                         .id ===
-                                                                                    itemJson.id_worker
+                                                                                        itemJson.id_worker
                                                                                         ? item
-                                                                                              .worker
-                                                                                              .worker_full_name
+                                                                                            .worker
+                                                                                            .worker_full_name
                                                                                         : "Unknown";
                                                                                 const workerFullName =
                                                                                     correspondingAuth
                                                                                         ? correspondingAuth.name
                                                                                         : `(${item.worker.worker_code})- ${correspondingWorker}`;
-
+                                                                                const checkAc = ARRAY_ACTION?.find((item) => {
+                                                                                    return item.id === itemJson.action ? item.value : '';
+                                                                                });
                                                                                 return (
                                                                                     <tr
                                                                                         key={
@@ -697,7 +700,9 @@ function Search({ auth }) {
                                                                                         </td>
                                                                                         <td className="px-6 py-4 border-b border-gray-500">
                                                                                             {
-                                                                                                itemJson.action
+
+                                                                                                checkAc ? checkAc.value : ''
+
                                                                                             }
                                                                                         </td>
                                                                                         <td className="px-6 py-4 border-b border-gray-500">

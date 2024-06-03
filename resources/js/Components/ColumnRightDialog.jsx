@@ -13,6 +13,8 @@ import {
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
+import { ARRAY_ACTION } from "@/Data/Table/Data";
+
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -462,7 +464,15 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
 };
 const arrayAction = [
     { id: 'guitho', value: 'Gửi Lịch Thợ' },
-    { id: 'guilich', value: 'Gửi Lịch Thợ2' },
+    { id: 'checkin', value: 'Thợ đã đến' },
+    { id: 'checkout', value: 'Đã Làm Xong' },
+    { id: 'goi', value: 'Đã gọi khách' },
+    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
+    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
+    { id: 'mai', value: 'Mai Làm Tiếp' },
+    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
+    { id: 'xong', value: 'Thợ Làm Xong' },
+
 ];
 const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth_user, workerInfo }) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -500,7 +510,7 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
         params.his_work
     );
     const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
-   
+
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
             <div className="flex items-center justify-between">
@@ -552,14 +562,16 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
                                         : `${correspondingWorker}`;
 
                                 // console.log(correspondingAuth.name);
-                                const checkAc = arrayAction?.find((arrayAction) => (arrayAction.id === itemJson.action ? arrayAction.value: ''));
+                                const checkAc = ARRAY_ACTION?.find((item) => {
+                                    return item.id === itemJson.action ? item.value : '';
+                                });
+
                                 // console.log(typeof arrayAction.id);
                                 return (
                                     <tr
                                         key={
                                             index
                                         }
-
                                     >
                                         <td className="px-6 py-4 border-b border-gray-500 border">
                                             {workerFullName}
@@ -567,7 +579,8 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
                                         <td className="px-6 py-4 border-b border-gray-500 border">
                                             {
 
-checkAc
+                                                checkAc ? checkAc.value : ''
+
                                             }
                                         </td>
                                         <td className="px-6 py-4 border-b border-gray-500 border">

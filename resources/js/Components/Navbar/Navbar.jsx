@@ -255,7 +255,7 @@ function ProfileMenu({ propauthprofile }) {
 
 // nav list component
 
-function NavList() {
+function NavList({ active = false }) {
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <a
@@ -270,7 +270,7 @@ function NavList() {
             <NavLink
                 href={route(`search`)}
                 className="flex flex-row gap-2 font-normal text-black lg:rounded-full"
-                active={true}
+
             >
                 <MenuItem className="flex gap-2 text-black lg:rounded-full">
                     <span>

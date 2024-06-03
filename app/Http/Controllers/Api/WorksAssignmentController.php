@@ -67,6 +67,7 @@ class WorksAssignmentController extends Controller
                     "workers.worker_phone_company",
                     "works_assignments.status_admin_check",
                     "works_assignments.flag_check",
+                    "works_assignments.his_work",
                 ]);
             // dd($data_json[$kindId]['data']);
             // Lấy thông tin bảo hành cho mỗi công việc được giao

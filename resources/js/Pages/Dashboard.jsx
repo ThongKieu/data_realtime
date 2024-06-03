@@ -56,7 +56,7 @@ import {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb,
+    KhaoSatDialogWeb,HisDialog
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -190,7 +190,9 @@ const Dashboard = ({ auth }) => {
             const jsonData = await response.json();
             if (jsonData) {
                 setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
-                setIsLoading(false); // Optional chaining để gọi hàm nếu nó tồn tại
+                setIsLoading(false); 
+                // Optional chaining để gọi hàm nếu nó tồn tại
+                // console.log(jsonData,'3333333333333333333333333333');
             } else {
                 console.log("Data lỗi không tồn tại!!");
                 setIsLoading(false); // Đảm bảo setIsLoading được gọi ngay cả khi jsonData trống
@@ -319,7 +321,22 @@ const Dashboard = ({ auth }) => {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    //
+    const [userAuth, setUserAuth] = useState([]);
+    const fetchUser = async () => {
+        try {
+            const response = await fetch("/api/web/users");
+            const jsonData = await response.json();
+            setUserAuth(jsonData.users);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    useEffect(() => {
+        fetchUser();
+    }, []);
     // ---------- Dialog ------------------------
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     // ----- lay thong tin bao hanh --------
@@ -1206,6 +1223,7 @@ const Dashboard = ({ auth }) => {
                 const [cardExpiresWeb, setCardExpiresWeb] = useState(
                     params.row
                 );
+                // console.log(params);
                 const useToggle = (initialState) => {
                     const [open, setOpen] = useState(initialState);
                     const handleOpen = () => {
@@ -1222,6 +1240,7 @@ const Dashboard = ({ auth }) => {
                     useToggle(false);
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
                 const [openView_KS, handleOpenView_KS] = useToggle(false);
+                const [openView_His, handleOpenView_His] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
                 const [work_noteWeb, setWorkNoteWeb] = useState();
                 const hasData = params.row;
@@ -1279,6 +1298,9 @@ const Dashboard = ({ auth }) => {
                         case "openViewKS":
                             handleOpenFunction(!isOpenState);
                             break;
+                        case "openViewHis":
+                                handleOpenFunction(!isOpenState);
+                                break;
                         default:
                             break;
                     }
@@ -1341,6 +1363,14 @@ const Dashboard = ({ auth }) => {
                         openView_KS,
                         handleOpenView_KS,
                         "openViewKS"
+                    );
+                };
+                const handleOpenViewHisDisable = () => {
+                    handleButtonAction(
+                        params.row.id,
+                        openView_His,
+                        handleOpenView_His,
+                        "openViewHis"
                     );
                 };
                 const handleSentDeleteDone = async () => {
@@ -1736,6 +1766,27 @@ const Dashboard = ({ auth }) => {
                                     </Button>
                                 ) : (
                                     <>
+                                       
+                                        <Tooltip
+                                            content="Nhập Thu Chi"
+                                            animate={{
+                                                mount: { scale: 1, y: 0 },
+                                                unmount: {
+                                                    scale: 0,
+                                                    y: 25,
+                                                },
+                                            }}
+                                        >
+                                            <Button
+                                                color="white"
+                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
+                                                onClick={() =>
+                                                    handleOpenSpendingTotalWithDisable()
+                                                }
+                                            >
+                                                <ArrowUpTrayIcon />
+                                            </Button>
+                                        </Tooltip>
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
@@ -1787,10 +1838,10 @@ const Dashboard = ({ auth }) => {
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>
-                                                <MenuItem className="p-0 w-fit">
+                                                <MenuItem className="p-1 w-fit">
                                                     <Tooltip
                                                         content="Khảo Sát"
-                                                        position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                        position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
                                                         arrowSize={10} // Đặt kích thước mũi tên của Tooltip
                                                         padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
                                                         distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
@@ -1820,28 +1871,42 @@ const Dashboard = ({ auth }) => {
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>
+                                                <MenuItem className="p-0 w-fit">
+                                                    <Tooltip
+                                                        content="Lịch Sử2"
+                                                        position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                        arrowSize={10} // Đặt kích thước mũi tên của Tooltip
+                                                        padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
+                                                        distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
+                                                        tagName="div" // Đặt loại thẻ sẽ được sử dụng cho Tooltip (mặc định là 'span')
+                                                        className="custom-tooltip" // Đặt class cho Tooltip để tùy chỉnh kiểu dáng
+                                                        contentStyle={{
+                                                            backgroundColor:
+                                                                "red",
+                                                            color: "white",
+                                                        }}
+                                                        // animate={{
+                                                        //     mount: {
+                                                        //         scale: 1,
+                                                        //         y: 0,
+                                                        //     },
+                                                        //     unmount: {
+                                                        //         scale: 0,
+                                                        //         y: 25,
+                                                        //     },
+                                                        // }}
+                                                    >
+                                                         <img src="/assets/h_icon.svg" alt="H icon" className="w-6 h-6 border-spacing-1 border-s-deep-orange-50 m-1 text-cyan-300"  onClick={() =>
+                                                                handleOpenViewHisDisable()
+                                                            }/>
+                                                        {/* <TicketIcon
+                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                            
+                                                        /> */}
+                                                    </Tooltip>
+                                                </MenuItem>
                                             </MenuList>
                                         </Menu>
-                                        <Tooltip
-                                            content="Nhập Thu Chi"
-                                            animate={{
-                                                mount: { scale: 1, y: 0 },
-                                                unmount: {
-                                                    scale: 0,
-                                                    y: 25,
-                                                },
-                                            }}
-                                        >
-                                            <Button
-                                                color="white"
-                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
-                                                onClick={() =>
-                                                    handleOpenSpendingTotalWithDisable()
-                                                }
-                                            >
-                                                <ArrowUpTrayIcon />
-                                            </Button>
-                                        </Tooltip>
                                         <Tooltip
                                             content="Sửa liên hệ admin"
                                             animate={{
@@ -1995,6 +2060,14 @@ const Dashboard = ({ auth }) => {
                             openViewKS={openView_KS}
                             handleOpenViewKS={handleOpenViewKSDisable}
                             handleViewKS={handleOpenViewKSDisable}
+                            params={params.row}
+                        />
+                          <HisDialog
+                            openViewHis={openView_His}
+                            auth_user={userAuth}
+                            workerInfo = {infoWorkerDashboard}
+                            handleOpenViewHis={handleOpenViewHisDisable}
+                            handleViewHis={handleOpenViewHisDisable}
                             params={params.row}
                         />
                     </div>

@@ -84,7 +84,7 @@ function Search({ auth }) {
         },
     ]);
     const [keySearch, setKey] = useState("");
-    const [userAuth, setUserAuth] = useState("");
+    const [userAuth, setUserAuth] = useState([]);
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
@@ -285,7 +285,10 @@ function Search({ auth }) {
                                     const maxLength = 50;
                                     // // if (item.his_work != undefined) {
                                     //     const cleanJsonString = item.his_work?.slice(1, -1);
-                                    //     const jsonParse = JSON?.parse(cleanJsonString);
+                                    const jsonParse = JSON?.parse(
+                                        item.his_work
+                                    );
+                                    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300'
                                     //     console.log(jsonParse);
                                     // // }
                                     return (
@@ -654,7 +657,7 @@ function Search({ auth }) {
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        {jsonParse.map(
+                                                                        {jsonParse?.map(
                                                                             (
                                                                                 itemJson,
                                                                                 index

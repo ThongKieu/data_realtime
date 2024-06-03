@@ -319,7 +319,22 @@ const Dashboard = ({ auth }) => {
             console.error("Error fetching data lỗi rồi:", error);
         }
     };
+    //
+    const [userAuth, setUserAuth] = useState([]);
+    const fetchUser = async () => {
+        try {
+            const response = await fetch("/api/web/users");
+            const jsonData = await response.json();
+            setUserAuth(jsonData.users);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    useEffect(() => {
+        fetchUser();
+    }, []);
     // ---------- Dialog ------------------------
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     // ----- lay thong tin bao hanh --------
@@ -1821,10 +1836,10 @@ const Dashboard = ({ auth }) => {
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>
-                                                <MenuItem className="p-0 w-fit">
+                                                <MenuItem className="p-1 w-fit">
                                                     <Tooltip
                                                         content="Khảo Sát"
-                                                        position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                        position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
                                                         arrowSize={10} // Đặt kích thước mũi tên của Tooltip
                                                         padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
                                                         distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
@@ -1856,8 +1871,8 @@ const Dashboard = ({ auth }) => {
                                                 </MenuItem>
                                                 <MenuItem className="p-0 w-fit">
                                                     <Tooltip
-                                                        content="Lịch Sử"
-                                                        position="top" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
+                                                        content="Lịch Sử2"
+                                                        position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
                                                         arrowSize={10} // Đặt kích thước mũi tên của Tooltip
                                                         padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
                                                         distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
@@ -1868,23 +1883,24 @@ const Dashboard = ({ auth }) => {
                                                                 "red",
                                                             color: "white",
                                                         }}
-                                                        animate={{
-                                                            mount: {
-                                                                scale: 1,
-                                                                y: 0,
-                                                            },
-                                                            unmount: {
-                                                                scale: 0,
-                                                                y: 25,
-                                                            },
-                                                        }}
+                                                        // animate={{
+                                                        //     mount: {
+                                                        //         scale: 1,
+                                                        //         y: 0,
+                                                        //     },
+                                                        //     unmount: {
+                                                        //         scale: 0,
+                                                        //         y: 25,
+                                                        //     },
+                                                        // }}
                                                     >
-                                                        <TicketIcon
-                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={() =>
+                                                         <img src="/assets/h_icon.svg" alt="H icon" className="w-6 h-6 border-spacing-1 border-s-deep-orange-50 m-1 text-cyan-300"  onClick={() =>
                                                                 handleOpenViewHisDisable()
-                                                            }
-                                                        />
+                                                            }/>
+                                                        {/* <TicketIcon
+                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
+                                                            
+                                                        /> */}
                                                     </Tooltip>
                                                 </MenuItem>
                                             </MenuList>
@@ -2046,6 +2062,8 @@ const Dashboard = ({ auth }) => {
                         />
                           <HisDialog
                             openViewHis={openView_His}
+                            auth_user={userAuth}
+                            workerInfo = {infoWorkerDashboard}
                             handleOpenViewHis={handleOpenViewHisDisable}
                             handleViewHis={handleOpenViewHisDisable}
                             params={params.row}

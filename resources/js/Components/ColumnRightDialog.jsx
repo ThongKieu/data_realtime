@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Button,
     Dialog,
@@ -324,34 +324,34 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
     const [scale, setScale] = useState(1);
     const handleZoomIn = () => {
         setScale(prevScale => prevScale + 0.1);
-      };
+    };
 
-      const handleZoomOut = () => {
+    const handleZoomOut = () => {
         setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
-      };
+    };
 
-      const handleWheel = (event) => {
+    const handleWheel = (event) => {
         event.preventDefault();
         if (event.deltaY < 0) {
-          setScale(prevScale => prevScale + 0.1);
+            setScale(prevScale => prevScale + 0.1);
         } else {
-          setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+            setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
         }
-      };
+    };
 
-      const handleClose = () => {
+    const handleClose = () => {
         setSelectedImage(null);
         setScale(1);
-      };
+    };
     const processedDataKS = processSeriImages(params.bill_imag);
     useEffect(() => {
         if (selectedImage) {
-          window.addEventListener('wheel', handleWheel);
+            window.addEventListener('wheel', handleWheel);
         }
         return () => {
-          window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('wheel', handleWheel);
         };
-      }, [selectedImage]);
+    }, [selectedImage]);
     return (
         <Dialog open={openViewKS} handler={handleOpenViewKS}>
             <div className="flex items-center justify-between">
@@ -460,132 +460,127 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         </Dialog>
     );
 };
-const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis }) => {
+const arrayAction = [
+    { id: 'guitho', value: 'Gửi Lịch Thợ' },
+    { id: 'guilich', value: 'Gửi Lịch Thợ2' },
+];
+const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth_user, workerInfo }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [scale, setScale] = useState(1);
     const handleZoomIn = () => {
         setScale(prevScale => prevScale + 0.1);
-      };
-      const handleZoomOut = () => {
+    };
+    const handleZoomOut = () => {
         setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
-      };
+    };
 
-      const handleWheel = (event) => {
+    const handleWheel = (event) => {
         event.preventDefault();
         if (event.deltaY < 0) {
-          setScale(prevScale => prevScale + 0.1);
+            setScale(prevScale => prevScale + 0.1);
         } else {
-          setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+            setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
         }
-      };
+    };
 
-      const handleClose = () => {
+    const handleClose = () => {
         setSelectedImage(null);
         setScale(1);
-      };
+    };
     const processedDataKS = processSeriImages(params.bill_imag);
     useEffect(() => {
         if (selectedImage) {
-          window.addEventListener('wheel', handleWheel);
+            window.addEventListener('wheel', handleWheel);
         }
         return () => {
-          window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('wheel', handleWheel);
         };
-      }, [selectedImage]);
+    }, [selectedImage]);
+    const jsonParse = JSON?.parse(
+        params.his_work
+    );
+    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+   
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
             <div className="flex items-center justify-between">
                 <DialogHeader> Thông tin lịch xử</DialogHeader>
             </div>
             <DialogBody>
-                <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Nội Dung Công Việc:
-                        </h2>
-                        <span>{params.his_work}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">Địa Chỉ:</h2>
-                        <span>{params.street}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">Quận:</h2>
-                        <span>{params.district}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Số Điện Thoại:
-                        </h2>
-                        <span>{params.phone_number}</span>
-                    </div>
-                    <div className="mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Nội Dung Khảo Sát Thực Tế:
-                        </h2>
-                        <span>{params.real_note}</span>
-                    </div>
-                </div>
-                <div className="mb-2">
-                    <h2 className="text-lg font-semibold">
-                        Hình Ảnh Khảo Sát Thực Tế:
-                    </h2>
-                    {/* {params.bill_imag == null || processedDataKS == false ? (
-                        <p className="flex items-center justify-center w-32 h-32 border border-green-500">
-                            Not Image
-                        </p>
-                    ) : (
-                        <span className="flex justify-between">
-                            {Array.isArray(processedDataKS) &&
-                                processedDataKS.map((item, index) => (
-                                    <img
-                                        key={index}
-                                        src={item}
-                                        alt={`hinhKS_${index}`}
-                                        className="w-40 h-40"
-                                        onClick={() => {
-                                            setSelectedImage(item);
-                                            setScale(1);
-                                        }}
-                                    />
-                                ))}
-                            {selectedImage && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-                                    <div className="relative">
-                                        <button
-                                            className="absolute z-40 text-2xl text-white top-2 right-2"
-                                            onClick={handleClose}
-                                        >
-                                            &times;
-                                        </button>
-                                        <div className="absolute flex flex-col space-y-2 top-2 left-2">
-                                            <button
-                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
-                                                onClick={handleZoomIn}
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
-                                                onClick={handleZoomOut}
-                                            >
-                                                -
-                                            </button>
-                                        </div>
-                                        <img
-                                            src={selectedImage}
-                                            className="max-w-full max-h-full"
-                                            style={{
-                                                transform: `scale(${scale})`,
-                                            }}
-                                            alt="Selected"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </span>
-                    )} */}
-                </div>
+                <table className="min-w-full bg-white">
+                    <thead>
+                        <tr >
+                            <th className={classTableHistory}>
+                                Người
+                                Xử
+                                Lý
+                            </th>
+                            <th className={classTableHistory}>
+                                Action
+                            </th>
+                            <th className={classTableHistory}>
+                                Time
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {jsonParse?.map(
+                            (
+                                itemJson,
+                                index
+                            ) => {
+                                const correspondingAuth =
+                                    auth_user?.find(
+                                        (
+                                            auth_user
+                                        ) =>
+                                            auth_user.id ===
+                                            itemJson.id_auth
+                                    );
+
+                                const correspondingWorker =
+                                    workerInfo?.find(
+                                        (
+                                            workerInfo
+                                        ) =>
+                                            workerInfo.value ===
+                                                itemJson.id_worker ? workerInfo.label : 'không có'
+                                    );
+                                const workerFullName =
+                                    correspondingAuth
+                                        ? correspondingAuth.name
+                                        : `${correspondingWorker}`;
+
+                                // console.log(correspondingAuth.name);
+                                const checkAc = arrayAction?.find((arrayAction) => (arrayAction.id === itemJson.action ? arrayAction.value: ''));
+                                // console.log(typeof arrayAction.id);
+                                return (
+                                    <tr
+                                        key={
+                                            index
+                                        }
+
+                                    >
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {workerFullName}
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {
+
+checkAc
+                                            }
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {
+                                                itemJson.time
+                                            }
+                                        </td>
+                                    </tr>
+                                );
+                            }
+                        )}
+                    </tbody>
+                </table>
             </DialogBody>
             <DialogFooter className="space-x-2">
                 <Button
@@ -697,19 +692,18 @@ const ViewTotalDialog = ({
                             </div>
                         </div>
                         <p
-                            className={`${
-                                LoiNhuan > 0
-                                    ? "text-green-500"
-                                    : LoiNhuan == 0
+                            className={`${LoiNhuan > 0
+                                ? "text-green-500"
+                                : LoiNhuan == 0
                                     ? "text-yellow-500"
                                     : "text-red-500"
-                            }`}
+                                }`}
                         >
                             {LoiNhuan > 0
                                 ? "Chưa Lỗ Được Đâu"
                                 : LoiNhuan == 0
-                                ? "Huề rồi"
-                                : "Lỗ Banh Xát"}
+                                    ? "Huề rồi"
+                                    : "Lỗ Banh Xát"}
                         </p>
                     </div>
                     <div className="p-0">
@@ -750,7 +744,7 @@ const ViewTotalDialog = ({
                             <div className="flex flex-col items-center justify-center">
                                 <p>Hình Vật Tư:</p>
                                 {params.bill_imag == null ||
-                                processedDataVT == false ? (
+                                    processedDataVT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
@@ -772,7 +766,7 @@ const ViewTotalDialog = ({
 
                                 <p>Phiếu Thu:</p>
                                 {params.seri_imag == null ||
-                                processedDataPT == false ? (
+                                    processedDataPT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
@@ -794,9 +788,8 @@ const ViewTotalDialog = ({
                             </div>
                         </div>
                         <div
-                            className={`${
-                                params.warranty == "KBH" ? "hidden" : "block"
-                            } pt-3`}
+                            className={`${params.warranty == "KBH" ? "hidden" : "block"
+                                } pt-3`}
                         >
                             <Card className="w-full h-[200px] overflow-scroll">
                                 <table className="w-full text-left table-auto min-w-max">
@@ -835,7 +828,7 @@ const ViewTotalDialog = ({
                                                                         className="font-normal"
                                                                     >
                                                                         {params.warranty !==
-                                                                        undefined
+                                                                            undefined
                                                                             ? item.id
                                                                             : "KBH"}
                                                                     </Typography>
@@ -895,5 +888,5 @@ export {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb,HisDialog
+    KhaoSatDialogWeb, HisDialog
 };

@@ -15,30 +15,28 @@ import {
 import { UserPlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import newSocket from "@/Utils/Socket";
-import { getFormattedToday } from "@/Data/UrlAPI/UrlApi";
 import useWindowSize from "@/Core/Resize";
 
+import { useSocket } from "@/Utils/SocketContext";
 function CancelBooking({ auth }) {
     const [deleteBooking, setDeleteBooking] = useState([]);
     const [socketCard, setSocketCard] = useState("");
-    const [hasLoaded, setHasLoaded] = useState(false);
+    const socket = useSocket();
     useEffect(() => {
-        if (!hasLoaded) {
-            fetchDelete();
-        // setSocketCard(newSocket, { secure: true });
-        newSocket.on("sendAddWorkTo_Client", (data) => {
-            fetchDelete(data);
-        });
-        setHasLoaded(true);
+        fetchDelete();
+        setSocketCard(socket);
+        if (socket) {
+            socket.on("sendAddWorkTo_Client", (data) => {
+                fetchDelete(data);
+            });
         }
         // lắng nghe server
-        // return () => {
-        //     if (socketCard) {
-        //         socketCard.disconnect();
-        //     }
-        // };
-    }, []);
+        return () => {
+            if (socket) {
+                socket.off("sendAddWorkTo_Client");
+            }
+        };
+    }, [socket]);
     const columns = [
         {
             field: "work_content",
@@ -104,13 +102,16 @@ function CancelBooking({ auth }) {
                             id_worker: selectPhanTho,
                             work_note: params.row.work_note,
                         };
-                        const response = await fetch("api/web/work-assignment", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
+                        const response = await fetch(
+                            "api/web/work-assignment",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                headers: {
+                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                },
+                            }
+                        );
                         if (response.ok) {
                             // socket.emit("addWorkTo_Server", "xoalich");
                             handleOpenTho();
@@ -182,6 +183,9 @@ function CancelBooking({ auth }) {
             const response = await fetch("api/web/cancle/works");
             const jsonData = await response.json();
             setDeleteBooking(jsonData.info_can);
+            if (socketCard) {
+                socketCard.emit('Lịch Xóa:',jsonData.info_can)
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import newSocket from "@/Utils/Socket";
+import { useSocket } from "@/Utils/SocketContext";
 import { host } from "@/Utils/UrlApi";
 function CardMain() {
     const [socketCard, setSocketCard] = useState();
@@ -9,14 +9,16 @@ function CardMain() {
     const [dataWork, setData_Work] = useState(0);
     const [dataWork_Assign, setDataWork_Assign] = useState(0);
     const [workDataCountDelete, setWorkDataCountDelete] = useState(0);
+
+    const socket = useSocket();
+
     useEffect(() => {
-        if (!hasLoaded) {
-            setSocketCard(newSocket, { secure: true });
+        setSocketCard(socket);
+        if (socket) {
             fetchDelete();
             getNumberOfWork();
             getNumberOfWork_Assign();
-            newSocket.on("sendAddWorkTo_Client", (data) => {
-                fetchDelete(data);
+            socket.on("sendAddWorkTo_Client", (data) => {
                 getNumberOfWork(data);
                 getNumberOfWork_Assign(data);
             });
@@ -24,11 +26,11 @@ function CardMain() {
         }
         // lắng nghe server
         return () => {
-            if (socketCard) {
-                socketCard.disconnect();
+            if (socket) {
+                socket.off("sendAddWorkTo_Client");
             }
         };
-    }, [hasLoaded, socketCard]);
+    }, [socket]);
     const getNumberOfWork = async () => {
         try {
             const response = await fetch(host + "api/web/works");

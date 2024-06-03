@@ -33,9 +33,7 @@ import NavLink from "@/Components/NavLink";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
-import {
-    getFirstName,
-} from "@/Data/UrlAPI/UrlApi";
+import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
 import useWindowSize from "@/Core/Resize";
@@ -257,7 +255,7 @@ function ProfileMenu({ propauthprofile }) {
 
 // nav list component
 
-function NavList({ active = false }) {
+function NavList() {
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <a
@@ -272,6 +270,7 @@ function NavList({ active = false }) {
             <NavLink
                 href={route(`search`)}
                 className="flex flex-row gap-2 font-normal text-black lg:rounded-full"
+                active={true}
             >
                 <MenuItem className="flex gap-2 text-black lg:rounded-full">
                     <span>
@@ -333,10 +332,7 @@ function NavList({ active = false }) {
     );
 }
 
-function NavbarDefault({
-    propauth,
-    check,
-}) {
+function NavbarDefault({ propauth, check }) {
     const { width, height } = useWindowSize(200);
     const [socketCard, setSocketCard] = useState();
     const [countDelete, setCountDelete] = useState(0);
@@ -349,32 +345,34 @@ function NavbarDefault({
         Array(jobs.length).fill(false)
     );
     useEffect(() => {
-        fetchDelete();
+        fetchDelete(check);
         getDataWorkerSales(check);
     }, [check]);
+
     useEffect(() => {
-        setSocketCard(newSocket, { secure: true });
-        newSocket.on("sendAddWorkTo_Client", (data) => {
-            if (data != "") {
-                fetchDelete(data, check);
-                getDataWorkerSales(data, check);
-            }
-        });
-        newSocket.on("UpdateDateTable_To_Client", (data) => {
-            if (data) {
-                getDataWorkerSales(data, check);
-            }
-        });
-        // return () => {
-        //     if (socketCard) {
-        //         socketCard.disconnect();
-        //     }
-        // };
-    }, [check]);
-    const fetchDelete = async () => {
+        if (!socketCard) {
+            setSocketCard(newSocket, { secure: true });
+
+            newSocket.on("sendAddWorkTo_Client", (data) => {
+                console.log(data, check);
+                if (data != "") {
+                    fetchDelete(check);
+                    getDataWorkerSales(data, check);
+                }
+            });
+
+            newSocket.on("UpdateDateTable_To_Client", (data) => {
+                if (data) {
+                    getDataWorkerSales(data, check);
+                }
+            });
+        }
+    }, [check, socketCard]);
+
+    const fetchDelete = async (dateCheckDel) => {
         try {
             const response = await fetch(
-                host + `api/web/cancle/works?dateCheck=${check}`
+                `api/web/cancle/works?dateCheck=${dateCheckDel}`
             );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
@@ -669,9 +667,6 @@ function NavbarDefault({
                                                                 <td className="p-4">
                                                                     {formatter.format(
                                                                         jobReport.work_expenditure
-
-
-
                                                                     )}
                                                                 </td>
                                                             </tr>
@@ -681,7 +676,9 @@ function NavbarDefault({
                                                                         index +
                                                                         i +
                                                                         4;
-                                                                        console.log(fuel);
+                                                                    console.log(
+                                                                        fuel
+                                                                    );
                                                                     return (
                                                                         <tr
                                                                             key={`${index}-${i}`}
@@ -792,9 +789,7 @@ function NavbarDefault({
                     <NavList />
                 </div>
                 <div className="flex flex-row items-center">
-                    <CardMain
-                        dateCheck={check}
-                    />
+                    <CardMain dateCheck={check} />
                     <NavLink
                         href={route("CancelBooking")}
                         className="font-normal"

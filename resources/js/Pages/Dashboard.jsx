@@ -61,11 +61,10 @@ import {
 import { host } from "@/Utils/UrlApi";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import newSocket from "@/Utils/Socket";
 import useWindowSize from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
-
+import { useSocket } from "@/Utils/SocketContext";
 // ----
 
 const Dashboard = ({ auth }) => {
@@ -86,6 +85,9 @@ const Dashboard = ({ auth }) => {
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
     const [userId, setSetUserId] = useState(0);
+
+    const socket = useSocket();
+
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -95,10 +97,10 @@ const Dashboard = ({ auth }) => {
         pushOn();
     }, []);
     useEffect(() => {
-        if (newSocket) {
-            setSocket_Dash(newSocket, { secure: true });
-            newSocket.emit("pushOnline", message);
-            newSocket.on("UpdateDateTable_To_Client", (data) => {
+        setSocket_Dash(socket);
+        if (socket) {
+            socket.emit("pushOnline", message);
+            socket.on("UpdateDateTable_To_Client", (data) => {
                 if (data.date_book || data.date_book != undefined) {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
@@ -109,14 +111,14 @@ const Dashboard = ({ auth }) => {
                     fetchDataDashboard(selectedDate);
                 }
             });
-            newSocket.on("sendAddWorkTo_Client", (jsonData) => {
+            socket.on("sendAddWorkTo_Client", (jsonData) => {
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                 }
             });
-            newSocket.on(
+            socket.on(
                 "ButtonDisable_To_Client",
                 ({ id, isDisabled, userFix, userID }) => {
                     setRowIdData(id);
@@ -127,11 +129,13 @@ const Dashboard = ({ auth }) => {
             );
         }
         return () => {
-            if (newSocket) {
-                newSocket.disconnect();
+            if (socket) {
+                socket.off("sendAddWorkTo_Client");
+                socket.off("UpdateDateTable_To_Client");
+                socket.off("ButtonDisable_To_Client");
             }
         };
-    }, [newSocket]);
+    }, [socket]);
     useEffect(() => {
         const mergedWorks = workData_Work.reduce((acc, currentItem) => {
             return acc.concat(currentItem.oldWork);
@@ -552,7 +556,7 @@ const Dashboard = ({ auth }) => {
                         let data = {
                             id: params.id,
                             auth_id: auth.user.id,
-                            work_note: work_note,
+                            work_note: params.row.real_note,
                         };
                         const response = await fetch("api/web/cancle/works", {
                             method: "POST",

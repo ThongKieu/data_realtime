@@ -24,3 +24,16 @@ export const TABLE_HEAD_RIGHT = [
     { id: "thuRight", colWidth: 120, nameHead: "Thu" },
     { id: "chucNangRight", colWidth: 150, nameHead: "Chức Năng" },
 ];
+export const ARRAY_ACTION =
+[
+    { id: 'guitho', value: 'Gửi Lịch Thợ' },
+    { id: 'checkin', value: 'Thợ đã đến' },
+    { id: 'checkout', value: 'Đã Làm Xong' },
+    { id: 'goi', value: 'Đã gọi khách' },
+    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
+    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
+    { id: 'mai', value: 'Mai Làm Tiếp' },
+    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
+    { id: 'xong', value: 'Thợ Làm Xong' },
+
+];

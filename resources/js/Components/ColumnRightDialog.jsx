@@ -13,6 +13,8 @@ import {
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
+import { ARRAY_ACTION } from "@/Data/Table/Data";
+
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -465,8 +467,21 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
     );
 };
 const arrayAction = [
+<<<<<<< HEAD
     { id: "guitho", value: "Gửi Lịch Thợ" },
     { id: "guilich", value: "Gửi Lịch Thợ2" },
+=======
+    { id: 'guitho', value: 'Gửi Lịch Thợ' },
+    { id: 'checkin', value: 'Thợ đã đến' },
+    { id: 'checkout', value: 'Đã Làm Xong' },
+    { id: 'goi', value: 'Đã gọi khách' },
+    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
+    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
+    { id: 'mai', value: 'Mai Làm Tiếp' },
+    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
+    { id: 'xong', value: 'Thợ Làm Xong' },
+
+>>>>>>> 76ee5f7bfa39d99d7edc46aed26dce154862551b
 ];
 const HisDialog = ({
     openViewHis,
@@ -511,9 +526,16 @@ const HisDialog = ({
             window.removeEventListener("wheel", handleWheel);
         };
     }, [selectedImage]);
+<<<<<<< HEAD
     const jsonParse = JSON?.parse(params.his_work);
     const classTableHistory =
         "px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500";
+=======
+    const jsonParse = JSON?.parse(
+        params.his_work
+    );
+    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+>>>>>>> 76ee5f7bfa39d99d7edc46aed26dce154862551b
 
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
@@ -545,6 +567,7 @@ const HisDialog = ({
                                 ? correspondingAuth.name
                                 : `${correspondingWorker}`;
 
+<<<<<<< HEAD
                             // console.log(correspondingAuth.name);
                             const checkAc = arrayAction?.find((arrayAction) =>
                                 arrayAction.id === itemJson.action
@@ -566,6 +589,39 @@ const HisDialog = ({
                                 </tr>
                             );
                         })}
+=======
+                                // console.log(correspondingAuth.name);
+                                const checkAc = ARRAY_ACTION?.find((item) => {
+                                    return item.id === itemJson.action ? item.value : '';
+                                });
+
+                                // console.log(typeof arrayAction.id);
+                                return (
+                                    <tr
+                                        key={
+                                            index
+                                        }
+                                    >
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {workerFullName}
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {
+
+                                                checkAc ? checkAc.value : ''
+
+                                            }
+                                        </td>
+                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                            {
+                                                itemJson.time
+                                            }
+                                        </td>
+                                    </tr>
+                                );
+                            }
+                        )}
+>>>>>>> 76ee5f7bfa39d99d7edc46aed26dce154862551b
                     </tbody>
                 </table>
             </DialogBody>

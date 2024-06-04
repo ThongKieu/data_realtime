@@ -505,6 +505,7 @@ function ApplicationPrice({ auth }) {
                         },
                     }}
                     className="text-center "
+                    autoHeight
                 />
             </Box>
         </Card>

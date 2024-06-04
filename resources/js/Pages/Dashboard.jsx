@@ -56,7 +56,8 @@ import {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb,HisDialog
+    KhaoSatDialogWeb,
+    HisDialog,
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
@@ -97,21 +98,22 @@ const Dashboard = ({ auth }) => {
         pushOn();
     }, []);
     useEffect(() => {
-        setSocket_Dash(socket);
         if (socket) {
+            setSocket_Dash(socket);
             socket.emit("pushOnline", message);
             socket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book || data.date_book != undefined) {
+                if (data.date_book == selectedDate || data.date_book != undefined) {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
-                } else if (data) {
+                } else {
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                 }
             });
             socket.on("sendAddWorkTo_Client", (jsonData) => {
+                console.log(jsonData);
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
@@ -128,13 +130,11 @@ const Dashboard = ({ auth }) => {
                 }
             );
         }
-        return () => {
-            if (socket) {
-                socket.off("sendAddWorkTo_Client");
-                socket.off("UpdateDateTable_To_Client");
-                socket.off("ButtonDisable_To_Client");
-            }
-        };
+        // return () => {
+        //     if (socket) {
+        //         socket.disconnect();
+        //     }
+        // };
     }, [socket]);
     useEffect(() => {
         const mergedWorks = workData_Work.reduce((acc, currentItem) => {
@@ -143,6 +143,7 @@ const Dashboard = ({ auth }) => {
         setMergedOldWorks(mergedWorks);
     }, [workData_Work]);
 
+    // console.log(socket_Dash?.id);
     const pushOn = async () => {
         try {
             let data = {
@@ -190,7 +191,7 @@ const Dashboard = ({ auth }) => {
             const jsonData = await response.json();
             if (jsonData) {
                 setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
-                setIsLoading(false); 
+                setIsLoading(false);
                 // Optional chaining để gọi hàm nếu nó tồn tại
                 // console.log(jsonData,'3333333333333333333333333333');
             } else {
@@ -206,6 +207,7 @@ const Dashboard = ({ auth }) => {
     const handleDateChange = (event) => {
         const newDate = event.target.value;
         setSelectedDate(newDate);
+        console.log(newDate);
     };
 
     const handleSearch = (dateCheckSearch) => {
@@ -570,29 +572,40 @@ const Dashboard = ({ auth }) => {
                 // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
+                        let data_hisWork = [
+                            {
+                                id_auth: auth.user.id,
+                                id_worker: null,
+                                action: "huy",
+                                work_note: work_note,
+                                time: getFormattedTIME(),
+                            },
+                        ];
                         let data = {
                             id: params.id,
                             auth_id: auth.user.id,
-                            work_note: params.row.real_note,
+                            work_note: JSON.stringify(data_hisWork),
                         };
-                        const response = await fetch("api/web/cancle/works", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
-                        if (response.ok) {
-                            socket_Dash.emit("addWorkTo_Server", "xoalich");
-                            handleOpen();
-                            console.log("Xóa thành Công");
-                        }
+                        console.log(data);
+                        // const response = await fetch("api/web/cancle/works", {
+                        //     method: "POST",
+                        //     body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                        //     headers: {
+                        //         "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                        //     },
+                        // });
+                        // if (response.ok) {
+                        //     socket_Dash.emit("addWorkTo_Server", "xoalich");
+                        //     handleOpen();
+                        //     console.log("Xóa thành Công");
+                        // }
                     } catch (error) {
                         console.log("Lỗi:", error);
                     }
                 };
 
                 const handleSentPhanTho = async (e) => {
+
                     if (!socket_Dash) {
                         console.error("Socket không khả dụng");
                         return;
@@ -1299,8 +1312,8 @@ const Dashboard = ({ auth }) => {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openViewHis":
-                                handleOpenFunction(!isOpenState);
-                                break;
+                            handleOpenFunction(!isOpenState);
+                            break;
                         default:
                             break;
                     }
@@ -1534,12 +1547,29 @@ const Dashboard = ({ auth }) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
                     const jsonArray = JSON.stringify(isDataChanged);
+                    let data_hisWork_thuchi = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "thuchi",
+                            time: getFormattedTIME(),
+                        },
+                    ];
+                    let data_hisWork_mai = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "mai",
+                            time: getFormattedTIME(),
+                        },
+                    ];
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
                         warranty: jsonArray,
+                        his_work: JSON.stringify(data_hisWork_thuchi),
                     };
                     const data_1 = {
                         ac: valueRadio,
@@ -1547,6 +1577,7 @@ const Dashboard = ({ auth }) => {
                         id_cus: params.row.id_cus,
                         id_worker: params.row.id_worker,
                         id_phu: params.row.id_phu,
+                        his_work: JSON.stringify(data_hisWork_mai),
                     };
                     if (valueRadio === "0") {
                         const image_Pt =
@@ -1766,7 +1797,6 @@ const Dashboard = ({ auth }) => {
                                     </Button>
                                 ) : (
                                     <>
-                                       
                                         <Tooltip
                                             content="Nhập Thu Chi"
                                             animate={{
@@ -1896,12 +1926,17 @@ const Dashboard = ({ auth }) => {
                                                         //     },
                                                         // }}
                                                     >
-                                                         <img src="/assets/h_icon.svg" alt="H icon" className="w-6 h-6 border-spacing-1 border-s-deep-orange-50 m-1 text-cyan-300"  onClick={() =>
+                                                        <img
+                                                            src="/assets/h_icon.svg"
+                                                            alt="H icon"
+                                                            className="w-6 h-6 m-1 border-spacing-1 border-s-deep-orange-50 text-cyan-300"
+                                                            onClick={() =>
                                                                 handleOpenViewHisDisable()
-                                                            }/>
+                                                            }
+                                                        />
                                                         {/* <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            
+
                                                         /> */}
                                                     </Tooltip>
                                                 </MenuItem>
@@ -2062,10 +2097,10 @@ const Dashboard = ({ auth }) => {
                             handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
                         />
-                          <HisDialog
+                        <HisDialog
                             openViewHis={openView_His}
                             auth_user={userAuth}
-                            workerInfo = {infoWorkerDashboard}
+                            workerInfo={infoWorkerDashboard}
                             handleOpenViewHis={handleOpenViewHisDisable}
                             handleViewHis={handleOpenViewHisDisable}
                             params={params.row}
@@ -2183,6 +2218,7 @@ const Dashboard = ({ auth }) => {
                                         slots={{
                                             columnHeaders: () => null,
                                         }}
+                                        autoHeight
                                     />
                                 </Box>
                             </div>

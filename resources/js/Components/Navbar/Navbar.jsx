@@ -37,8 +37,9 @@ import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
 import useWindowSize from "@/Core/Resize";
+import { useSocket } from "@/Utils/SocketContext";
 // profile menu component
-function ProfileMenu({ propauthprofile }) {
+function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
@@ -68,7 +69,6 @@ function ProfileMenu({ propauthprofile }) {
     };
     const handleMakeReadAll = async () => {
         let data = { code: propauthprofile.code };
-        console.log(data, "ssss");
         try {
             const response = await fetch(`api/web/noti/markReadAll`, {
                 method: "POST",
@@ -87,16 +87,15 @@ function ProfileMenu({ propauthprofile }) {
 
     useEffect(() => {
         fetchNoti();
-        newSocket.on("notication_Client", () => {
-            fetchNoti();
-        });
+        if (socket) {
+            socket.on("notication_Client", () => {
+                fetchNoti();
+            });
+        }
         if (isMenuOpen == true) {
             numberOn();
         }
-        return () => {
-            newSocket.off("notication_Client");
-        };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, socket]);
     return (
         <div className="flex">
             <NavLink
@@ -118,8 +117,8 @@ function ProfileMenu({ propauthprofile }) {
                     />
                 </svg>
             </NavLink>
-            <NavLink
-                href={route("chat")}
+            <a
+                href={`${host}chat`}
                 className="ml-2 cursor-pointer py-1.5 font-medium hidden"
             >
                 <svg
@@ -136,9 +135,9 @@ function ProfileMenu({ propauthprofile }) {
                         d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"
                     />
                 </svg>
-            </NavLink>
-            <NavLink
-                href={route("notice")}
+            </a>
+            <a
+                href={`${host}thong-bao-lich-moi`}
                 className="relative ml-2 font-medium cursor-pointer"
             >
                 <svg
@@ -171,7 +170,7 @@ function ProfileMenu({ propauthprofile }) {
                         </span>
                     </div>
                 </span>
-            </NavLink>
+            </a>
 
             <Menu
                 open={isMenuOpen}
@@ -255,7 +254,7 @@ function ProfileMenu({ propauthprofile }) {
 
 // nav list component
 
-function NavList({ active = false }) {
+function NavList() {
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <a
@@ -270,7 +269,6 @@ function NavList({ active = false }) {
             <NavLink
                 href={route(`search`)}
                 className="flex flex-row gap-2 font-normal text-black lg:rounded-full"
-
             >
                 <MenuItem className="flex gap-2 text-black lg:rounded-full">
                     <span>
@@ -344,30 +342,37 @@ function NavbarDefault({ propauth, check }) {
     const [openSpending, setOpenSpending] = useState(
         Array(jobs.length).fill(false)
     );
+    const socket = useSocket();
     useEffect(() => {
         fetchDelete(check);
         getDataWorkerSales(check);
     }, [check]);
+    useEffect(() => {
+        setSocketCard(socket);
+        // return () => {
+        //     if (socket) {
+        //         // socket.off("sendAddWorkTo_Client");
+        //         socket.off("UpdateDateTable_To_Client");
+        //     }
+        // };
+    }, [check, socket]);
 
     useEffect(() => {
-        if (!socketCard) {
-            setSocketCard(newSocket, { secure: true });
-
-            newSocket.on("sendAddWorkTo_Client", (data) => {
-                console.log(data, check);
+        if (socket) {
+            socket.on("sendAddWorkTo_Client", (data) => {
                 if (data != "") {
                     fetchDelete(check);
                     getDataWorkerSales(data, check);
                 }
             });
-
-            newSocket.on("UpdateDateTable_To_Client", (data) => {
+            socket.on("UpdateDateTable_To_Client", (data) => {
                 if (data) {
+                    fetchDelete(check);
                     getDataWorkerSales(data, check);
                 }
             });
         }
-    }, [check, socketCard]);
+    }, [check]);
 
     const fetchDelete = async (dateCheckDel) => {
         try {
@@ -376,9 +381,6 @@ function NavbarDefault({ propauth, check }) {
             );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
-            if (socketCard) {
-                socketCard.emit("addWorkTo_Server", jsonData.num_can);
-            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -571,7 +573,7 @@ function NavbarDefault({ propauth, check }) {
                     },
                 });
                 if (response.status === 200) {
-                    newSocket.emit("addWorkTo_Server", data);
+                    socketCard.emit("addWorkTo_Server", data);
                     // setJobTable();
                     handleClose();
                 }
@@ -780,20 +782,18 @@ function NavbarDefault({ propauth, check }) {
                     <Bars2Icon className="w-6 h-6" />
                 </IconButton>
                 <div className="hidden p-0 m-0 lg:flex">
-                    <NavLink
-                        href={route("dashboard")}
+                    <a
+                        href={`${host}`}
                         className="mr-4 ml-2 cursor-pointer py-1.5 font-medium "
                     >
                         <ApplicationLogo />
-                    </NavLink>
+                    </a>
+
                     <NavList />
                 </div>
                 <div className="flex flex-row items-center">
                     <CardMain dateCheck={check} />
-                    <NavLink
-                        href={route("CancelBooking")}
-                        className="font-normal"
-                    >
+                    <a href={`${host}lich-huy`} className="font-normal">
                         <Tooltip
                             content={countDelete}
                             className="text-black bg-white w-fit"
@@ -817,7 +817,7 @@ function NavbarDefault({ propauth, check }) {
                                 </CardBody>
                             </Card>
                         </Tooltip>
-                    </NavLink>
+                    </a>
                     <Card
                         className="flex flex-row items-center justify-between p-1 border border-green-600 border-solid rounded cursor-pointer w-28 justify-left shadow-green-400"
                         onClick={handleOpenWorker}
@@ -908,7 +908,10 @@ function NavbarDefault({ propauth, check }) {
                     </Dialog>
                 </div>
                 <div>
-                    <ProfileMenu propauthprofile={propauth} />
+                    <ProfileMenu
+                        propauthprofile={propauth}
+                        socket={socketCard}
+                    />
                 </div>
             </div>
             <Collapse open={isNavOpen} className="overflow-scroll ">

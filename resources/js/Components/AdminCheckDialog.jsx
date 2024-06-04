@@ -68,19 +68,23 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [oldDataBH, setOldDataBH] = useState(params.row.warranty);
+    useEffect(() => {
+        setOldDataBH(params.row.warranties);
+    }, [params.row.warranties]);
+
+    const [oldDataBH, setOldDataBH] = useState();
     const [dataBH, setDataBH] = useState(
-        params.row.warranty == "KBH"
+        params.row.warranties == "KBH"
             ? [
                   {
                       id: 0,
                       warranty_time: 0,
                       unit: "kbh",
                       warranty_info: "Không Bảo Hành",
-                      warranty_create: 0,
+                      id_work_has: params.row.id_work_has,
                   },
               ]
-            : params.row.warranty
+            : params.row.warranties
     );
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
@@ -123,6 +127,7 @@ function AdminCheckDialog({
                 warranty_time: 0,
                 unit: "KBH",
                 warranty_info: "Không Bảo Hành",
+                id_work_has: params.row.id_work_has,
             },
         ]);
     };
@@ -182,9 +187,14 @@ function AdminCheckDialog({
                                       ...matchingItem,
                                       ...item,
                                       warranty_create: 0,
+                                      id_work_has: params.row.id_work_has,
                                   } // Sửa
                                 : null
-                            : { ...item, warranty_create: 1 }; // Thêm mới
+                            : {
+                                  ...item,
+                                  warranty_create: 1,
+                                  id_work_has: params.row.id_work_has,
+                              }; // Thêm mới
                     })
                     .filter(Boolean);
                 const dataBh = {
@@ -235,7 +245,7 @@ function AdminCheckDialog({
             },
         };
 
-    // console.log(check_admin);
+        // console.log(check_admin);
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
@@ -262,7 +272,7 @@ function AdminCheckDialog({
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
-        setDataBH(params.row.warranty);
+        setDataBH(params.row.warranties);
     };
     return (
         <Dialog

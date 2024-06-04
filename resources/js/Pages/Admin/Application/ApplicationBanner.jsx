@@ -407,6 +407,7 @@ function ApplicationBanner() {
                                         rows={rows}
                                         columns={columnVideo}
                                         className="text-center "
+                                        autoHeight
                                     />
                                 </Box>
                             </Card>
@@ -434,6 +435,7 @@ function ApplicationBanner() {
                                             rows={rows}
                                             columns={columnBannerTop}
                                             className="text-center "
+                                            autoHeight
                                         />
                                     </Box>
                                 </Card>
@@ -458,6 +460,7 @@ function ApplicationBanner() {
                                             rows={rows}
                                             columns={columnBannerBot}
                                             className="text-center "
+                                            autoHeight
                                         />
                                     </Box>
                                 </Card>

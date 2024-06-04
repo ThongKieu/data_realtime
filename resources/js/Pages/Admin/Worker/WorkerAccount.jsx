@@ -472,6 +472,7 @@ function WorkerAccount() {
                             columns={columns}
                             getRowId={(accountData) => accountData.id_worker}
                             className="text-center"
+                            autoHeight
                         />
                     </Box>
                 </Card>

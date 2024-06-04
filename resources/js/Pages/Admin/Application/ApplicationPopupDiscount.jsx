@@ -454,6 +454,7 @@ function ApplicationPopupDiscount() {
                                         showQuickFilter: true,
                                     },
                                 }}
+                                autoHeight
                             />
                         </Box>
                     </CardBody>

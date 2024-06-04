@@ -531,7 +531,6 @@ class WorksAssignmentController extends Controller
         // Thêm phần lịch sử thay đổi
         WorksAssignmentController::insertHisWork($id_work_has, $request->his_work);
         if ($request->id_phu) {
-
             $w_a_n = new WorksAssignment([
                 'id_cus' => $id_cus,
                 'id_worker' => $id_worker,

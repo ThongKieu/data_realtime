@@ -200,6 +200,7 @@ function ApplicationWorkList() {
                                 // {...getData}
                                 rows={getData}
                                 columns={column}
+                                autoHeight
                             />
                         </Box>
                     )}

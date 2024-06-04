@@ -464,6 +464,7 @@ function WorkersMain({ auth }) {
                             },
                         }}
                         className="text-center"
+                        autoHeight
                     />
                 </Box>
             </Card>

@@ -80,6 +80,7 @@ const ReasonDialog = ({
                         label="Lý do hủy"
                         className="shadow-none"
                         onChange={(e) => setWorkNote(e.target.value)}
+                        required
                     />
                 </div>
             </DialogBody>
@@ -466,18 +467,7 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         </Dialog>
     );
 };
-const arrayAction = [
-    { id: 'guitho', value: 'Gửi Lịch Thợ' },
-    { id: 'checkin', value: 'Thợ đã đến' },
-    { id: 'checkout', value: 'Đã Làm Xong' },
-    { id: 'goi', value: 'Đã gọi khách' },
-    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
-    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
-    { id: 'mai', value: 'Mai Làm Tiếp' },
-    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
-    { id: 'xong', value: 'Thợ Làm Xong' },
 
-];
 const HisDialog = ({
     openViewHis,
     handleOpenViewHis,
@@ -525,7 +515,13 @@ const HisDialog = ({
         params.his_work
     );
     const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+    const handleButtonClick = (lat, log) => {
+        const newWindow = window.open('', '_blank', 'width=1200,height=600');
+        // Mở trang Map với các tham số
+        newWindow.location.href = `https://www.google.com/maps/place/${lat},${log}`;
 
+        // newWindow.location.href = `https://www.google.com/maps/place/10.821203,106.7116815`;
+    };
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
             <div className="flex items-center justify-between">
@@ -561,7 +557,7 @@ const HisDialog = ({
                                     return item.id === itemJson.action ? item.value : '';
                                 });
 
-                                // console.log(typeof arrayAction.id);
+                                console.log(itemJson);
                                 return (
                                     <tr
                                         key={

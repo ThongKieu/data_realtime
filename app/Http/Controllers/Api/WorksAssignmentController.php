@@ -162,12 +162,13 @@ class WorksAssignmentController extends Controller
 
     public function cancelWorkFromAssignment(Request $request)
     {
-        if ($request->id == null || $request->id_cus == null || $request->real_note == null || $request->auth_id == null) {
+        if ($request->id == null || $request->id_cus == null || $request->auth_id == null) {
             return -1;
         } else {
             $note = $request->real_note;
             Work::where('id', '=', $request->id_cus)->update(['status_cus' => 2, 'work_note' => $note, 'member_read' => $request->auth_id]);
             WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 5, 'real_note' => $note]);
+            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
             if (isset($request->from_app)) {
                 NoticationAllController::create('3', $request->content, '');
             }
@@ -182,6 +183,7 @@ class WorksAssignmentController extends Controller
         } else {
             $seri_imag = '';
             $ac = $request->ac;
+            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
             if ($ac == 1) {
                 //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
                 if ($request->hasFile('image_work_path')) {
@@ -265,6 +267,7 @@ class WorksAssignmentController extends Controller
                 $note = 'Đã làm ngày : ' . $sub;
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
 
             //id_work, id_worker, id_phu
             $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
@@ -286,6 +289,7 @@ class WorksAssignmentController extends Controller
         } else {
             $id_cus = $request->id_cus;
             // dd($request->all());
+            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
             if (count((json_decode($request->warranty))) > 0) {
                 $warranty = json_decode($request->warranty);
                 foreach ($warranty as $item) {
@@ -500,6 +504,7 @@ class WorksAssignmentController extends Controller
                     case 13:
                         // Admin Check
                         $data = $request->data;
+                        WorksAssignmentController::insertHisWork($request->id, $request->his_work);
                         // dd($$request->all())
                         Work::where('id', '=', $request->id_cus)->update(['work_content' => $data['work_content'], 'phone_number' => $data['phone_number'], 'street' => $data['street'], 'district' => $data['district'], 'name_cus' => $data['name_cus']]);
 
@@ -643,6 +648,8 @@ class WorksAssignmentController extends Controller
 
         return response()->json($his_work);
     }
+    // thêm lịch sử xử lý lịch web
+
     public static function insertHisWork($id_work_has, $his_work)
     {
         //     $id_work_has = $request->id_work_has;
@@ -674,6 +681,7 @@ class WorksAssignmentController extends Controller
             return 0;
         }
     }
+    // thêm lịch sử xử lý lịch Moblie
     public function insertHisWorkMobile(Request $request)
     {
         $id_work_has = $request->id_work_has;
@@ -705,6 +713,11 @@ class WorksAssignmentController extends Controller
         } else {
             return 0;
         }
+    }
+    //Lấy dữ liệu tổng từ bảng lịch đã phân gửi Ktra bởi ADMIN getCancleBook
+    public function getCancleBook()  {
+
+        return 'Tất cả thông tin';
     }
 
 }

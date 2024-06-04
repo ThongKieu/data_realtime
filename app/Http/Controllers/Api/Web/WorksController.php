@@ -67,37 +67,7 @@ class WorksController extends Controller
 
         return response()->json(count($dataWorkDone));
     }
-    public function getCancleBook(Request $request)
-    {
-        if ($request->dateCheck) {
-            $today = $request->dateCheck;
-        } else {
-            $today = date('Y-m-d');
-        }
-        $co_khi = DB::table('works')
-            ->join('users', 'works.member_read', '=', 'users.id')
-            ->where('works.date_book', '=', $today)
-            ->where('works.status_cus', '=', 2)
-            ->limit(100)
-            ->get([
 
-                "works.id",
-                "works.work_content",
-                "works.name_cus",
-                "works.date_book",
-                "works.work_note",
-                "works.street",
-                "works.district",
-                "works.phone_number",
-                "works.image_work_path",
-                "users.name",
-            ]);
-        $nu_can = count($co_khi);
-        return response()->json([
-            'num_can' => $nu_can,
-            'info_can' => $co_khi,
-        ]);
-    }
     public function store(StoreWorkRequest $request)
     {
         Work::create($request->validated());
@@ -186,13 +156,51 @@ class WorksController extends Controller
 
         return response()->json(['message' => 'No image uploaded'], 400);
     }
+    // thông tin lịch hủy
     public function insertCancleBook(Request $request)
     {
         // dd($request);
         $up = Work::where('id', '=', $request->id)->update(['status_cus' => 2, 'work_note' => $request->work_note, 'member_read' => $request->auth_id]);
+
         if ($up) {
             return 'Delete work done !';
         }
         return 'Delete Failse !';
+    }
+    public function getCancleBook(Request $request)
+    {
+        if ($request->dateCheck) {
+            $today = $request->dateCheck;
+        } else {
+            $today = date('Y-m-d');
+        }
+
+        $cancle = DB::table('works')
+        ->join('users', 'works.member_read', '=', 'users.id')
+        ->leftJoin('works_assignments', 'works.id', '=', 'works_assignments.id_cus')
+        ->select([
+            'works.id',
+            'works.work_content',
+            'works.name_cus',
+            'works.date_book',
+            'works.work_note',
+            'works.street',
+            'works.district',
+            'works.phone_number',
+            'works.image_work_path',
+            'users.name',
+            DB::raw('IFNULL(works_assignments.his_work, "") as his_work'),
+        ])
+        // ->where('works.date_book', '=', $today)
+        ->where('works.status_cus', '=', 2)
+        ->orderBy('works.id','DESC')
+        ->limit(100)
+        ->get();
+        $nu_can = $cancle->count();
+
+        return response()->json([
+            'num_can' => $nu_can,
+            'info_can' => $cancle,
+        ]);
     }
 }

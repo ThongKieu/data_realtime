@@ -102,7 +102,10 @@ const Dashboard = ({ auth }) => {
             setSocket_Dash(socket);
             socket.emit("pushOnline", message);
             socket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book == selectedDate || data.date_book != undefined) {
+                if (
+                    data.date_book == selectedDate ||
+                    data.date_book != undefined
+                ) {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
@@ -572,40 +575,45 @@ const Dashboard = ({ auth }) => {
                 // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
-                        let data_hisWork = [
-                            {
-                                id_auth: auth.user.id,
-                                id_worker: null,
-                                action: "huy",
-                                work_note: work_note,
-                                time: getFormattedTIME(),
-                            },
-                        ];
-                        let data = {
-                            id: params.id,
-                            auth_id: auth.user.id,
-                            work_note: JSON.stringify(data_hisWork),
-                        };
-                        console.log(data);
-                        // const response = await fetch("api/web/cancle/works", {
-                        //     method: "POST",
-                        //     body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                        //     headers: {
-                        //         "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                        //     },
-                        // });
-                        // if (response.ok) {
-                        //     socket_Dash.emit("addWorkTo_Server", "xoalich");
-                        //     handleOpen();
-                        //     console.log("Xóa thành Công");
-                        // }
+                        if (work_note == null || !work_note) {
+                            alert("Vui lòng điền lý do hủy!");
+                        } else {
+                            let data_hisWork = [
+                                {
+                                    id_auth: auth.user.id,
+                                    id_worker: null,
+                                    action: "huy",
+                                    work_note: work_note,
+                                    time: getFormattedTIME(),
+                                },
+                            ];
+                            let data = {
+                                id: params.id,
+                                auth_id: auth.user.id,
+                                work_note: JSON.stringify(data_hisWork),
+                            };
+                            const response = await fetch(
+                                "api/web/cancle/works",
+                                {
+                                    method: "POST",
+                                    body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                    headers: {
+                                        "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                    },
+                                }
+                            );
+                            if (response.ok) {
+                                socket_Dash.emit("addWorkTo_Server", "xoalich");
+                                handleOpen();
+                                console.log("Xóa thành Công");
+                            }
+                        }
                     } catch (error) {
                         console.log("Lỗi:", error);
                     }
                 };
 
                 const handleSentPhanTho = async (e) => {
-
                     if (!socket_Dash) {
                         console.error("Socket không khả dụng");
                         return;
@@ -1388,11 +1396,19 @@ const Dashboard = ({ auth }) => {
                 };
                 const handleSentDeleteDone = async () => {
                     try {
+                        let data_hisWork = [
+                            {
+                                id_auth: auth.user.id,
+                                id_worker: null,
+                                action: "huy",
+                                time: getFormattedTIME(),
+                            },
+                        ];
                         let data = {
                             id: params.id,
                             id_cus: params.row.id_cus,
-                            real_note: params.row.real_note,
                             auth_id: auth.user.id,
+                            his_work: JSON.stringify(data_hisWork),
                         };
                         const response = await fetch(
                             "api/web/update/work-assignment-cancle",
@@ -1416,6 +1432,14 @@ const Dashboard = ({ auth }) => {
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
                 const handleSentKSWeb = async (e) => {
                     e.preventDefault();
+                    let data_hisWork_KS = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "ks",
+                            time: getFormattedTIME(),
+                        },
+                    ];
                     const formData = new FormData();
                     formData.append("ac", 1);
                     formData.append("id", params.id);
@@ -1433,6 +1457,10 @@ const Dashboard = ({ auth }) => {
                     formData.append("name_cus", cardExpiresWeb.name_cus);
                     formData.append("date_book", selectedDate);
                     formData.append("status_work", cardExpiresWeb.status_work);
+                    formData.append(
+                        "his_work",
+                        JSON.stringify(data_hisWork_KS)
+                    );
                     formData.append(
                         "income_total",
                         cardExpiresWeb.income_total
@@ -1608,7 +1636,6 @@ const Dashboard = ({ auth }) => {
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
-                        // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
                         his_work: JSON.stringify(data_hisWork),
@@ -1670,7 +1697,7 @@ const Dashboard = ({ auth }) => {
 
                     // Sử dụng window.confirm thay vì alert
                     const userConfirmed = window.confirm(
-                        "Có thật muốn xóa hình"
+                        "Có thật muốn xóa hình vật tư"
                     );
 
                     if (userConfirmed) {
@@ -1715,40 +1742,48 @@ const Dashboard = ({ auth }) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
                     const newImages = imagePt1.filter((_, i) => i !== index);
-                    setImagePt1(newImages);
-                    const dataBody = {
-                        auth_id: auth.user.id,
-                        ac: 3,
-                        id: params.row.id,
-                        seri_imag_del: deletedImage,
-                    };
-                    const jsonData = JSON.stringify(dataBody);
-                    try {
-                        const response = await fetch(urlApi, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: jsonData,
-                        });
+                    const userConfirmed = window.confirm(
+                        "Có thật muốn xóa hình phiếu thu"
+                    );
+                    if (userConfirmed) {
+                        setImagePt1(newImages);
+                        const dataBody = {
+                            auth_id: auth.user.id,
+                            ac: 3,
+                            id: params.row.id,
+                            seri_imag_del: deletedImage,
+                        };
+                        const jsonData = JSON.stringify(dataBody);
+                        try {
+                            const response = await fetch(urlApi, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            });
 
-                        if (response.ok) {
-                            console.log(
-                                "Hình đã được xóa thành công từ máy chủ",
-                                dataBody
-                            );
-                            socket_Dash.emit(
-                                "addWorkTo_Server",
-                                "Xóa hình ảnh"
-                            );
-                        } else {
+                            if (response.ok) {
+                                console.log(
+                                    "Hình đã được xóa thành công từ máy chủ",
+                                    dataBody
+                                );
+                                socket_Dash.emit(
+                                    "addWorkTo_Server",
+                                    "Xóa hình ảnh"
+                                );
+                            } else {
+                                console.error(
+                                    "Lỗi khi gửi yêu cầu xóa hình:",
+                                    response.statusText
+                                );
+                            }
+                        } catch (error) {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
-                                response.statusText
+                                error
                             );
                         }
-                    } catch (error) {
-                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${

@@ -37,4 +37,5 @@ export const ARRAY_ACTION =
     { id: 'xong', value: 'Thợ Làm Xong' },
     { id: 'thuchi', value: 'Nhập Thu Chi' },
     { id: 'adCheck', value: 'Admin Check' },
+    { id: 'ks', value: 'Cty Báo Giá' },
 ];

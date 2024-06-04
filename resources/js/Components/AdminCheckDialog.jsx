@@ -24,6 +24,7 @@ import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
 import useWindowSize from "@/Core/Resize";
+import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -225,11 +226,20 @@ function AdminCheckDialog({
     };
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
+        let data_hisWork_adCheck = [
+            {
+                id_auth: auth.user.id,
+                id_worker: null,
+                action: "adCheck",
+                time: getFormattedTIME(),
+            },
+        ];
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
             id: params.row.id,
             id_cus: params.row.id_cus,
+            his_work: JSON.stringify(data_hisWork_adCheck),
             data: {
                 ...cardExpires,
                 id_worker: params.row.id_worker,
@@ -274,6 +284,8 @@ function AdminCheckDialog({
         setIsReadMore(!isReadMore);
         setDataBH(params.row.warranties);
     };
+    const [openImage, setOpenImage] = useState(false);
+    const handleOpenImage = () => setOpenImage(!openImage);
     return (
         <Dialog
             open={openAdminCheck}
@@ -571,6 +583,7 @@ function AdminCheckDialog({
                                                     handleImageVtDelete(index)
                                                 }
                                             />
+
                                             <img
                                                 src={`${host}${item}`}
                                                 alt="nature image"
@@ -621,8 +634,35 @@ function AdminCheckDialog({
                                             <img
                                                 src={`${host}${item}`}
                                                 alt="nature image"
-                                                className="p-2"
+                                                className="p-2 cursor-pointer"
+                                                onClick={handleOpenImage}
                                             />
+                                            <Dialog
+                                                open={openImage}
+                                                handler={handleOpenImage}
+                                            >
+                                                <DialogBody>
+                                                    <img
+                                                        src={`${host}${item}`}
+                                                        alt="nature image"
+                                                        className="p-2 cursor-pointer"
+                                                        onClick={
+                                                            handleOpenImage
+                                                        }
+                                                    />
+                                                </DialogBody>
+                                                <DialogFooter>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="green"
+                                                        onClick={
+                                                            handleOpenImage
+                                                        }
+                                                    >
+                                                        <span>Thoát</span>
+                                                    </Button>
+                                                </DialogFooter>
+                                            </Dialog>
                                         </Card>
                                     ))}
                                 </div>

@@ -462,18 +462,7 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         </Dialog>
     );
 };
-const arrayAction = [
-    { id: 'guitho', value: 'Gửi Lịch Thợ' },
-    { id: 'checkin', value: 'Thợ đã đến' },
-    { id: 'checkout', value: 'Đã Làm Xong' },
-    { id: 'goi', value: 'Đã gọi khách' },
-    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
-    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
-    { id: 'mai', value: 'Mai Làm Tiếp' },
-    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
-    { id: 'xong', value: 'Thợ Làm Xong' },
 
-];
 const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth_user, workerInfo }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [scale, setScale] = useState(1);
@@ -510,7 +499,13 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
         params.his_work
     );
     const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+    const handleButtonClick = (lat, log) => {
+        const newWindow = window.open('', '_blank', 'width=1200,height=600');
+        // Mở trang Map với các tham số
+        newWindow.location.href = `https://www.google.com/maps/place/${lat},${log}`;
 
+        // newWindow.location.href = `https://www.google.com/maps/place/10.821203,106.7116815`;
+    };
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
             <div className="flex items-center justify-between">
@@ -566,7 +561,7 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
                                     return item.id === itemJson.action ? item.value : '';
                                 });
 
-                                // console.log(typeof arrayAction.id);
+                                console.log(itemJson);
                                 return (
                                     <tr
                                         key={
@@ -584,9 +579,21 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
                                             }
                                         </td>
                                         <td className="px-6 py-4 border-b border-gray-500 border">
-                                            {
-                                                itemJson.time
-                                            }
+                                            {itemJson.time.toString()} {/* Hiển thị giá trị thời gian */}
+
+                                            {/* Kiểm tra nếu itemJson chứa lat và log */}
+                                            {itemJson.lat && itemJson.log && (
+                                                <button
+                                                    onClick={() => handleButtonClick(itemJson.lat, itemJson.log)}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                                    </svg>
+
+                                                    {/* <IconComponent /> Thay IconComponent với biểu tượng bạn muốn hiển thị */}
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 );

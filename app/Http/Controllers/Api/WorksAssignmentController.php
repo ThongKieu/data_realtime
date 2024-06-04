@@ -265,6 +265,7 @@ class WorksAssignmentController extends Controller
                 $note = 'Đã làm ngày : ' . $sub;
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+            WorksAssignmentController::insertHisWork($request->id, $request->his_work);
 
             //id_work, id_worker, id_phu
             $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
@@ -290,6 +291,7 @@ class WorksAssignmentController extends Controller
                 $warranty = json_decode($request->warranty);
                 foreach ($warranty as $item) {
                     if ($item->warranty_time != 0) {
+                        WorksAssignmentController::insertHisWork($request->id, $request->his_work);
                         WarrantiesController::insertWarrantiesFix($request->id, $item->warranty_time, $item->warranty_info, $item->unit);
                     }
 
@@ -644,6 +646,8 @@ class WorksAssignmentController extends Controller
 
         return response()->json($his_work);
     }
+    // thêm lịch sử xử lý lịch web
+
     public static function insertHisWork($id_work_has, $his_work)
     {
         //     $id_work_has = $request->id_work_has;
@@ -675,6 +679,7 @@ class WorksAssignmentController extends Controller
             return 0;
         }
     }
+    // thêm lịch sử xử lý lịch Moblie
     public function insertHisWorkMobile(Request $request)
     {
         $id_work_has = $request->id_work_has;
@@ -706,6 +711,11 @@ class WorksAssignmentController extends Controller
         } else {
             return 0;
         }
+    }
+    //Lấy dữ liệu tổng từ bảng lịch đã phân gửi Ktra bởi ADMIN getCancleBook
+    public function getCancleBook()  {
+        
+        return 'Tất cả thông tin';
     }
 
 }

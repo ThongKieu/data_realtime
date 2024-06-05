@@ -237,7 +237,7 @@ function Home({ auth }) {
             titleTop: "Tổng Lịch",
             titleMid: 158,
             titleBot: 16,
-            imgSrc: "assets/all.png",
+            imgSrc: "assets/images/web/all.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -245,7 +245,7 @@ function Home({ auth }) {
             titleTop: "Điện Nước",
             titleMid: 130,
             titleBot: 14,
-            imgSrc: "assets/dn.png",
+            imgSrc: "assets/images/web/dn.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -253,7 +253,7 @@ function Home({ auth }) {
             titleTop: "Điện Lạnh",
             titleMid: 158,
             titleBot: 5,
-            imgSrc: "assets/dl.png",
+            imgSrc: "assets/images/web/dl.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -261,7 +261,7 @@ function Home({ auth }) {
             titleTop: "Đồ Gỗ",
             titleMid: 130,
             titleBot: 3,
-            imgSrc: "assets/dg.png",
+            imgSrc: "assets/images/web/dg.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -269,7 +269,7 @@ function Home({ auth }) {
             titleTop: "NLMT",
             titleMid: 130,
             titleBot: 2,
-            imgSrc: "assets/nlmt.png",
+            imgSrc: "assets/images/web/nlmt.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -277,7 +277,7 @@ function Home({ auth }) {
             titleTop: "Cơ Khí",
             titleMid: 158,
             titleBot: 1,
-            imgSrc: "assets/hx.png",
+            imgSrc: "assets/images/web/hx.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -285,7 +285,7 @@ function Home({ auth }) {
             titleTop: "Vận Chuyển",
             titleMid: 130,
             titleBot: 7,
-            imgSrc: "assets/vc.png",
+            imgSrc: "assets/images/web/vc.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
         {
@@ -293,7 +293,7 @@ function Home({ auth }) {
             titleTop: "Vệ Sinh Bể Nước",
             titleMid: 130,
             titleBot: 4,
-            imgSrc: "assets/vsbn.png",
+            imgSrc: "assets/images/web/vsbn.png",
             // IconChild: <FolderPlusIcon className="w-6 h-6" />,
         },
     ];

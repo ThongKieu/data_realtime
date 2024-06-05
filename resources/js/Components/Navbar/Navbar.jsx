@@ -43,13 +43,17 @@ function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
+    const [listuser, setlistOnline] = useState("");
+
     const [noti, setNoti] = useState("");
     const numberOn = async () => {
         try {
             const res = await fetch(`${host}api/web/list-online`);
             const jsonData = await res.json();
             if (jsonData) {
-                setNumberOnline(jsonData);
+                setNumberOnline(jsonData.num);
+                setlistOnline(jsonData.list_user);
+                console.log(jsonData);
             }
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -204,6 +208,8 @@ function ProfileMenu({ propauthprofile, socket }) {
                     <OnlineList
                         avatarimage={host + propauthprofile.avatar}
                         numberonline={number}
+                        listuser={listuser}
+                        auth= {propauthprofile.id}
                         name={propauthprofile.name}
                     />
                     <NavLink

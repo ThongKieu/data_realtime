@@ -114,7 +114,7 @@ function CancelBooking({ auth }) {
             renderCell: (params) => {
                 return (
                     <HistoryDialog
-                        contentBtn={"Lịch xử xử lý"}
+                        content={"Lịch xử xử lý"}
                         dataFormParent={params.row}
                         userAuth={userAuth}
                         infoWorker={infoWorker}

@@ -13,6 +13,7 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         // const socketInstance = newSocket({ secure: true });
         setSocket(newSocket, { secure: true });
+
         return () => {
             newSocket.disconnect();
         };

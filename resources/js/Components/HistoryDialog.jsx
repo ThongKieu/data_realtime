@@ -14,9 +14,10 @@ import {
 import { ARRAY_ACTION } from "@/Data/Table/Data";
 const HistoryDialog = ({
     dataFormParent,
-    contentBtn,
+    icon: Icon,
     userAuth,
     infoWorker,
+    content,
 }) => {
     const classTableHistory =
         "px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300";
@@ -68,9 +69,28 @@ const HistoryDialog = ({
 
     return (
         <>
-            <Button onClick={handleOpenHis} variant="gradient">
-                {contentBtn}
-            </Button>
+                {Icon ? (
+                    <Button
+                        className="p-1 border rounded-md"
+                        color="gray"
+                        variant="outlined"
+                        onClick={handleOpenHis}
+                    >
+                        {" "}
+                        {Icon}
+                    </Button>
+                ) : (
+                    <Button
+                        className="p-2 border rounded-md"
+                        color="green"
+                        variant="outlined"
+                        onClick={handleOpenHis}
+                    >
+                        {" "}
+                        {content}
+                    </Button>
+                )}
+
             <Dialog open={openHis} handler={handleOpenHis}>
                 <DialogBody>
                     <table className="min-w-full bg-white">

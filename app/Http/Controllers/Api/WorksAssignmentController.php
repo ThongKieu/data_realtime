@@ -268,7 +268,6 @@ class WorksAssignmentController extends Controller
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
             WorksAssignmentController::insertHisWork($request->id, $request->his_work);
-
             //id_work, id_worker, id_phu
             $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
 

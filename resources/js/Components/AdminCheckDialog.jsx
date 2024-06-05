@@ -618,6 +618,7 @@ function AdminCheckDialog({
 
                             {imagePt1 == "" || imagePt1 == null ? (
                                 <i className="mt-4">(Không Có Hình)</i>
+
                             ) : (
                                 <div className="grid w-full grid-cols-3 gap-4 mt-4">
                                     {imagePt1.map((item, index) => (

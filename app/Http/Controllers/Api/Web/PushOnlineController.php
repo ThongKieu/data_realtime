@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class PushOnlineController extends Controller
 {
@@ -27,8 +28,12 @@ class PushOnlineController extends Controller
         return 'OK';
     }
     public function listOnline()  {
-        $is_online = User::where('is_online','=',1)->get('id');
-        return response()->json(count($is_online));
+        $list  = User::where('is_online','=',1)->get(['id','name','avatar']);
+        $num = count($list);
+        // $is_online = new stdClass();
+        $is_online['list_user'] = $list; 
+        $is_online['num'] =$num;
+        return response()->json($is_online);
         // return response()->json($is_online);
     }
 }

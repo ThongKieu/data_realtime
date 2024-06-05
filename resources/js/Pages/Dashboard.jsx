@@ -2145,14 +2145,6 @@ const Dashboard = ({ auth }) => {
             },
         },
     ];
-    const DNCU = useRef(null);
-    const DN = useRef(null);
-    const DL = useRef(null);
-    const DG = useRef(null);
-    const NLMT = useRef(null);
-    const XD = useRef(null);
-    const VC = useRef(null);
-    const HX = useRef(null);
     // ----------------------------nut scrollView trong bang --------------------------
     const scrollView = (ref) => {
         if (ref && ref.current) {
@@ -2232,6 +2224,7 @@ const Dashboard = ({ auth }) => {
                                         Lịch Chưa Xử Lý (Số lịch:{" "}
                                         {mergedOldWorks.length})
                                     </Typography>
+
 
                                     <DataGrid
                                         sx={{

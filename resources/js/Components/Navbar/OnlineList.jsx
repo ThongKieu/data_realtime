@@ -14,6 +14,14 @@ function OnlineList({ numberonline, avatarimage, name, listuser,auth }) {
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+    // useEffect(() => {
+    //     if (socket) {
+    //         socket.on("disconnect", () => {
+    //             // Handle socket disconnection
+    //             console.log("Socket disconnected");
+    //         });
+    //     }
+    // }, [socket]);
 
     return (
         <>

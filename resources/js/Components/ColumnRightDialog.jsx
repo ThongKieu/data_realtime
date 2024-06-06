@@ -557,7 +557,7 @@ const HisDialog = ({
                                     return item.id === itemJson.action ? item.value : '';
                                 });
 
-                                console.log(itemJson);
+                                // console.log(itemJson);
                                 return (
                                     <tr
                                         key={

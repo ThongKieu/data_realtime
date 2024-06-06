@@ -154,9 +154,7 @@ function Search({ auth }) {
     useEffect(() => {
         if (socket) {
             setSocketSearch(socket);
-
         }
-
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
@@ -205,10 +203,7 @@ function Search({ auth }) {
         const filteredArray = parts?.filter((item) => item.trim() !== "");
         setImgNote(filteredArray);
     };
-    console.log(socketSearch?.connected);
-    if (socketSearch ||  socketSearch?.connected == false) {
-        setSocketSearch(socket, { reconnection: true });
-    }
+
     const ReadMore = ({ text, maxLength }) => {
         const [isReadMore, setIsReadMore] = useState(false);
 

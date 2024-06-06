@@ -22,14 +22,9 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         setSocket(newSocket, { secure: true });
 
-        // window.addEventListener('beforeunload', handleBeforeUnload);
-
-        // return () => {
-        //     window.removeEventListener('beforeunload', handleBeforeUnload);
-        //     if (userLeavingPage) {
-        //         newSocket.disconnect();
-        //     }
-        // };
+        return () => {
+            newSocket.disconnect();
+        };
     }, [newSocket]);
     
     useEffect(() => {

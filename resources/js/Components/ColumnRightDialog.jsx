@@ -10,10 +10,12 @@ import {
     Typography,
     Card,
 } from "@material-tailwind/react";
-import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 import { ARRAY_ACTION } from "@/Data/Table/Data";
+import useWindowSize from "@/Core/Resize";
+import HistoryDialog from "./HistoryDialog";
 
 const ThoDialog = ({
     open,
@@ -511,12 +513,11 @@ const HisDialog = ({
             window.removeEventListener("wheel", handleWheel);
         };
     }, [selectedImage]);
-    const jsonParse = JSON?.parse(
-        params.his_work
-    );
-    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+    const jsonParse = JSON?.parse(params.his_work);
+    const classTableHistory =
+        "px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500";
     const handleButtonClick = (lat, log) => {
-        const newWindow = window.open('', '_blank', 'width=1200,height=600');
+        const newWindow = window.open("", "_blank", "width=1200,height=600");
         // Mở trang Map với các tham số
         newWindow.location.href = `https://www.google.com/maps/place/${lat},${log}`;
 
@@ -552,37 +553,26 @@ const HisDialog = ({
                                 ? correspondingAuth.name
                                 : `${correspondingWorker}`;
 
-                                // console.log(correspondingAuth.name);
-                                const checkAc = ARRAY_ACTION?.find((item) => {
-                                    return item.id === itemJson.action ? item.value : '';
-                                });
-
-                                // console.log(itemJson);
-                                return (
-                                    <tr
-                                        key={
-                                            index
-                                        }
-                                    >
-                                        <td className="px-6 py-4 border border-b border-gray-500">
-                                            {workerFullName}
-                                        </td>
-                                        <td className="px-6 py-4 border border-b border-gray-500">
-                                            {
-
-                                                checkAc ? checkAc.value : ''
-
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 border border-b border-gray-500">
-                                            {
-                                                itemJson.time
-                                            }
-                                        </td>
-                                    </tr>
-                                );
-                            }
-                        )}
+                            // console.log(correspondingAuth.name);
+                            const checkAc = ARRAY_ACTION?.find((item) => {
+                                return item.id === itemJson.action
+                                    ? item.value
+                                    : "";
+                            });
+                            return (
+                                <tr key={index}>
+                                    <td className="px-6 py-4 border border-b border-gray-500">
+                                        {workerFullName}
+                                    </td>
+                                    <td className="px-6 py-4 border border-b border-gray-500">
+                                        {checkAc ? checkAc.value : ""}
+                                    </td>
+                                    <td className="px-6 py-4 border border-b border-gray-500">
+                                        {itemJson.time}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </DialogBody>
@@ -604,6 +594,8 @@ const ViewTotalDialog = ({
     handleOpenViewTotal,
     params,
     handleViewTotal,
+    userAuth,
+    infoWorker,
 }) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
@@ -642,33 +634,48 @@ const ViewTotalDialog = ({
         {
             id: 7,
             label: "Thông Tin Bảo Hành:",
-            TextContent: `${params.warranties == "KBH" ? params.warranties : ""}`,
+            TextContent: `${
+                params.warranties == "KBH" ? params.warranties : ""
+            }`,
         },
     ];
     const LoiNhuan = params.income_total - params.spending_total;
     const processedDataVT = processSeriImages(params.bill_imag);
     const processedDataPT = processSeriImages(params.seri_imag);
     const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
+
+    const { width, height } = useWindowSize(300);
     return (
         <Dialog
             open={openViewTotal}
             handler={handleOpenViewTotal}
             className="bg-none"
         >
-            <DialogBody className="p-1">
-                <div className="relative flex flex-col w-full p-8 text-black shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-black-900 to-white-800 shadow-black-900/20">
+            <DialogHeader className="justify-between ">
+                <h3 className="block p-3 font-sans antialiased font-bold leading-normal text-center text-black uppercase border-b r">
+                    Thông Tin Thu Chi của{" "}
+                    <span className="italic font-bold underline">
+                        {"(" +
+                            params.worker_code +
+                            ") - " +
+                            params.worker_full_name +
+                            " - " +
+                            params.worker_phone_company}
+                    </span>
+                </h3>
+                <HistoryDialog
+                    icon={<ClockIcon className="w-6 h-6" />}
+                    dataFormParent={params}
+                    userAuth={userAuth}
+                    infoWorker={infoWorker}
+                />
+            </DialogHeader>
+            <DialogBody
+                className={`overflow-y-auto h-full`}
+                style={{ height: `${height}px` }}
+            >
+                <div className="relative flex flex-col w-full p-8 text-black shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-black-900 to-white-800 shadow-black-900/20 ">
                     <div className="relative pb-8 m-0 mb-8 overflow-hidden text-center bg-transparent border-b rounded-none shadow-none text-black-700 bg-clip-border border-black/10">
-                        <h3 className="block pb-3 font-sans antialiased font-bold leading-normal text-black uppercase border-b r">
-                            Thông Tin Thu Chi của{" "}
-                            <span className="italic font-bold underline">
-                                {"(" +
-                                    params.worker_code +
-                                    ") - " +
-                                    params.worker_full_name +
-                                    " - " +
-                                    params.worker_phone_company}
-                            </span>
-                        </h3>
                         <div className="flex justify-between gap-1 mt-6 font-sans antialiased font-normal tracking-normal text-black">
                             <div className="flex flex-col text-center">
                                 <span className="pr-1 mt-2 text-2xl underline">
@@ -835,7 +842,8 @@ const ViewTotalDialog = ({
                                                                     >
                                                                         {params.warranties !==
                                                                         undefined
-                                                                            ? index + 1
+                                                                            ? index +
+                                                                              1
                                                                             : "KBH"}
                                                                     </Typography>
                                                                 </td>
@@ -871,17 +879,18 @@ const ViewTotalDialog = ({
                             </Card>
                         </div>
                     </div>
-                    <div className="p-0 mt-12">
-                        <Button
-                            className="w-full"
-                            color="white"
-                            onClick={handleViewTotal}
-                        >
-                            Xem xong
-                        </Button>
-                    </div>
                 </div>
             </DialogBody>
+            <div className="p-0 mt-12">
+                <Button
+                    className="w-full "
+                    color="green"
+                    variant="outlined"
+                    onClick={handleOpenViewTotal}
+                >
+                    Xem xong
+                </Button>
+            </div>
         </Dialog>
     );
 };

@@ -125,6 +125,24 @@ function Search({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
+
+    useEffect(() => {
+        if (socket) {
+            setSocketSearch(socket);
+        }
+        const handleResize = () => {
+            setScreenSize({
+                width: window.innerWidth,
+                height: window.innerHeight - 100,
+            });
+        };
+        fetchSearch();
+        fetchUser();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [socket]);
     const handelBH = async (id, id_cus, worker_full_name, code) => {
         let data = {
             id: id,
@@ -143,31 +161,15 @@ function Search({ auth }) {
             if (response.ok) {
                 // const responseData = await response.json(); // Convert response to JSON
                 // setDataReturn(responseData);
-                window.history.back();
+                socketSearch.emit('addWorkTo_Server',`Bảo hành của ${worker_full_name}`);
+                 window.location.href = `${host}`;
             } else {
                 console.error("Error:", response.status, response.statusText);
             }
         } catch (error) {
-            console.log("hihi", error);
+            console.log("Error:", error);
         }
     };
-    useEffect(() => {
-        if (socket) {
-            setSocketSearch(socket);
-        }
-        const handleResize = () => {
-            setScreenSize({
-                width: window.innerWidth,
-                height: window.innerHeight - 100,
-            });
-        };
-        fetchSearch();
-        fetchUser();
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, [socketSearch]);
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);

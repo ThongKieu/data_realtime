@@ -3,39 +3,43 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Typography } from "@material-tailwind/react";
 import Box from "@mui/material/Box";
 const KindWorker_ForWork = ({ kindWorker, column }) => {
-    const rows = kindWorker.data?.map((work) => ({
-        id: work.id,
-        id_cus: work.id_cus,
-        id_worker: work.id_worker,
-        id_phu: work.id_phu,
-        real_note: work.real_note,
-        spending_total: work.spending_total,
-        income_total: work.income_total,
-        bill_imag: work.bill_imag,
-        seri_imag: work.seri_imag,
-        status_work: work.status_work,
-        check_in: work.check_in,
-        seri_number: work.seri_number,
-        work_content: work.work_content,
-        date_book: work.date_book,
-        street: work.street,
-        district: work.district,
-        phone_number: work.phone_number,
-        image_work_path: work.image_work_path,
-        kind_work: work.kind_work,
-        name_cus: work.name_cus,
-        worker_full_name: work.worker_full_name,
-        worker_code: work.worker_code,
-        worker_address: work.worker_address,
-        worker_phone_company: work.worker_phone_company,
-        status_admin_check: work.status_admin_check,
-        flag_check: work.flag_check,
-        warranties: work.warranties,
-        his_work: work.his_work,
-    }));
+    const rows = kindWorker.data
+        ?.filter((work) =>
+            Object.values(work).every((val) => val !== undefined)
+        )
+        ?.map((work) => ({
+            id: work?.id,
+            id_cus: work?.id_cus,
+            id_worker: work?.id_worker,
+            id_phu: work?.id_phu,
+            real_note: work?.real_note,
+            work_note: work?.work_note,
+            spending_total: work?.spending_total,
+            income_total: work?.income_total,
+            bill_imag: work?.bill_imag,
+            seri_imag: work?.seri_imag,
+            status_work: work?.status_work,
+            check_in: work?.check_in,
+            seri_number: work?.seri_number,
+            work_content: work?.work_content,
+            date_book: work?.date_book,
+            street: work?.street,
+            district: work?.district,
+            phone_number: work?.phone_number,
+            image_work_path: work?.image_work_path,
+            kind_work: work?.kind_work,
+            name_cus: work?.name_cus,
+            worker_full_name: work?.worker_full_name,
+            worker_code: work?.worker_code,
+            worker_address: work?.worker_address,
+            worker_phone_company: work?.worker_phone_company,
+            status_admin_check: work?.status_admin_check,
+            flag_check: work?.flag_check,
+            warranties: work?.warranties,
+            his_work: work?.his_work,
+        }));
     return (
-
-            <Box
+        <Box
             sx={{
                 height: rows == "" ? 40 : 1,
                 width: "100%",

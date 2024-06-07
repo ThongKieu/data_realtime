@@ -29,11 +29,10 @@ function formatCardNumber(value) {
 // --------------------API ---------
 import {
     getFormattedToday,
-    url_API,
     url_API_District,
 } from "@/Data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/Socket";
+import { useSocket } from "@/Utils/SocketContext";
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -72,16 +71,23 @@ function FloatingButton() {
     };
     const formattedToday = getFormattedToday();
     const [selectedDate, setSelectedDate] = useState(formattedToday);
+    const [socketFTB, setSocketFTB] = useState();
     const handleDateChange = (event) => {
         setSelectedDate(event.target.value);
     };
+    const socket = useSocket();
     useEffect(() => {
         fetchData();
         fetchDataKindWorker();
+        if (socket) {
+            setSocketFTB(socket);
+        }
         return () => {
-            newSocket.disconnect();
+            if (socket) {
+                socket.disconnect();
+            }
         };
-    }, []);
+    }, [socket]);
     const fetchData = async () => {
         try {
             const response = await fetch(host + url_API_District);
@@ -149,7 +155,7 @@ function FloatingButton() {
                 }
             );
             if (response.status === 200) {
-                newSocket.emit("addWorkTo_Server", formData);
+                socketFTB.emit("addWorkTo_Server", formData);
                 handleOpen();
                 setFormData({
                     member_read: 1,
@@ -187,7 +193,6 @@ function FloatingButton() {
                         className="w-5 h-5 mr-3 cursor-pointer"
                         onClick={handleOpen}
                     />
-
                 </div>
                 <form className="flex flex-col">
                     <DialogBody divider>
@@ -195,7 +200,7 @@ function FloatingButton() {
                             <div className="my-2">
                                 <Input
                                     label="Số điện thoại"
-                                    value={formData.phone_number}
+                                    value={formData.phone_number=="" ? formatExpires(formData.phone_number) : formData.phone_number}
                                     id="phone_number"
                                     type="text"
                                     name="phone_number"
@@ -315,7 +320,6 @@ function FloatingButton() {
                         </div>
                     </DialogBody>
                     <DialogFooter className="justify-center space-x-2">
-
                         <Button
                             size="lg"
                             className="w-11/12"
@@ -325,7 +329,6 @@ function FloatingButton() {
                         >
                             Thêm
                         </Button>
-
                     </DialogFooter>
                 </form>
             </Dialog>

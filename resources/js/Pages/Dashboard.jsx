@@ -404,7 +404,6 @@ const Dashboard = ({ auth }) => {
                 const shouldDisplayIconButton =
                     hasData.work_note !== null ||
                     hasData.image_work_path !== null;
-                    console.log(hasData);
                 return (
                     <div className="text-center">
                         {shouldDisplayIconButton && (
@@ -1270,6 +1269,7 @@ const Dashboard = ({ auth }) => {
                 const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [openView_His, handleOpenView_His] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
+                const [work_noteThuHoi, setWorkNoteThuHoi] = useState();
                 const [work_noteWeb, setWorkNoteWeb] = useState();
                 const hasData = params.row;
                 const filteredArray = processSeriImages(hasData.bill_imag);
@@ -1441,7 +1441,9 @@ const Dashboard = ({ auth }) => {
                     e.preventDefault();
                     // Kiểm tra nếu work_noteWeb trống thì hiển thị cảnh báo và không cho gửi form
                     if (work_noteWeb == "" || work_noteWeb == undefined) {
-                        alert("Vui lòng nhập Tình Trạng Thực Tế trước khi gửi.");
+                        alert(
+                            "Vui lòng nhập Tình Trạng Thực Tế trước khi gửi."
+                        );
                         return;
                     }
                     let data_hisWork_KS = [
@@ -1458,25 +1460,43 @@ const Dashboard = ({ auth }) => {
                     formData.append("id_cus", params.row.id_cus);
                     formData.append("real_note", work_noteWeb);
                     formData.append("auth_id", auth.user.id);
-                    formData.append("work_content", cardExpiresWeb.work_content);
-                    formData.append("phone_number", cardExpiresWeb.phone_number);
+                    formData.append(
+                        "work_content",
+                        cardExpiresWeb.work_content
+                    );
+                    formData.append(
+                        "phone_number",
+                        cardExpiresWeb.phone_number
+                    );
                     formData.append("name_cus", cardExpiresWeb.name_cus);
                     formData.append("date_book", selectedDate);
                     formData.append("status_work", cardExpiresWeb.status_work);
-                    formData.append("his_work", JSON.stringify(data_hisWork_KS));
-                    formData.append("income_total", cardExpiresWeb.income_total);
+                    formData.append(
+                        "his_work",
+                        JSON.stringify(data_hisWork_KS)
+                    );
+                    formData.append(
+                        "income_total",
+                        cardExpiresWeb.income_total
+                    );
                     for (let i = 0; i < selectedFilesKS.length; i++) {
-                        formData.append("image_work_path[]", selectedFilesKS[i]);
+                        formData.append(
+                            "image_work_path[]",
+                            selectedFilesKS[i]
+                        );
                     }
-                    const response = await fetch("api/web/update/work-assignment-quote", {
-                        method: "POST",
-                        headers: {
-                            Accept: "application/json",
-                            // "Content-Type": "application/json", // Không cần thiết với FormData
-                        },
-                        // mode: "no-cors", // Nên tránh dùng mode: "no-cors" trừ khi thật sự cần thiết
-                        body: formData,
-                    });
+                    const response = await fetch(
+                        "api/web/update/work-assignment-quote",
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                // "Content-Type": "application/json", // Không cần thiết với FormData
+                            },
+                            // mode: "no-cors", // Nên tránh dùng mode: "no-cors" trừ khi thật sự cần thiết
+                            body: formData,
+                        }
+                    );
 
                     if (response.ok) {
                         socket_Dash.emit("addWorkTo_Server", "Khảo sát");
@@ -1484,7 +1504,10 @@ const Dashboard = ({ auth }) => {
                         handleOpenKSWebWithDisable();
                     } else {
                         // Xử lý khi có lỗi từ server
-                        console.error("Failed to update work assignment:", response);
+                        console.error(
+                            "Failed to update work assignment:",
+                            response
+                        );
                     }
                 };
 
@@ -1624,45 +1647,50 @@ const Dashboard = ({ auth }) => {
                 };
 
                 const handleThuHoi = async (e) => {
-                    let data_hisWork = [
-                        {
-                            id_auth: auth.user.id,
-                            id_worker: null,
-                            action: "thuhoi",
-                            time: getFormattedTIME(),
-                        },
-                    ];
-                    let data = {
-                        id: params.id,
-                        id_cus: params.row.id_cus,
-                        real_note: params.row.real_note,
-                        worker_name: params.row.worker_full_name,
-                        his_work: JSON.stringify(data_hisWork),
-                    };
-                    try {
-                        const response = await fetch(
-                            "api/web/update/work-assignment-return",
+                    if (work_noteThuHoi == "" || work_noteThuHoi == undefined) {
+                        alert("Không được bỏ trống lý do hủy");
+                    } else {
+                        let data_hisWork = [
                             {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                id_auth: auth.user.id,
+                                id_worker: null,
+                                action: "thuhoi",
+                                time: getFormattedTIME(),
+                            },
+                        ];
+                        let data = {
+                            id: params.id,
+                            id_cus: params.row.id_cus,
+                            real_note: work_noteThuHoi,
+                            worker_name: params.row.worker_full_name,
+                            his_work: JSON.stringify(data_hisWork),
+                        };
+                        console.log(data);
+                        try {
+                            const response = await fetch(
+                                "api/web/update/work-assignment-return",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                    },
+                                    body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                }
+                            );
+                            if (response.ok) {
+                                socket_Dash.emit(
+                                    "addWorkTo_Server",
+                                    "Thu hoi lich"
+                                );
+                                socket_Dash.emit(
+                                    "returnWorkWebToServer",
+                                    params.row.id_worker
+                                );
+                                handleOpenThuHoi();
                             }
-                        );
-                        if (response.ok) {
-                            socket_Dash.emit(
-                                "addWorkTo_Server",
-                                "Thu hoi lich"
-                            );
-                            socket_Dash.emit(
-                                "returnWorkWebToServer",
-                                params.row.id_worker
-                            );
-                            handleOpenThuHoi();
+                        } catch (error) {
+                            console.log("Loi", error);
                         }
-                    } catch (error) {
-                        console.log("Loi", error);
                     }
                 };
                 const dataBtnChi = [
@@ -1813,14 +1841,6 @@ const Dashboard = ({ auth }) => {
                                                 }
                                             />
                                         </Tooltip>
-                                        <HistoryDialog
-                                            icon={
-                                                <ClockIcon className="w-6 h-6" />
-                                            }
-                                            dataFormParent={params.row}
-                                            userAuth={userAuth}
-                                            infoWorker={infoWorkerDashboard}
-                                        />
                                     </>
                                 ) : params.row.status_work == 1 ? (
                                     <div className="flex flex-row gap-1">
@@ -2074,12 +2094,14 @@ const Dashboard = ({ auth }) => {
                             }
                             socketD={socket_Dash}
                             handleSearch={() => handleSearch(selectedDate)}
+                            infoWorker={infoWorkerDashboard}
+                            userAuth={userAuth}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
                             openThuHoi={openThuHoi}
                             handleOpenThuHoi={handleOpenThuHoiWithDisable}
-                            setWorkNote={setWorkNote}
+                            setWorkNote={setWorkNoteThuHoi}
                             handleThuHoi={handleThuHoi}
                         />
                         {/*----------------------------- dialog form Huy ----------- */}

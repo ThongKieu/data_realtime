@@ -19,12 +19,14 @@ import {
     PlusCircleIcon,
     TrashIcon,
     PaperAirplaneIcon,
+    ClockIcon,
 } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
 import useWindowSize from "@/Core/Resize";
 import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
+import HistoryDialog from "./HistoryDialog";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -46,6 +48,8 @@ function AdminCheckDialog({
     handleChange,
     socketD,
     handleSearch,
+    infoWorker,
+    userAuth,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -299,6 +303,12 @@ function AdminCheckDialog({
                 <DialogHeader className="font-sans underline ">
                     ADMIN KIỂM TRA
                 </DialogHeader>
+                <HistoryDialog
+                    icon={<ClockIcon className="w-4 h-4" />}
+                    dataFormParent={params.row}
+                    userAuth={userAuth}
+                    infoWorker={infoWorker}
+                />
             </div>
             <DialogBody
                 className={`overflow-y-auto`}

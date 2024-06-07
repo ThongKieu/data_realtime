@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import newSocket from "@/Utils/Socket"; // Đường dẫn tới file socket của bạn
 
-
 const SocketContext = createContext();
 
 export const useSocket = () => {
@@ -10,23 +9,15 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
-    // const [userLeavingPage, setUserLeavingPage] = useState(false);
-
-    // const handleBeforeUnload = (event) => {
-    //     setUserLeavingPage(true);
-    //     event.preventDefault();
-    //     newSocket.emit('disconnect', 'Kết thúc phiên');
-    //     newSocket.disconnect();
-    // };
 
     useEffect(() => {
+        // const socketInstance = newSocket({ secure: true });
         setSocket(newSocket, { secure: true });
 
         return () => {
             newSocket.disconnect();
         };
     }, [newSocket]);
-    
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.keyCode === 123) {
@@ -49,7 +40,7 @@ export const SocketProvider = ({ children }) => {
         };
     }, []);
     return (
-        <SocketContext.Provider value={socket }>
+        <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
     );

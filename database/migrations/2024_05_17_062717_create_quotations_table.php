@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('vat')->default(0);
             $table->integer('quote_total_price')->default(0);
             $table->tinyInteger('quote_status')->default(0);
+            $table->string('quote_image',5000)->nullable();
             $table->timestamps();
         });
     }

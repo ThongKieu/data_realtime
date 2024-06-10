@@ -88,7 +88,7 @@ class WarrantiesController extends Controller
     }
     public function createNewWorkFromOldCus($name_cus ,$work_note,$work_content,$street,$district,$phone_number)
     {
-        $date = date('d-m-Y');
+        $date = date('Y-m-d');
         $newWork = new Work([
             'name_cus'=> $name_cus,
             'date_book'=> $date ,
@@ -107,7 +107,7 @@ class WarrantiesController extends Controller
     {
         // $id = $req->id;
         // $date_book = $req ->date_book;
-        $date_now = date('d-m-Y');
+        $date_now = date('Y-m-d');
         // $a
         $time_warranties = Warranties::where('id_work_has','=',$id)->get();
         if($time_warranties->count()>0)

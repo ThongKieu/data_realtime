@@ -148,6 +148,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('quotation')->group(function()
     {
         Route::post('insert','App\Http\Controllers\QuotationController@create');
+        Route::post('insert-admin','App\Http\Controllers\QuotationController@adminQuote');
     }
 );
 

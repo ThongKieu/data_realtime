@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('position')->nullable();
             $table->string('phone')->nullable();
             $table->integer('is_online')->default(0);
+            $table->string('last_active')->nullable();
             $table->string('code')->nullable();
             $table->string('avatar')->default('assets/images/web/all.png');
             $table->rememberToken();

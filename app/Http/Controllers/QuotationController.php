@@ -21,7 +21,7 @@ class QuotationController extends Controller
             'quote_date' => $re->quote_date,
             'quote_info' => $re->quote_info,
             'quote_total_price' => $re->quote_total_price,
-            // 'vat'=>$re->vat
+            'vat'=>$re->vat
         ]);
         $new->save();
         if ($new) {

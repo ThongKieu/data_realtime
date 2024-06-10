@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
  */
-
 Route::prefix('web')->group(function () {
+
+
     Route::post('/insertLocation', 'App\Http\Controllers\TestLocationController@insertLocation');
     Route::post('/getLocation', 'App\Http\Controllers\TestLocationController@getLocation');
 
@@ -143,6 +144,12 @@ Route::prefix('web')->group(function () {
         // Route::post('delete', 'App\Http\Controllers\WorkListController@delete');
     });
     Route::post('/ig', 'App\Http\Controllers\ImageCustomController@optimizeImage');
+
+    Route::prefix('quotation')->group(function()
+    {
+        Route::post('insert','App\Http\Controllers\QuotationController@create');
+    }
+);
 
 })->withoutMiddleware("throttle:api")
     ->middleware(

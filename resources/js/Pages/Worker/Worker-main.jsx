@@ -12,14 +12,13 @@ import {
     Tooltip,
 } from "@material-tailwind/react";
 import { PlusCircleIcon, MapPinIcon } from "@heroicons/react/24/outline";
-
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/Socket";
+import { useSocket } from "@/Utils/SocketContext";
 function WorkersMain({ auth }) {
     // thêm thợ
+    const socket = useSocket();
     const [open, setOpen] = useState(false);
     const [info_worker, setFormDataWorker] = useState({
         worker_full_name: "",
@@ -125,7 +124,7 @@ function WorkersMain({ auth }) {
 
             if (res.ok) {
                 console.log("status_change_worker");
-                newSocket.emit("addWorkTo_Server", "status_change_worker");
+                socket?.emit("addWorkTo_Server", "status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
             }
@@ -309,7 +308,7 @@ function WorkersMain({ auth }) {
             width: 100,
             renderCell: (params) => {
                 return (
-                    <div >
+                    <div>
                         <img
                             src={
                                 params.row.worker_avatar !== null

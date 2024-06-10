@@ -20,9 +20,11 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
 import useWindowSize from "@/Core/Resize";
-import newSocket from "@/Utils/Socket";
+import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
+import { useSocket } from "@/Utils/SocketContext";
 function WorkerList({ auth }) {
     // thêm thợ
+    const socket = useSocket();
     const [open, setOpen] = useState(false);
     const [openAccApp, setOpenAccApp] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -142,7 +144,7 @@ function WorkerList({ auth }) {
                 body: JSON.stringify(data1),
             });
             if (res.ok) {
-                newSocket.emit("addWorkTo_Server", data1);
+                socket?.emit("addWorkTo_Server", data1);
                 console.log("status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -348,11 +350,7 @@ function WorkerList({ auth }) {
             headerName: "Doanh Số",
             width: 70,
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
-                return <p>{formatter.format(params.row.worker_daily_sales)}</p>;
+                return <p>{formatCurrencyVND(params.row.worker_daily_sales)}</p>;
             },
             // editable: true,
         },
@@ -361,13 +359,10 @@ function WorkerList({ auth }) {
             headerName: "Tăng Ca",
             width: 70,
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
+
                 return (
                     <p>
-                        {formatter.format(params.row.worker_daily_o_t_by_hour)}
+                        {formatCurrencyVND(params.row.worker_daily_o_t_by_hour)}
                     </p>
                 );
             },

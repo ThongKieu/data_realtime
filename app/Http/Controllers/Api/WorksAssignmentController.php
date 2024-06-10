@@ -255,7 +255,7 @@ class WorksAssignmentController extends Controller
     }
     public function continueWorkAss(Request $request)
     {
-
+        // dd($request->all());
         if ($request->ac == 1) {
             // update bảng đã phân
             // lấy id works sau đó đổi thông tin trạng thái, thêm nội dung ghi chú vào bảng work
@@ -715,7 +715,8 @@ class WorksAssignmentController extends Controller
         }
     }
     //Lấy dữ liệu tổng từ bảng lịch đã phân gửi Ktra bởi ADMIN getCancleBook
-    public function getCancleBook()  {
+    public function getCancleBook()
+    {
 
         return 'Tất cả thông tin';
     }

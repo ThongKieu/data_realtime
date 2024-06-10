@@ -2,33 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\WorksAssignmentController;
 use App\Models\Quotation;
 use App\Models\User;
 use App\Models\Work;
 use App\Models\WorksAssignment;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
+use Intervention\Image\Colors\Rgb\Channels\Red;
 
 class QuotationController extends Controller
 {
     //
     public function create(Request $re)
     {
-        
+        $seri_imag = '';
+        if ($re->hasFile('image_work_path')) {
+            $images = $re->file('image_work_path');
+            // dd($images);
+            foreach ($images as $image) {
+                $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $image->move('assets/images/work_assignment/' . $re->id . '/quote', $name);
+                $seri_imag .= 'assets/images/work_assignment/' . $re->id . '/quote/' . $name . ',';
+            }
+        }
         $new  = new Quotation([
             'id_work_has' => $re->id_work_has,
             'id_auth' => $re->id_auth,
             'quote_date' => $re->quote_date,
             'quote_info' => $re->quote_info,
+            'quote_image'=>$seri_imag,
             'quote_total_price' => $re->quote_total_price,
             'vat'=>$re->vat
         ]);
         $new->save();
+        $his_work = '"id_auth": null,"id_worker":"'.$re->worker.'","action":"bg","time":"'.date('Y-m-d H:m:s').'"';
+        WorksAssignmentController::insertHisWork($re->id_work_has,$his_work);
+        if($re->quote_total_price >0)
+        {
+            
+        }
         if ($new) {
             return 1;
         } else return 0;
     }
-    public function generatePDF(Request $re)
+    public function generatePDF()
     {
         $quote = Quotation::where('id', '=', 1)->get();
         // $data = [

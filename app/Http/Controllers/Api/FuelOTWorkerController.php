@@ -16,9 +16,9 @@ class FuelOTWorkerController extends Controller
     {
         // dd($r->all());
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
+            $fuel_o_t_workers_date_set = date("Y-m-d", strtotime($r->date_check));
         } else {
-            $fuel_o_t_workers_date_set = date('d-m-Y');
+            $fuel_o_t_workers_date_set = date('Y-m-d');
         }
         if ($r->id) {
             $fuel_o_t_workers_id = $r->id;
@@ -41,10 +41,10 @@ class FuelOTWorkerController extends Controller
     public function getAllFOWorker(Request $r)
     {
         if ($r->date_check != null) {
-            $fuel_o_t_workers_date_set = date("d-m-Y", strtotime($r->date_check));
+            $fuel_o_t_workers_date_set = date("Y-m-d", strtotime($r->date_check));
         } else {
 
-            $fuel_o_t_workers_date_set = date('d-m-Y');
+            $fuel_o_t_workers_date_set = date('Y-m-d');
         }
 
         $get_id = FuelOTWorker::where('fuel_o_t_workers_date_set', '=', $fuel_o_t_workers_date_set)->get([
@@ -66,7 +66,7 @@ class FuelOTWorkerController extends Controller
         // dd($r->all());
         $a = json_decode($r->data);
 
-        $fuel_o_t_workers_date_set = date('d-m-Y');
+        $fuel_o_t_workers_date_set = date('Y-m-d');
         $fuel_o_t_workers_flag = 0;
         foreach ($a as $c_a) {
             // dd($a);

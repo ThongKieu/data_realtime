@@ -88,7 +88,7 @@ class ReportWorkerController extends Controller
     public function getAllWorker(Request $r)
     {
         if ($r->date_check == null || $r->date_check == '') {
-            $date_check = date('d-m-Y');
+            $date_check = date('Y-m-d');
         } else {
             $date_check = $r->date_check;
         }

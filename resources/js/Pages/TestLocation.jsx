@@ -9,6 +9,7 @@ const TestLocation = () => {
     const [changeInput, setChangeInput] = useState();
     const fetchData = async (id_Worker) => {
         if (id_Worker) {
+            console.log(id_Worker);
             const requestBody = {
                 idWorker: id_Worker,
             };

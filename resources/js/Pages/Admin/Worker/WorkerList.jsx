@@ -38,7 +38,7 @@ function WorkerList({ auth }) {
         worker_kind: 0,
     });
     const [accAPP, setAccApp] = useState(null);
-    const { width, height } = useWindowSize(65);
+    const { width, height } = useWindowSize(73);
 
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
@@ -99,9 +99,10 @@ function WorkerList({ auth }) {
         }
     };
     useEffect(() => {
-        // Gọi API để lấy dữ liệu
         fetchDataWorker();
         fetchDataCodeWorker();
+    }, []);
+    useEffect(() => {
         if (socket) {
             socket?.on("sendAddWorkTo_Client", (jsonData) => {
                 if (jsonData) {
@@ -142,27 +143,7 @@ function WorkerList({ auth }) {
                 // Thực hiện xử lý lỗi ở đây, ví dụ: hiển thị thông báo lỗi cho người dùng hoặc thử lại yêu cầu
             });
     };
-    const fetchData = async (data1) => {
-        try {
-            const res = await fetch(host + "api/web/update/worker", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data1),
-            });
-            if (res.ok) {
-                socket?.emit("addWorkTo_Server", data1);
-                console.log("status_change_worker");
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    // fetch data phone
-    const fetchDataPhone = async (data) => {
+    const fetchData = async (data) => {
         try {
             const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
@@ -171,8 +152,8 @@ function WorkerList({ auth }) {
                 },
                 body: JSON.stringify(data),
             });
-
             if (res.ok) {
+                socket?.emit("addWorkTo_Server", data);
                 console.log("status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -181,7 +162,6 @@ function WorkerList({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
@@ -352,8 +332,8 @@ function WorkerList({ auth }) {
             renderCell: (params) => {
                 const handleChangeva = (event) => {
                     // Xử lý sự thay đổi của lựa chọn ở đây
-                    const selectedValue = event.target.value;
-                    const data_set = {
+                    let selectedValue = event.target.value;
+                    let data_set = {
                         action: "status_change_worker",
                         id: params.id,
                         status: selectedValue,
@@ -681,7 +661,7 @@ function WorkerList({ auth }) {
                         </div>
                     </div>
                 </Card>
-                <Card className={`w-[${width}px] m-1 mt-1`}>
+                <Card className={`w-[${width}px] m-1 mt-1 overflow-scroll`}>
                     <Box sx={{ height: height, width: 1 }}>
                         <DataGrid
                             rows={rows}

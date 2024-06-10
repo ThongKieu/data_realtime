@@ -178,6 +178,7 @@ class WorksController extends Controller
         $cancle = DB::table('works')
         ->join('users', 'works.member_read', '=', 'users.id')
         ->leftJoin('works_assignments', 'works.id', '=', 'works_assignments.id_cus')
+        ->where ('date_book','=',$today)
         ->select([
             'works.id',
             'works.work_content',
@@ -203,4 +204,5 @@ class WorksController extends Controller
             'info_can' => $cancle,
         ]);
     }
+    
 }

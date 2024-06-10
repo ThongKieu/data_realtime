@@ -18,7 +18,7 @@ return new class extends Migration
             $table->tinyInteger('id_auth');
             $table->string('quote_date');
             $table->string('quote_info',5000);
-            // $table->string('vat')->default(0);
+            $table->string('vat')->default(0);
             $table->integer('quote_total_price');
             $table->tinyInteger('quote_status')->default(0);
             $table->timestamps();

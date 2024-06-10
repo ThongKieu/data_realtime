@@ -267,8 +267,8 @@ class WorksAssignmentController extends Controller
                 $note = 'Đã làm ngày : ' . $sub;
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
+            
             WorksAssignmentController::insertHisWork($request->id, $request->his_work);
-
             //id_work, id_worker, id_phu
             $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
 
@@ -352,7 +352,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y'),
+                        'work_done_date' => date('Y-m-d'),
                     ]);
                 return response()->json('Update work with image !!!');
             } else {
@@ -363,7 +363,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y'),
+                        'work_done_date' => date('Y-m-d'),
 
                     ]);
                 // if($request->datainput != null || $request->datainput != '')
@@ -510,7 +510,7 @@ class WorksAssignmentController extends Controller
 
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
-                        ReportWorkerController::setReportDay($data['id_worker'], date('d-m-Y'), $data['income_total'], $data['spending_total']);
+                        ReportWorkerController::setReportDay($data['id_worker'], date('Y-m-d'), $data['income_total'], $data['spending_total']);
                         return 'Admin Check';
                     default:
                         return 'Done With None Update !';
@@ -719,6 +719,19 @@ class WorksAssignmentController extends Controller
     {
 
         return 'Tất cả thông tin';
+    }
+    public function checkInOut(Request $request)
+    {
+        if($request->id_work_has && $request -> check_in_out)
+        {
+            WorksAssignment::where('id','=',$request->id_work_has)->update(['check_in'=>$request->check_in_out]);
+
+            return response()->json('Check Local Done');
+        }
+        else 
+        {
+            return response()->json('Check infomation sent');
+        }
     }
 
 }

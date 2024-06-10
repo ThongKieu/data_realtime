@@ -19,12 +19,14 @@ import {
     PlusCircleIcon,
     TrashIcon,
     PaperAirplaneIcon,
+    ClockIcon,
 } from "@heroicons/react/24/outline";
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
 import useWindowSize from "@/Core/Resize";
 import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
+import HistoryDialog from "./HistoryDialog";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -46,6 +48,8 @@ function AdminCheckDialog({
     handleChange,
     socketD,
     handleSearch,
+    infoWorker,
+    userAuth,
 }) {
     const [activePt, setActivePt] = useState({
         inputSPT: false,
@@ -71,9 +75,14 @@ function AdminCheckDialog({
     };
     useEffect(() => {
         setOldDataBH(params.row.warranties);
-    }, [params.row.warranties]);
+        setDataBH(params.row.warranties);
+        setSetImageVt(imageVt1);
+        setSetImagePt(imagePt1);
+    }, [params.row.warranties, imageVt1, imagePt1]);
 
     const [oldDataBH, setOldDataBH] = useState();
+    const [imageVt, setSetImageVt] = useState();
+    const [imagePt, setSetImagePt] = useState();
     const [dataBH, setDataBH] = useState(
         params.row.warranties == "KBH"
             ? [
@@ -255,7 +264,6 @@ function AdminCheckDialog({
             },
         };
 
-        // console.log(check_admin);
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
@@ -280,9 +288,8 @@ function AdminCheckDialog({
     };
     const { width, height } = useWindowSize(300);
     const [isReadMore, setIsReadMore] = useState(false);
-    const toggleReadMore = (id) => {
+    const toggleReadMore = () => {
         setIsReadMore(!isReadMore);
-        setDataBH(params.row.warranties);
     };
     const [openImage, setOpenImage] = useState(false);
     const handleOpenImage = () => setOpenImage(!openImage);
@@ -296,6 +303,12 @@ function AdminCheckDialog({
                 <DialogHeader className="font-sans underline ">
                     ADMIN KIỂM TRA
                 </DialogHeader>
+                <HistoryDialog
+                    icon={<ClockIcon className="w-4 h-4" />}
+                    dataFormParent={params.row}
+                    userAuth={userAuth}
+                    infoWorker={infoWorker}
+                />
             </div>
             <DialogBody
                 className={`overflow-y-auto`}
@@ -515,7 +528,7 @@ function AdminCheckDialog({
                         </i>
                         <p
                             onClick={() => {
-                                toggleReadMore(params.row.warranty);
+                                toggleReadMore();
                             }}
                             className="p-1 mt-1 text-center border border-green-500 rounded-md cursor-pointer"
                         >
@@ -568,11 +581,11 @@ function AdminCheckDialog({
                                     />
                                 </div>
                             </div>
-                            {imageVt1 == "" || imageVt1 == null ? (
+                            {imageVt == "" || imageVt == null ? (
                                 <i className="mt-4">(Không Có Hình)</i>
                             ) : (
                                 <div className="grid w-full grid-cols-3 gap-4 mt-4">
-                                    {imageVt1.map((item, index) => (
+                                    {imageVt.map((item, index) => (
                                         <Card
                                             key={index}
                                             className="relative border border-green-500 rounded-none"
@@ -616,11 +629,11 @@ function AdminCheckDialog({
                                 </div>
                             </div>
 
-                            {imagePt1 == "" || imagePt1 == null ? (
+                            {imagePt == "" || imagePt == null ? (
                                 <i className="mt-4">(Không Có Hình)</i>
                             ) : (
                                 <div className="grid w-full grid-cols-3 gap-4 mt-4">
-                                    {imagePt1.map((item, index) => (
+                                    {imagePt.map((item, index) => (
                                         <Card
                                             key={index}
                                             className="relative border border-green-500 rounded-none"

@@ -24,7 +24,8 @@ class User extends Authenticatable
         'permission',
         'code',
         'phone',
-        'position'
+        'position',
+        'last_active'
     ];
 
     /**

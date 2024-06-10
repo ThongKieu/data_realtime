@@ -10,13 +10,14 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
-        // const socketInstance = newSocket({ secure: true });
-        setSocket(newSocket, { secure: true });
+     useEffect(() => {
+        const socketInstance = newSocket({ secure: true });
+        setSocket(socketInstance);
+
         return () => {
-            newSocket.disconnect();
+            socketInstance.disconnect();
         };
-    }, [newSocket]);
+    }, []); // Sử dụng mảng rỗng để chỉ chạy một lần khi component mount
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.keyCode === 123) {

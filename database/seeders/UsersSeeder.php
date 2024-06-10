@@ -23,7 +23,7 @@ class UsersSeeder extends Seeder
                 'phone'=>'0912847218',
                 'position'=> 'NV Văn Phòng',
                 'code'=>'VP01',
-                'avatar'=>'assets/avatar/avata1.png'
+                'avatar'=>'assets/images/web/all.png'
             ],);
 
             User::factory()->create([
@@ -34,7 +34,7 @@ class UsersSeeder extends Seeder
                 'position'=> 'NV Văn Phòng',
                 'permission'=>1,
                 'code'=>'VP02',
-                'avatar'=>'assets/avatar/avata2.png'
+                'avatar'=>'assets/images/web/all.png'
             ],);
             User::factory()->create([
                 'name' => 'Admin Quản lý',
@@ -44,7 +44,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('Thoviet58568!@#'),
                 'permission'=>1,
                 'code'=>'VP03',
-                'avatar'=>'assets/avatar/avata3.png'
+                'avatar'=>'assets/images/web/all.png'
             ],);
             User::factory()->create([
                 'name' => 'Điều phối viên',
@@ -54,7 +54,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('Thoviet58568!@#'),
                 'permission'=>2,
                 'code'=>'VP04',
-                'avatar'=>'assets/avatar/avata3.png'
+                'avatar'=>'assets/images/web/all.png'
             ],);
             User::factory()->create([
                 'name' => 'Kế Toán',
@@ -64,7 +64,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('Thoviet58568!@#'),
                 'permission'=>3,
                 'code'=>'VP05',
-                'avatar'=>'assets/avatar/avata3.png'
+                'avatar'=>'assets/images/web/all.png'
             ],);
     }
 }

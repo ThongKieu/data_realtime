@@ -43,13 +43,17 @@ function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const closeMenu = () => setIsMenuOpen(false);
     const [number, setNumberOnline] = useState("");
+    const [listuser, setlistOnline] = useState("");
+
     const [noti, setNoti] = useState("");
     const numberOn = async () => {
         try {
             const res = await fetch(`${host}api/web/list-online`);
             const jsonData = await res.json();
             if (jsonData) {
-                setNumberOnline(jsonData);
+                setNumberOnline(jsonData.num);
+                setlistOnline(jsonData.list_user);
+                console.log(jsonData);
             }
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -204,6 +208,8 @@ function ProfileMenu({ propauthprofile, socket }) {
                     <OnlineList
                         avatarimage={host + propauthprofile.avatar}
                         numberonline={number}
+                        listuser={listuser}
+                        auth= {propauthprofile.id}
                         name={propauthprofile.name}
                     />
                     <NavLink
@@ -259,24 +265,22 @@ function NavList() {
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
             <a
                 href={`${host}`}
-                className="flex flex-row gap-2 p-2 font-normal text-black lg:rounded-full hover:bg-blue-gray-50"
+                className="flex flex-row gap-2 p-2 pr-0 font-normal text-black lg:rounded-full hover:bg-blue-gray-50"
             >
                 <span>
                     <HomeIcon className="h-[18px] w-[18px]" />
                 </span>
                 <span>Trang Chủ</span>
             </a>
-            <NavLink
-                href={route(`search`)}
-                className="flex flex-row gap-2 font-normal text-black lg:rounded-full"
+            <a
+                href={`${host}tim-kiem`}
+                className="flex flex-row gap-2 p-2 font-normal text-black lg:rounded-full hover:bg-blue-gray-50"
             >
-                <MenuItem className="flex gap-2 text-black lg:rounded-full">
-                    <span>
-                        <UserCircleIcon className="h-[18px] w-[18px]" />
-                    </span>
-                    <span>Tìm Kiếm</span>
-                </MenuItem>
-            </NavLink>
+                <span>
+                <UserCircleIcon className="h-[18px] w-[18px]" />
+                </span>
+                <span>Tìm Kiếm</span>
+            </a>
             <IdentificationIcon className="h-[18px] w-[18px] " />
             <Menu allowHover>
                 <MenuHandler>
@@ -349,12 +353,6 @@ function NavbarDefault({ propauth, check }) {
     }, [check]);
     useEffect(() => {
         setSocketCard(socket);
-        // return () => {
-        //     if (socket) {
-        //         // socket.off("sendAddWorkTo_Client");
-        //         socket.off("UpdateDateTable_To_Client");
-        //     }
-        // };
     }, [check, socket]);
 
     useEffect(() => {
@@ -372,7 +370,7 @@ function NavbarDefault({ propauth, check }) {
                 }
             });
         }
-    }, [check]);
+    }, [check,socket]);
 
     const fetchDelete = async (dateCheckDel) => {
         try {

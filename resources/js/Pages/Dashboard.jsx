@@ -38,6 +38,7 @@ import {
     TicketIcon,
     CheckCircleIcon,
     BookmarkSquareIcon,
+    ClockIcon,
 } from "@heroicons/react/24/outline";
 import {
     url_API,
@@ -66,6 +67,7 @@ import useWindowSize from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 import { useSocket } from "@/Utils/SocketContext";
+import HistoryDialog from "@/Components/HistoryDialog";
 // ----
 
 const Dashboard = ({ auth }) => {
@@ -195,6 +197,7 @@ const Dashboard = ({ auth }) => {
             if (jsonData) {
                 setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
                 setIsLoading(false);
+                console.log(jsonData);
                 // Optional chaining để gọi hàm nếu nó tồn tại
                 // console.log(jsonData,'3333333333333333333333333333');
             } else {
@@ -419,7 +422,7 @@ const Dashboard = ({ auth }) => {
                                     <p className="italic font-bold underline">
                                         Nội dung ghi chú:
                                     </p>
-                                    <p>{params.row.work_note}</p>
+                                    <p>{hasData.work_note}</p>
                                 </div>
                                 <div className="object-cover object-center w-full p-2 mb-5 border border-green-500 rounded-lg shadow-xl">
                                     <p className="italic font-bold underline">
@@ -757,14 +760,19 @@ const Dashboard = ({ auth }) => {
             editable: false,
         },
         {
-            field: "warranty",
+            field: "warranties",
             headerName: "BH",
             width: 50,
             editable: false,
             type: "text",
             renderCell: (params, index) => {
+                useEffect(() => {
+                    if (params.row.warranties || params.row.warranties != "") {
+                        setTTBH(params.row.warranties);
+                    }
+                }, [params.row.warranties]);
                 const [TTBH, setTTBH] = useState(
-                    params.row.warranty == "KBH"
+                    params.row.warranties == "KBH"
                         ? [
                               {
                                   id: 0,
@@ -774,7 +782,7 @@ const Dashboard = ({ auth }) => {
                                   warranty_create: 0,
                               },
                           ]
-                        : params.row.warranty
+                        : params.row.warranties
                 );
                 const [open, setOpen] = useState(false);
                 const handleOpen = () => {
@@ -790,8 +798,6 @@ const Dashboard = ({ auth }) => {
                             variant="outlined"
                             onClick={() => {
                                 handleOpen();
-                                // pa
-                                // setTTBH();
                             }}
                         >
                             <ClipboardDocumentListIcon className="w-4 h-4" />
@@ -1263,6 +1269,7 @@ const Dashboard = ({ auth }) => {
                 const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [openView_His, handleOpenView_His] = useToggle(false);
                 const [work_note, setWorkNote] = useState();
+                const [work_noteThuHoi, setWorkNoteThuHoi] = useState();
                 const [work_noteWeb, setWorkNoteWeb] = useState();
                 const hasData = params.row;
                 const filteredArray = processSeriImages(hasData.bill_imag);
@@ -1432,6 +1439,13 @@ const Dashboard = ({ auth }) => {
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
                 const handleSentKSWeb = async (e) => {
                     e.preventDefault();
+                    // Kiểm tra nếu work_noteWeb trống thì hiển thị cảnh báo và không cho gửi form
+                    if (work_noteWeb == "" || work_noteWeb == undefined) {
+                        alert(
+                            "Vui lòng nhập Tình Trạng Thực Tế trước khi gửi."
+                        );
+                        return;
+                    }
                     let data_hisWork_KS = [
                         {
                             id_auth: auth.user.id,
@@ -1477,18 +1491,26 @@ const Dashboard = ({ auth }) => {
                             method: "POST",
                             headers: {
                                 Accept: "application/json",
-                                "Content-Type": "application/json",
+                                // "Content-Type": "application/json", // Không cần thiết với FormData
                             },
-                            mode: "no-cors",
+                            // mode: "no-cors", // Nên tránh dùng mode: "no-cors" trừ khi thật sự cần thiết
                             body: formData,
                         }
                     );
+
                     if (response.ok) {
                         socket_Dash.emit("addWorkTo_Server", "Khảo sát");
                         handleOpen();
                         handleOpenKSWebWithDisable();
+                    } else {
+                        // Xử lý khi có lỗi từ server
+                        console.error(
+                            "Failed to update work assignment:",
+                            response
+                        );
                     }
                 };
+
                 // --------- thu chi ----------------------------
                 const [isDataChanged, setIsDataChanged] = useState([]);
                 const handleDataFromChild = (data) => setIsDataChanged(data);
@@ -1625,45 +1647,50 @@ const Dashboard = ({ auth }) => {
                 };
 
                 const handleThuHoi = async (e) => {
-                    let data_hisWork = [
-                        {
-                            id_auth: auth.user.id,
-                            id_worker: null,
-                            action: "thuhoi",
-                            time: getFormattedTIME(),
-                        },
-                    ];
-                    let data = {
-                        id: params.id,
-                        id_cus: params.row.id_cus,
-                        real_note: params.row.real_note,
-                        worker_name: params.row.worker_full_name,
-                        his_work: JSON.stringify(data_hisWork),
-                    };
-                    try {
-                        const response = await fetch(
-                            "api/web/update/work-assignment-return",
+                    if (work_noteThuHoi == "" || work_noteThuHoi == undefined) {
+                        alert("Không được bỏ trống lý do hủy");
+                    } else {
+                        let data_hisWork = [
                             {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                                },
-                                body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                id_auth: auth.user.id,
+                                id_worker: null,
+                                action: "thuhoi",
+                                time: getFormattedTIME(),
+                            },
+                        ];
+                        let data = {
+                            id: params.id,
+                            id_cus: params.row.id_cus,
+                            real_note: work_noteThuHoi,
+                            worker_name: params.row.worker_full_name,
+                            his_work: JSON.stringify(data_hisWork),
+                        };
+                        console.log(data);
+                        try {
+                            const response = await fetch(
+                                "api/web/update/work-assignment-return",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                    },
+                                    body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                }
+                            );
+                            if (response.ok) {
+                                socket_Dash.emit(
+                                    "addWorkTo_Server",
+                                    "Thu hoi lich"
+                                );
+                                socket_Dash.emit(
+                                    "returnWorkWebToServer",
+                                    params.row.id_worker
+                                );
+                                handleOpenThuHoi();
                             }
-                        );
-                        if (response.ok) {
-                            socket_Dash.emit(
-                                "addWorkTo_Server",
-                                "Thu hoi lich"
-                            );
-                            socket_Dash.emit(
-                                "returnWorkWebToServer",
-                                params.row.id_worker
-                            );
-                            handleOpenThuHoi();
+                        } catch (error) {
+                            console.log("Loi", error);
                         }
-                    } catch (error) {
-                        console.log("Loi", error);
                     }
                 };
                 const dataBtnChi = [
@@ -1797,7 +1824,7 @@ const Dashboard = ({ auth }) => {
                         userId ? (
                             <p className="w-full text-center">{idUserFix}</p>
                         ) : (
-                            <div className="flex flex-row justify-center">
+                            <div className="flex flex-row items-center justify-center">
                                 {check_admin ||
                                 (check_admin &&
                                     selectedDate != formattedToday) ? (
@@ -1816,20 +1843,40 @@ const Dashboard = ({ auth }) => {
                                         </Tooltip>
                                     </>
                                 ) : params.row.status_work == 1 ? (
-                                    <p
-                                        className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
-                                    >
-                                        Mai Làm Tiếp
-                                    </p>
+                                    <div className="flex flex-row gap-1">
+                                        <p
+                                            className={`p-1 text-blue-500 border border-blue-500 rounded-sm`}
+                                        >
+                                            Mai Làm Tiếp
+                                        </p>
+                                        <HistoryDialog
+                                            icon={
+                                                <ClockIcon className="w-4 h-4" />
+                                            }
+                                            dataFormParent={params.row}
+                                            userAuth={userAuth}
+                                            infoWorker={infoWorkerDashboard}
+                                        />
+                                    </div>
                                 ) : params.row.status_work == 3 ? (
-                                    <Button
-                                        className={`p-2 rounded`}
-                                        onClick={() =>
-                                            handleOpenViewKSDisable()
-                                        }
-                                    >
-                                        Khảo Sát
-                                    </Button>
+                                    <div className="flex flex-row gap-1">
+                                        <Button
+                                            className={`p-2 rounded`}
+                                            onClick={() =>
+                                                handleOpenViewKSDisable()
+                                            }
+                                        >
+                                            Khảo Sát
+                                        </Button>
+                                        <HistoryDialog
+                                            icon={
+                                                <ClockIcon className="w-4 h-4" />
+                                            }
+                                            dataFormParent={params.row}
+                                            userAuth={userAuth}
+                                            infoWorker={infoWorkerDashboard}
+                                        />
+                                    </div>
                                 ) : (
                                     <>
                                         <Tooltip
@@ -1938,7 +1985,7 @@ const Dashboard = ({ auth }) => {
                                                 </MenuItem>
                                                 <MenuItem className="p-0 w-fit">
                                                     <Tooltip
-                                                        content="Lịch Sử2"
+                                                        content="Lịch Sử"
                                                         position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
                                                         arrowSize={10} // Đặt kích thước mũi tên của Tooltip
                                                         padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
@@ -1950,29 +1997,14 @@ const Dashboard = ({ auth }) => {
                                                                 "red",
                                                             color: "white",
                                                         }}
-                                                        // animate={{
-                                                        //     mount: {
-                                                        //         scale: 1,
-                                                        //         y: 0,
-                                                        //     },
-                                                        //     unmount: {
-                                                        //         scale: 0,
-                                                        //         y: 25,
-                                                        //     },
-                                                        // }}
                                                     >
-                                                        <img
-                                                            src="/assets/h_icon.svg"
+                                                        <ClockIcon
                                                             alt="H icon"
                                                             className="w-6 h-6 m-1 border-spacing-1 border-s-deep-orange-50 text-cyan-300"
                                                             onClick={() =>
                                                                 handleOpenViewHisDisable()
                                                             }
                                                         />
-                                                        {/* <TicketIcon
-                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-
-                                                        /> */}
                                                     </Tooltip>
                                                 </MenuItem>
                                             </MenuList>
@@ -2062,12 +2094,14 @@ const Dashboard = ({ auth }) => {
                             }
                             socketD={socket_Dash}
                             handleSearch={() => handleSearch(selectedDate)}
+                            infoWorker={infoWorkerDashboard}
+                            userAuth={userAuth}
                         />
                         {/*----------------------------- dialog form Thu Hoi ----------- */}
                         <ThuHoiDialog
                             openThuHoi={openThuHoi}
                             handleOpenThuHoi={handleOpenThuHoiWithDisable}
-                            setWorkNote={setWorkNote}
+                            setWorkNote={setWorkNoteThuHoi}
                             handleThuHoi={handleThuHoi}
                         />
                         {/*----------------------------- dialog form Huy ----------- */}
@@ -2125,6 +2159,8 @@ const Dashboard = ({ auth }) => {
                             handleOpenViewTotal={handleOpenViewTotalWithDisable}
                             handleViewTotal={handleOpenViewTotal}
                             params={params.row}
+                            infoWorker={infoWorkerDashboard}
+                            userAuth={userAuth}
                         />
                         <KSDialog
                             openViewKS={openView_KS}
@@ -2145,14 +2181,6 @@ const Dashboard = ({ auth }) => {
             },
         },
     ];
-    const DNCU = useRef(null);
-    const DN = useRef(null);
-    const DL = useRef(null);
-    const DG = useRef(null);
-    const NLMT = useRef(null);
-    const XD = useRef(null);
-    const VC = useRef(null);
-    const HX = useRef(null);
     // ----------------------------nut scrollView trong bang --------------------------
     const scrollView = (ref) => {
         if (ref && ref.current) {

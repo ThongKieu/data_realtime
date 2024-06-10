@@ -7,12 +7,12 @@ function Chat({ auth }) {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState("");
     const [chatContent, setChatContent] = useState([]);
-    useEffect(() => {
-        setSocket(newSocket, { secure: true });
-        return () => {
-            newSocket.disconnect();
-        };
-    }, []);
+    // useEffect(() => {
+    //     setSocket(newSocket, { secure: true });
+    //     return () => {
+    //         newSocket.disconnect();
+    //     };
+    // }, []);
     // Trả giá trị về từ server
     useEffect(() => {
         if (socket) {

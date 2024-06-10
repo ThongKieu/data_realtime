@@ -56,16 +56,16 @@ import {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb,HisDialog
+    KhaoSatDialogWeb,
+    HisDialog,
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import newSocket from "@/Utils/Socket";
 import useWindowSize from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
-
+import { useSocket } from "@/Utils/SocketContext";
 // ----
 
 const Dashboard = ({ auth }) => {
@@ -86,6 +86,9 @@ const Dashboard = ({ auth }) => {
     const [idUserFix, setIdUserFix] = useState();
     const [rowIdData, setRowIdData] = useState(0);
     const [userId, setSetUserId] = useState(0);
+
+    const socket = useSocket();
+
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -95,28 +98,32 @@ const Dashboard = ({ auth }) => {
         pushOn();
     }, []);
     useEffect(() => {
-        if (newSocket) {
-            setSocket_Dash(newSocket, { secure: true });
-            newSocket.emit("pushOnline", message);
-            newSocket.on("UpdateDateTable_To_Client", (data) => {
-                if (data.date_book || data.date_book != undefined) {
+        if (socket) {
+            setSocket_Dash(socket);
+            socket.emit("pushOnline", message);
+            socket.on("UpdateDateTable_To_Client", (data) => {
+                if (
+                    data.date_book == selectedDate ||
+                    data.date_book != undefined
+                ) {
                     fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
-                } else if (data) {
+                } else {
                     fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                 }
             });
-            newSocket.on("sendAddWorkTo_Client", (jsonData) => {
+            socket.on("sendAddWorkTo_Client", (jsonData) => {
+                console.log(jsonData);
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                 }
             });
-            newSocket.on(
+            socket.on(
                 "ButtonDisable_To_Client",
                 ({ id, isDisabled, userFix, userID }) => {
                     setRowIdData(id);
@@ -126,12 +133,12 @@ const Dashboard = ({ auth }) => {
                 }
             );
         }
-        return () => {
-            if (newSocket) {
-                newSocket.disconnect();
-            }
-        };
-    }, [newSocket]);
+        // return () => {
+        //     if (socket) {
+        //         socket.disconnect();
+        //     }
+        // };
+    }, [socket]);
     useEffect(() => {
         const mergedWorks = workData_Work.reduce((acc, currentItem) => {
             return acc.concat(currentItem.oldWork);
@@ -139,6 +146,7 @@ const Dashboard = ({ auth }) => {
         setMergedOldWorks(mergedWorks);
     }, [workData_Work]);
 
+    // console.log(socket_Dash?.id);
     const pushOn = async () => {
         try {
             let data = {
@@ -186,7 +194,7 @@ const Dashboard = ({ auth }) => {
             const jsonData = await response.json();
             if (jsonData) {
                 setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
-                setIsLoading(false); 
+                setIsLoading(false);
                 // Optional chaining để gọi hàm nếu nó tồn tại
                 // console.log(jsonData,'3333333333333333333333333333');
             } else {
@@ -202,6 +210,7 @@ const Dashboard = ({ auth }) => {
     const handleDateChange = (event) => {
         const newDate = event.target.value;
         setSelectedDate(newDate);
+        console.log(newDate);
     };
 
     const handleSearch = (dateCheckSearch) => {
@@ -566,22 +575,38 @@ const Dashboard = ({ auth }) => {
                 // console.log('params params :',params, auth);
                 const handleSentDelete = async () => {
                     try {
-                        let data = {
-                            id: params.id,
-                            auth_id: auth.user.id,
-                            work_note: work_note,
-                        };
-                        const response = await fetch("api/web/cancle/works", {
-                            method: "POST",
-                            body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
-                            headers: {
-                                "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
-                            },
-                        });
-                        if (response.ok) {
-                            socket_Dash.emit("addWorkTo_Server", "xoalich");
-                            handleOpen();
-                            console.log("Xóa thành Công");
+                        if (work_note == null || !work_note) {
+                            alert("Vui lòng điền lý do hủy!");
+                        } else {
+                            let data_hisWork = [
+                                {
+                                    id_auth: auth.user.id,
+                                    id_worker: null,
+                                    action: "huy",
+                                    work_note: work_note,
+                                    time: getFormattedTIME(),
+                                },
+                            ];
+                            let data = {
+                                id: params.id,
+                                auth_id: auth.user.id,
+                                work_note: JSON.stringify(data_hisWork),
+                            };
+                            const response = await fetch(
+                                "api/web/cancle/works",
+                                {
+                                    method: "POST",
+                                    body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
+                                    headers: {
+                                        "Content-Type": "application/json", // Xác định loại dữ liệu gửi đi
+                                    },
+                                }
+                            );
+                            if (response.ok) {
+                                socket_Dash.emit("addWorkTo_Server", "xoalich");
+                                handleOpen();
+                                console.log("Xóa thành Công");
+                            }
                         }
                     } catch (error) {
                         console.log("Lỗi:", error);
@@ -1295,8 +1320,8 @@ const Dashboard = ({ auth }) => {
                             handleOpenFunction(!isOpenState);
                             break;
                         case "openViewHis":
-                                handleOpenFunction(!isOpenState);
-                                break;
+                            handleOpenFunction(!isOpenState);
+                            break;
                         default:
                             break;
                     }
@@ -1371,11 +1396,19 @@ const Dashboard = ({ auth }) => {
                 };
                 const handleSentDeleteDone = async () => {
                     try {
+                        let data_hisWork = [
+                            {
+                                id_auth: auth.user.id,
+                                id_worker: null,
+                                action: "huy",
+                                time: getFormattedTIME(),
+                            },
+                        ];
                         let data = {
                             id: params.id,
                             id_cus: params.row.id_cus,
-                            real_note: params.row.real_note,
                             auth_id: auth.user.id,
+                            his_work: JSON.stringify(data_hisWork),
                         };
                         const response = await fetch(
                             "api/web/update/work-assignment-cancle",
@@ -1399,6 +1432,14 @@ const Dashboard = ({ auth }) => {
                 const [selectedFilesKS, setSelectedFilesKS] = useState([]);
                 const handleSentKSWeb = async (e) => {
                     e.preventDefault();
+                    let data_hisWork_KS = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "ks",
+                            time: getFormattedTIME(),
+                        },
+                    ];
                     const formData = new FormData();
                     formData.append("ac", 1);
                     formData.append("id", params.id);
@@ -1416,6 +1457,10 @@ const Dashboard = ({ auth }) => {
                     formData.append("name_cus", cardExpiresWeb.name_cus);
                     formData.append("date_book", selectedDate);
                     formData.append("status_work", cardExpiresWeb.status_work);
+                    formData.append(
+                        "his_work",
+                        JSON.stringify(data_hisWork_KS)
+                    );
                     formData.append(
                         "income_total",
                         cardExpiresWeb.income_total
@@ -1530,12 +1575,29 @@ const Dashboard = ({ auth }) => {
                     e.preventDefault();
                     const UrlApi = `api/web/update/work-continue`;
                     const jsonArray = JSON.stringify(isDataChanged);
+                    let data_hisWork_thuchi = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "thuchi",
+                            time: getFormattedTIME(),
+                        },
+                    ];
+                    let data_hisWork_mai = [
+                        {
+                            id_auth: auth.user.id,
+                            id_worker: null,
+                            action: "mai",
+                            time: getFormattedTIME(),
+                        },
+                    ];
                     const data_0 = {
                         ...cardExpires,
                         ac: valueRadio,
                         id: params.row.id,
                         member_read: auth.user.id,
                         warranty: jsonArray,
+                        his_work: JSON.stringify(data_hisWork_thuchi),
                     };
                     const data_1 = {
                         ac: valueRadio,
@@ -1543,6 +1605,7 @@ const Dashboard = ({ auth }) => {
                         id_cus: params.row.id_cus,
                         id_worker: params.row.id_worker,
                         id_phu: params.row.id_phu,
+                        his_work: JSON.stringify(data_hisWork_mai),
                     };
                     if (valueRadio === "0") {
                         const image_Pt =
@@ -1573,7 +1636,6 @@ const Dashboard = ({ auth }) => {
                     let data = {
                         id: params.id,
                         id_cus: params.row.id_cus,
-                        // auth_id: auth.user.id,
                         real_note: params.row.real_note,
                         worker_name: params.row.worker_full_name,
                         his_work: JSON.stringify(data_hisWork),
@@ -1635,7 +1697,7 @@ const Dashboard = ({ auth }) => {
 
                     // Sử dụng window.confirm thay vì alert
                     const userConfirmed = window.confirm(
-                        "Có thật muốn xóa hình"
+                        "Có thật muốn xóa hình vật tư"
                     );
 
                     if (userConfirmed) {
@@ -1680,40 +1742,48 @@ const Dashboard = ({ auth }) => {
                     const urlApi = "api/web/update/check-admin";
                     const deletedImage = imagePt1[index];
                     const newImages = imagePt1.filter((_, i) => i !== index);
-                    setImagePt1(newImages);
-                    const dataBody = {
-                        auth_id: auth.user.id,
-                        ac: 3,
-                        id: params.row.id,
-                        seri_imag_del: deletedImage,
-                    };
-                    const jsonData = JSON.stringify(dataBody);
-                    try {
-                        const response = await fetch(urlApi, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: jsonData,
-                        });
+                    const userConfirmed = window.confirm(
+                        "Có thật muốn xóa hình phiếu thu"
+                    );
+                    if (userConfirmed) {
+                        setImagePt1(newImages);
+                        const dataBody = {
+                            auth_id: auth.user.id,
+                            ac: 3,
+                            id: params.row.id,
+                            seri_imag_del: deletedImage,
+                        };
+                        const jsonData = JSON.stringify(dataBody);
+                        try {
+                            const response = await fetch(urlApi, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: jsonData,
+                            });
 
-                        if (response.ok) {
-                            console.log(
-                                "Hình đã được xóa thành công từ máy chủ",
-                                dataBody
-                            );
-                            socket_Dash.emit(
-                                "addWorkTo_Server",
-                                "Xóa hình ảnh"
-                            );
-                        } else {
+                            if (response.ok) {
+                                console.log(
+                                    "Hình đã được xóa thành công từ máy chủ",
+                                    dataBody
+                                );
+                                socket_Dash.emit(
+                                    "addWorkTo_Server",
+                                    "Xóa hình ảnh"
+                                );
+                            } else {
+                                console.error(
+                                    "Lỗi khi gửi yêu cầu xóa hình:",
+                                    response.statusText
+                                );
+                            }
+                        } catch (error) {
                             console.error(
                                 "Lỗi khi gửi yêu cầu xóa hình:",
-                                response.statusText
+                                error
                             );
                         }
-                    } catch (error) {
-                        console.error("Lỗi khi gửi yêu cầu xóa hình:", error);
                     }
                 };
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
@@ -1762,7 +1832,6 @@ const Dashboard = ({ auth }) => {
                                     </Button>
                                 ) : (
                                     <>
-                                       
                                         <Tooltip
                                             content="Nhập Thu Chi"
                                             animate={{
@@ -1892,12 +1961,17 @@ const Dashboard = ({ auth }) => {
                                                         //     },
                                                         // }}
                                                     >
-                                                         <img src="/assets/h_icon.svg" alt="H icon" className="w-6 h-6 border-spacing-1 border-s-deep-orange-50 m-1 text-cyan-300"  onClick={() =>
+                                                        <img
+                                                            src="/assets/h_icon.svg"
+                                                            alt="H icon"
+                                                            className="w-6 h-6 m-1 border-spacing-1 border-s-deep-orange-50 text-cyan-300"
+                                                            onClick={() =>
                                                                 handleOpenViewHisDisable()
-                                                            }/>
+                                                            }
+                                                        />
                                                         {/* <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            
+
                                                         /> */}
                                                     </Tooltip>
                                                 </MenuItem>
@@ -2058,10 +2132,10 @@ const Dashboard = ({ auth }) => {
                             handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
                         />
-                          <HisDialog
+                        <HisDialog
                             openViewHis={openView_His}
                             auth_user={userAuth}
-                            workerInfo = {infoWorkerDashboard}
+                            workerInfo={infoWorkerDashboard}
                             handleOpenViewHis={handleOpenViewHisDisable}
                             handleViewHis={handleOpenViewHisDisable}
                             params={params.row}
@@ -2179,6 +2253,7 @@ const Dashboard = ({ auth }) => {
                                         slots={{
                                             columnHeaders: () => null,
                                         }}
+                                        autoHeight
                                     />
                                 </Box>
                             </div>

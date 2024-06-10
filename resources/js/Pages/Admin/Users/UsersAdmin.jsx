@@ -482,6 +482,7 @@ function UsersAdmin({ auth }) {
                                             showQuickFilter: true,
                                         },
                                     }}
+                                    autoHeight
                                 />
                             </Box>
                         )}

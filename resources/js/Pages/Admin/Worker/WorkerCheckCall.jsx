@@ -420,6 +420,7 @@ function WorkerCheckCall() {
                                                         showQuickFilter: true,
                                                     },
                                                 }}
+                                                autoHeight
                                             />
                                         </Box>
                                     </Card>
@@ -441,6 +442,7 @@ function WorkerCheckCall() {
                                                         showQuickFilter: true,
                                                     },
                                                 }}
+                                                autoHeight
                                             />
                                         </Box>
                                     </Card>

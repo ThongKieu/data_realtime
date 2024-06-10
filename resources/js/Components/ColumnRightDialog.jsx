@@ -80,6 +80,7 @@ const ReasonDialog = ({
                         label="Lý do hủy"
                         className="shadow-none"
                         onChange={(e) => setWorkNote(e.target.value)}
+                        required
                     />
                 </div>
             </DialogBody>
@@ -325,19 +326,23 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [scale, setScale] = useState(1);
     const handleZoomIn = () => {
-        setScale(prevScale => prevScale + 0.1);
+        setScale((prevScale) => prevScale + 0.1);
     };
 
     const handleZoomOut = () => {
-        setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+        setScale((prevScale) =>
+            prevScale > 0.1 ? prevScale - 0.1 : prevScale
+        );
     };
 
     const handleWheel = (event) => {
         event.preventDefault();
         if (event.deltaY < 0) {
-            setScale(prevScale => prevScale + 0.1);
+            setScale((prevScale) => prevScale + 0.1);
         } else {
-            setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+            setScale((prevScale) =>
+                prevScale > 0.1 ? prevScale - 0.1 : prevScale
+            );
         }
     };
 
@@ -348,10 +353,10 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
     const processedDataKS = processSeriImages(params.bill_imag);
     useEffect(() => {
         if (selectedImage) {
-            window.addEventListener('wheel', handleWheel);
+            window.addEventListener("wheel", handleWheel);
         }
         return () => {
-            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener("wheel", handleWheel);
         };
     }, [selectedImage]);
     return (
@@ -462,34 +467,34 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         </Dialog>
     );
 };
-const arrayAction = [
-    { id: 'guitho', value: 'Gửi Lịch Thợ' },
-    { id: 'checkin', value: 'Thợ đã đến' },
-    { id: 'checkout', value: 'Đã Làm Xong' },
-    { id: 'goi', value: 'Đã gọi khách' },
-    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
-    { id: 'tra', value: 'Thợ Báo Trả Lịch' },
-    { id: 'mai', value: 'Mai Làm Tiếp' },
-    { id: 'baogia', value: 'Thợ Báo Báo Giá' },
-    { id: 'xong', value: 'Thợ Làm Xong' },
 
-];
-const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth_user, workerInfo }) => {
+const HisDialog = ({
+    openViewHis,
+    handleOpenViewHis,
+    params,
+    handleViewHis,
+    auth_user,
+    workerInfo,
+}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [scale, setScale] = useState(1);
     const handleZoomIn = () => {
-        setScale(prevScale => prevScale + 0.1);
+        setScale((prevScale) => prevScale + 0.1);
     };
     const handleZoomOut = () => {
-        setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+        setScale((prevScale) =>
+            prevScale > 0.1 ? prevScale - 0.1 : prevScale
+        );
     };
 
     const handleWheel = (event) => {
         event.preventDefault();
         if (event.deltaY < 0) {
-            setScale(prevScale => prevScale + 0.1);
+            setScale((prevScale) => prevScale + 0.1);
         } else {
-            setScale(prevScale => (prevScale > 0.1 ? prevScale - 0.1 : prevScale));
+            setScale((prevScale) =>
+                prevScale > 0.1 ? prevScale - 0.1 : prevScale
+            );
         }
     };
 
@@ -500,17 +505,23 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
     const processedDataKS = processSeriImages(params.bill_imag);
     useEffect(() => {
         if (selectedImage) {
-            window.addEventListener('wheel', handleWheel);
+            window.addEventListener("wheel", handleWheel);
         }
         return () => {
-            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener("wheel", handleWheel);
         };
     }, [selectedImage]);
     const jsonParse = JSON?.parse(
         params.his_work
     );
     const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border border-gray-500';
+    const handleButtonClick = (lat, log) => {
+        const newWindow = window.open('', '_blank', 'width=1200,height=600');
+        // Mở trang Map với các tham số
+        newWindow.location.href = `https://www.google.com/maps/place/${lat},${log}`;
 
+        // newWindow.location.href = `https://www.google.com/maps/place/10.821203,106.7116815`;
+    };
     return (
         <Dialog open={openViewHis} handler={handleOpenViewHis}>
             <div className="flex items-center justify-between">
@@ -519,71 +530,51 @@ const HisDialog = ({ openViewHis, handleOpenViewHis, params, handleViewHis, auth
             <DialogBody>
                 <table className="min-w-full bg-white">
                     <thead>
-                        <tr >
-                            <th className={classTableHistory}>
-                                Người
-                                Xử
-                                Lý
-                            </th>
-                            <th className={classTableHistory}>
-                                Action
-                            </th>
-                            <th className={classTableHistory}>
-                                Time
-                            </th>
+                        <tr>
+                            <th className={classTableHistory}>Người Xử Lý</th>
+                            <th className={classTableHistory}>Action</th>
+                            <th className={classTableHistory}>Time</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {jsonParse?.map(
-                            (
-                                itemJson,
-                                index
-                            ) => {
-                                const correspondingAuth =
-                                    auth_user?.find(
-                                        (
-                                            auth_user
-                                        ) =>
-                                            auth_user.id ===
-                                            itemJson.id_auth
-                                    );
+                        {jsonParse?.map((itemJson, index) => {
+                            const correspondingAuth = auth_user?.find(
+                                (auth_user) => auth_user.id === itemJson.id_auth
+                            );
 
-                                const correspondingWorker =
-                                    workerInfo?.find(
-                                        (
-                                            workerInfo
-                                        ) =>
-                                            workerInfo.value ===
-                                                itemJson.id_worker ? workerInfo.label : 'không có'
-                                    );
-                                const workerFullName =
-                                    correspondingAuth
-                                        ? correspondingAuth.name
-                                        : `${correspondingWorker}`;
+                            const correspondingWorker = workerInfo?.find(
+                                (workerInfo) =>
+                                    workerInfo.value === itemJson.id_worker
+                                        ? workerInfo.label
+                                        : "không có"
+                            );
+                            const workerFullName = correspondingAuth
+                                ? correspondingAuth.name
+                                : `${correspondingWorker}`;
 
                                 // console.log(correspondingAuth.name);
                                 const checkAc = ARRAY_ACTION?.find((item) => {
                                     return item.id === itemJson.action ? item.value : '';
                                 });
 
-                                // console.log(typeof arrayAction.id);
+                                console.log(itemJson);
                                 return (
                                     <tr
                                         key={
                                             index
                                         }
                                     >
-                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                        <td className="px-6 py-4 border border-b border-gray-500">
                                             {workerFullName}
                                         </td>
-                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                        <td className="px-6 py-4 border border-b border-gray-500">
                                             {
 
                                                 checkAc ? checkAc.value : ''
 
                                             }
                                         </td>
-                                        <td className="px-6 py-4 border-b border-gray-500 border">
+                                        <td className="px-6 py-4 border border-b border-gray-500">
                                             {
                                                 itemJson.time
                                             }
@@ -651,7 +642,7 @@ const ViewTotalDialog = ({
         {
             id: 7,
             label: "Thông Tin Bảo Hành:",
-            TextContent: `${params.warranty == "KBH" ? params.warranty : ""}`,
+            TextContent: `${params.warranties == "KBH" ? params.warranties : ""}`,
         },
     ];
     const LoiNhuan = params.income_total - params.spending_total;
@@ -705,18 +696,19 @@ const ViewTotalDialog = ({
                             </div>
                         </div>
                         <p
-                            className={`${LoiNhuan > 0
-                                ? "text-green-500"
-                                : LoiNhuan == 0
+                            className={`${
+                                LoiNhuan > 0
+                                    ? "text-green-500"
+                                    : LoiNhuan == 0
                                     ? "text-yellow-500"
                                     : "text-red-500"
-                                }`}
+                            }`}
                         >
                             {LoiNhuan > 0
                                 ? "Chưa Lỗ Được Đâu"
                                 : LoiNhuan == 0
-                                    ? "Huề rồi"
-                                    : "Lỗ Banh Xát"}
+                                ? "Huề rồi"
+                                : "Lỗ Banh Xát"}
                         </p>
                     </div>
                     <div className="p-0">
@@ -757,7 +749,7 @@ const ViewTotalDialog = ({
                             <div className="flex flex-col items-center justify-center">
                                 <p>Hình Vật Tư:</p>
                                 {params.bill_imag == null ||
-                                    processedDataVT == false ? (
+                                processedDataVT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
@@ -779,7 +771,7 @@ const ViewTotalDialog = ({
 
                                 <p>Phiếu Thu:</p>
                                 {params.seri_imag == null ||
-                                    processedDataPT == false ? (
+                                processedDataPT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
@@ -801,8 +793,9 @@ const ViewTotalDialog = ({
                             </div>
                         </div>
                         <div
-                            className={`${params.warranty == "KBH" ? "hidden" : "block"
-                                } pt-3`}
+                            className={`${
+                                params.warranty == "KBH" ? "hidden" : "block"
+                            } pt-3`}
                         >
                             <Card className="w-full h-[200px] overflow-scroll">
                                 <table className="w-full text-left table-auto min-w-max">
@@ -825,8 +818,8 @@ const ViewTotalDialog = ({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {Array.isArray(params.warranty) &&
-                                            params.warranty?.map(
+                                        {Array.isArray(params.warranties) &&
+                                            params.warranties?.map(
                                                 (item, index) => {
                                                     return (
                                                         <tr
@@ -840,9 +833,9 @@ const ViewTotalDialog = ({
                                                                         color="blue-gray"
                                                                         className="font-normal"
                                                                     >
-                                                                        {params.warranty !==
-                                                                            undefined
-                                                                            ? item.id
+                                                                        {params.warranties !==
+                                                                        undefined
+                                                                            ? index + 1
                                                                             : "KBH"}
                                                                     </Typography>
                                                                 </td>
@@ -901,5 +894,6 @@ export {
     ViewTotalDialog,
     processSeriImages,
     KSDialog,
-    KhaoSatDialogWeb, HisDialog
+    KhaoSatDialogWeb,
+    HisDialog,
 };

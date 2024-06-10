@@ -55,6 +55,7 @@ Route::prefix('web')->group(function () {
         Route::get('works', 'App\Http\Controllers\Api\Web\WorksController@getCancleBook');
         Route::post('works', 'App\Http\Controllers\Api\Web\WorksController@insertCancleBook');
         Route::post('workassignment', 'App\Http\Controllers\Api\WorksAssignmentController@insertCancleBook');
+        Route::get('workassignment', 'App\Http\Controllers\Api\WorksAssignmentController@getCancleBook');
     });
 
     Route::get('works_done', 'App\Http\Controllers\Api\Web\WorksController@indexSetWork');

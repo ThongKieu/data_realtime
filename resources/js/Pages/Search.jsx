@@ -30,8 +30,11 @@ const TABLE_HEAD = [
     "Yêu Cầu Bảo Hành",
     "Lịch Sử",
 ];
+import { useSocket } from "@/Utils/SocketContext";
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
+    const socket = useSocket();
+    const [socketSearch, setSocketSearch] = useState(null);
     const [dataReturn, setDataReturn] = useState([
         {
             id: 1,
@@ -78,7 +81,7 @@ function Search({ auth }) {
                     id: 2,
                     id_work_has: 1,
                     warranty_time: 2,
-                    warranty_info: "12aaaaaaaaaaaa312",
+                    warranty_info: "Không Bảo Hành",
                     unit: "m",
                 },
             ],
@@ -129,7 +132,6 @@ function Search({ auth }) {
             worker_full_name: worker_full_name,
             worker_code: code,
         };
-        console.log(data);
         try {
             const response = await fetch("api/web/search/warranty", {
                 method: "POST",
@@ -150,6 +152,11 @@ function Search({ auth }) {
         }
     };
     useEffect(() => {
+        if (socket) {
+            setSocketSearch(socket);
+
+        }
+
         const handleResize = () => {
             setScreenSize({
                 width: window.innerWidth,
@@ -162,7 +169,7 @@ function Search({ auth }) {
         return () => {
             window.removeEventListener("resize", handleResize);
         };
-    }, []);
+    }, [socketSearch]);
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialogNote, setOpenDialogNote] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
@@ -198,6 +205,10 @@ function Search({ auth }) {
         const filteredArray = parts?.filter((item) => item.trim() !== "");
         setImgNote(filteredArray);
     };
+    console.log(socketSearch?.connected);
+    if (socketSearch ||  socketSearch?.connected == false) {
+        setSocketSearch(socket, { reconnection: true });
+    }
     const ReadMore = ({ text, maxLength }) => {
         const [isReadMore, setIsReadMore] = useState(false);
 
@@ -289,7 +300,8 @@ function Search({ auth }) {
                                     const jsonParse = JSON?.parse(
                                         item.his_work
                                     );
-                                    const classTableHistory = 'px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300'
+                                    const classTableHistory =
+                                        "px-6 py-3 leading-4 tracking-wider text-left text-blue-500 border-b-2 border-gray-300";
                                     //     console.log(jsonParse);
                                     // // }
                                     return (
@@ -644,15 +656,27 @@ function Search({ auth }) {
                                                                 <table className="min-w-full bg-white">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th className={classTableHistory}>
+                                                                            <th
+                                                                                className={
+                                                                                    classTableHistory
+                                                                                }
+                                                                            >
                                                                                 Người
                                                                                 Xử
                                                                                 Lý
                                                                             </th>
-                                                                            <th className={classTableHistory}>
+                                                                            <th
+                                                                                className={
+                                                                                    classTableHistory
+                                                                                }
+                                                                            >
                                                                                 Action
                                                                             </th>
-                                                                            <th className={classTableHistory}>
+                                                                            <th
+                                                                                className={
+                                                                                    classTableHistory
+                                                                                }
+                                                                            >
                                                                                 Time
                                                                             </th>
                                                                         </tr>

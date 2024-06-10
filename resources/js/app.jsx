@@ -4,11 +4,12 @@ import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { SocketProvider } from "./Utils/SocketContext";
 const queryClient = new QueryClient();
-const appName = import.meta.env.VITE_APP_NAME || "Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt";
+const appName =
+    import.meta.env.VITE_APP_NAME || "Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -21,11 +22,12 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <QueryClientProvider client={queryClient} >
-                <App {...props} key={index} />
-                <ToastContainer />
+            <QueryClientProvider client={queryClient}>
+                <SocketProvider>
+                    <App {...props} key={index} />
+                    <ToastContainer />
+                </SocketProvider>
             </QueryClientProvider>
-
         );
     },
     progress: {

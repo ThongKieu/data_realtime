@@ -135,6 +135,7 @@ function ToolsAdminBlockSDT() {
                                 slots={{ toolbar: QuickSearchToolbar }}
                                 rows={row}
                                 columns={column}
+                                autoHeight
                             />
                         </Box>
                     </Card>

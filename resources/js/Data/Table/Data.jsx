@@ -30,10 +30,12 @@ export const ARRAY_ACTION =
     { id: 'checkin', value: 'Thợ đã đến' },
     { id: 'checkout', value: 'Đã Làm Xong' },
     { id: 'goi', value: 'Đã gọi khách' },
-    { id: 'huy', value: 'Thợ Báo Hủy Lịch' },
+    { id: 'huy', value: 'Hủy Lịch' },
     { id: 'tra', value: 'Thợ Báo Trả Lịch' },
     { id: 'mai', value: 'Mai Làm Tiếp' },
     { id: 'baogia', value: 'Thợ Báo Báo Giá' },
     { id: 'xong', value: 'Thợ Làm Xong' },
-
+    { id: 'thuchi', value: 'Nhập Thu Chi' },
+    { id: 'adCheck', value: 'Admin Check' },
+    { id: 'ks', value: 'Cty Báo Giá' },
 ];

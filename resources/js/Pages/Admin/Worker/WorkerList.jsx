@@ -581,6 +581,7 @@ function WorkerList({ auth }) {
                                 },
                             }}
                             className="text-center "
+                            autoHeight
                         />
                     </Box>
                 </Card>

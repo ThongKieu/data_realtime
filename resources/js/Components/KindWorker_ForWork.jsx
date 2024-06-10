@@ -63,6 +63,7 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                 columns={column}
                 hideFooterPagination={false}
                 rowHeight={40}
+                autoHeight
                 disableRowSelectionOnClick
                 slots={{
                     columnHeaders: () => null,

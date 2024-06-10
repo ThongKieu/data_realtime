@@ -159,6 +159,7 @@ function Products({ auth }) {
               pageSizeOptions={[30]}
               // checkboxSelection
               disableRowSelectionOnClick
+              autoHeight
             />
           </Box>
         )}

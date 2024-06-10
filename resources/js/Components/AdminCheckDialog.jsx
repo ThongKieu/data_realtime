@@ -24,6 +24,7 @@ import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
 import useWindowSize from "@/Core/Resize";
+import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -68,19 +69,23 @@ function AdminCheckDialog({
     const containerProps = {
         className: "min-w-[72px]",
     };
-    const [oldDataBH, setOldDataBH] = useState(params.row.warranty);
+    useEffect(() => {
+        setOldDataBH(params.row.warranties);
+    }, [params.row.warranties]);
+
+    const [oldDataBH, setOldDataBH] = useState();
     const [dataBH, setDataBH] = useState(
-        params.row.warranty == "KBH"
+        params.row.warranties == "KBH"
             ? [
                   {
                       id: 0,
                       warranty_time: 0,
                       unit: "kbh",
                       warranty_info: "Không Bảo Hành",
-                      warranty_create: 0,
+                      id_work_has: params.row.id_work_has,
                   },
               ]
-            : params.row.warranty
+            : params.row.warranties
     );
     const [openBH, setOpenBH] = useState(false);
     const handleOpenBH = () => setOpenBH(!openBH);
@@ -123,6 +128,7 @@ function AdminCheckDialog({
                 warranty_time: 0,
                 unit: "KBH",
                 warranty_info: "Không Bảo Hành",
+                id_work_has: params.row.id_work_has,
             },
         ]);
     };
@@ -182,9 +188,14 @@ function AdminCheckDialog({
                                       ...matchingItem,
                                       ...item,
                                       warranty_create: 0,
+                                      id_work_has: params.row.id_work_has,
                                   } // Sửa
                                 : null
-                            : { ...item, warranty_create: 1 }; // Thêm mới
+                            : {
+                                  ...item,
+                                  warranty_create: 1,
+                                  id_work_has: params.row.id_work_has,
+                              }; // Thêm mới
                     })
                     .filter(Boolean);
                 const dataBh = {
@@ -215,11 +226,20 @@ function AdminCheckDialog({
     };
     const handleUpdateStatusCheckAdmin = async (e) => {
         e.preventDefault();
+        let data_hisWork_adCheck = [
+            {
+                id_auth: auth.user.id,
+                id_worker: null,
+                action: "adCheck",
+                time: getFormattedTIME(),
+            },
+        ];
         const check_admin = {
             ac: 13,
             auth_id: auth.user.id,
             id: params.row.id,
             id_cus: params.row.id_cus,
+            his_work: JSON.stringify(data_hisWork_adCheck),
             data: {
                 ...cardExpires,
                 id_worker: params.row.id_worker,
@@ -235,7 +255,7 @@ function AdminCheckDialog({
             },
         };
 
-    // console.log(check_admin);
+        // console.log(check_admin);
         try {
             const res = await fetch(`api/web/update/check-admin`, {
                 method: "POST",
@@ -262,8 +282,10 @@ function AdminCheckDialog({
     const [isReadMore, setIsReadMore] = useState(false);
     const toggleReadMore = (id) => {
         setIsReadMore(!isReadMore);
-        setDataBH(params.row.warranty);
+        setDataBH(params.row.warranties);
     };
+    const [openImage, setOpenImage] = useState(false);
+    const handleOpenImage = () => setOpenImage(!openImage);
     return (
         <Dialog
             open={openAdminCheck}
@@ -561,6 +583,7 @@ function AdminCheckDialog({
                                                     handleImageVtDelete(index)
                                                 }
                                             />
+
                                             <img
                                                 src={`${host}${item}`}
                                                 alt="nature image"
@@ -611,8 +634,35 @@ function AdminCheckDialog({
                                             <img
                                                 src={`${host}${item}`}
                                                 alt="nature image"
-                                                className="p-2"
+                                                className="p-2 cursor-pointer"
+                                                onClick={handleOpenImage}
                                             />
+                                            <Dialog
+                                                open={openImage}
+                                                handler={handleOpenImage}
+                                            >
+                                                <DialogBody>
+                                                    <img
+                                                        src={`${host}${item}`}
+                                                        alt="nature image"
+                                                        className="p-2 cursor-pointer"
+                                                        onClick={
+                                                            handleOpenImage
+                                                        }
+                                                    />
+                                                </DialogBody>
+                                                <DialogFooter>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="green"
+                                                        onClick={
+                                                            handleOpenImage
+                                                        }
+                                                    >
+                                                        <span>Thoát</span>
+                                                    </Button>
+                                                </DialogFooter>
+                                            </Dialog>
                                         </Card>
                                     ))}
                                 </div>

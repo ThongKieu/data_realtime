@@ -659,6 +659,7 @@ function QuoteFlow({ auth }) {
           <Box sx={{ height: 800, width: "100%" }} className="overflow-scroll">
             <DataGrid
               rows={infoBook}
+              autoHeight
               columns={columns}
               initialState={{
                 pagination: {

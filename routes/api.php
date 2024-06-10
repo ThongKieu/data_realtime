@@ -218,6 +218,8 @@ Route::prefix('app')->group(function () {
         // info Worker by ID
         Route::post('info-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@infoWorkerToApp');
         Route::post('update-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateInfoWorkerToApp');
+        // Check in Check Out
+        Route::post('check-in-out','App\Http\Controllers\Api\WorksAssignmentController@checkInOut');
 
     });
     // Customer

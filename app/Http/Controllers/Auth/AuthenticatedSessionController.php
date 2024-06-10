@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +44,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        User::where('id','=',Auth::user()->id)->update(['is_online'=>0]);
+        $date = Carbon::now()->setTimezone('Asia/Ho_Chi_Minh');
+        User::where('id','=',Auth::user()->id)->update(['is_online'=>0,'last_active'=>$date]);
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

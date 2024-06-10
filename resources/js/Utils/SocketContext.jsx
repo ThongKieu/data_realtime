@@ -9,7 +9,6 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
-    const [userLeavingPage, setUserLeavingPage] = useState(false);
 
     useEffect(() => {
         const socketInstance = newSocket({ secure: true });

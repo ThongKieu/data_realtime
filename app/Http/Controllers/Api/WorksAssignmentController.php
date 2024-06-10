@@ -351,7 +351,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y'),
+                        'work_done_date' => date('Y-m-d'),
                     ]);
                 return response()->json('Update work with image !!!');
             } else {
@@ -362,7 +362,7 @@ class WorksAssignmentController extends Controller
                         'spending_total' => $request->spending_total,
                         'income_total' => $request->income_total,
                         'seri_number' => $request->seri_number,
-                        'work_done_date' => date('d-m-Y'),
+                        'work_done_date' => date('Y-m-d'),
 
                     ]);
                 // if($request->datainput != null || $request->datainput != '')
@@ -509,7 +509,7 @@ class WorksAssignmentController extends Controller
 
                         WorksAssignment::where('id', '=', $request->id)->update(['real_note' => $data['real_note'], 'income_total' => $data['income_total'], 'spending_total' => $data['spending_total'], 'seri_number' => $data['seri_number'], 'status_admin_check' => 1]);
 
-                        ReportWorkerController::setReportDay($data['id_worker'], date('d-m-Y'), $data['income_total'], $data['spending_total']);
+                        ReportWorkerController::setReportDay($data['id_worker'], date('Y-m-d'), $data['income_total'], $data['spending_total']);
                         return 'Admin Check';
                     default:
                         return 'Done With None Update !';

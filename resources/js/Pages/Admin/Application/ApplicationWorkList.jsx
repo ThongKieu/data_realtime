@@ -15,7 +15,7 @@ import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import { host } from "@/Utils/UrlApi";
 import { Box, Divider } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 
 function ApplicationWorkList() {
     const [isLoading, setIsLoading] = useState(false);

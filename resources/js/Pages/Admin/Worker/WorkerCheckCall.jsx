@@ -21,7 +21,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import AlertIcon from "@/Pages/Admin/DataImport/Components/AlertIcon";
 import { host } from "@/Utils/UrlApi";
 import { toast } from "react-toastify";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import Box from "@mui/material/Box";
 import { formatTime } from "@/Data/UrlAPI/UrlApi";
 function WorkerCheckCall() {

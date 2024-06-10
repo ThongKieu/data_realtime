@@ -35,7 +35,7 @@ import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 // import NavGuest from "./navGuest";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
 import { formatCurrencyVND } from "../ColumnRightDialog";
 // profile menu component

@@ -65,7 +65,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 import { useSocket } from "@/Utils/SocketContext";

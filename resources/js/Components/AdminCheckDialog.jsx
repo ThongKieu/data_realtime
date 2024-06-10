@@ -24,7 +24,7 @@ import {
 import { Divider } from "@mui/material";
 import EditableInput from "./EditInput";
 import FileInput from "./FileInputImage";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
 import HistoryDialog from "./HistoryDialog";
 function AdminCheckDialog({

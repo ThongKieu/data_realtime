@@ -24,7 +24,7 @@ import {
 } from "chart.js";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import CardOrderSource from "./CardOrderSource";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 const TABLE_HEAD = [
     "ID",
     "Tên nhân viên",
@@ -175,7 +175,7 @@ function Home({ auth }) {
             console.log("push on Loi", error);
         }
     }
-    
+
     const fetchTopBannerAdmin = async (e) => {
         try {
 

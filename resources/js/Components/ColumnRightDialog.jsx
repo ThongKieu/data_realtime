@@ -14,7 +14,8 @@ import { XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 import { ARRAY_ACTION } from "@/Data/Table/Data";
-import useWindowSize from "@/Core/Resize";
+import { useWindowSize } from "@/Core/Resize";
+
 import HistoryDialog from "./HistoryDialog";
 const formatNumberToVNDk = (number) => {
     const k = 1000;
@@ -22,7 +23,7 @@ const formatNumberToVNDk = (number) => {
 
     // Kiểm tra nếu ba chữ số cuối cùng của số là "000"
     if (number % k === 0) {
-        return (number / k) + vndSuffix;
+        return number / k + vndSuffix;
     }
 
     // Định dạng theo kiểu tiền tệ Việt Nam nếu không phải
@@ -36,7 +37,7 @@ const formatCurrencyVND = (number) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
-        minimumFractionDigits: 0 // Không hiển thị chữ số thập phân
+        minimumFractionDigits: 0, // Không hiển thị chữ số thập phân
     });
 
     return formatter.format(number);
@@ -49,6 +50,7 @@ const ThoDialog = ({
     handleSelectChange,
     handleSentPhanTho,
 }) => {
+
     return (
         <Dialog open={open} handler={handleOpenTho} className="lg:min-w-52">
             <div className="flex items-center justify-between">
@@ -444,7 +446,7 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         {
             id: "thu",
             headContent: "Dự Thu:",
-            value_quote: formatNumberToVNDk(params.income_total) ,
+            value_quote: formatNumberToVNDk(params.income_total),
         },
     ];
     return (
@@ -973,5 +975,7 @@ export {
     processSeriImages,
     KSDialog,
     KhaoSatDialogWeb,
-    HisDialog,formatNumberToVNDk,formatCurrencyVND
+    HisDialog,
+    formatNumberToVNDk,
+    formatCurrencyVND,
 };

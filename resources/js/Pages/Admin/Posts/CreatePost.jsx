@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { Head } from "@inertiajs/react";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import Box from "@mui/material/Box";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { host, apiPost } from "@/Utils/UrlApi";

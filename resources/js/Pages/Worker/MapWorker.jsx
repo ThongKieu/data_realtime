@@ -13,7 +13,7 @@ import {
 } from "@material-tailwind/react";
 import { host } from "@/Utils/UrlApi";
 import { useSocket } from "@/Utils/SocketContext";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 
 function MapWorker({ auth }) {
     const socket = useSocket();

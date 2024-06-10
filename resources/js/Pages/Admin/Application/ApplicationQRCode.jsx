@@ -12,7 +12,7 @@ import {
 } from "@material-tailwind/react";
 import QRCode from "react-qr-code";
 import { toPng, toJpeg, toSvg } from "html-to-image";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { Box } from "@mui/material";
 function ApplicationQRCode() {
     const [inputData, setInputData] = useState("");

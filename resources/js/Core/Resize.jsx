@@ -1,6 +1,6 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const useWindowSize = (x) => {
+export const useWindowSize = (x) => {
     const [windowSize, setWindowSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - x,
@@ -22,7 +22,7 @@ const useWindowSize = (x) => {
     return windowSize;
 };
 
-const useEditableCell = (params, actionType) => {
+export const useEditableCell = (params, actionType) => {
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
 
@@ -63,5 +63,3 @@ const useEditableCell = (params, actionType) => {
         updateCellData,
     };
 };
-
-export default { useEditableCell, useWindowSize };

@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function () {
 
     });
     Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
+    Route::get('generate-pdf2', function(){return view('pdf.pdftemplate');});
+
     Route::prefix('workers')->group(function () {
         Route::get('/', function () {return Inertia::render('Worker/Worker-main');})->name('WorkerMain');
         Route::get('/vi-tri-tho', function () {return Inertia::render('Worker/MapWorker');})->name('locationWorker');

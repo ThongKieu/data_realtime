@@ -115,6 +115,10 @@ class QuotationController extends Controller
             'vat' => $re->vat
         ]);
         $new->save();
+
+        WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 3]);
+        $his_work = '"id_worker": null,"auth_id":"' . $re->auth_id . '","action":"tra","time":"' . date('Y-m-d H:m:s') . '"';
+        WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
         if ($new) {
             return 1;
         } 

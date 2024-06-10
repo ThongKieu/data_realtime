@@ -267,7 +267,7 @@ class WorksAssignmentController extends Controller
                 $note = 'Đã làm ngày : ' . $sub;
             }
             $up = WorksAssignment::where('id', '=', $request->id)->update(['status_work' => 1, 'real_note' => $note]);
-            
+
             WorksAssignmentController::insertHisWork($request->id, $request->his_work);
             //id_work, id_worker, id_phu
             $created_at = Carbon::tomorrow('Asia/Ho_Chi_Minh');
@@ -722,15 +722,12 @@ class WorksAssignmentController extends Controller
     }
     public function checkInOut(Request $request)
     {
-        if($request->id_work_has && $request -> check_in_out)
-        {
-            WorksAssignment::where('id','=',$request->id_work_has)->update(['check_in'=>$request->check_in_out]);
+        if ($request->id_work_has && $request->check_in_out) {
+            WorksAssignment::where('id', '=', $request->id_work_has)->update(['check_in' => $request->check_in_out]);
 
-            return response()->json('Check Local Done');
-        }
-        else 
-        {
-            return response()->json('Check infomation sent');
+            return 1;
+        } else {
+            return -1;
         }
     }
 

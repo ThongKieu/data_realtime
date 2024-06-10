@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             //'id_work_has' 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status',
             $table->tinyInteger('id_work_has');
-            $table->tinyInteger('id_auth');
+            $table->tinyInteger('id_auth')->default(0);
             $table->string('quote_date');
-            $table->string('quote_info',5000);
+            $table->string('quote_info', 5000);
             $table->string('vat')->default(0);
-            $table->integer('quote_total_price');
+            $table->integer('quote_total_price')->default(0);
             $table->tinyInteger('quote_status')->default(0);
             $table->timestamps();
         });

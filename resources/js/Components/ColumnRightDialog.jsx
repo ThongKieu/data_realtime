@@ -14,9 +14,34 @@ import { XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 import { ARRAY_ACTION } from "@/Data/Table/Data";
-import useWindowSize from "@/Core/Resize";
-import HistoryDialog from "./HistoryDialog";
+import { useWindowSize } from "@/Core/Resize";
 
+import HistoryDialog from "./HistoryDialog";
+const formatNumberToVNDk = (number) => {
+    const k = 1000;
+    const vndSuffix = "k";
+
+    // Kiểm tra nếu ba chữ số cuối cùng của số là "000"
+    if (number % k === 0) {
+        return number / k + vndSuffix;
+    }
+
+    // Định dạng theo kiểu tiền tệ Việt Nam nếu không phải
+    return new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0, // Không hiển thị chữ số thập phân
+    }).format(number);
+};
+const formatCurrencyVND = (number) => {
+    const formatter = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0, // Không hiển thị chữ số thập phân
+    });
+
+    return formatter.format(number);
+};
 const ThoDialog = ({
     open,
     handleOpenTho,
@@ -25,6 +50,7 @@ const ThoDialog = ({
     handleSelectChange,
     handleSentPhanTho,
 }) => {
+
     return (
         <Dialog open={open} handler={handleOpenTho} className="lg:min-w-52">
             <div className="flex items-center justify-between">
@@ -290,6 +316,32 @@ const KhaoSatDialogWeb = ({
                             disabled={disabledAllowedWeb}
                         />
                     </div>
+                    <div className="flex items-center gap-4">
+                        <Input
+                            label="Chi"
+                            id="spending_total"
+                            name="spending_total"
+                            value={cardExpiresWeb.spending_total}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                        />
+
+                        <Input
+                            label="Thu"
+                            id="income_total"
+                            name="income_total"
+                            value={cardExpiresWeb.income_total}
+                            onChange={handleChangeWeb}
+                            containerProps={{
+                                className: "min-w-[72px]",
+                            }}
+                            className="shadow-none"
+                            disabled={disabledAllowedWeb}
+                        />
+                    </div>
                     <div className="grid gap-6">
                         <Textarea
                             label="Tình Trạng Thực Tế"
@@ -330,7 +382,6 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
     const handleZoomIn = () => {
         setScale((prevScale) => prevScale + 0.1);
     };
-
     const handleZoomOut = () => {
         setScale((prevScale) =>
             prevScale > 0.1 ? prevScale - 0.1 : prevScale
@@ -361,6 +412,43 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
             window.removeEventListener("wheel", handleWheel);
         };
     }, [selectedImage]);
+    const data = [
+        {
+            id: "noi_dung",
+            headContent: " Nội Dung Công Việc:",
+            value_quote: params.work_content,
+        },
+        {
+            id: "dia_chi",
+            headContent: "Địa chỉ:",
+            value_quote: params.street,
+        },
+        {
+            id: "quan",
+            headContent: " Quận:",
+            value_quote: params.district,
+        },
+        {
+            id: "sdt",
+            headContent: " Số điện thoại:",
+            value_quote: params.phone_number,
+        },
+        {
+            id: "noi_dung_ks",
+            headContent: " Nội Dung Khảo Sát:",
+            value_quote: params.real_note,
+        },
+        {
+            id: "chi",
+            headContent: "Dự Chi:",
+            value_quote: formatNumberToVNDk(params.spending_total),
+        },
+        {
+            id: "thu",
+            headContent: "Dự Thu:",
+            value_quote: formatNumberToVNDk(params.income_total),
+        },
+    ];
     return (
         <Dialog open={openViewKS} handler={handleOpenViewKS}>
             <div className="flex items-center justify-between">
@@ -368,32 +456,19 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
             </div>
             <DialogBody>
                 <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Nội Dung Công Việc:
-                        </h2>
-                        <span>{params.work_content}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">Địa Chỉ:</h2>
-                        <span>{params.street}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">Quận:</h2>
-                        <span>{params.district}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Số Điện Thoại:
-                        </h2>
-                        <span>{params.phone_number}</span>
-                    </div>
-                    <div className="mb-2">
-                        <h2 className="text-lg font-semibold">
-                            Nội Dung Khảo Sát Thực Tế:
-                        </h2>
-                        <span>{params.real_note}</span>
-                    </div>
+                    {data.map((item) => {
+                        return (
+                            <div
+                                key={item.id}
+                                className="flex items-center mb-2"
+                            >
+                                <h2 className="pr-2 text-lg font-semibold">
+                                    {item.headContent}
+                                </h2>
+                                <span>{item.value_quote}</span>
+                            </div>
+                        );
+                    })}
                 </div>
                 <div className="mb-2">
                     <h2 className="text-lg font-semibold">
@@ -597,10 +672,6 @@ const ViewTotalDialog = ({
     userAuth,
     infoWorker,
 }) => {
-    const formatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
     const ContentData = [
         {
             id: 0,
@@ -682,7 +753,7 @@ const ViewTotalDialog = ({
                                     Chi
                                 </span>
                                 <span className="text-2xl ">
-                                    {formatter.format(params.spending_total)}
+                                    {formatCurrencyVND(params.spending_total)}
                                 </span>
                             </div>
                             <div className="flex flex-col text-center ">
@@ -690,7 +761,7 @@ const ViewTotalDialog = ({
                                     Thu
                                 </span>
                                 <span className="text-2xl">
-                                    {formatter.format(params.income_total)}
+                                    {formatCurrencyVND(params.income_total)}
                                 </span>
                             </div>
                             <div className="flex flex-col text-center ">
@@ -698,7 +769,7 @@ const ViewTotalDialog = ({
                                     Lợi Nhuận
                                 </span>
                                 <span className="text-2xl">
-                                    {formatter.format(LoiNhuan)}
+                                    {formatCurrencyVND(LoiNhuan)}
                                 </span>
                             </div>
                         </div>
@@ -905,4 +976,6 @@ export {
     KSDialog,
     KhaoSatDialogWeb,
     HisDialog,
+    formatNumberToVNDk,
+    formatCurrencyVND,
 };

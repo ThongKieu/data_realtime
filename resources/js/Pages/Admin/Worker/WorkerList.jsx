@@ -19,10 +19,12 @@ import {
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-import useWindowSize from "@/Core/Resize";
-import newSocket from "@/Utils/Socket";
+import {useWindowSize} from "@/Core/Resize";
+import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
+import { useSocket } from "@/Utils/SocketContext";
 function WorkerList({ auth }) {
     // thêm thợ
+    const socket = useSocket();
     const [open, setOpen] = useState(false);
     const [openAccApp, setOpenAccApp] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -36,7 +38,7 @@ function WorkerList({ auth }) {
         worker_kind: 0,
     });
     const [accAPP, setAccApp] = useState(null);
-    const { width, height } = useWindowSize(65);
+    const { width, height } = useWindowSize(73);
 
     const handleOpen = () => setOpen(!open);
     const handleOpenAccApp = () => setOpenAccApp(!openAccApp);
@@ -97,10 +99,19 @@ function WorkerList({ auth }) {
         }
     };
     useEffect(() => {
-        // Gọi API để lấy dữ liệu
         fetchDataWorker();
         fetchDataCodeWorker();
     }, []);
+    useEffect(() => {
+        if (socket) {
+            socket?.on("sendAddWorkTo_Client", (jsonData) => {
+                if (jsonData) {
+                    fetchDataWorker();
+                    // fetchDataCodeWorker();
+                }
+            });
+        }
+    }, [socket]);
     const fetchDataWorker = () => {
         fetch(host + "api/web/workers")
             .then((response) => {
@@ -132,27 +143,7 @@ function WorkerList({ auth }) {
                 // Thực hiện xử lý lỗi ở đây, ví dụ: hiển thị thông báo lỗi cho người dùng hoặc thử lại yêu cầu
             });
     };
-    const fetchData = async (data1) => {
-        try {
-            const res = await fetch(host + "api/web/update/worker", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data1),
-            });
-            if (res.ok) {
-                newSocket.emit("addWorkTo_Server", data1);
-                console.log("status_change_worker");
-            } else {
-                console.error("Lỗi khi gửi dữ liệu:", res.statusText);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    // fetch data phone
-    const fetchDataPhone = async (data) => {
+    const fetchData = async (data) => {
         try {
             const res = await fetch(host + "api/web/update/worker", {
                 method: "POST",
@@ -161,8 +152,8 @@ function WorkerList({ auth }) {
                 },
                 body: JSON.stringify(data),
             });
-
             if (res.ok) {
+                socket?.emit("addWorkTo_Server", data);
                 console.log("status_change_worker");
             } else {
                 console.error("Lỗi khi gửi dữ liệu:", res.statusText);
@@ -171,7 +162,6 @@ function WorkerList({ auth }) {
             console.error("Error fetching data:", error);
         }
     };
-
     // ------------------------------fetch data image----------------------------
     const fetchDataImage = async (data) => {
         try {
@@ -280,30 +270,51 @@ function WorkerList({ auth }) {
             editable: false,
             renderCell: (params) => {
                 const inputRef = createRef();
-                const updatePhone = (e) => {
-                    const set123 = e.target.value;
-                    const dataPhone = {
+                const [isEditing, setIsEditing] = useState(false);
+
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_phone_company = (e) => {
+                    let setWorker_phone_company = e.target.value;
+                    const dataPhone_change_worker = {
                         action: "phone_change_worker",
                         id: params.id,
-                        phone_ct: set123,
+                        phone_ct: setWorker_phone_company,
                     };
 
                     if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        fetchDataPhone(dataPhone);
-                        inputRef.current.blur();
+                        fetchData(dataPhone_change_worker);
+                        setIsEditing(false);
                     }
                 };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
+
                 return (
-                    <Input
-                        ref={inputRef}
-                        defaultValue={params.value}
-                        onKeyDown={updatePhone}
-                        className="text-center bg-white border-none rounded-none outline-none "
-                        labelProps={{
-                            className: "hidden",
-                        }}
-                    />
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_phone_company}
+                                className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {params.value}
+                            </p>
+                        )}
+                    </>
                 );
             },
         },
@@ -316,13 +327,13 @@ function WorkerList({ auth }) {
         {
             field: "status_worker",
             headerName: "Tinh trạng",
-            width: 250,
+            width: 200,
             editable: false,
             renderCell: (params) => {
                 const handleChangeva = (event) => {
                     // Xử lý sự thay đổi của lựa chọn ở đây
-                    const selectedValue = event.target.value;
-                    const data_set = {
+                    let selectedValue = event.target.value;
+                    let data_set = {
                         action: "status_change_worker",
                         id: params.id,
                         status: selectedValue,
@@ -346,29 +357,109 @@ function WorkerList({ auth }) {
         {
             field: "worker_daily_sales",
             headerName: "Doanh Số",
-            width: 70,
+            width: 90,
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
-                return <p>{formatter.format(params.row.worker_daily_sales)}</p>;
+                const inputRef = createRef();
+                const [isEditing, setIsEditing] = useState(false);
+
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_daily_sales = (e) => {
+                    let setWorker_daily_sales = e.target.value;
+                    const dataWorker_daily_sales = {
+                        action: "change_worker_daily_sales",
+                        id: params.id,
+                        worker_daily_sales: setWorker_daily_sales,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        // Gọi hàm API để gửi dữ liệu
+                        fetchData(dataWorker_daily_sales);
+                        setIsEditing(false);
+                    }
+                };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
+                return (
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_daily_sales}
+                                className="text-center bg-white border-none rounded-none outline-none w-[70px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {formatCurrencyVND(params.value)}
+                            </p>
+                        )}
+                    </>
+                );
             },
-            // editable: true,
+            editable: false,
         },
         {
             field: "worker_daily_o_t_by_hour",
             headerName: "Tăng Ca",
             width: 70,
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
+                const inputRef = createRef();
+                const [isEditing, setIsEditing] = useState(false);
+
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_daily_o_t_by_hour = (e) => {
+                    let setWorker_OT = e.target.value;
+                    const dataWorker_daily_o_t_by_hour = {
+                        action: "change_worker_daily_o_t_by_hour",
+                        id: params.id,
+                        worker_daily_o_t_by_hour: setWorker_OT,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        // Gọi hàm API để gửi dữ liệu
+                        fetchData(dataWorker_daily_o_t_by_hour);
+                        setIsEditing(false);
+                    }
+                };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
                 return (
-                    <p>
-                        {formatter.format(params.row.worker_daily_o_t_by_hour)}
-                    </p>
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_daily_o_t_by_hour}
+                                className="text-center bg-white border-none rounded-none outline-none w-[70px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {formatCurrencyVND(params.value)}
+                            </p>
+                        )}
+                    </>
                 );
             },
             // editable: true,
@@ -570,7 +661,7 @@ function WorkerList({ auth }) {
                         </div>
                     </div>
                 </Card>
-                <Card className={`w-[${width}px] m-1 mt-1`}>
+                <Card className={`w-[${width}px] m-1 mt-1 overflow-scroll`}>
                     <Box sx={{ height: height, width: 1 }}>
                         <DataGrid
                             rows={rows}

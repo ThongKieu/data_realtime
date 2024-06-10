@@ -34,10 +34,10 @@ import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
-import newSocket from "@/Utils/Socket";
 // import NavGuest from "./navGuest";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
+import { formatCurrencyVND } from "../ColumnRightDialog";
 // profile menu component
 function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,7 +74,7 @@ function ProfileMenu({ propauthprofile, socket }) {
     const handleMakeReadAll = async () => {
         let data = { code: propauthprofile.code };
         try {
-            const response = await fetch(`api/web/noti/markReadAll`, {
+            const response = await fetch(`${host}api/web/noti/markReadAll`, {
                 method: "POST",
                 body: JSON.stringify(data), // Gửi dữ liệu dưới dạng JSON
                 headers: {
@@ -375,7 +375,7 @@ function NavbarDefault({ propauth, check }) {
     const fetchDelete = async (dateCheckDel) => {
         try {
             const response = await fetch(
-                `api/web/cancle/works?dateCheck=${dateCheckDel}`
+                `${host}api/web/cancle/works?dateCheck=${dateCheckDel}`
             );
             const jsonData = await response.json();
             setCountDelete(jsonData.num_can);
@@ -400,6 +400,7 @@ function NavbarDefault({ propauth, check }) {
         try {
             const res = await fetch(uri);
             const jsonData = await res.json();
+            console.log(jsonData);
             if (jsonData || jsonData != "undefined") {
                 setJobs(jsonData);
             } else {
@@ -506,11 +507,6 @@ function NavbarDefault({ propauth, check }) {
             </div>
         );
     };
-
-    const formatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
     function JobTable({ data, handleClose }) {
         const [jobTable, setJobTable] = useState([data]);
         const handleMoneyChange = (
@@ -652,7 +648,7 @@ function NavbarDefault({ propauth, check }) {
                                                                     Thu
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    {formatter.format(
+                                                                    {formatCurrencyVND(
                                                                         jobReport.work_revenue
                                                                     )}
                                                                 </td>
@@ -665,7 +661,7 @@ function NavbarDefault({ propauth, check }) {
                                                                     Chi
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    {formatter.format(
+                                                                    {formatCurrencyVND(
                                                                         jobReport.work_expenditure
                                                                     )}
                                                                 </td>
@@ -731,7 +727,7 @@ function NavbarDefault({ propauth, check }) {
                                                                     Doanh Số
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    {formatter.format(
+                                                                    {formatCurrencyVND(
                                                                         ds
                                                                     )}
                                                                 </td>

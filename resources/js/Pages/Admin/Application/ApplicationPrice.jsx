@@ -23,7 +23,7 @@ import {
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { Divider } from "@mui/material";
 import FileInput from "@/Components/FileInputImage";
 

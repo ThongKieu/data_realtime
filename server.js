@@ -52,13 +52,13 @@ io.on("connection", (socket) => {
         io.sockets.emit("getLocalFormServer", data);
     });
     // // Xử lý sự kiện khi máy khách ngắt kết nối
-    socket.on("disconnect", (id) => {
-        console.log("User disconnected:", socket.id);
-    });
-    // socket.on("disconnect", () => {
-    //     console.log("User disconnected");
-    //     io.sockets.emit("userOffline", socket.id);
+    // socket.on("disconnect", (id) => {
+    //     console.log("User disconnected:", socket.id);
     // });
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
+        io.sockets.emit("userOffline", socket.id);
+    });
 });
 
 httpServer.listen(3000, function () {

@@ -12,15 +12,15 @@ export default defineConfig({
       ],
       server:{
         // hmr:'localhost'
-        host: ["192.168.0.44"],
-        port: 5173,
-        hmr: {host: ["192.168.0.44"],},
+        // host: ["192.168.0.143"],
+        // port: 5173,
+        // hmr: {host: ["192.168.0.143"],},
         // host: ["192.168.0.44"],
         // port: 5173,
         // hmr: {host: ["192.168.0.44"],},
-        // host: ["192.168.0.231"],
-        // port: 5173,
-        // hmr: {host: ["192.168.0.231"],},
+        host: ["192.168.0.231"],
+        port: 5173,
+        hmr: {host: ["192.168.0.231"],},
     },
     build:{
         chunkSizeWarningLimit: 32000,

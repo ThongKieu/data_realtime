@@ -17,7 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
 import { host } from "@/Utils/UrlApi";
 import HistoryDialog from "@/Components/HistoryDialog";

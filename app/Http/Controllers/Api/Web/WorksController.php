@@ -175,7 +175,7 @@ class WorksController extends Controller
             $today = date('Y-m-d');
         }
 
-        $cancle = DB::table('works')
+        $cancel = DB::table('works')
         ->join('users', 'works.member_read', '=', 'users.id')
         ->leftJoin('works_assignments', 'works.id', '=', 'works_assignments.id_cus')
         ->where ('date_book','=',$today)
@@ -197,11 +197,11 @@ class WorksController extends Controller
         ->orderBy('works.id','DESC')
         ->limit(100)
         ->get();
-        $nu_can = $cancle->count();
+        $nu_can = $cancel->count();
 
         return response()->json([
             'num_can' => $nu_can,
-            'info_can' => $cancle,
+            'info_can' => $cancel,
         ]);
     }
     

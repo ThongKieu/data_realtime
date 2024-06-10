@@ -19,19 +19,11 @@ import {
 import { Box, Divider } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
-  TrashIcon,
   PencilIcon,
-  ArrowPathIcon,
   UserPlusIcon,
-  DocumentDuplicateIcon,
-  MagnifyingGlassIcon,
-  ClipboardDocumentListIcon,
-  ArrowUpTrayIcon,
-  XMarkIcon,
-  EllipsisVerticalIcon,
-  TicketIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
+import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
 
 function QuoteFlow({ auth }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -312,14 +304,9 @@ function QuoteFlow({ auth }) {
       width: 150,
       editable: false,
       renderCell:(params)=>{
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-
-      });
       return (
         <span className="text-center">
-            {formatter.format(params.row.total)}
+            {formatCurrencyVND(params.row.total)}
         </span>
     );
       },
@@ -331,14 +318,9 @@ function QuoteFlow({ auth }) {
       width: 150,
       editable: false,
       renderCell:(params)=>{
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-
-      });
       return (
         <span className="text-center">
-            {formatter.format(params.row.expense)}
+            {formatCurrencyVND(params.row.expense)}
         </span>
     );
       },

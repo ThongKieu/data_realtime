@@ -21,7 +21,7 @@ import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 const TABLE_HEAD = [
     "STT",
     "Tên",

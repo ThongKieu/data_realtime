@@ -12,10 +12,13 @@ import {
     Typography,
 } from "@material-tailwind/react";
 import { host } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/Socket";
+import { useSocket } from "@/Utils/SocketContext";
+import {useWindowSize} from "@/Core/Resize";
 
 function MapWorker({ auth }) {
+    const socket = useSocket();
     const [searchTerm, setSearchTerm] = useState("");
+    const {width,height} = useWindowSize(100)
     const [localOneWorkerMaps, setLocalOneWorkerMaps] = useState([]);
     const [localWorkerMaps, setLocalWorkerMaps] = useState([]);
     const [searchResults, setSearchResults] = useState(localWorkerMaps);
@@ -49,10 +52,6 @@ function MapWorker({ auth }) {
         </>
     );
 
-    const [screenSize, setScreenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight - 100,
-    });
     const handleViewLocalWorker = async () => {
         fetchLocalWorkerMaps();
     };
@@ -94,7 +93,7 @@ function MapWorker({ auth }) {
             last_active: "dddd  Minh",
             is_online: 1,
         };
-        newSocket.emit("sentLocalToServer", data);
+        socket?.emit("sentLocalToServer", data);
     };
     const [clickCount, setClickCount] = useState(0);
 
@@ -104,7 +103,7 @@ function MapWorker({ auth }) {
         setClickCount(clickCount + 1);
     };
     useEffect(() => {
-        newSocket.on("getLocalFormServer", (data) => {
+        socket?.on("getLocalFormServer", (data) => {
             if (data && data.new_id_worker) {
                 // Kiểm tra xem id_worker đã tồn tại trong localWorkerMaps chưa
                 const idExistsIndex = localWorkerMaps.findIndex(
@@ -112,8 +111,6 @@ function MapWorker({ auth }) {
                 );
                 if (idExistsIndex !== -1) {
                     // Nếu tồn tại, cập nhật trường lat và lng
-                    const count = 0;
-                    console.log(`ddd test ${clickCount}:`, idExistsIndex);
                     setLocalWorkerMaps((prevData) => {
                         const newData = [...prevData];
                         newData[idExistsIndex] = {
@@ -129,25 +126,9 @@ function MapWorker({ auth }) {
             }
         });
     }, [localWorkerMaps]);
-    // useEffect cho handleResize
-    useEffect(() => {
-        const handleResize = () => {
-            setScreenSize({
-                width: window.innerWidth,
-                height: window.innerHeight - 100,
-            });
-        };
-        window.addEventListener("resize", handleResize);
-        fetchLocalWorkerMaps();
-        return () => {
-            window.removeEventListener("resize", handleResize);
-            newSocket.disconnect();
-        };
-    }, []);
     useEffect(() => {
         setSearchResults(localWorkerMaps);
     }, [localWorkerMaps]);
-    var heightScreenTV = screenSize.height;
     return (
         <AuthenticatedLayout children={auth.user} user={auth.user}>
             <Head title="Vị Trí Thợ" />
@@ -155,7 +136,7 @@ function MapWorker({ auth }) {
                 <div className="col-span-1">
                     <Card
                         className="p-3 "
-                        style={{ height: `${heightScreenTV}px` }}
+                        style={{ height: `${height}px` }}
                     >
                         <div className="flex flex-row justify-between gap-1">
                             {/* //Bấm xem sẽ load lại maps */}
@@ -179,7 +160,7 @@ function MapWorker({ auth }) {
                         </div>
                         <CardBody
                             className="relative flex flex-col w-full p-0 mt-1 overflow-scroll text-gray-700 bg-white border border-green-500 rounded-none shadow-md bg-clip-border"
-                            style={{ height: `${heightScreenTV}px` }}
+                            style={{ height: `${height}px` }}
                         >
                             {/* Danh sach tho  */}
                             {searchResults == null
@@ -277,7 +258,7 @@ function MapWorker({ auth }) {
                     {searchResults == null ? (
                         <div
                             style={{
-                                height: `${heightScreenTV}px`,
+                                height: `${height}px`,
                                 width: "100%",
                             }}
                             className="customIMG"
@@ -309,7 +290,7 @@ function MapWorker({ auth }) {
                     ) : (
                         <div
                             style={{
-                                height: `${heightScreenTV}px`,
+                                height: `${height}px`,
                                 width: "100%",
                             }}
                             className="customIMG"

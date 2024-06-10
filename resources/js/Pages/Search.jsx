@@ -31,6 +31,7 @@ const TABLE_HEAD = [
     "Lịch Sử",
 ];
 import { useSocket } from "@/Utils/SocketContext";
+import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
 function Search({ auth }) {
     // const onChange = ({ target }) => setEmail(target.value);
     const socket = useSocket();
@@ -284,13 +285,7 @@ function Search({ auth }) {
                                     const classes = isLast
                                         ? "p-1 text-center"
                                         : "p-1 border border-blue-gray-300 text-center";
-                                    const formatter = new Intl.NumberFormat(
-                                        "vi-VN",
-                                        {
-                                            style: "currency",
-                                            currency: "VND",
-                                        }
-                                    );
+
                                     const maxLength = 50;
                                     // // if (item.his_work != undefined) {
                                     //     const cleanJsonString = item.his_work?.slice(1, -1);
@@ -575,14 +570,14 @@ function Search({ auth }) {
                                             <td
                                                 className={`${classes} w-[90px] text-right`}
                                             >
-                                                {formatter.format(
+                                                {formatCurrencyVND(
                                                     item.spending_total
                                                 )}
                                             </td>
                                             <td
                                                 className={`${classes} w-[90px] text-right`}
                                             >
-                                                {formatter.format(
+                                                {formatCurrencyVND(
                                                     item.income_total
                                                 )}
                                             </td>

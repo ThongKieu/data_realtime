@@ -1,42 +1,25 @@
 import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import React, { useEffect, useRef } from "react";
 import { Head } from "@inertiajs/react";
-import {
-    Card,
-    Typography,
-    Avatar,
-    Tooltip,
-    Input,
-    Button,
-    Textarea,
-} from "@material-tailwind/react";
+import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import Box from "@mui/material/Box";
-import {
-    UsersIcon,
-    BellAlertIcon,
-    PlusCircleIcon,
-} from "@heroicons/react/24/outline";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import FileInput from "@/Components/FileInputImage";
 import { host, apiPost } from "@/Utils/UrlApi";
-import newSocket from "@/Utils/Socket";
-import parse from "html-react-parser";
-
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { useSocket } from "@/Utils/SocketContext";
 function CreatePost({ auth }) {
     const { width, height } = useWindowSize(65);
     const [textPost, setTextPost] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
-    const [post, setPost] = useState({title: "",des: "",});
+    const [post, setPost] = useState({ title: "", des: "" });
     const [isSavePost, setIsSavePost] = useState(false);
     const handleIsSavePost = () => setIsSavePost(!isSavePost);
+    const socket = useSocket();
     useEffect(() => {
         return () => {
-            newSocket.disconnect();
+            socket?.disconnect();
         };
     }, []);
     const editorRef = useRef(null);
@@ -74,7 +57,7 @@ function CreatePost({ auth }) {
                     body: formData,
                 });
                 if (response.status === 200) {
-                    newSocket.emit("addWorkTo_Server", formData);
+                    socket?.emit("addWorkTo_Server", formData);
                     // handleOpen();
                     handleIsSavePost();
                     setTextPost(newTextPost);

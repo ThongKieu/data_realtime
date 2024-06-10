@@ -59,11 +59,13 @@ import {
     KSDialog,
     KhaoSatDialogWeb,
     HisDialog,
+    formatNumberToVNDk,
+    HuyDialog,
+    formatCurrencyVND,
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
-import { HuyDialog } from "@/Components/ColumnRightDialog";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 import { useSocket } from "@/Utils/SocketContext";
@@ -90,7 +92,21 @@ const Dashboard = ({ auth }) => {
     const [userId, setSetUserId] = useState(0);
 
     const socket = useSocket();
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            const confirmationMessage =
+                "Bạn có chắc chắn muốn rời khỏi trang này?";
+            event.returnValue = confirmationMessage; // Gecko + IE
+            return confirmationMessage; // Webkit, Safari, Chrome etc.
+        };
 
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        // Cleanup function to remove the event listener on component unmount
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
@@ -751,6 +767,19 @@ const Dashboard = ({ auth }) => {
             },
         },
     ];
+    const ButtonAmination = () => {
+        return (
+            <div class="button-container">
+                <a href="#" class="button-animation">
+                    Button
+                    <span class="sppp1"></span>
+                    <span class="sppp2"></span>
+                    <span class="sppp3"></span>
+                    <span class="sppp4"></span>
+                </a>
+            </div>
+        );
+    };
     // du lieu bang cong viec da phan -----------------------------------
     const columnsright = [
         {
@@ -1209,13 +1238,11 @@ const Dashboard = ({ auth }) => {
             editable: false,
             type: "number",
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
                 return (
                     <span className="text-center">
-                        {formatter.format(params.row.spending_total)}
+                        {params.row.status_work == 3
+                            ? formatNumberToVNDk(params.row.spending_total)
+                            : formatCurrencyVND(params.row.spending_total)}
                     </span>
                 );
             },
@@ -1227,13 +1254,11 @@ const Dashboard = ({ auth }) => {
             editable: false,
             type: "number",
             renderCell: (params) => {
-                const formatter = new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                });
                 return (
                     <span className="text-center">
-                        {formatter.format(params.row.income_total)}
+                        {params.row.status_work == 3
+                            ? formatNumberToVNDk(params.row.income_total)
+                            : formatCurrencyVND(params.row.income_total)}
                     </span>
                 );
             },
@@ -1268,7 +1293,7 @@ const Dashboard = ({ auth }) => {
                 const [openViewTotal, handleOpenViewTotal] = useToggle(false);
                 const [openView_KS, handleOpenView_KS] = useToggle(false);
                 const [openView_His, handleOpenView_His] = useToggle(false);
-                const [work_note, setWorkNote] = useState();
+                const [work_Note_Assign, setWorkNote_Assign] = useState();
                 const [work_noteThuHoi, setWorkNoteThuHoi] = useState();
                 const [work_noteWeb, setWorkNoteWeb] = useState();
                 const hasData = params.row;
@@ -1403,6 +1428,15 @@ const Dashboard = ({ auth }) => {
                 };
                 const handleSentDeleteDone = async () => {
                     try {
+                        if (
+                            work_Note_Assign == "" ||
+                            work_Note_Assign == undefined
+                        ) {
+                            alert(
+                                "Vui lòng nhập lý do hủy (Delete Work Done)."
+                            );
+                            return;
+                        }
                         let data_hisWork = [
                             {
                                 id_auth: auth.user.id,
@@ -1415,6 +1449,7 @@ const Dashboard = ({ auth }) => {
                             id: params.id,
                             id_cus: params.row.id_cus,
                             auth_id: auth.user.id,
+                            work_note: work_Note_Assign,
                             his_work: JSON.stringify(data_hisWork),
                         };
                         const response = await fetch(
@@ -1479,6 +1514,10 @@ const Dashboard = ({ auth }) => {
                         "income_total",
                         cardExpiresWeb.income_total
                     );
+                    formData.append(
+                        "spending_total",
+                        cardExpiresWeb.spending_total
+                    );
                     for (let i = 0; i < selectedFilesKS.length; i++) {
                         formData.append(
                             "image_work_path[]",
@@ -1499,7 +1538,11 @@ const Dashboard = ({ auth }) => {
                     );
 
                     if (response.ok) {
-                        socket_Dash.emit("addWorkTo_Server", "Khảo sát");
+                        socket_Dash.emit(
+                            "addWorkTo_Server",
+                            "Khảo sát",
+                            formData
+                        );
                         handleOpen();
                         handleOpenKSWebWithDisable();
                     } else {
@@ -1721,13 +1764,13 @@ const Dashboard = ({ auth }) => {
                 const handleImageVtDelete = async (index) => {
                     const deletedImage = imageVt1[index];
                     const newImages = imageVt1.filter((_, i) => i !== index);
-
                     // Sử dụng window.confirm thay vì alert
-                    const userConfirmed = window.confirm(
-                        "Có thật muốn xóa hình vật tư"
-                    );
 
-                    if (userConfirmed) {
+                    if (auth.user.permission !== 0) {
+                        alert("Bạn không đủ quyền xóa hình! ^_^");
+                        return;
+                    } else {
+                        window.confirm("Có thật muốn xóa hình vật tư");
                         setImageVt1(newImages);
                         const dataBody = {
                             auth_id: auth.user.id,
@@ -1891,7 +1934,7 @@ const Dashboard = ({ auth }) => {
                                         >
                                             <Button
                                                 color="white"
-                                                className={`text-green-500 bg-none hover:bg-green-500 border-green-500 ${classButtonDaPhan} ${DK2}`}
+                                                className={`relative text-green-500 bg-none hover:bg-green-500  border-green-500 ${classButtonDaPhan} ${DK2}`}
                                                 onClick={() =>
                                                     handleOpenSpendingTotalWithDisable()
                                                 }
@@ -1902,7 +1945,7 @@ const Dashboard = ({ auth }) => {
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
-                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}`}
+                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}  ${params.row.check_in ==1 ?"animate-ping": "" }`}
                                                 />
                                             </MenuHandler>
                                             <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
@@ -2108,7 +2151,7 @@ const Dashboard = ({ auth }) => {
                         <HuyDialog
                             openHuy={openHuy}
                             handleOpenHuy={handleOpenHuyWithDisable}
-                            setWorkNote={setWorkNote}
+                            setWorkNote={setWorkNote_Assign}
                             handleSentDeleteDone={handleSentDeleteDone}
                         />
                         {/*----------------------------- dialog form KS ----------- */}

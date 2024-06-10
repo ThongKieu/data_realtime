@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { host } from '@/Utils/UrlApi';
+import { formatCurrencyVND } from '@/Components/ColumnRightDialog';
 
 function Products({ auth }) {
   const [products, setProduct] = useState('');
@@ -35,14 +36,9 @@ function Products({ auth }) {
     {
       field: "price_product", headerName: "Giá Mua", width: 200,
       renderCell: (params) => {
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-
-        });
         return (
           <span className="text-center">
-            {formatter.format(params.row.price_product)}
+            {formatCurrencyVND(params.row.price_product)}
           </span>
         );
       },
@@ -50,14 +46,9 @@ function Products({ auth }) {
     {
       field: "sale_price_product", headerName: "Giá Bán Dự Kiến", width: 200,
       renderCell: (params) => {
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-
-        });
         return (
           <span className="text-center">
-            {formatter.format(params.row.sale_price_product)}
+            {formatCurrencyVND(params.row.sale_price_product)}
           </span>
         );
       },
@@ -97,11 +88,6 @@ function Products({ auth }) {
     {
       field: '', headerName: "Xử Lý", width: 150,
       renderCell: (params) => {
-        const formatter = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-
-        });
         return (
           <Button variant="outlined" className="p-2 m-1" >
             <NavLink

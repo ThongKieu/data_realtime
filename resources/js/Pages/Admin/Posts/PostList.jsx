@@ -21,7 +21,7 @@ import {
     ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { Box } from "@mui/material";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { Link } from "@inertiajs/react";
 import { apiPost, host } from "@/Utils/UrlApi";
 import { Editor } from "@tinymce/tinymce-react";

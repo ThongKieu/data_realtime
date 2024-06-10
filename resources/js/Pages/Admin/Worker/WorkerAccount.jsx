@@ -26,7 +26,7 @@ import AuthenticatedLayoutAdmin from "@/Layouts/Admin/AuthenticatedLayoutAdmin";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
 
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 import { Divider } from "@mui/material";
 const TABS = [
     {

@@ -22,7 +22,7 @@ import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { host } from "@/Utils/UrlApi";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 
 function ManagerMedia({ auth }) {
     const { width, height } = useWindowSize(65);

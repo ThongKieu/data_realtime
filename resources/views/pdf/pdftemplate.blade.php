@@ -143,7 +143,7 @@
                             <td>5,000,000</td>
                             <td></td>
                         </tr>
-                        @endforeach
+                      
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Cộng</td>

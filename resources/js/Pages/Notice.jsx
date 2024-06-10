@@ -12,17 +12,16 @@ import {
 } from "@material-tailwind/react";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
-import newSocket from "@/Utils/Socket";
-import { host } from "@/Utils/UrlApi";
+import { useSocket } from "@/Utils/SocketContext";
 function Notice({ auth }) {
+    const socket = useSocket();
+    const [socket_Notice, setSocket_Notice] = useState();
     const [dataNoti, setNoti] = useState({
         new_work_from_app: [],
         new_work_from_worker: [],
         new_feeback: [],
         new_return_work_from_worker: [],
     });
-    console.log(dataNoti);
-    const [notificationData, setInfoNotification] = useState("");
     const fetchNotiUser = async () => {
         try {
             const response = await fetch("api/web/noti");
@@ -45,7 +44,7 @@ function Notice({ auth }) {
                 },
             });
             if (response.status == 200) {
-                newSocket.emit("notication_Server", data);
+                socket_Notice.emit("notication_Server", data);
                 console.log(response);
             }
         } catch (error) {
@@ -55,7 +54,10 @@ function Notice({ auth }) {
 
     useEffect(() => {
         fetchNotiUser();
-        // newSocket.on("notication_Client", () => {
+        if (socket) {
+            setSocket_Notice(socket);
+        }
+        // socket_Notice.on("notication_Client", () => {
         //     // fetchNoti();
         //     fetchNotiUser();
         // });

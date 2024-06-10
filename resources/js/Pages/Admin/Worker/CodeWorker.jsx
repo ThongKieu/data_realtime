@@ -22,7 +22,7 @@ import { host } from "@/Utils/UrlApi";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useEffect } from "react";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 function CodeWorker({ auth }) {
     const { width, height } = useWindowSize(50);
     const [open, setOpen] = useState(false);

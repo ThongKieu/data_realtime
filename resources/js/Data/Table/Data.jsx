@@ -38,4 +38,5 @@ export const ARRAY_ACTION =
     { id: 'thuchi', value: 'Nhập Thu Chi' },
     { id: 'adCheck', value: 'Admin Check' },
     { id: 'ks', value: 'Cty Báo Giá' },
+    { id: 'doitho', value: 'Đổi Thợ' },
 ];

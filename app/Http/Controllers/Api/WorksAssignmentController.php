@@ -142,8 +142,8 @@ class WorksAssignmentController extends Controller
     }
     public function returnWorkFromAssignment(Request $request)
     {
-        // || $request->real_note == null
-        if ($request->id == null || $request->id_cus == null || $request->worker_name == null) {
+        //
+        if ($request->id == null || $request->id_cus == null || $request->worker_name == null || $request->real_note == null) {
             return -1;
         } else {
             $note = $request->real_note . '-' . $request->worker_name . '- Đã Trả';
@@ -152,7 +152,6 @@ class WorksAssignmentController extends Controller
             // Thêm phần lịch sử thay đổi
             WorksAssignmentController::insertHisWork($request->id, $request->his_work);
             if (isset($request->from_app)) {
-
                 NoticationAllController::create('3', $note, '');
             }
             return 1;

@@ -19,7 +19,7 @@ import {
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
 import { Divider } from "@mui/material";
-import useWindowSize from "@/Core/Resize";
+import {useWindowSize} from "@/Core/Resize";
 
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";

@@ -85,7 +85,7 @@ class WorkerController extends Controller
                 {
                     MapsWorkerController::updateDismissal($re->id);
                     AccountionWorker::where('id','=',$re->id)->update(['active'=>2]);
-                   
+
                 }
                 return response()->json('Change Status');
             case 'avatar_change_worker':
@@ -100,6 +100,12 @@ class WorkerController extends Controller
             case 'phone_change_worker':
                 Worker::where('id', '=', $re->id)->update(['worker_phone_company' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
+            case 'change_worker_daily_sales':
+                Worker::where('id', '=', $re->id)->update(['worker_daily_sales' => $re->worker_daily_sales]);
+                return response()->json(['data' => 'Change worker_daily_sales']);
+            case 'change_worker_daily_o_t_by_hour':
+                Worker::where('id', '=', $re->id)->update(['worker_daily_o_t_by_hour' => $re->worker_daily_o_t_by_hour]);
+                return response()->json(['data' => 'Change worker_daily_o_t_by_hour']);
             default:
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }

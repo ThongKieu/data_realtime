@@ -37,6 +37,7 @@ import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 // import NavGuest from "./navGuest";
 import useWindowSize from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
+import { formatCurrencyVND } from "../ColumnRightDialog";
 // profile menu component
 function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -399,6 +400,7 @@ function NavbarDefault({ propauth, check }) {
         try {
             const res = await fetch(uri);
             const jsonData = await res.json();
+            console.log(jsonData);
             if (jsonData || jsonData != "undefined") {
                 setJobs(jsonData);
             } else {

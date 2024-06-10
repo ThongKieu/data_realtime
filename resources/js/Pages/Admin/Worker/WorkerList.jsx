@@ -102,7 +102,15 @@ function WorkerList({ auth }) {
         // Gọi API để lấy dữ liệu
         fetchDataWorker();
         fetchDataCodeWorker();
-    }, []);
+        if (socket) {
+            socket?.on("sendAddWorkTo_Client", (jsonData) => {
+                if (jsonData) {
+                    fetchDataWorker();
+                    // fetchDataCodeWorker();
+                }
+            });
+        }
+    }, [socket]);
     const fetchDataWorker = () => {
         fetch(host + "api/web/workers")
             .then((response) => {
@@ -282,30 +290,51 @@ function WorkerList({ auth }) {
             editable: false,
             renderCell: (params) => {
                 const inputRef = createRef();
-                const updatePhone = (e) => {
-                    const set123 = e.target.value;
-                    const dataPhone = {
+                const [isEditing, setIsEditing] = useState(false);
+
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_phone_company = (e) => {
+                    let setWorker_phone_company = e.target.value;
+                    const dataPhone_change_worker = {
                         action: "phone_change_worker",
                         id: params.id,
-                        phone_ct: set123,
+                        phone_ct: setWorker_phone_company,
                     };
 
                     if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        fetchDataPhone(dataPhone);
-                        inputRef.current.blur();
+                        fetchData(dataPhone_change_worker);
+                        setIsEditing(false);
                     }
                 };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
+
                 return (
-                    <Input
-                        ref={inputRef}
-                        defaultValue={params.value}
-                        onKeyDown={updatePhone}
-                        className="text-center bg-white border-none rounded-none outline-none "
-                        labelProps={{
-                            className: "hidden",
-                        }}
-                    />
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_phone_company}
+                                className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {params.value}
+                            </p>
+                        )}
+                    </>
                 );
             },
         },
@@ -318,7 +347,7 @@ function WorkerList({ auth }) {
         {
             field: "status_worker",
             headerName: "Tinh trạng",
-            width: 250,
+            width: 200,
             editable: false,
             renderCell: (params) => {
                 const handleChangeva = (event) => {
@@ -348,22 +377,109 @@ function WorkerList({ auth }) {
         {
             field: "worker_daily_sales",
             headerName: "Doanh Số",
-            width: 70,
+            width: 90,
             renderCell: (params) => {
-                return <p>{formatCurrencyVND(params.row.worker_daily_sales)}</p>;
+                const inputRef = createRef();
+                const [isEditing, setIsEditing] = useState(false);
+
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_daily_sales = (e) => {
+                    let setWorker_daily_sales = e.target.value;
+                    const dataWorker_daily_sales = {
+                        action: "change_worker_daily_sales",
+                        id: params.id,
+                        worker_daily_sales: setWorker_daily_sales,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        // Gọi hàm API để gửi dữ liệu
+                        fetchData(dataWorker_daily_sales);
+                        setIsEditing(false);
+                    }
+                };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
+                return (
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_daily_sales}
+                                className="text-center bg-white border-none rounded-none outline-none w-[70px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {formatCurrencyVND(params.value)}
+                            </p>
+                        )}
+                    </>
+                );
             },
-            // editable: true,
+            editable: false,
         },
         {
             field: "worker_daily_o_t_by_hour",
             headerName: "Tăng Ca",
             width: 70,
             renderCell: (params) => {
+                const inputRef = createRef();
+                const [isEditing, setIsEditing] = useState(false);
 
+                const handleEdit = () => {
+                    setIsEditing(true);
+                };
+
+                const handleBlur = () => {
+                    setIsEditing(false);
+                };
+                const updateWorker_daily_o_t_by_hour = (e) => {
+                    let setWorker_OT = e.target.value;
+                    const dataWorker_daily_o_t_by_hour = {
+                        action: "change_worker_daily_o_t_by_hour",
+                        id: params.id,
+                        worker_daily_o_t_by_hour: setWorker_OT,
+                    };
+
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        // Gọi hàm API để gửi dữ liệu
+                        fetchData(dataWorker_daily_o_t_by_hour);
+                        setIsEditing(false);
+                    }
+                };
+                useEffect(() => {
+                    if (isEditing && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isEditing]);
                 return (
-                    <p>
-                        {formatCurrencyVND(params.row.worker_daily_o_t_by_hour)}
-                    </p>
+                    <>
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                defaultValue={params.value}
+                                onBlur={handleBlur}
+                                onKeyDown={updateWorker_daily_o_t_by_hour}
+                                className="text-center bg-white border-none rounded-none outline-none w-[70px]"
+                            />
+                        ) : (
+                            <p onClick={handleEdit} className="text-center">
+                                {formatCurrencyVND(params.value)}
+                            </p>
+                        )}
+                    </>
                 );
             },
             // editable: true,

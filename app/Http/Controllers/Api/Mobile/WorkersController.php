@@ -143,6 +143,10 @@ class WorkersController extends Controller
             case 'phone_change_worker':
                 Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
+                // Thong them doan nay
+                case 'phone_change_worker_daily_sales':
+                    Worker::where('id', '=', $re->id)->update(['worker_daily_sales' => $re->worker_daily_sales]);
+                    return response()->json(['data' => 'Change worker_daily_sales']);
             default:
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }
@@ -350,11 +354,11 @@ class WorkersController extends Controller
             return 'Chek Info Sent';
     }
     public function updateInfoWorkerToApp(Request $request) {
-        
+
         $update_info = Worker::where('id','=',$request->id)->update([
             'worker_full_name'=>$request->worker_full_name,'worker_phone_personal'=> $request->worker_phone_personal
         ]);
-        
+
         if($update_info)
         {
             return response()->json($update_info);

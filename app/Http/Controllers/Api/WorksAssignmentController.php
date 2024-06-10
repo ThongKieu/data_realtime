@@ -718,5 +718,18 @@ class WorksAssignmentController extends Controller
 
         return 'Tất cả thông tin';
     }
+    public function checkInOut(Request $request)
+    {
+        if($request->id_work_has && $request -> check_in_out)
+        {
+            WorksAssignment::where('id','=',$request->id_work_has)->update(['check_in'=>$request->check_in_out]);
+
+            return response()->json('Check Local Done');
+        }
+        else 
+        {
+            return response()->json('Check infomation sent');
+        }
+    }
 
 }

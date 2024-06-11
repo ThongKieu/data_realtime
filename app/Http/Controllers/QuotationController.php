@@ -102,9 +102,10 @@ class QuotationController extends Controller
     // VP trực tiếp làm báo giá mà k cần thợ ks
     public function adminQuote(Request $re)
     {
-        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
+        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","quote_note":"Không sửa lỗi khác",}]';
         // $user_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","potision":"NV Kinh Doanh","phone":"0912847218"}]';
         // $cus_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","address":"NV Kinh Doanh","phone":"0912847218"}]';
+        // $quote_note=[{"id":"1","note_content":"Khong bao hanh","id":"2","note_content":"Tinh theo thucte thi cong"}];
         $quote_total_price = $re->quote_total_price;
         // lấy hình ảnh khảo sát thực tế nếu có
         $seri_imag = '';
@@ -112,24 +113,28 @@ class QuotationController extends Controller
             $images = $re->file('image_work');
             // dd($images);
             foreach ($images as $image) {
-                $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                $image->move('assets/images/' . $re->id . '/quote', $name);
-                $seri_imag .= 'assets/images/' . $re->id . '/quote/' . $name . ',';
+                $name = $re->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $image->move('assets/images/' . $re->id_work_has . '/quote', $name);
+                $seri_imag .= 'assets/images/' . $re->id_work_has . '/quote/' . $name . ',';
             }
         }
         $new  = new Quotation([
             'id_work_has' => $re->id_work_has,
             'id_auth' => $re->auth_id,
-            'quote_date' => $re->quote_date,
+            'quote_date' => date('d-m-Y'),
             'quote_info' => $re->quote_info, // Trường này dạng JSON
             'quote_image' => $seri_imag,
+            'quote_cus_info' => $re->quote_cus_info,
+            'quote_user_info' => $re->quote_user_info,
             'quote_total_price' => $quote_total_price,
+            'quote_note'=>$re->quote_note,
             'vat' => $re->vat
         ]);
         $new->save();
 
         WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 3]);
-        $his_work = '"id_worker": null,"auth_id":"' . $re->auth_id . '","action":"tra","time":"' . date('Y-m-d H:m:s') . '"';
+
+        $his_work = '[{"id_worker": null,"auth_id":"' . $re->auth_id . '","action":"baogiaad","time":"' . date('Y-m-d H:m:s') . '"}]';
         WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
         if ($new) {
             return 1;

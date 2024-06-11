@@ -29,8 +29,8 @@ class QuotationController extends Controller
             
             foreach ($images as $image) {
                 $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                $image->move('assets/images/work_assignment/' . $re->id . '/quote', $name);
-                $seri_imag .= 'assets/images/work_assignment/' . $re->id . '/quote/' . $name . ',';
+                $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
+                $seri_imag .= 'assets/images/work_assignment/' . $re->id_work_has . '/quote/' . $name . ',';
             }
         }
         // tạo thông tin báo giá khảo sát
@@ -39,7 +39,7 @@ class QuotationController extends Controller
             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
             // Cần hình ảnh chứng minh bg  hoặc nhập số tiền + phương thức bg
             // Điền thông tin lịch sử
-            $his_work = '{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' .$time. '"}';
+            $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' .$time. '"}]';
 
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // cập nhật dữ liệu cho bảng thợ đã làm
@@ -58,12 +58,13 @@ class QuotationController extends Controller
             //Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành, hình ảnh báo giá
             // cập nhật lịch sử
             if (isset($re->auth_id)) {
-                $his_work = '"id_worker": null,"auth_id":"' . $re->auth_id . '","action":"baogia","time":"' . $time . '"';
+                $his_work = '[{"id_auth": ' . $re->auth_id . ',"id_worker":"null","action":"baogiaad","time":"' .$time. '"}]';
             } else {
-                $his_work = '"id_auth": null,"id_worker":"' . $re->worker . '","action":"baogia","time":"' . $time . '"';
+                $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' .$time. '"}]';
             }
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
-
+            // Thêm dữ liệu vào bảng Báo giá    
+            $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
             $new  = new Quotation([
                 'id_work_has' => $re->id_work_has,
                 'id_auth' => $re->auth_id,

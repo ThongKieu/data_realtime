@@ -653,8 +653,9 @@ class WorksAssignmentController extends Controller
     {
         //     $id_work_has = $request->id_work_has;
         // $his_work=json_encode($his_work);
-        // dd($his_work);
         $his_on_table = WorksAssignment::where('id', '=', $id_work_has)->value('his_work');
+        // dd($his_on_table);
+
         if ($his_on_table && $his_on_table == '') {
 
             $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $his_work]);

@@ -28,7 +28,7 @@ return new class extends Migration
             $table ->integer('flag_check')->default(0);
             $table ->integer('kind_work_assign')->nullable();
             $table->string('seri_number')->nullable();
-            $table->string('his_work',1000)->nullable();
+            $table->string('his_work',5000)->nullable();
             $table->string('work_done_date')->nullable();
             $table->timestamps();
         });

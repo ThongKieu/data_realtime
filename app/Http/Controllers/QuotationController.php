@@ -28,7 +28,7 @@ class QuotationController extends Controller
             $images = $re->file('image_work');
             
             foreach ($images as $image) {
-                $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $name = $re->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                 $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
                 $seri_imag .= 'assets/images/work_assignment/' . $re->id_work_has . '/quote/' . $name . ',';
             }
@@ -64,7 +64,7 @@ class QuotationController extends Controller
             }
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // Thêm dữ liệu vào bảng Báo giá    
-            $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
+            // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
             $new  = new Quotation([
                 'id_work_has' => $re->id_work_has,
                 'id_auth' => $re->auth_id,
@@ -102,6 +102,9 @@ class QuotationController extends Controller
     // VP trực tiếp làm báo giá mà k cần thợ ks
     public function adminQuote(Request $re)
     {
+        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
+        // $user_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","potision":"NV Kinh Doanh","phone":"0912847218"}]';
+        // $cus_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","address":"NV Kinh Doanh","phone":"0912847218"}]';
         $quote_total_price = $re->quote_total_price;
         // lấy hình ảnh khảo sát thực tế nếu có
         $seri_imag = '';

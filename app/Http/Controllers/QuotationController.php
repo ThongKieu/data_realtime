@@ -37,7 +37,7 @@ class QuotationController extends Controller
             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
             // Cần hình ảnh chứng minh bg  hoặc nhập số tiền + phương thức bg
             // Điền thông tin lịch sử
-            $his_work = '{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}';
+            $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
 
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // cập nhật dữ liệu cho bảng thợ đã làm
@@ -56,12 +56,13 @@ class QuotationController extends Controller
             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành, hình ảnh báo giá
             // cập nhật lịch sử
             if (isset($re->auth_id)) {
-                $his_work = '"id_worker": null,"auth_id":"' . $re->auth_id . '","action":"baogia","time":"' . $time . '"';
+                $his_work = '[{"id_auth": ' . $re->auth_id . ',"id_worker":"null","action":"baogiaad","time":"' . $time . '"}]';
             } else {
-                $his_work = '"id_auth": null,"id_worker":"' . $re->worker . '","action":"baogia","time":"' . $time . '"';
+                $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
             }
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
-
+            // Thêm dữ liệu vào bảng Báo giá
+            // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
             $new = new Quotation([
                 'id_work_has' => $re->id_work_has,
                 'id_auth' => $re->auth_id,
@@ -79,10 +80,10 @@ class QuotationController extends Controller
         } elseif ($ac == 3) {
             // Thợ ks mà không làm được cty gửi cho thợ khác báo
             // Yêu cầu có id_cus, id_work_has, work_note, imag_path,id_worker
-            $his_work = '"id_auth": null,"id_worker":"' . $re->worker . '","action":"tra","time":"' . $time . '"';
+            $his_work = '"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"tra","time":"' . $time . '"';
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // Lấy thông tin note
-            $note = Worker::where('id', '=', $re->worker)->value('worker_full_name');
+            $note = Worker::where('id', '=', $re->id_worker)->value('worker_full_name');
             $note .= 'Đã KS';
             // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);

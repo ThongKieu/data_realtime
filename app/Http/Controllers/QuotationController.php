@@ -79,12 +79,12 @@ class QuotationController extends Controller
             // Lấy thông tin note
             $note = Worker::where('id', '=', $re->worker)->value('worker_full_name');
             $note .= 'Đã KS';
-            // cập nhật thông tin bảng 
+            // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
             Work::where('id', '=', $re->id_cus)->update(['imag_path' => $seri_imag, 'work_note' => $note]);
         }
 
-        //trả dữ liệu báo giá khảo sát  
+        //trả dữ liệu báo giá khảo sát
         if ($new) {
             return 1;
         } else return 0;
@@ -121,7 +121,7 @@ class QuotationController extends Controller
         WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
         if ($new) {
             return 1;
-        } 
+        }
         else return 0;
     }
     public function generatePDF()

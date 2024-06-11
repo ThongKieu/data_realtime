@@ -1,6 +1,6 @@
 import React from "react";
 
-function Export_Quote() {
+const Export_Quote = () => {
     return (
         <>
             <div id="titleTop">
@@ -21,6 +21,6 @@ function Export_Quote() {
             </div>
         </>
     );
-}
+};
 
 export default Export_Quote;

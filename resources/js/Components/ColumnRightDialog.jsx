@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Button,
     Dialog,
@@ -10,12 +10,15 @@ import {
     Typography,
     Card,
 } from "@material-tailwind/react";
-import { XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
+import {
+    XMarkIcon,
+    ClockIcon,
+    PlusCircleIcon,
+} from "@heroicons/react/24/outline";
 import Select from "react-select";
 import FileInput from "./FileInputImage";
 import { ARRAY_ACTION } from "@/Data/Table/Data";
 import { useWindowSize } from "@/Core/Resize";
-
 import HistoryDialog from "./HistoryDialog";
 const formatNumberToVNDk = (number) => {
     const k = 1000;
@@ -50,7 +53,6 @@ const ThoDialog = ({
     handleSelectChange,
     handleSentPhanTho,
 }) => {
-
     return (
         <Dialog open={open} handler={handleOpenTho} className="lg:min-w-52">
             <div className="flex items-center justify-between">
@@ -230,8 +232,82 @@ const KhaoSatDialogWeb = ({
     handleFileChangeWeb,
     previewImagesWeb,
 }) => {
+    const inputRef = useRef();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingField, setEditingField] = useState(null);
+    const [changeKS, setChangeQuota] = useState(cardExpiresWeb);
+    const handleEdit = (field) => {
+        setIsEditing(true);
+        setEditingField(field);
+    };
+
+    const handleBlur = () => {
+        setIsEditing(false);
+        setEditingField(null);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setChangeQuota((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    useEffect(() => {
+        setChangeQuota(cardExpiresWeb);
+    }, [cardExpiresWeb]);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isEditing]);
+    console.log(changeKS);
+
+    // ----- thêm dòng trong bảng --------------/
+
+    const { width, height } = useWindowSize(380);
+    const [counter, setCounter] = useState(1);
+    const [rows, setRows] = useState([createEmptyRow(1)]); // Initialize with the first row
+    function createEmptyRow(counter) {
+        return {
+            stt: counter,
+            content: "",
+            unit: "",
+            quantity: 0,
+            unitPrice: 0,
+            total: 0,
+            note: "",
+            vat: 10,
+        };
+    }
+
+    const handleInputChange = (index, e) => {
+        const { name, value } = e.target;
+        const updatedRows = [...rows];
+        updatedRows[index][name] = value;
+
+        if (["quantity", "unitPrice", "vat"].includes(name)) {
+            const quantity = parseFloat(updatedRows[index].quantity) || 0;
+            const unitPrice = parseFloat(updatedRows[index].unitPrice) || 0;
+            const vat = parseFloat(updatedRows[index].vat) || 0;
+            const total = quantity * unitPrice * (1 + vat / 100);
+            updatedRows[index].total = total;
+        }
+        setRows(updatedRows);
+    };
+
+    const handleAddRow = () => {
+        setCounter((prevCounter) => {
+            const newCounter = prevCounter + 1;
+            setRows([...rows, createEmptyRow(newCounter)]);
+            return newCounter;
+        });
+    };
+    console.log(height);
     return (
-        <Dialog open={openKSWeb} handler={handleOpenKSWeb}>
+        <Dialog open={openKSWeb} handler={handleOpenKSWeb} size="xxl">
             <div className="flex items-center justify-between">
                 <DialogHeader>Lịch Khảo Sát</DialogHeader>
                 <XMarkIcon
@@ -240,124 +316,506 @@ const KhaoSatDialogWeb = ({
                 />
             </div>
             <DialogBody divider>
-                <form className="flex flex-col gap-4 mt-2">
-                    {/* Các trường input */}
-                    <div className="flex items-center gap-4 ">
-                        <Input
-                            label="Yêu Cầu Công Việc"
-                            id="work_content"
-                            name="work_content"
-                            value={cardExpiresWeb.work_content}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                        <Input
-                            label="Số Điện Thoại"
-                            id="phone_number"
-                            name="phone_number"
-                            value={cardExpiresWeb.phone_number}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Input
-                            label="Địa Chỉ"
-                            id="street"
-                            name="street"
-                            value={cardExpiresWeb.street}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                        <Input
-                            label="Quận"
-                            id="district"
-                            name="district"
-                            value={cardExpiresWeb.district}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Input
-                            label="Tên Khách Hàng"
-                            id="name_cus"
-                            name="name_cus"
-                            value={cardExpiresWeb.name_cus}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
+                <div className="p-1">
+                    {/* <form className="flex flex-col col-span-2 gap-4 mt-2">
 
-                        <Input
-                            label="Ngày Làm"
-                            id="date_book"
-                            name="date_book"
-                            value={cardExpiresWeb.date_book}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                            disabled={disabledAllowedWeb}
-                        />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Input
-                            label="Chi"
-                            id="spending_total"
-                            name="spending_total"
-                            value={cardExpiresWeb.spending_total}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                        />
+                        <div className="flex items-center gap-4 ">
+                            <Input
+                                label="Yêu Cầu Công Việc"
+                                id="work_content"
+                                name="work_content"
+                                value={cardExpiresWeb.work_content}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+                            <Input
+                                label="Số Điện Thoại"
+                                id="phone_number"
+                                name="phone_number"
+                                value={cardExpiresWeb.phone_number}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Input
+                                label="Địa Chỉ"
+                                id="street"
+                                name="street"
+                                value={cardExpiresWeb.street}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+                            <Input
+                                label="Quận"
+                                id="district"
+                                name="district"
+                                value={cardExpiresWeb.district}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Input
+                                label="Tên Khách Hàng"
+                                id="name_cus"
+                                name="name_cus"
+                                value={cardExpiresWeb.name_cus}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
 
-                        <Input
-                            label="Thu"
-                            id="income_total"
-                            name="income_total"
-                            value={cardExpiresWeb.income_total}
-                            onChange={handleChangeWeb}
-                            containerProps={{
-                                className: "min-w-[72px]",
-                            }}
-                            className="shadow-none"
-                            disabled={disabledAllowedWeb}
+                            <Input
+                                label="Ngày Làm"
+                                id="date_book"
+                                name="date_book"
+                                value={cardExpiresWeb.date_book}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                                disabled={disabledAllowedWeb}
+                            />
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Input
+                                label="Chi"
+                                id="spending_total"
+                                name="spending_total"
+                                value={cardExpiresWeb.spending_total}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                            />
+
+                            <Input
+                                label="Thu"
+                                id="income_total"
+                                name="income_total"
+                                value={cardExpiresWeb.income_total}
+                                onChange={handleChangeWeb}
+                                containerProps={{
+                                    className: "min-w-[72px]",
+                                }}
+                                className="shadow-none"
+                                disabled={disabledAllowedWeb}
+                            />
+                        </div>
+                        <div className="grid gap-6">
+                            <Textarea
+                                label="Tình Trạng Thực Tế"
+                                className="shadow-none"
+                                id="real_note"
+                                name="real_note"
+                                onChange={(e) => setWorkNoteWeb(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-center justify-center ">
+                            <FileInput
+                                handleFileChange={handleFileChangeWeb}
+                                previewImages={previewImagesWeb}
+                            />
+                        </div>
+                    </form> */}
+                    <div className="p-4 mx-10 border border-black">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold ">Báo Giá</h2>
+                            <i className="flex flex-row justify-center">
+                                (V/v:{" "}
+                                {isEditing && editingField === "vv" ? (
+                                    <input
+                                        ref={inputRef}
+                                        id="vv"
+                                        value={changeKS.vv || ""}
+                                        name="vv"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                    />
+                                ) : (
+                                    <p
+                                        onClick={() => handleEdit("vv")}
+                                        className="text-center"
+                                    >
+                                        Vận chuyển
+                                    </p>
+                                )}
+                                )
+                            </i>
+                        </div>
+                        <div
+                            id="info_customer"
+                            className="flex flex-row justify-center gap-4 p-1"
+                        >
+                            <div className="p-2 border border-black rounded-md">
+                                <div>
+                                    <span className="pr-1 ">
+                                        Tên Khách hàng:
+                                    </span>
+                                    {isEditing &&
+                                    editingField === "name_cus" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="name_cus"
+                                            name="name_cus"
+                                            value={changeKS.name_cus || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("name_cus")
+                                            }
+                                        >
+                                            {changeKS.name_cus}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">Địa Chỉ:</span>
+                                    {isEditing && editingField === "street" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="street"
+                                            name="street"
+                                            value={changeKS.street || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() => handleEdit("street")}
+                                        >
+                                            {changeKS.street}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">Địa Chỉ:</span>
+                                    {isEditing &&
+                                    editingField === "district" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="district"
+                                            name="district"
+                                            value={changeKS.district || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("district")
+                                            }
+                                        >
+                                            {changeKS.district}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">
+                                        Số Điện Thoại:
+                                    </span>
+                                    {isEditing &&
+                                    editingField === "phone_number" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={changeKS.phone_number || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("phone_number")
+                                            }
+                                        >
+                                            {changeKS.phone_number}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="p-2 border border-black rounded-md">
+                                <div>
+                                    <span className="pr-1 ">
+                                        Tên Nhân Viên:
+                                    </span>
+                                    {isEditing &&
+                                    editingField === "name_cus" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="name_cus"
+                                            name="name_cus"
+                                            value={changeKS.name_cus || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("name_cus")
+                                            }
+                                        >
+                                            {changeKS.name_cus}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">Chức Vụ:</span>
+                                    {isEditing && editingField === "street" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="street"
+                                            name="street"
+                                            value={changeKS.street || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() => handleEdit("street")}
+                                        >
+                                            {changeKS.street}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">Email:</span>
+                                    {isEditing &&
+                                    editingField === "district" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="district"
+                                            name="district"
+                                            value={changeKS.district || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("district")
+                                            }
+                                        >
+                                            {changeKS.district}
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="pr-1 ">
+                                        Số Điện Thoại:
+                                    </span>
+                                    {isEditing &&
+                                    editingField === "phone_number" ? (
+                                        <input
+                                            ref={inputRef}
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={changeKS.phone_number || ""}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        />
+                                    ) : (
+                                        <span
+                                            className="font-bold text-black"
+                                            onClick={() =>
+                                                handleEdit("phone_number")
+                                            }
+                                        >
+                                            1800 8122 - {changeKS.phone_number}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            className={`container  p-1 mx-auto overflow-scroll`}
+                            style={{height: `${height}px`}}
+                        >
+                            <table className="w-full border border-collapse border-gray-400 shadow-lg table-fixed">
+                                <thead>
+                                    <tr>
+                                        <th className="w-10 px-1 py-2 text-gray-800 border border-gray-300">
+                                            STT
+                                        </th>
+                                        <th className="px-1 py-2 text-gray-800 border border-gray-300 w-fit">
+                                            Nội dung
+                                        </th>
+                                        <th className="w-20 px-4 py-2 text-gray-800 border border-gray-300">
+                                            Đơn vị tính
+                                        </th>
+                                        <th className="w-20 px-1 py-2 text-gray-800 border border-gray-300">
+                                            Số lượng
+                                        </th>
+                                        <th className="w-32 px-4 py-2 text-gray-800 border border-gray-300">
+                                            Đơn giá
+                                        </th>
+                                        <th className="w-32 px-1 py-2 text-gray-800 border border-gray-300">
+                                            Thành tiền
+                                        </th>
+                                        <th className="w-24 px-1 py-2 text-gray-800 border border-gray-300">
+                                            Ghi chú
+                                        </th>
+                                        <th className="w-24 px-1 py-2 text-gray-800 border border-gray-300">
+                                            VAT (%)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rows.map((row, index) => (
+                                        <tr
+                                            key={index}
+                                            className="hover:bg-gray-100"
+                                        >
+                                            <td className="p-1 text-center border border-gray-300 fit-content">
+                                                {row.stt}
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <textarea
+                                                    name="content"
+                                                    value={row.content}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="unit"
+                                                    value={row.unit}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="quantity"
+                                                    type="number"
+                                                    value={row.quantity}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="unitPrice"
+                                                    type="number"
+                                                    value={row.unitPrice}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 text-right border border-gray-300">
+                                                {formatCurrencyVND(row.total)}
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="note"
+                                                    value={row.note}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <select
+                                                    name="vat"
+                                                    value={row.vat}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="w-fit"
+                                                    style={{ width: "100%" }}
+                                                >
+                                                    <option value={0}>
+                                                        chưa VAT
+                                                    </option>
+                                                    <option value={8}>
+                                                        8%
+                                                    </option>
+                                                    <option value={10}>
+                                                        10%
+                                                    </option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <PlusCircleIcon
+                            className="w-6 h-6 cursor-pointer text-blue-gray-700"
+                            onClick={handleAddRow}
                         />
                     </div>
-                    <div className="grid gap-6">
-                        <Textarea
-                            label="Tình Trạng Thực Tế"
-                            className="shadow-none"
-                            id="real_note"
-                            name="real_note"
-                            onChange={(e) => setWorkNoteWeb(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex items-center justify-center ">
-                        <FileInput
-                            handleFileChange={handleFileChangeWeb}
-                            previewImages={previewImagesWeb}
-                        />
-                    </div>
-                </form>
+                </div>
             </DialogBody>
             <DialogFooter className="space-x-2">
                 <Button

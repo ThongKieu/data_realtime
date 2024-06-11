@@ -27,8 +27,8 @@ class QuotationController extends Controller
 
             foreach ($images as $image) {
                 $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                $image->move('assets/images/work_assignment/' . $re->id . '/quote', $name);
-                $seri_imag .= 'assets/images/work_assignment/' . $re->id . '/quote/' . $name . ',';
+                $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
+                $seri_imag .= 'assets/images/work_assignment/' . $re->id_work_has . '/quote/' . $name . ',';
             }
         }
         // tạo thông tin báo giá khảo sát

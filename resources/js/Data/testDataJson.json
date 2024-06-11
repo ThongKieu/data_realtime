@@ -1,0 +1,35 @@
+[
+    {
+        "quote_info": [
+            {
+                "content": "Sửa ML",
+                "unit": "cái",
+                "quality": "2",
+                "price": "1000000",
+                "total": "2000000",
+                "vat": "10",
+                "note": "Không sửa lỗi khác"
+            }
+        ]
+    },
+    {
+        "user_info": [
+            {
+                "name": "Trần Mạnh",
+                "email": "lienhe@thoviet.com.vn",
+                "potision": "NV Kinh Doanh",
+                "phone": "0912847218"
+            }
+        ]
+    },
+    {
+        "cus_info": [
+            {
+                "name": "Trần Mạnh",
+                "email": "lienhe@thoviet.com.vn",
+                "address": "NV Kinh Doanh",
+                "phone": "0912847218"
+            }
+        ]
+    }
+]

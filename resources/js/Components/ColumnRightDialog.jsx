@@ -231,11 +231,13 @@ const KhaoSatDialogWeb = ({
     disabledAllowedWeb,
     handleFileChangeWeb,
     previewImagesWeb,
+    auth,
 }) => {
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState(null);
     const [changeKS, setChangeQuota] = useState(cardExpiresWeb);
+    const [authQuota, setAuthQuota] = useState(auth);
     const handleEdit = (field) => {
         setIsEditing(true);
         setEditingField(field);
@@ -256,14 +258,15 @@ const KhaoSatDialogWeb = ({
 
     useEffect(() => {
         setChangeQuota(cardExpiresWeb);
-    }, [cardExpiresWeb]);
+        setAuthQuota(auth);
+    }, [cardExpiresWeb, auth]);
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
         }
     }, [isEditing]);
-    console.log(changeKS);
+    console.log(authQuota);
 
     // ----- thêm dòng trong bảng --------------/
 
@@ -305,10 +308,9 @@ const KhaoSatDialogWeb = ({
             return newCounter;
         });
     };
-    console.log(height);
     return (
         <Dialog open={openKSWeb} handler={handleOpenKSWeb} size="xxl">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between h-8 p-0 text-white bg-blue-gray-500">
                 <DialogHeader>Lịch Khảo Sát</DialogHeader>
                 <XMarkIcon
                     className="w-5 h-5 mr-3 cursor-pointer"
@@ -569,104 +571,47 @@ const KhaoSatDialogWeb = ({
                                     <span className="pr-1 ">
                                         Tên Nhân Viên:
                                     </span>
-                                    {isEditing &&
-                                    editingField === "name_cus" ? (
-                                        <input
-                                            ref={inputRef}
-                                            id="name_cus"
-                                            name="name_cus"
-                                            value={changeKS.name_cus || ""}
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
-                                        />
-                                    ) : (
-                                        <span
-                                            className="font-bold text-black"
-                                            onClick={() =>
-                                                handleEdit("name_cus")
-                                            }
-                                        >
-                                            {changeKS.name_cus}
-                                        </span>
-                                    )}
+                                    <span
+                                        id="name_Employ"
+                                        className="font-bold text-black"
+                                    >
+                                        {authQuota.user.name}
+                                    </span>
                                 </div>
                                 <div>
                                     <span className="pr-1 ">Chức Vụ:</span>
-                                    {isEditing && editingField === "street" ? (
-                                        <input
-                                            ref={inputRef}
-                                            id="street"
-                                            name="street"
-                                            value={changeKS.street || ""}
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
-                                        />
-                                    ) : (
-                                        <span
-                                            className="font-bold text-black"
-                                            onClick={() => handleEdit("street")}
-                                        >
-                                            {changeKS.street}
-                                        </span>
-                                    )}
+                                    <span
+                                        id="position_Employ"
+                                        className="font-bold text-black"
+                                    >
+                                        {authQuota.user.position}
+                                    </span>
                                 </div>
                                 <div>
                                     <span className="pr-1 ">Email:</span>
-                                    {isEditing &&
-                                    editingField === "district" ? (
-                                        <input
-                                            ref={inputRef}
-                                            id="district"
-                                            name="district"
-                                            value={changeKS.district || ""}
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
-                                        />
-                                    ) : (
-                                        <span
-                                            className="font-bold text-black"
-                                            onClick={() =>
-                                                handleEdit("district")
-                                            }
-                                        >
-                                            {changeKS.district}
-                                        </span>
-                                    )}
+                                    <span
+                                        id="email_Employ"
+                                        className="font-bold text-black"
+                                    >
+                                        lienhe@thoviet.com.vn
+                                    </span>
                                 </div>
                                 <div>
                                     <span className="pr-1 ">
                                         Số Điện Thoại:
                                     </span>
-                                    {isEditing &&
-                                    editingField === "phone_number" ? (
-                                        <input
-                                            ref={inputRef}
-                                            id="phone_number"
-                                            name="phone_number"
-                                            value={changeKS.phone_number || ""}
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            className="text-center bg-white border-none rounded-none outline-none w-[100px]"
-                                        />
-                                    ) : (
-                                        <span
-                                            className="font-bold text-black"
-                                            onClick={() =>
-                                                handleEdit("phone_number")
-                                            }
-                                        >
-                                            1800 8122 - {changeKS.phone_number}
-                                        </span>
-                                    )}
+                                    <span
+                                        id="phone_Employ"
+                                        className="font-bold text-black"
+                                    >
+                                        1800 8122 - {authQuota.user.phone}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div
                             className={`container  p-1 mx-auto overflow-scroll`}
-                            style={{height: `${height}px`}}
+                            style={{ height: `${height}px` }}
                         >
                             <table className="w-full border border-collapse border-gray-400 shadow-lg table-fixed">
                                 <thead>
@@ -809,6 +754,10 @@ const KhaoSatDialogWeb = ({
                                     ))}
                                 </tbody>
                             </table>
+                            <div id="note_quota">
+                                <h2>*Ghi Chú</h2>
+
+                            </div>
                         </div>
                         <PlusCircleIcon
                             className="w-6 h-6 cursor-pointer text-blue-gray-700"

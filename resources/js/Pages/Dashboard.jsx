@@ -2172,6 +2172,7 @@ const Dashboard = ({ auth }) => {
                                 )
                             }
                             previewImagesWeb={previewImgKS}
+                            auth={auth}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <SpendingDialog

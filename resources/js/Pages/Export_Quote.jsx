@@ -3,7 +3,10 @@ import { Button } from "@material-tailwind/react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { useWindowSize } from "@/Core/Resize";
 import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
-const Export_Quote = ({ cardExpiresWeb, auth }) => {
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from "@inertiajs/react";
+const Export_Quote = ({ auth }) => {
+    const [dataLocation, setDataLocation] = useState("");
     const data_unit = [
         { id_unit: "Bộ", unit_quote: "Bộ" },
         { id_unit: "Cái", unit_quote: "Cái" },
@@ -20,12 +23,9 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState(null);
-    const [changeQuote, setChangeQuote] = useState({
-        ...cardExpiresWeb,
-        email_cus: "abnbbb",
-    });
+    const [changeQuote, setChangeQuote] = useState(dataLocation);
     const [authQuote, setAuthQuote] = useState(auth);
-    const { width, height } = useWindowSize(380);
+    const { width, height } = useWindowSize(200);
     const [counter, setCounter] = useState(1);
     const [rows, setRows] = useState([createEmptyRow(1)]);
     const [noteContent, setNoteContent] = useState([]);
@@ -206,11 +206,16 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
             console.error("Error:", error);
         }
     };
-
     useEffect(() => {
-        setChangeQuote(cardExpiresWeb);
+        const queryParams = new URLSearchParams(window.location.search);
+        const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
+        setDataLocation(data);
+        // Sử dụng dữ liệu được truyền tới từ trang dashboard
+    }, []);
+    useEffect(() => {
+        setChangeQuote(dataLocation);
         setAuthQuote(auth);
-    }, [cardExpiresWeb, auth]);
+    }, [auth, dataLocation]);
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -219,8 +224,9 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
     }, [isEditing]);
 
     return (
-        <div className="flex items-center justify-between h-8 p-0 text-white bg-blue-gray-500">
-            <div className="p-1">
+        <AuthenticatedLayout user={auth.user}>
+            <Head title="Báo Giá" />
+            <div className="lg:w-[60%] md:w-[90%] m-auto p-1">
                 <div className="p-4 mx-10 border border-black">
                     <div className="text-center">
                         <h2 className="text-2xl font-bold ">Báo Giá</h2>
@@ -344,7 +350,7 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
                                         ref={inputRef}
                                         id="email_cus"
                                         name="email_cus"
-                                        value={changeQuote.email_cus || "sdsf"}
+                                        value={changeQuote.email_cus || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         className="text-center bg-white border-none rounded-none outline-none w-[100px]"
@@ -354,7 +360,8 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
                                         className="font-bold text-black"
                                         onClick={() => handleEdit("email_cus")}
                                     >
-                                        {changeQuote.email_cus}
+                                        Email KH
+                                        {/* {changeQuote.email_cus} */}
                                     </span>
                                 )}
                             </div>
@@ -633,12 +640,16 @@ const Export_Quote = ({ cardExpiresWeb, auth }) => {
                         </div>
                     </div>
                 </div>
+                <Button
+                    className="mt-5 mr-10 float-end"
+                    variant="gradient"
+                    color="red"
+                    onClick={handleSubmit}
+                >
+                    Xác nhận
+                </Button>
             </div>
-
-            <Button variant="gradient" color="red" onClick={handleSubmit}>
-                Xác nhận
-            </Button>
-        </div>
+        </AuthenticatedLayout>
     );
 };
 

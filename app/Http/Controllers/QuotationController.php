@@ -102,10 +102,11 @@ class QuotationController extends Controller
     // VP trực tiếp làm báo giá mà k cần thợ ks
     public function adminQuote(Request $re)
     {
-        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","quote_note":"Không sửa lỗi khác",}]';
+        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
         // $user_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","potision":"NV Kinh Doanh","phone":"0912847218"}]';
         // $cus_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","address":"NV Kinh Doanh","phone":"0912847218"}]';
         // $quote_note=[{"id":"1","note_content":"Khong bao hanh","id":"2","note_content":"Tinh theo thucte thi cong"}];
+        dd($re->all());
         $quote_total_price = $re->quote_total_price;
         // lấy hình ảnh khảo sát thực tế nếu có
         $seri_imag = '';

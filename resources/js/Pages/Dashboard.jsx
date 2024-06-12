@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head  } from "@inertiajs/react";
 import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
 import Divider from "@mui/material/Divider";
@@ -65,7 +65,7 @@ import {
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import {useWindowSize} from "@/Core/Resize";
+import { useWindowSize } from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 import { useSocket } from "@/Utils/SocketContext";
@@ -1945,7 +1945,11 @@ const Dashboard = ({ auth }) => {
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
-                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}  ${params.row.check_in ==1 ?"animate-ping": "" }`}
+                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}  ${
+                                                        params.row.check_in == 1
+                                                            ? "animate-ping"
+                                                            : ""
+                                                    }`}
                                                 />
                                             </MenuHandler>
                                             <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
@@ -2020,9 +2024,9 @@ const Dashboard = ({ auth }) => {
                                                     >
                                                         <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={() =>
-                                                                handleOpenKSWebWithDisable()
-                                                            }
+                                                            onClick={() => {
+                                                                handleOpenKSWebWithDisable();
+                                                            }}
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>

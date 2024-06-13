@@ -24,12 +24,12 @@ class QuotationController extends Controller
         if(count($quote) == 0)
         {
             // Thợ khảo sát báo giá báo cáo bằng hình chụp, tổng giá tiền
-            $quote_work_has = WorksAssignment::where('id','=',$id)->get( 'id_cus',
+            $quote_work_has = WorksAssignment::where('id','=',$id)->get([ 'id_cus',
             'id_worker',
             'id_phu',
             'real_note',
             'income_total',
-            'bill_imag',
+            'bill_imag']
             );
             return response()->json(['data'=>$quote_work_has,'ac'=>2]);
         }

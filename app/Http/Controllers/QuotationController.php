@@ -30,7 +30,7 @@ class QuotationController extends Controller
         $seri_imag = '';
         if ($re->hasFile('image_work')) {
             $images = $re->file('image_work');
-            
+
             foreach ($images as $image) {
                 $name = $re->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                 $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
@@ -67,7 +67,7 @@ class QuotationController extends Controller
                 $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' .$time. '"}]';
             }
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
-            // Thêm dữ liệu vào bảng Báo giá    
+            // Thêm dữ liệu vào bảng Báo giá
             // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
             $new  = new Quotation([
                 'id_work_has' => $re->id_work_has,
@@ -92,12 +92,12 @@ class QuotationController extends Controller
             // Lấy thông tin note
             $note = Worker::where('id', '=', $re->id_worker)->value('worker_full_name');
             $note .= ' - Đã KS';
-            // cập nhật thông tin bảng 
+            // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
            $new = Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note]);
         }
 
-        //trả dữ liệu báo giá khảo sát  
+        //trả dữ liệu báo giá khảo sát
         if ($new) {
             return 1;
         } else return 0;
@@ -106,10 +106,11 @@ class QuotationController extends Controller
     // VP trực tiếp làm báo giá mà k cần thợ ks
     public function adminQuote(Request $re)
     {
-        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","quote_note":"Không sửa lỗi khác",}]';
+        // $quote_info = '[{"content":"Sửa ML","unit":"cái","quality":"2","price":"1000000","total":"2000000","vat":"10","note":"Không sửa lỗi khác",}]';
         // $user_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","potision":"NV Kinh Doanh","phone":"0912847218"}]';
         // $cus_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","address":"NV Kinh Doanh","phone":"0912847218"}]';
         // $quote_note=[{"id":"1","note_content":"Khong bao hanh","id":"2","note_content":"Tinh theo thucte thi cong"}];
+        dd($re->all());
         $quote_total_price = $re->quote_total_price;
         // lấy hình ảnh khảo sát thực tế nếu có
         $seri_imag = '';
@@ -143,7 +144,7 @@ class QuotationController extends Controller
         WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
         if ($new) {
             return 1;
-        } 
+        }
         else return 0;
     }
     public function generatePDF(Request $re)

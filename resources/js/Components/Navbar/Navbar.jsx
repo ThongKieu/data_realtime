@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo,useContext } from "react";
 import {
     Navbar,
     Collapse,
@@ -38,6 +38,8 @@ import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 import {useWindowSize} from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
 import { formatCurrencyVND } from "../ColumnRightDialog";
+import { AppContext } from "@/Utils/AppContext";
+
 // profile menu component
 function ProfileMenu({ propauthprofile, socket }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -347,6 +349,7 @@ function NavbarDefault({ propauth, check }) {
         Array(jobs.length).fill(false)
     );
     const socket = useSocket();
+    const {sharedData} = useContext(AppContext);
     useEffect(() => {
         fetchDelete(check);
         getDataWorkerSales(check);
@@ -354,7 +357,6 @@ function NavbarDefault({ propauth, check }) {
     useEffect(() => {
         setSocketCard(socket);
     }, [check, socket]);
-
     useEffect(() => {
         if (socket) {
             socket.on("sendAddWorkTo_Client", (data) => {

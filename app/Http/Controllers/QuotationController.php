@@ -106,7 +106,7 @@ class QuotationController extends Controller
         // $user_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","potision":"NV Kinh Doanh","phone":"0912847218"}]';
         // $cus_info = '[{"name":"Trần Mạnh","email":"lienhe@thoviet.com.vn","address":"NV Kinh Doanh","phone":"0912847218"}]';
         // $quote_note=[{"id":"1","note_content":"Khong bao hanh","id":"2","note_content":"Tinh theo thucte thi cong"}];
-        dd($re->all());
+        // dd($re->all());
         $quote_total_price = $re->quote_total_price;
         // lấy hình ảnh khảo sát thực tế nếu có
         $seri_imag = '';

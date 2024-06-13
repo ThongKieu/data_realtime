@@ -27,6 +27,7 @@ import FileInput from "./FileInputImage";
 import {useWindowSize} from "@/Core/Resize";
 import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
 import HistoryDialog from "./HistoryDialog";
+import { handleBaoGiaClick } from "./HandleEvent/Handles";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -648,7 +649,7 @@ function AdminCheckDialog({
                                                 src={`${host}${item}`}
                                                 alt="nature image"
                                                 className="p-2 cursor-pointer"
-                                                onClick={handleOpenImage}
+                                                onClick={()=> handleBaoGiaClick(`hinhPT ${cardExpires.worker_code}-${cardExpires.worker_full_name}`, item)}
                                             />
                                             <Dialog
                                                 open={openImage}

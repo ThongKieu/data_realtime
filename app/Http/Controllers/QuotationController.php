@@ -17,7 +17,7 @@ class QuotationController extends Controller
     //
     public function getByWorkHas(Request $request)
     {
-        
+
     }
     public function create(Request $re)
     {
@@ -94,7 +94,7 @@ class QuotationController extends Controller
             $note .= ' - Đã KS';
             // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
-           $new = Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note]);
+           $new = Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note,'status_cus'=>0]);
         }
 
         //trả dữ liệu báo giá khảo sát
@@ -154,7 +154,7 @@ class QuotationController extends Controller
                 'date' => date('m/d/Y'),
                 'quote_info' => json_decode($quote)
             ];
-       
+
         if ($data == null) {
             $data = ['data' => 'Null'];
         }

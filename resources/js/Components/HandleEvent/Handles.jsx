@@ -36,3 +36,19 @@ export const copyTextToClipboard = (text) => {
         console.log("Không có dữ liệu để sao chép.");
     }
 };
+export const handleBaoGiaClick = (data, url) => {
+    if (data || data != undefined || data != "" || data != null) {
+        const dataToSend = JSON.stringify(data);
+        const newTab = window.open(
+            `${url}?data=${encodeURIComponent(dataToSend)}`,
+            "_blank"
+        );
+        if (newTab) {
+            newTab.focus();
+        } else {
+            alert(
+                "Trình duyệt của bạn đã chặn cửa sổ popup. Vui lòng cho phép hiển thị popup."
+            );
+        }
+    }
+};

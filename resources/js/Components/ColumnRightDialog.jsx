@@ -20,6 +20,7 @@ import FileInput from "./FileInputImage";
 import { ARRAY_ACTION } from "@/Data/Table/Data";
 import { useWindowSize } from "@/Core/Resize";
 import HistoryDialog from "./HistoryDialog";
+import { handleBaoGiaClick } from "./HandleEvent/Handles";
 const formatNumberToVNDk = (number) => {
     const k = 1000;
     const vndSuffix = "k";
@@ -585,12 +586,15 @@ const KhaoSatDialogWeb = ({
                                 </div>
                                 <div>
                                     <span className="pr-1 ">Email:</span>
-                                    {isEditing && editingField === "email_cus" ? (
+                                    {isEditing &&
+                                    editingField === "email_cus" ? (
                                         <input
                                             ref={inputRef}
                                             id="email_cus"
                                             name="email_cus"
-                                            value={changeQuote.email_cus || "sdsf"}
+                                            value={
+                                                changeQuote.email_cus || "sdsf"
+                                            }
                                             onBlur={handleBlur}
                                             onChange={handleChange}
                                             className="text-center bg-white border-none rounded-none outline-none w-[100px]"
@@ -598,7 +602,9 @@ const KhaoSatDialogWeb = ({
                                     ) : (
                                         <span
                                             className="font-bold text-black"
-                                            onClick={() => handleEdit("email_cus")}
+                                            onClick={() =>
+                                                handleEdit("email_cus")
+                                            }
                                         >
                                             {changeQuote.email_cus}
                                         </span>
@@ -952,6 +958,7 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
         setSelectedImage(null);
         setScale(1);
     };
+
     const processedDataKS = processSeriImages(params.bill_imag);
     useEffect(() => {
         if (selectedImage) {
@@ -1036,51 +1043,36 @@ const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
                                         src={item}
                                         alt={`hinhKS_${index}`}
                                         className="w-40 h-40"
-                                        onClick={() => {
-                                            setSelectedImage(item);
-                                            setScale(1);
-                                        }}
+                                        onClick={() =>
+                                            handleBaoGiaClick(
+                                                `hinhKS_${
+                                                    params.street
+                                                        ? params.street
+                                                        : params.district
+                                                }`,
+                                                item
+                                            )
+                                        }
                                     />
                                 ))}
-                            {selectedImage && (
-                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-                                    <div className="relative">
-                                        <button
-                                            className="absolute z-40 text-2xl text-white top-2 right-2"
-                                            onClick={handleClose}
-                                        >
-                                            &times;
-                                        </button>
-                                        <div className="absolute flex flex-col space-y-2 top-2 left-2">
-                                            <button
-                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
-                                                onClick={handleZoomIn}
-                                            >
-                                                +
-                                            </button>
-                                            <button
-                                                className="z-40 px-2 py-1 text-red-500 bg-blue-500 rounded"
-                                                onClick={handleZoomOut}
-                                            >
-                                                -
-                                            </button>
-                                        </div>
-                                        <img
-                                            src={selectedImage}
-                                            className="max-w-full max-h-full"
-                                            style={{
-                                                transform: `scale(${scale})`,
-                                            }}
-                                            alt="Selected"
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </span>
                     )}
                 </div>
             </DialogBody>
             <DialogFooter className="space-x-2">
+                <Button
+                    variant="outlined"
+                    className="px-5 py-2"
+                    color="blue"
+                    onClick={() =>
+                        handleBaoGiaClick(
+                            { ...params, email: "" },
+                            "/export-quote"
+                        )
+                    }
+                >
+                    Chỉnh sửa báo giá
+                </Button>
                 <Button
                     variant="outlined"
                     className="px-5 py-2"

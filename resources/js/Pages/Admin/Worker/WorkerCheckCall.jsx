@@ -423,7 +423,7 @@ function WorkerCheckCall() {
                                     </Card>
                                 </TabPanel>
                                 <TabPanel key="cty" value="cty">
-                                    <Card className="w-full h-full">
+                                    <Card className="w-full h-full overflow-scroll">
                                         <Box
                                             sx={{
                                                 height: { height },

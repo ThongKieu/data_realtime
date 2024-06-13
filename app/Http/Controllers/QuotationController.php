@@ -15,6 +15,10 @@ use Intervention\Image\Colors\Rgb\Channels\Red;
 class QuotationController extends Controller
 {
     //
+    public function getByWorkHas(Request $request)
+    {
+        
+    }
     public function create(Request $re)
     {
         // dd($re->all());
@@ -129,6 +133,7 @@ class QuotationController extends Controller
             'quote_user_info' => $re->quote_user_info,
             'quote_total_price' => $quote_total_price,
             'quote_note'=>$re->quote_note,
+            'quote_image' =>$seri_imag,
             'vat' => $re->vat
         ]);
         $new->save();
@@ -144,32 +149,17 @@ class QuotationController extends Controller
     }
     public function generatePDF(Request $re)
     {
-        // $quote = Quotation::where('id', '=', 1)->get();
+        $quote = Quotation::where('id', '=', 1)->get();
+        $data = [
+                'date' => date('m/d/Y'),
+                'quote_info' => json_decode($quote)
+            ];
+       
+        if ($data == null) {
+            $data = ['data' => 'Null'];
+        }
 
-        // foreach ($quote as $item) {
-        //     $info_khach = WorksAssignment::where('id', '=', $item->id_work_has)->value('id_cus');
-        //     $info_khach_tbCus = Work::where('id', '=', $info_khach)->get([
-        //         'work_content',
-        //         'name_cus',
-        //         'phone_number',
-        //         'street',
-        //         'district',
-        //     ]);
-            $user = User::where('id', '>', 1)->get(['name', 'phone', 'email', 'position']);
-        //     $data = [
-        //         'info_cus' =>   json_decode($info_khach_tbCus),
-        //         'date' => date('m/d/Y'),
-        //         'user' => json_decode($user),
-        //         'quote_info' => json_decode($item->quote_info)
-        //     ];
-        // }
-        // // dd($data);
-        // if ($data == null) {
-        //     $data = ['data' => 'Null'];
-        // }
-
-        // $users = User::all();
-        $pdf = FacadePdf::loadView('pdf.pdftemplate', array('data' =>  $user))
+        $pdf = FacadePdf::loadView('pdf.pdftemplate', array('data' =>  $data))
             ->setOption(['dpi' => 150, 'defaultFont' => ' Times New Roman, Times, serif',])
             ->setPaper('a4', 'vertical');
         return $pdf->stream('users-lists.pdf');

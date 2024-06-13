@@ -98,6 +98,7 @@ Route::prefix('web')->group(function () {
     Route::prefix('worker')->group(function () {
         Route::get('all-workers', 'App\Http\Controllers\Api\Web\WorkerController@getAllWorkers');
         Route::get('all-check-call-workers', 'App\Http\Controllers\Api\Web\CheckCallWorkerController@getAllCheckCallWorkers');
+        Route::get('all-check-call-workers2', 'App\Http\Controllers\Api\Web\CheckCallWorkerController@getWorkerDetails');
     });
     //products
     Route::prefix('product')->group(function () {
@@ -147,6 +148,8 @@ Route::prefix('web')->group(function () {
 
     Route::prefix('quotation')->group(function()
     {
+        Route::get('insert','App\Http\Controllers\QuotationController@getByWorkHas');
+
         Route::post('insert','App\Http\Controllers\QuotationController@create');
         Route::post('insert-admin','App\Http\Controllers\QuotationController@adminQuote');
     }

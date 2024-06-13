@@ -17,8 +17,26 @@ class QuotationController extends Controller
     //
     public function getByWorkHas(Request $request)
     {
+        $id = $request->id_work_has;
 
+        $quote = Quotation::where('id_work_has','=',$id)->get();
+        //TH1 : Không có báo giá trường trong bảng báo giá
+        if(count($quote) == 0)
+        {
+            // Thợ khảo sát báo giá báo cáo bằng hình chụp, tổng giá tiền
+            $quote_work_has = WorksAssignment::where('id','=',$id)->get( 'id_cus',
+            'id_worker',
+            'id_phu',
+            'real_note',
+            'income_total',
+            'bill_imag',
+            );
+            return response()->json(['data'=>$quote_work_has,'ac'=>2]);
+        }
+        else
+            return response()->json(['data'=>$quote,'ac'=>1]);
     }
+
     public function create(Request $re)
     {
         // dd($re->all());
@@ -91,6 +109,7 @@ class QuotationController extends Controller
             // dd($his_work);
             // Lấy thông tin note
             $note = Worker::where('id', '=', $re->id_worker)->value('worker_full_name');
+            // $note = Work::where('id', '=', $re->id_cus)->update(['status_cus'=>0]);
             $note .= ' - Đã KS';
             // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
@@ -146,6 +165,10 @@ class QuotationController extends Controller
             return 1;
         }
         else return 0;
+    }
+    public function update(Request $request)
+    {
+
     }
     public function generatePDF(Request $re)
     {

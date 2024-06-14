@@ -26,12 +26,13 @@ class QuotationController extends Controller
             $images = $re->file('image_work');
 
             foreach ($images as $image) {
-                $name = $re->id . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $name = $re->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                 $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
                 $seri_imag .= 'assets/images/work_assignment/' . $re->id_work_has . '/quote/' . $name . ',';
             }
         }
         // tạo thông tin báo giá khảo sát
+        //  ac 1 tạo thông tin trực tiếp trên bảng work_assignments, ac 2 tạo thông tin trên bảng quotations, ac 3 trả thông tin cho bảng work
         // dd($seri_imag);
         if ($ac == 1) {
             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
@@ -79,22 +80,24 @@ class QuotationController extends Controller
             ]);
         } elseif ($ac == 3) {
             // Thợ ks mà không làm được cty gửi cho thợ khác báo
-            // Yêu cầu có id_cus, id_work_has, work_note, imag_path,id_worker
-            $his_work = '"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"tra","time":"' . $time . '"';
+            // Yêu cầu có id_cus, id_work_has, work_note, image_work,id_worker
+            $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
+            // dd($his_work);
             // Lấy thông tin note
             $note = Worker::where('id', '=', $re->id_worker)->value('worker_full_name');
-            $note .= 'Đã KS';
+            $note .= ' - Đã KS';
             // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
-            Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note]);
+            $new = Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note]);
+
         }
 
         //trả dữ liệu báo giá khảo sát
         if ($new) {
             return 1;
         } else {
-            return 0;
+            return -1;
         }}
 
     // VP trực tiếp làm báo giá mà k cần thợ ks

@@ -70,6 +70,23 @@
         font-weight: 700;
         text-align: right;
     }
+    .w-4
+    {
+        width: 400px;
+    }
+    .w-1
+    {
+        width: 80px;
+    }
+    .w-1-5
+    {
+        width: 140px;
+    }
+    .w-2
+    {
+        width: 180px;
+    }
+    
 </style>
 
 <body>
@@ -94,28 +111,40 @@
         </section>
         <section style="position: relative; margin-top: -10px">
             <div>
-                <div class="info-quote" style="width: 500px;">
-                    <p><b>Người liên hệ: Quý Khách hàng</b><br>
-                        Địa chỉ : <br>
-                        Email: <br>
-                        ĐT : 0347578964 <br>
-                    </p>
-                </div>
-                <div class="info-quote" style="width: 500px; position: absolute; top:0; right: 0;">
-                    <p><b>Từ: Ngô Văn Thông</b><br>
-                        Chức vụ : Phó Phòng Kinh Doanh<br>
-                        Email: lienhe@thoviet.com.vn<br>
-                        ĐT : 0914439118 - 0912747218<br>
-                    </p>
-                </div>
+                {{ $data['date'] }}
+                @foreach ($data['quote_info'] as $quote)
+                    <div class="info-quote" style="width: 500px;">
+                        @foreach (json_decode($quote->quote_cus_info) as $customer)
+                            <p><b>Người liên hệ: {{ $customer->name ? $customer->name : 'Quý Khách Hàng' }}</b><br>
+                                Địa chỉ: {{ $customer->address ? $customer->address : '-' }}<br>
+                                Email: {{ $customer->email ? $customer->email : '-' }}<br>
+                                Điện thoại: {{ $customer->phone ? $customer->phone : '-' }}<br>
+                            </p>
+                        @endforeach
+                    </div>
+                    <div class="info-quote" style="width: 500px; position: absolute; top:0; right: 0;">
+
+                        @foreach (json_decode($quote->quote_user_info) as $user)
+                            <p><b>Từ: {{ $user->name ? $user->name : 'Công Ty Thợ Việt' }}</b><br>
+                                Chức vụ : {{ $user->potision ? $user->potision : 'NV Kinh Doanh' }}<br>
+                                Email: lienhe@thoviet.com.vn<br>
+                                ĐT : 18008122 - {{ $user->phone ? $user->phone : '0915.269.839' }}<br>
+                            </p>
+                        @endforeach
+                    </div>
             </div>
             <div style="margin-top: -20px;">
-                <p style="font-style: bold;  padding:-10px 0;  margin: -10px 0;"> <strong>THỢ VIỆT NGƯỜI THỢ CỦA GIA ĐÌNH VIỆT SINCE 2011</strong></p>
-                <p style="font-style: bold; padding:-10px 0;  margin: -10px 0;"><strong> DỊCH VỤ SỬA NHÀ - LẮP ĐẶT - SỬA CHỮA ĐIỆN NƯỚC - ĐIỆN LẠNH - ĐỒ GỖ</strong></p>
-                <p style="padding:-10px 15px;  margin: -10px 0; ">Công ty Thợ Việt rất vui khi nhận được yêu cầu của Quý công ty.</p>
-                <p style="padding:-10px 15px;  margin: -10px 0; ">Chúng tôi hân hạnh gửi đến Quý Công ty bảng báo giá sau:</p>
+                <p style="font-style: bold;  padding:-10px 0;  margin: -10px 0;"> <strong>THỢ VIỆT NGƯỜI THỢ CỦA GIA
+                        ĐÌNH VIỆT SINCE 2011</strong></p>
+                <p style="font-style: bold; padding:-10px 0;  margin: -10px 0;"><strong> DỊCH VỤ SỬA NHÀ - LẮP ĐẶT - SỬA
+                        CHỮA ĐIỆN NƯỚC - ĐIỆN LẠNH - ĐỒ GỖ</strong></p>
+                <p style="padding:-10px 15px;  margin: -10px 0; ">Công ty Thợ Việt rất vui khi nhận được yêu cầu của Quý
+                    công ty.</p>
+                <p style="padding:-10px 15px;  margin: -10px 0; ">Chúng tôi hân hạnh gửi đến Quý Công ty bảng báo giá
+                    sau:</p>
             </div>
             <div class="col-12" style="max-width: 98%; margin: auto">
+
                 <table class="table table-bordered tb-c">
                     <thead>
                         <tr>
@@ -129,54 +158,64 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>
-                                THỢ VIỆT NGƯỜI THỢ CỦA GIA ĐÌNH VIỆT SINCE 2011<br>
-                                DỊCH VỤ SỬA NHÀ - LẮP ĐẶT - SỬA CHỮA ĐIỆN NƯỚC - ĐIỆN LẠNH - ĐỒ GỖ<br>
-                                Công ty Thợ Việt rất vui khi nhận được yêu cầu của Quý công ty.<br>
-                                Chúng tôi hân hạnh gửi đến Quý Công ty bảng báo giá sau:<br>
-                            </td>
-                            <td>Cái</td>
-                            <td>1</td>
-                            <td>500,000</td>
-                            <td>5,000,000</td>
-                            <td></td>
-                        </tr>
-                      
+                        @php
+                            $price = 0;
+                            $total_price=0; // Khởi tạo giá trị ban đầu
+                        @endphp
+                        @foreach (json_decode($quote->quote_info) as $quote_i)
+                            <tr>
+                                <td class="td-c-m">1</td>
+                                <td class="td-c-m w-4">{{ $quote_i->content }}</td>
+                                <td class="td-c-m w-1">{{ $quote_i->unit }}</td>
+                                <td class="td-c-m w-1">{{ $quote_i->quality }}</td>
+                                <td class="td-c-e2 w-1-5">{{ number_format($quote_i->price, 2) }}</td>
+                                <td class=" td-c-e2 w-1-5">{{ number_format($quote_i->price, 2) }}</td>
+                                <td class=" td-c-e w-1-5" >{{ $quote_i->note }}</td> <!-- để lấp cột cuối -->
+                            </tr>
+                            @php
+                                $price += $quote_i->total; // Thêm giá của mục hiện tại vào tổng
+
+                                $total_price +=$price;
+                            @endphp
+                        @endforeach
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Cộng</td>
-                            <td colspan="2" class="td-c-e">500,000 đ</td>
+                            <td colspan="2" class="td-c-e">{{number_format($price, 0)}}</td>
                             <td></td>
                         </tr>
-                        <tr>
-                            <td colspan="2"></td>
-                            <td colspan="2" class="td-c-m">Thuế GTGT</td>
-                            <td colspan="2" class="td-c-e">50,000 đ</td>
-                            <td></td>
-                        </tr>
+                        @if ($quote->vat == 1)
+                            <tr>
+                                <td colspan="2"></td>
+                                <td colspan="2" class="td-c-m">Thuế GTGT</td>
+                                <td colspan="2" class="td-c-e">{{ $quote->vat }}</td>
+                                <td></td>
+                            </tr>
+                        @endif
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Tổng Cộng</td>
-                            <td colspan="2" class="td-c-e">550,000 đ</td>
+                            <td colspan="2" class="td-c-e">{{number_format($total_price, 0)}}</td>
                             <td></td>
                         </tr>
                     </tbody>
                 </table>
 
                 <ul>
+
                     <li style="list-style: none; padding:0px">
                         <b>* Ghi chú:</b>
                     </li>
-                    <li>
-                        Khối lượng báo theo thực tế thi công.
-                    </li>
-                    <li>
-                        Đơn giá chưa bao gồm VAT.
-                    </li>
+
+                    @foreach (json_decode($quote->quote_note) as $note)
+                        <li>
+                            {{ $note->note_content }}
+                        </li>
+                    @endforeach
+
                 </ul>
             </div>
+            @endforeach
         </section>
         <section style="position: relative;">
             <div style="position: absolute; left: 10%">

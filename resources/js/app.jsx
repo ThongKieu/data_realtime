@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SocketProvider } from "./Utils/SocketContext";
+import { AppProvider } from "./Utils/AppContext";
 const queryClient = new QueryClient();
 const appName =
     import.meta.env.VITE_APP_NAME || "Công Ty TNHH Dịch Vụ Kỹ Thuật Thợ Việt";
@@ -24,7 +25,9 @@ createInertiaApp({
         root.render(
             <QueryClientProvider client={queryClient}>
                 <SocketProvider>
-                    <App {...props} key={index} />
+                    <AppProvider>
+                        <App {...props} key={index} />
+                    </AppProvider>
                     <ToastContainer />
                 </SocketProvider>
             </QueryClientProvider>

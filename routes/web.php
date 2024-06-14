@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/lich-huy', function () {return Inertia::render('CancelBooking');})->name('CancelBooking');
     Route::get('/test', function () {return Inertia::render('test');})->name('test');
     Route::get('/quoteflow', function () {return Inertia::render('QuoteFlow');})->name('quoteflow');
+    Route::get('/export-quote', function () {return Inertia::render('Export_Quote');})->name('Export_Quote');
     Route::get('generate-pdf', 'App\Http\Controllers\QuotationController@generatePDF');
     Route::get('generate-pdf2', function () {return view('pdf.pdftemplate');});
 

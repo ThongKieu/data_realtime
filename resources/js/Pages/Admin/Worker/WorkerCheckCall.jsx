@@ -154,10 +154,7 @@ function WorkerCheckCall() {
             setFile(null);
         }
     };
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
+
     const [selectedWorker, setSelectedWorker] = useState("");
     const [selectedMonth, setSelectedMonth] = useState("");
 
@@ -404,7 +401,7 @@ function WorkerCheckCall() {
                             <Divider />
                             <TabsBody>
                                 <TabPanel key="sim" value="sim">
-                                    <Card className="w-full h-full">
+                                    <Card className="w-full h-full overflow-scroll">
                                         <Box
                                             sx={{
                                                 height: { height },
@@ -426,7 +423,7 @@ function WorkerCheckCall() {
                                     </Card>
                                 </TabPanel>
                                 <TabPanel key="cty" value="cty">
-                                    <Card className="w-full h-full">
+                                    <Card className="w-full h-full overflow-scroll">
                                         <Box
                                             sx={{
                                                 height: { height },

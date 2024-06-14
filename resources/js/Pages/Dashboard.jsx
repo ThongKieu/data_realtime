@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Select from "react-select";
 import Divider from "@mui/material/Divider";
 // -------
@@ -65,11 +65,12 @@ import {
 } from "@/Components/ColumnRightDialog";
 import { host } from "@/Utils/UrlApi";
 import { TABLE_HEAD_RIGHT, TABLE_HEAD_LEFT } from "@/Data/Table/Data";
-import {useWindowSize} from "@/Core/Resize";
+import { useWindowSize } from "@/Core/Resize";
 import SpendingDialog from "@/Components/SpendingDialog";
 import KindWorker_ForWork from "@/Components/KindWorker_ForWork";
 import { useSocket } from "@/Utils/SocketContext";
 import HistoryDialog from "@/Components/HistoryDialog";
+import { AppContext } from "@/Utils/AppContext";
 // ----
 
 const Dashboard = ({ auth }) => {
@@ -92,6 +93,8 @@ const Dashboard = ({ auth }) => {
     const [userId, setSetUserId] = useState(0);
 
     const socket = useSocket();
+    const { setSharedData } = useContext(AppContext);
+
     useEffect(() => {
         const handleBeforeUnload = (event) => {
             const confirmationMessage =
@@ -112,6 +115,9 @@ const Dashboard = ({ auth }) => {
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
     }, [selectedDate]);
+    useEffect(() => {
+        setSharedData({workData:workData_Work,workData_As:workData_Assign})
+    }, [setSharedData,workData_Work,workData_Assign]);
     useEffect(() => {
         pushOn();
     }, []);
@@ -1859,7 +1865,20 @@ const Dashboard = ({ auth }) => {
                 const classButtonDaPhan = `w-8 h-8 p-1 mr-2 rounded border cursor-pointer hover:text-white ${
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
-
+                const handleBaoGiaClick = () => {
+                    const dataToSend = JSON.stringify({...cardExpires,email:""});
+                    const newTab = window.open(
+                        `/export-quote?data=${encodeURIComponent(dataToSend)}`,
+                        "_blank"
+                    );
+                    if (newTab) {
+                        newTab.focus();
+                    } else {
+                        alert(
+                            "Trình duyệt của bạn đã chặn cửa sổ popup. Vui lòng cho phép hiển thị popup."
+                        );
+                    }
+                };
                 return (
                     <div className="text-center">
                         {isButtonDisabled == true &&
@@ -1945,7 +1964,11 @@ const Dashboard = ({ auth }) => {
                                         <Menu allowHover>
                                             <MenuHandler>
                                                 <EllipsisVerticalIcon
-                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}  ${params.row.check_in ==1 ?"animate-ping": "" }`}
+                                                    className={`w-8 h-8 pt-2 cursor-pointer hover:bg-orange-300 border-orange-300 ${classButtonDaPhan} ${DK1} ${DK2}  ${
+                                                        params.row.check_in == 1
+                                                            ? "animate-ping"
+                                                            : ""
+                                                    }`}
                                                 />
                                             </MenuHandler>
                                             <MenuList className="flex justify-between p-1 border border-green-500 rounded-none w-fit min-w-fit MenuListEdit">
@@ -2020,9 +2043,9 @@ const Dashboard = ({ auth }) => {
                                                     >
                                                         <TicketIcon
                                                             className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={() =>
-                                                                handleOpenKSWebWithDisable()
-                                                            }
+                                                            onClick={() => {
+                                                                handleBaoGiaClick();
+                                                            }}
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>
@@ -2172,6 +2195,7 @@ const Dashboard = ({ auth }) => {
                                 )
                             }
                             previewImagesWeb={previewImgKS}
+                            auth={auth}
                         />
                         {/* ------------------Dialog Thu Chi----------------------------------- */}
                         <SpendingDialog

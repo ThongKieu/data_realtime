@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     UserGroupIcon,
     CircleStackIcon,
@@ -12,8 +12,11 @@ import {
     FolderIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "@inertiajs/react";
+import { useWindowSize } from "@/Core/Resize";
+import { useSocket } from "@/Utils/SocketContext";
 function AdminSidebar({ children }) {
     const [open, setOpen] = useState(false);
+    const { width, height } = useWindowSize(0);
     const [openSubmenu, setOpenSubmenu] = useState(false);
     const Menus = [
         {
@@ -66,7 +69,6 @@ function AdminSidebar({ children }) {
                     icon: <ChevronDoubleRightIcon className="w-3" />,
                     href: route("admin/worker-account"),
                 },
-                
             ],
         },
         {
@@ -181,36 +183,53 @@ function AdminSidebar({ children }) {
         },
     ];
     const [activeIndex, setActiveIndex] = useState(null);
-    const [screenSize] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
-    const heightScreenTV = screenSize.height;
+    const socket = useSocket();
+
     return (
-        <div className={`flex w-full h-${heightScreenTV}  text-black`}>
+        <div className={`flex w-full h-${height} text-black bg-[#607d8b]`}>
+            {open && (
+                <div
+                    className="absolute top-0 left-0 z-20 w-full h-full bg-black opacity-50"
+                    onClick={() => setOpen(false)}
+                ></div>
+            )}
             <div
                 className={`${
-                    open ? "w-[15%]" : "w-[3%]"
-                } bg-gray-200 h-screen fixed top-0 left-0 z-10 p-2 pt-1 duration-300 rounded-lg overflow-y-auto`}
+                    open ? "left-[0] w-40 lg:w-64 " : "left-[0]"
+                } transition-all w-16 duration-300 bg-white h-screen fixed top-0 z-30 p-2 pt-1 rounded-l-none rounded-[30px] overflow-y-auto shadow-lg `}
             >
-                <ChevronLeftIcon
-                    className={`absolute cursor-pointer  right-5 md:right-[8px] xl:right-4 top-9 w-7 border-black border-2 rounded-full ${
-                        !open && "rotate-180"
-                    } hover:border-red-500`}
-                    onClick={() => setOpen(!open)}
-                />
-                <ul className={`pt-6 h-[${heightScreenTV}px]`}>
+                {open && (
+                    <ChevronLeftIcon
+                        className={`absolute cursor-pointer right-3 md:right-[8px] xl:right-4 top-5 w-7 border-black border-2 rounded-full ${
+                            !open && "rotate-180"
+                        } hover:border-red-500`}
+                        onClick={() => setOpen(!open)}
+                    />
+                )}
+                <ul
+                    className={`pt-3 flex flex-col ${
+                        open ? "" : "justify-items-center items-center"
+                    } text-center h-[${height}px]`}
+                >
+                    {!open && (
+                        <ChevronLeftIcon
+                            className={`cursor-pointer w-7 border-black border-2 rounded-full ${
+                                !open && "rotate-180"
+                            } hover:border-red-500`}
+                            onClick={() => setOpen(!open)}
+                        />
+                    )}
                     <h1
                         className={`text-black origin-left font-medium text-xl duration-200 ${
-                            !open && "scale-0"
+                            !open && "scale-0 hidden"
                         }`}
                     >
                         THỢ VIỆT
                     </h1>
                     <Link href={route("admin")}>
                         <li
-                            className={`flex  rounded-md p-2 ${
-                                open ? " mt-5" : "md:p-1 xl:p-2 mt-0"
+                            className={`flex rounded-md p-2 ${
+                                open ? " mt-5" : "md:p-1 xl:p-2 mt-2"
                             } cursor-pointer hover:bg-blue-gray-500 hover:text-white text-sm items-center text-black`}
                         >
                             <HomeIcon className="w-6" />
@@ -308,9 +327,7 @@ function AdminSidebar({ children }) {
                 </ul>
             </div>
             <div
-                className={`${
-                    open ? "pl-[15%]" : "pl-[3%]"
-                } w-full h-screen overflow-scroll-y`}
+                className={`bg-[#607d8b] ml-16 w-full h-screen overflow-scroll-y transition-all duration-300`}
             >
                 {children}
             </div>

@@ -87,37 +87,22 @@ const Dashboard = ({ auth }) => {
     // ---------------------------- thoi gian thuc su dung socket -------------------------
     const [isLoading, setIsLoading] = useState(true);
     const { width, height } = useWindowSize(100);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [idUserFix, setIdUserFix] = useState();
-    const [rowIdData, setRowIdData] = useState(0);
-    const [userId, setSetUserId] = useState(0);
-
+    const [dataViewQuote, setDataViewQuote] = useState([]);
     const socket = useSocket();
     const { setSharedData } = useContext(AppContext);
+    const [disabledStates, setDisabledStates] = useState({});
 
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            const confirmationMessage =
-                "Bạn có chắc chắn muốn rời khỏi trang này?";
-            event.returnValue = confirmationMessage; // Gecko + IE
-            return confirmationMessage; // Webkit, Safari, Chrome etc.
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        // Cleanup function to remove the event listener on component unmount
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
-    }, []);
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);
         fetchDateDoneCheck(selectedDate);
     }, [selectedDate]);
     useEffect(() => {
-        setSharedData({workData:workData_Work,workData_As:workData_Assign})
-    }, [setSharedData,workData_Work,workData_Assign]);
+        setSharedData({
+            workData: workData_Work,
+            workData_As: workData_Assign,
+        });
+    }, [setSharedData, workData_Work, workData_Assign]);
     useEffect(() => {
         pushOn();
     }, []);
@@ -125,22 +110,22 @@ const Dashboard = ({ auth }) => {
         if (socket) {
             setSocket_Dash(socket);
             socket.emit("pushOnline", message);
+            socket.on("initialDisabledStates", (initialStates) => {
+                setDisabledStates(initialStates);
+            });
             socket.on("UpdateDateTable_To_Client", (data) => {
                 if (
                     data.date_book == selectedDate ||
                     data.date_book != undefined
                 ) {
-                    fetchDateCheck(data.date_book);
                     fetchDateDoneCheck(data.date_book);
                     fetchDataDashboard(data.date_book);
                 } else {
-                    fetchDateCheck(selectedDate);
                     fetchDateDoneCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
                 }
             });
             socket.on("sendAddWorkTo_Client", (jsonData) => {
-                console.log(jsonData);
                 if (jsonData) {
                     fetchDateCheck(selectedDate);
                     fetchDataDashboard(selectedDate);
@@ -149,19 +134,17 @@ const Dashboard = ({ auth }) => {
             });
             socket.on(
                 "ButtonDisable_To_Client",
-                ({ id, isDisabled, userFix, userID }) => {
-                    setRowIdData(id);
-                    setIdUserFix(userFix);
-                    setIsButtonDisabled(isDisabled);
-                    setSetUserId(userID);
+                ({ id, isDisabled, userFix }) => {
+                    setDisabledStates((prevState) => ({
+                        ...prevState,
+                        [id]: {
+                            isDisabled,
+                            userFix,
+                        },
+                    }));
                 }
             );
         }
-        // return () => {
-        //     if (socket) {
-        //         socket.disconnect();
-        //     }
-        // };
     }, [socket]);
     useEffect(() => {
         const mergedWorks = workData_Work.reduce((acc, currentItem) => {
@@ -169,8 +152,6 @@ const Dashboard = ({ auth }) => {
         }, []);
         setMergedOldWorks(mergedWorks);
     }, [workData_Work]);
-
-    // console.log(socket_Dash?.id);
     const pushOn = async () => {
         try {
             let data = {
@@ -219,9 +200,6 @@ const Dashboard = ({ auth }) => {
             if (jsonData) {
                 setWorkData_Assign(jsonData); // Optional chaining để gọi hàm nếu nó tồn tại
                 setIsLoading(false);
-                console.log(jsonData);
-                // Optional chaining để gọi hàm nếu nó tồn tại
-                // console.log(jsonData,'3333333333333333333333333333');
             } else {
                 console.log("Data lỗi không tồn tại!!");
                 setIsLoading(false); // Đảm bảo setIsLoading được gọi ngay cả khi jsonData trống
@@ -232,6 +210,27 @@ const Dashboard = ({ auth }) => {
         }
     };
 
+    const handleGetDataQuote = async (id) => {
+        const uri = `api/web/quotation/insert?id_work_has=${id}`;
+        console.log(id);
+        try {
+            const response = await fetch(uri, {
+                method: "GET", // Hoặc 'POST' nếu cần gửi dữ liệu
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            setDataViewQuote(result);
+            console.log("test----", result);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
     const handleDateChange = (event) => {
         const newDate = event.target.value;
         setSelectedDate(newDate);
@@ -378,17 +377,17 @@ const Dashboard = ({ auth }) => {
             width: 165,
             editable: true,
             tabindex: 0,
-            renderEditCell: (params) => (
-                <input
-                    type="text"
-                    defaultValue={params.row.work_content}
-                    className=" bg-white border-none rounded-none outline-none w-[165px]"
-                    labelProps={{
-                        className: "hidden",
-                    }}
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === "Tab") {
+            renderEditCell: (params) => {
+                return (
+                    <input
+                        type="text"
+                        defaultValue={params.row.work_content}
+                        className=" bg-white border-none rounded-none outline-none w-[165px]"
+                        labelProps={{
+                            className: "hidden",
+                        }}
+                        tabIndex={0}
+                        onBlur={(e) => {
                             const newValue = e.target.value;
                             const data = {
                                 ac: "1",
@@ -397,10 +396,26 @@ const Dashboard = ({ auth }) => {
                             };
                             // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
                             fetchDataDashboard(data);
-                        }
-                    }}
-                />
-            ),
+                        }}
+                        onKeyDown={(e) => {
+                            if (
+                                e.key === "Enter" ||
+                                e.key === "Tab" ||
+                                e.type === "blur"
+                            ) {
+                                const newValue = e.target.value;
+                                const data = {
+                                    ac: "1",
+                                    id: params.id,
+                                    work_content: newValue,
+                                };
+                                // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                                fetchDataDashboard(data);
+                            }
+                        }}
+                    />
+                );
+            },
         },
         {
             field: "date_book",
@@ -502,6 +517,16 @@ const Dashboard = ({ auth }) => {
                     labelProps={{
                         className: "hidden",
                     }}
+                    onBlur={(e) => {
+                        const newValue = e.target.value;
+                        const data = {
+                            ac: "3",
+                            id: params.id,
+                            street: newValue,
+                        };
+                        // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                        fetchDataDashboard(data);
+                    }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === "Tab") {
                             const newValue = e.target.value;
@@ -530,6 +555,16 @@ const Dashboard = ({ auth }) => {
                     className=" bg-white border-none rounded-none outline-none w-[50px]"
                     labelProps={{
                         className: "hidden",
+                    }}
+                    onBlur={(e) => {
+                        const newValue = e.target.value;
+                        const data = {
+                            ac: "4",
+                            id: params.id,
+                            district: newValue,
+                        };
+                        // Gọi hàm xử lý cập nhật dữ liệu lên máy chủ
+                        fetchDataDashboard(data);
                     }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === "Tab") {
@@ -773,19 +808,6 @@ const Dashboard = ({ auth }) => {
             },
         },
     ];
-    const ButtonAmination = () => {
-        return (
-            <div class="button-container">
-                <a href="#" class="button-animation">
-                    Button
-                    <span class="sppp1"></span>
-                    <span class="sppp2"></span>
-                    <span class="sppp3"></span>
-                    <span class="sppp4"></span>
-                </a>
-            </div>
-        );
-    };
     // du lieu bang cong viec da phan -----------------------------------
     const columnsright = [
         {
@@ -1321,44 +1343,57 @@ const Dashboard = ({ auth }) => {
                         [name]: value,
                     }));
                 };
+                // const [disabledButton, setDisabledButton] = useState({});
                 const handleButtonAction = (
                     rowId,
                     isOpenState,
                     handleOpenFunction,
                     actionType
                 ) => {
+                    const updatedState = !isOpenState;
+                    // Cập nhật trạng thái tại client
+                    setDisabledStates((prevState) => ({
+                        ...prevState,
+                        [rowId]: {
+                            isDisabled: updatedState,
+                            userFix: auth.user.name,
+                        },
+                    }));
                     // Gửi thông điệp đến server để thông báo về việc disable button
                     socket_Dash.emit("ButtonDisable_To_Server", {
                         id: rowId,
-                        isDisabled: !isOpenState,
+                        isDisabled: updatedState,
                         userFix: auth.user.name,
                         userID: auth.user.id,
                     });
+                    // const updatedState = !isOpenState;
+
+                    // Cập nhật trạng thái tại client
 
                     switch (actionType) {
                         case "openSpendingTotal":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openHuy":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openKSWeb":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openThuHoi":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openAdminCheck":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openViewTotal":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openViewKS":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         case "openViewHis":
-                            handleOpenFunction(!isOpenState);
+                            handleOpenFunction(updatedState);
                             break;
                         default:
                             break;
@@ -1866,7 +1901,10 @@ const Dashboard = ({ auth }) => {
                     params.row.flag_check === 1 ? "hidden" : ""
                 }`;
                 const handleBaoGiaClick = () => {
-                    const dataToSend = JSON.stringify({...cardExpires,email:""});
+                    const dataToSend = JSON.stringify({
+                        ...cardExpires,
+                        email: "",
+                    });
                     const newTab = window.open(
                         `/export-quote?data=${encodeURIComponent(dataToSend)}`,
                         "_blank"
@@ -1881,10 +1919,10 @@ const Dashboard = ({ auth }) => {
                 };
                 return (
                     <div className="text-center">
-                        {isButtonDisabled == true &&
-                        params.row.id === rowIdData &&
-                        userId ? (
-                            <p className="w-full text-center">{idUserFix}</p>
+                        {disabledStates[params.row.id]?.isDisabled ? (
+                            <p className="w-full text-center">
+                                {disabledStates[params.row.id].userFix}
+                            </p>
                         ) : (
                             <div className="flex flex-row items-center justify-center">
                                 {check_admin ||
@@ -1925,7 +1963,8 @@ const Dashboard = ({ auth }) => {
                                         <Button
                                             className={`p-2 rounded`}
                                             onClick={() =>
-                                                handleOpenViewKSDisable()
+                                                handleOpenViewKSDisable() ||
+                                                handleGetDataQuote(params.id)
                                             }
                                         >
                                             Khảo Sát
@@ -2234,6 +2273,7 @@ const Dashboard = ({ auth }) => {
                             handleOpenViewKS={handleOpenViewKSDisable}
                             handleViewKS={handleOpenViewKSDisable}
                             params={params.row}
+                            dataViewQuote={dataViewQuote}
                         />
                         <HisDialog
                             openViewHis={openView_His}
@@ -2338,6 +2378,9 @@ const Dashboard = ({ auth }) => {
                                                 borderRight:
                                                     "1px solid #e0e0e0",
                                             },
+                                            ".MuiDataGrid-columnHeaders": {
+                                                display: "none",
+                                            },
                                         }}
                                         width={100}
                                         rows={mergedOldWorks} // Sử dụng mảng đã gộp thay vì mảng ban đầu
@@ -2345,9 +2388,9 @@ const Dashboard = ({ auth }) => {
                                         hideFooterPagination={false}
                                         rowHeight={40}
                                         disableRowSelectionOnClick
-                                        slots={{
-                                            columnHeaders: () => null,
-                                        }}
+                                        // slots={{
+                                        //     columnHeaders: () => null,
+                                        // }}
                                         autoHeight
                                     />
                                 </Box>

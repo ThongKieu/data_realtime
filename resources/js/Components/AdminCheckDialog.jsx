@@ -48,7 +48,6 @@ function AdminCheckDialog({
     classNameChild,
     handleChange,
     socketD,
-    handleSearch,
     infoWorker,
     userAuth,
 }) {
@@ -274,7 +273,6 @@ function AdminCheckDialog({
                 body: JSON.stringify(check_admin),
             });
             if (res.ok) {
-                handleSearch();
                 handleOpenAdminCheck();
                 socketD.emit("UpdateDateTable_To_Server", check_admin.data);
             } else {

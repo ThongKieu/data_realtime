@@ -61,6 +61,9 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                     ".MuiDataGrid-withBorderColor": {
                         borderRight: "1px solid #e0e0e0",
                     },
+                    ".MuiDataGrid-columnHeaders": {
+                        display: "none",
+                    },
                 }}
                 width={100}
                 rows={rows}
@@ -69,9 +72,6 @@ const KindWorker_ForWork = ({ kindWorker, column }) => {
                 rowHeight={40}
                 autoHeight
                 disableRowSelectionOnClick
-                slots={{
-                    columnHeaders: () => null,
-                }}
             />
         </Box>
     );

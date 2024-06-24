@@ -51,7 +51,7 @@ export function SidebarAdmin() {
                 </div>
             ) : (
                 <Card
-                    className={`h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 block ${sidebarStyles}`}
+                    className={`h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl  block ${sidebarStyles}`}
                 >
                     <div className="flex p-4 mb-2">
                         <Typography

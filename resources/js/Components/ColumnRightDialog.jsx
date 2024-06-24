@@ -21,6 +21,7 @@ import { ARRAY_ACTION } from "@/Data/Table/Data";
 import { useWindowSize } from "@/Core/Resize";
 import HistoryDialog from "./HistoryDialog";
 import { handleBaoGiaClick } from "./HandleEvent/Handles";
+import { TemplateAC1, TemplateAC2 } from "./Template/TemplateViewQuote";
 const formatNumberToVNDk = (number) => {
     const k = 1000;
     const vndSuffix = "k";
@@ -257,7 +258,6 @@ const KhaoSatDialogWeb = ({
     const [newNoteValue, setNewNoteValue] = useState("");
     const [autoIncrementId, setAutoIncrementId] = useState(1);
     const [isVatChecked, setIsVatChecked] = useState(false);
-    console.log(changeQuote);
     function createEmptyRow(counter) {
         return {
             stt: counter,
@@ -931,148 +931,71 @@ const processSeriImages = (data) => {
     const filteredArray = parts?.filter((item) => item.trim() !== "");
     return filteredArray;
 };
-const KSDialog = ({ openViewKS, handleOpenViewKS, params, handleViewKS }) => {
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [scale, setScale] = useState(1);
-    const handleZoomIn = () => {
-        setScale((prevScale) => prevScale + 0.1);
-    };
-    const handleZoomOut = () => {
-        setScale((prevScale) =>
-            prevScale > 0.1 ? prevScale - 0.1 : prevScale
-        );
-    };
 
-    const handleWheel = (event) => {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-            setScale((prevScale) => prevScale + 0.1);
-        } else {
-            setScale((prevScale) =>
-                prevScale > 0.1 ? prevScale - 0.1 : prevScale
-            );
-        }
-    };
-
-    const handleClose = () => {
-        setSelectedImage(null);
-        setScale(1);
-    };
-
+const KSDialog = ({
+    openViewKS,
+    handleOpenViewKS,
+    params,
+    handleViewKS,
+    dataViewQuote,
+}) => {
     const processedDataKS = processSeriImages(params.bill_imag);
-    useEffect(() => {
-        if (selectedImage) {
-            window.addEventListener("wheel", handleWheel);
-        }
-        return () => {
-            window.removeEventListener("wheel", handleWheel);
-        };
-    }, [selectedImage]);
-    const data = [
-        {
-            id: "noi_dung",
-            headContent: " Nội Dung Công Việc:",
-            value_quote: params.work_content,
-        },
-        {
-            id: "dia_chi",
-            headContent: "Địa chỉ:",
-            value_quote: params.street,
-        },
-        {
-            id: "quan",
-            headContent: " Quận:",
-            value_quote: params.district,
-        },
-        {
-            id: "sdt",
-            headContent: " Số điện thoại:",
-            value_quote: params.phone_number,
-        },
-        {
-            id: "noi_dung_ks",
-            headContent: " Nội Dung Khảo Sát:",
-            value_quote: params.real_note,
-        },
-        {
-            id: "chi",
-            headContent: "Dự Chi:",
-            value_quote: formatNumberToVNDk(params.spending_total),
-        },
-        {
-            id: "thu",
-            headContent: "Dự Thu:",
-            value_quote: formatNumberToVNDk(params.income_total),
-        },
-    ];
     return (
-        <Dialog open={openViewKS} handler={handleOpenViewKS}>
+        <Dialog open={openViewKS} handler={handleOpenViewKS} size="xl">
             <div className="flex items-center justify-between">
                 <DialogHeader>Tình Trạng Khảo Sát</DialogHeader>
             </div>
-            <DialogBody>
-                <div className="p-4 mb-2 bg-white rounded-lg shadow-md">
-                    {data.map((item) => {
-                        return (
-                            <div
-                                key={item.id}
-                                className="flex items-center mb-2"
-                            >
-                                <h2 className="pr-2 text-lg font-semibold">
-                                    {item.headContent}
-                                </h2>
-                                <span>{item.value_quote}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className="mb-2">
-                    <h2 className="text-lg font-semibold">
-                        Hình Ảnh Khảo Sát Thực Tế:
-                    </h2>
-                    {params.bill_imag == null || processedDataKS == false ? (
-                        <p className="flex items-center justify-center w-32 h-32 border border-green-500">
-                            Not Image
-                        </p>
-                    ) : (
-                        <span className="flex justify-between">
-                            {Array.isArray(processedDataKS) &&
-                                processedDataKS.map((item, index) => (
-                                    <img
-                                        key={index}
-                                        src={item}
-                                        alt={`hinhKS_${index}`}
-                                        className="w-40 h-40"
-                                        onClick={() =>
-                                            handleBaoGiaClick(
-                                                `hinhKS_${
-                                                    params.street
-                                                        ? params.street
-                                                        : params.district
-                                                }`,
-                                                item
-                                            )
-                                        }
-                                    />
-                                ))}
-                        </span>
-                    )}
-                </div>
+            <DialogBody divider>
+                {dataViewQuote && dataViewQuote.ac == 1 ? (
+                    <TemplateAC1
+                        key={1}
+                        params={params}
+                        processedDataKS={processedDataKS}
+                        handleBaoGiaClick={handleBaoGiaClick}
+                    />
+                ) : dataViewQuote && dataViewQuote.ac == 2 ? (
+                    <TemplateAC2
+                        key={2}
+                        params={params}
+                        dataQuote={dataViewQuote?.data}
+                        handleBaoGiaClick={handleBaoGiaClick}
+                    />
+                ) : (
+                    <p>Loading...</p>
+                )}
             </DialogBody>
             <DialogFooter className="space-x-2">
-                <Button
+                {dataViewQuote && dataViewQuote.ac == 1 ? (
+                     <Button
+                     variant="outlined"
+                     className="px-5 py-2"
+                     color="blue"
+                     onClick={() =>
+                         handleBaoGiaClick(
+                             { ...params, Email:''},
+                             "/export-quote"
+                         )
+                     }
+                 >
+                     Chỉnh sửa báo giá 1
+                 </Button>
+                ) : dataViewQuote && dataViewQuote.ac == 2 ? (
+                    <Button
                     variant="outlined"
                     className="px-5 py-2"
                     color="blue"
                     onClick={() =>
                         handleBaoGiaClick(
-                            { ...params, email: "" },
+                            { ...params, dataQuote: dataViewQuote?.data },
                             "/export-quote"
                         )
                     }
                 >
-                    Chỉnh sửa báo giá
+                    Chỉnh sửa báo giá 2
                 </Button>
+                ) : (
+                    <p>Loading...</p>
+                )}
                 <Button
                     variant="outlined"
                     className="px-5 py-2"

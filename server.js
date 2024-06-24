@@ -9,13 +9,16 @@ const io = new Server(httpServer, {
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
 });
-
+let disabledStates = {};
+console.log(disabledStates);
 io.on("connection", (socket) => {
     console.log("user connected");
     socket.on("userOnline", (userId) => {
         console.log(`User ${userId} is online`);
         io.sockets.emit("userOnline_Client", userId);
     });
+
+    io.sockets.emit("initialDisabledStates", disabledStates);
     socket.on("notication_Server", async (data) => {
         console.log("notication_Server", data);
         io.sockets.emit("notication_Client", data);
@@ -28,15 +31,19 @@ io.on("connection", (socket) => {
         console.log("Received form data addWork:", formData1);
         io.sockets.emit("sendAddWorkTo_Client", formData1);
     });
-    socket.on("ButtonDisable_To_Server", async (data) => {
-        const { id, isDisabled, userFix, userID } = data; // Cập nhật trạng thái của nút trên server
-        buttonStates[id] = { isDisabled, userFix, userID };
-        // Gửi trạng thái cập nhật cho tất cả các client
-        io.sockets.emit('UpdateButtonStates', buttonStates);
+    // socket.on("ButtonDisable_To_Server", async (isDisabled) => {
+    //     console.log("Button Disable:", isDisabled);
+    //     io.sockets.emit("ButtonDisable_To_Client", isDisabled);
+    // });
+    socket.on("ButtonDisable_To_Server", ({ id, isDisabled, userFix }) => {
+        // Cập nhật trạng thái
+        disabledStates[id] = { isDisabled, userFix };
+        // Phát tín hiệu cập nhật đến tất cả các client
+        console.log(disabledStates[id]);
+        io.sockets.emit("ButtonDisable_To_Client", { id, isDisabled, userFix });
     });
     socket.on("UpdateDateTable_To_Server", async (Data) => {
         console.log("Received form data UpdateDateTable:", Data);
-
         io.sockets.emit("UpdateDateTable_To_Client", Data);
     });
     socket.on("deleteWorkTo_Server", async (data) => {

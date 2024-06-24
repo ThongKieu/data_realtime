@@ -31,10 +31,10 @@ class QuotationController extends Controller
             'income_total',
             'bill_imag']
             );
-            return response()->json(['data'=>$quote_work_has,'ac'=>2]);
+            return response()->json(['data'=>$quote_work_has,'ac'=>1]);
         }
         else
-            return response()->json(['data'=>$quote,'ac'=>1]);
+            return response()->json(['data'=>$quote,'ac'=>2]);
     }
 
     public function create(Request $re)
@@ -169,6 +169,49 @@ class QuotationController extends Controller
     public function update(Request $request)
     {
 
+        $quote_id = $request->quote_id;
+        // dd($quote_id);
+        $quote = Quotation::find($quote_id);
+
+        if (!$quote) {
+            return response()->json(['error' => 'Quotation not found'], 404);
+        }
+
+        $quote->id_work_has = $request->id_work_has;
+        $quote->id_auth = $request->auth_id;
+        $quote->quote_date = date('d-m-Y');
+        $quote->quote_info = $request->quote_info; // Dữ liệu này dạng JSON
+        $quote->quote_cus_info = $request->quote_cus_info;
+        $quote->quote_user_info = $request->quote_user_info;
+        $quote->quote_total_price = $request->quote_total_price;
+        $quote->quote_note = $request->quote_note;
+        $quote->vat = $request->vat;
+
+        // Xóa hình ảnh cũ nếu có yêu cầu cập nhật hình ảnh mới
+        if ($request->hasFile('image_work')) {
+            // Bạn cần đảm bảo rằng bạn có cơ chế xóa hình ảnh cũ phù hợp (không được cung cấp trong mã của bạn)
+            $seri_imag = '';
+            $images = $request->file('image_work');
+            foreach ($images as $image) {
+                $name = $request->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $image->move('assets/images/' . $request->id_work_has . '/quote', $name);
+                $seri_imag .= 'assets/images/' . $request->id_work_has . '/quote/' . $name . ',';
+            }
+            $quote->quote_image = $seri_imag;
+        }
+
+        $quote->save();
+
+        WorksAssignment::where('id', '=', $request->id_work_has)->update(['status_work' => 3]);
+
+        $his_work = '[{"id_worker": null,"auth_id":"' . $request->auth_id . '","action":"capnhatbaogia","time":"' . date('Y-m-d H:m:s') . '"}]';
+        WorksAssignmentController::insertHisWork($request->id_work_has, $his_work);
+
+        if ($quote) {
+            return response()->json(['success' => true, 'message' => 'Quotation updated successfully'], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to update quotation'], 500);
+        }
     }
     public function generatePDF(Request $re)
     {

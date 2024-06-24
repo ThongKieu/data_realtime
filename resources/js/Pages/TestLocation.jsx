@@ -2,6 +2,7 @@ import { Head } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Typography, Input } from "@material-tailwind/react";
 import { host } from "@/Utils/UrlApi";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 const TestLocation = () => {
     const TABLE_HEAD = ["Address", "Lat", "Lng", "Time"];
@@ -9,7 +10,6 @@ const TestLocation = () => {
     const [changeInput, setChangeInput] = useState();
     const fetchData = async (id_Worker) => {
         if (id_Worker) {
-            console.log(id_Worker);
             const requestBody = {
                 idWorker: id_Worker,
             };
@@ -28,8 +28,11 @@ const TestLocation = () => {
                 console.error("Error fetching data:", error);
             }
         }
+        useEffect(() => {
+            fetchData();
+        }, []);
         return (
-            <div>
+            <AuthenticatedLayout>
                 <Head title="Test Location" />
                 <Card className="flex flex-row m-2">
                     <Input
@@ -120,7 +123,7 @@ const TestLocation = () => {
                         </tbody>
                     </table>
                 </Card>
-            </div>
+            </AuthenticatedLayout>
         );
     };
 };

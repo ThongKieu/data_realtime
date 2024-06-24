@@ -27,10 +27,7 @@ function formatCardNumber(value) {
     }
 }
 // --------------------API ---------
-import {
-    getFormattedToday,
-    url_API_District,
-} from "@/Data/UrlAPI/UrlApi";
+import { getFormattedToday, url_API_District } from "@/Data/UrlAPI/UrlApi";
 import { host } from "@/Utils/UrlApi";
 import { useSocket } from "@/Utils/SocketContext";
 function formatExpires(value) {
@@ -157,13 +154,6 @@ function FloatingButton() {
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData);
                 handleOpen();
-                setFormData({
-                    member_read: 1,
-                    kind_work: 1,
-                    status_cus: 0,
-                    from_cus: 0,
-                    flag_status: 1,
-                });
             } else if (response.status === 422) {
                 alert(
                     `Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`
@@ -171,6 +161,15 @@ function FloatingButton() {
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            console.log('test thanh cong', formData);
+            setFormData({
+                member_read: 1,
+                kind_work: 1,
+                status_cus: 0,
+                from_cus: 0,
+                flag_status: 1,
+            });
         }
     };
 
@@ -200,12 +199,19 @@ function FloatingButton() {
                             <div className="my-2">
                                 <Input
                                     label="Số điện thoại"
-                                    value={formData.phone_number=="" ? formatExpires(formData.phone_number) : formData.phone_number}
+                                    value={
+                                        formData.phone_number == ""
+                                            ? formatExpires(
+                                                  formData.phone_number
+                                              )
+                                            : formData.phone_number
+                                    }
                                     id="phone_number"
                                     type="text"
                                     name="phone_number"
-                                    className="shadow-none required"
+                                    className="shadow-none"
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="my-2">
@@ -217,6 +223,7 @@ function FloatingButton() {
                                     name="work_content"
                                     value={formData.work_content}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="flex items-center gap-4 my-4">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo,useContext } from "react";
+import React, { useEffect, useState, memo, useContext } from "react";
 import {
     Navbar,
     Collapse,
@@ -30,12 +30,13 @@ import {
 } from "@heroicons/react/24/outline";
 import CardMain from "./Card";
 import NavLink from "@/Components/NavLink";
+import { Link } from "@inertiajs/react";
 import ApplicationLogo from "../ApplicationLogo";
 import OnlineList from "./OnlineList";
 import { host } from "@/Utils/UrlApi";
 import { getFirstName } from "@/Data/UrlAPI/UrlApi";
 // import NavGuest from "./navGuest";
-import {useWindowSize} from "@/Core/Resize";
+import { useWindowSize } from "@/Core/Resize";
 import { useSocket } from "@/Utils/SocketContext";
 import { formatCurrencyVND } from "../ColumnRightDialog";
 import { AppContext } from "@/Utils/AppContext";
@@ -211,7 +212,7 @@ function ProfileMenu({ propauthprofile, socket }) {
                         avatarimage={host + propauthprofile.avatar}
                         numberonline={number}
                         listuser={listuser}
-                        auth= {propauthprofile.id}
+                        auth={propauthprofile.id}
                         name={propauthprofile.name}
                     />
                     <NavLink
@@ -265,6 +266,7 @@ function ProfileMenu({ propauthprofile, socket }) {
 function NavList() {
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
+
             <a
                 href={`${host}`}
                 className="flex flex-row gap-2 p-2 pr-0 font-normal text-black lg:rounded-full hover:bg-blue-gray-50"
@@ -279,7 +281,7 @@ function NavList() {
                 className="flex flex-row gap-2 p-2 font-normal text-black lg:rounded-full hover:bg-blue-gray-50"
             >
                 <span>
-                <UserCircleIcon className="h-[18px] w-[18px]" />
+                    <UserCircleIcon className="h-[18px] w-[18px]" />
                 </span>
                 <span>Tìm Kiếm</span>
             </a>
@@ -349,7 +351,7 @@ function NavbarDefault({ propauth, check }) {
         Array(jobs.length).fill(false)
     );
     const socket = useSocket();
-    const {sharedData} = useContext(AppContext);
+    const { sharedData } = useContext(AppContext);
     useEffect(() => {
         fetchDelete(check);
         getDataWorkerSales(check);
@@ -372,7 +374,7 @@ function NavbarDefault({ propauth, check }) {
                 }
             });
         }
-    }, [check,socket]);
+    }, [check, socket]);
 
     const fetchDelete = async (dateCheckDel) => {
         try {
@@ -402,7 +404,6 @@ function NavbarDefault({ propauth, check }) {
         try {
             const res = await fetch(uri);
             const jsonData = await res.json();
-            console.log(jsonData);
             if (jsonData || jsonData != "undefined") {
                 setJobs(jsonData);
             } else {

@@ -17,14 +17,14 @@ return new class extends Migration
             $table->tinyInteger('id_work_has');
             $table->tinyInteger('id_auth')->default(0);
             $table->string('quote_date');
-            $table->string('quote_info',5000);
-            $table->string('quote_note',1000)->nullable();
-            $table->string('quote_cus_info',1000)->nullable();
-            $table->string('quote_user_info',1000)->nullable();
+            $table->string('quote_info', 5000);
+            $table->string('quote_note', 1000)->nullable();
+            $table->string('quote_cus_info', 1000)->nullable();
+            $table->string('quote_user_info', 1000)->nullable();
             $table->tinyInteger('vat')->default(0);
             $table->integer('quote_total_price')->default(0);
             $table->tinyInteger('quote_status')->default(0);
-            $table->string('quote_image',1000)->nullable();
+            $table->string('quote_image', 1000)->nullable();
             $table->timestamps();
         });
     }

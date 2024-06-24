@@ -25,7 +25,7 @@ const Export_Quote = ({ auth }) => {
     const [editingField, setEditingField] = useState(null);
     const [changeQuote, setChangeQuote] = useState(dataLocation);
     const [authQuote, setAuthQuote] = useState(auth);
-    const { width, height } = useWindowSize(200);
+    const { width, height } = useWindowSize(300);
     const [counter, setCounter] = useState(1);
     const [rows, setRows] = useState([createEmptyRow(1)]);
     const [noteContent, setNoteContent] = useState([]);
@@ -37,7 +37,7 @@ const Export_Quote = ({ auth }) => {
             stt: counter,
             content: "",
             unit: "",
-            quantity: 0,
+            quality: 0,
             unitPrice: 0,
             total: 0,
             vat: 0,
@@ -68,6 +68,7 @@ const Export_Quote = ({ auth }) => {
             const { totalWithoutVAT, totalVat8, totalVat10, totalWithVAT } =
                 calculateTotals(updatedRows);
             setRows(updatedRows);
+            console.log(totalWithoutVAT);
         }
     };
 
@@ -76,13 +77,13 @@ const Export_Quote = ({ auth }) => {
         const updatedRows = [...rows];
         updatedRows[index][name] = value;
 
-        if (["quantity", "unitPrice", "vat"].includes(name)) {
-            const quantity = parseFloat(updatedRows[index].quantity) || 0;
+        if (["quality", "unitPrice", "vat"].includes(name)) {
+            const quality = parseFloat(updatedRows[index].quality) || 0;
             const unitPrice = parseFloat(updatedRows[index].unitPrice) || 0;
             const vat = isVatChecked
                 ? parseFloat(updatedRows[index].vat) || 0
                 : 0;
-            const total = quantity * unitPrice * (1 + vat / 100);
+            const total = quality * unitPrice * (1 + vat / 100);
             updatedRows[index].total = total;
         }
 
@@ -96,11 +97,11 @@ const Export_Quote = ({ auth }) => {
 
     const handleAddNote = () => {
         if (newNoteValue.trim() !== "") {
-            setNoteContent([
-                ...noteContent,
+            setNoteContent((prevNotes) => [
+                ...prevNotes,
                 { id: autoIncrementId, note_content: newNoteValue },
             ]);
-            setAutoIncrementId(autoIncrementId + 1);
+            setAutoIncrementId((prevId) => prevId + 1);
             setNewNoteValue("");
         }
     };
@@ -112,10 +113,10 @@ const Export_Quote = ({ auth }) => {
         let totalWithVAT = 0;
 
         rows.forEach((row) => {
-            const quantity = parseFloat(row.quantity) || 0;
+            const quality = parseFloat(row.quality) || 0;
             const unitPrice = parseFloat(row.unitPrice) || 0;
             const vat = parseFloat(row.vat) || 0;
-            const total = quantity * unitPrice;
+            const total = quality * unitPrice;
 
             totalWithoutVAT += total;
 
@@ -139,8 +140,9 @@ const Export_Quote = ({ auth }) => {
     const { totalWithoutVAT, totalVat8, totalVat10, totalWithVAT } =
         calculateTotals(rows);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (quoteID) => {
         const formData = new FormData();
+        formData.append("quote_id", quoteID);
         formData.append("auth_id", authQuote.user.id);
         formData.append("id_work_has", changeQuote.id_cus);
         formData.append(
@@ -173,7 +175,7 @@ const Export_Quote = ({ auth }) => {
                 rows.map((row) => ({
                     content: row.content,
                     unit: row.unit,
-                    quantity: row.quantity,
+                    quality: row.quality,
                     price: row.unitPrice,
                     total: row.total,
                     vat: row.vat,
@@ -193,15 +195,14 @@ const Export_Quote = ({ auth }) => {
 
         try {
             const response = await fetch(
-                "api/web/quotation/insert-admin",
+                "api/web/quotation/update_quote",
                 requestOptions
             );
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
             const result = await response.text();
-            console.log(result);
-            handleSentKSWeb(); // call this function to handle after successful submission
+            // handleSentKSWeb(); // call this function to handle after successful submission
         } catch (error) {
             console.error("Error:", error);
         }
@@ -222,7 +223,40 @@ const Export_Quote = ({ auth }) => {
             inputRef.current.focus();
         }
     }, [isEditing]);
-
+    useEffect(() => {
+        if (changeQuote.dataQuote && Array.isArray(changeQuote.dataQuote)) {
+            const allQuoteInfo = changeQuote.dataQuote
+                .map((item) => item?.quote_info)
+                .filter(
+                    (quoteInfo) => quoteInfo && typeof quoteInfo === "string"
+                )
+                .map((quoteInfo) => JSON.parse(quoteInfo))
+                .flat();
+            console.log(allQuoteInfo);
+            console.log(changeQuote.dataQuote);
+            if (allQuoteInfo.length) {
+                setRows(
+                    allQuoteInfo.map((item, index) => ({
+                        stt: index + 1,
+                        content: item.content || "",
+                        unit: item.unit || "",
+                        quality: item.quality || 0,
+                        unitPrice: item.price || 0,
+                        total: 0,
+                        vat: 0,
+                    }))
+                );
+                setCounter(allQuoteInfo.length);
+                setNoteContent(
+                    allQuoteInfo.map((note, index) => ({
+                        id: index,
+                        note_content: note.note,
+                    }))
+                );
+                setAutoIncrementId(allQuoteInfo.length);
+            }
+        }
+    }, [changeQuote]);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Báo Giá" />
@@ -231,7 +265,7 @@ const Export_Quote = ({ auth }) => {
                     <div className="text-center">
                         <h2 className="text-2xl font-bold ">Báo Giá</h2>
                         <i className="flex flex-row justify-center">
-                            (V/v:{" "}
+                            (V/v:
                             {isEditing && editingField === "vv" ? (
                                 <input
                                     ref={inputRef}
@@ -490,9 +524,9 @@ const Export_Quote = ({ auth }) => {
                                         </td>
                                         <td className="p-1 border border-gray-300">
                                             <input
-                                                name="quantity"
+                                                name="quality"
                                                 type="number"
-                                                value={row.quantity}
+                                                value={row.quality}
                                                 onChange={(e) =>
                                                     handleInputChange(index, e)
                                                 }
@@ -586,7 +620,6 @@ const Export_Quote = ({ auth }) => {
                                         >
                                             <td className="border border-gray-300 "></td>
                                             <td className="border border-gray-300 "></td>
-
                                             <td
                                                 colSpan={3}
                                                 className="border border-gray-300 "
@@ -622,7 +655,7 @@ const Export_Quote = ({ auth }) => {
                             <h2>*Ghi Chú</h2>
                             {noteContent.map((note, index) => (
                                 <p key={index}>
-                                    <strong>{note.id}:</strong>{" "}
+                                    <strong>{note.id}:</strong>
                                     {note.note_content}
                                 </p>
                             ))}
@@ -644,7 +677,7 @@ const Export_Quote = ({ auth }) => {
                     className="mt-5 mr-10 float-end"
                     variant="gradient"
                     color="red"
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(changeQuote.dataQuote[0]?.id)}
                 >
                     Xác nhận
                 </Button>

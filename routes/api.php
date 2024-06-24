@@ -152,6 +152,7 @@ Route::prefix('web')->group(function () {
 
         Route::post('insert','App\Http\Controllers\QuotationController@create');
         Route::post('insert-admin','App\Http\Controllers\QuotationController@adminQuote');
+        Route::post('update_quote','App\Http\Controllers\QuotationController@update');
     }
 );
 

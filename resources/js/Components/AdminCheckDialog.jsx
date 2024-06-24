@@ -27,6 +27,7 @@ import FileInput from "./FileInputImage";
 import {useWindowSize} from "@/Core/Resize";
 import { getFormattedTIME } from "@/Data/UrlAPI/UrlApi";
 import HistoryDialog from "./HistoryDialog";
+import { handleBaoGiaClick } from "./HandleEvent/Handles";
 function AdminCheckDialog({
     params,
     handleFileChangeVt,
@@ -47,7 +48,6 @@ function AdminCheckDialog({
     classNameChild,
     handleChange,
     socketD,
-    handleSearch,
     infoWorker,
     userAuth,
 }) {
@@ -273,7 +273,6 @@ function AdminCheckDialog({
                 body: JSON.stringify(check_admin),
             });
             if (res.ok) {
-                handleSearch();
                 handleOpenAdminCheck();
                 socketD.emit("UpdateDateTable_To_Server", check_admin.data);
             } else {
@@ -648,7 +647,7 @@ function AdminCheckDialog({
                                                 src={`${host}${item}`}
                                                 alt="nature image"
                                                 className="p-2 cursor-pointer"
-                                                onClick={handleOpenImage}
+                                                onClick={()=> handleBaoGiaClick(`hinhPT ${cardExpires.worker_code}-${cardExpires.worker_full_name}`, item)}
                                             />
                                             <Dialog
                                                 open={openImage}

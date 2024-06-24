@@ -13,9 +13,8 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         const socketInstance = newSocket({ secure: true });
         setSocket(socketInstance);
-
         return () => {
-            socketInstance.disconnect();
+            socketInstance.close();
         };
     }, []); // Sử dụng mảng rỗng để chỉ chạy một lần khi component mount
     useEffect(() => {

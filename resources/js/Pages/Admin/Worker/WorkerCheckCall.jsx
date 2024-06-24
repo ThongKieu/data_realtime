@@ -53,7 +53,7 @@ function WorkerCheckCall() {
         try {
             const response = await fetch(
                 host +
-                    "api/web/all-check-call-workers?this_month=" +
+                    "api/web/all-check-call-workers2?this_month=" +
                     this_month +
                     "&this_year=" +
                     this_year
@@ -163,7 +163,7 @@ function WorkerCheckCall() {
         console.log(selectedMonth);
         fetch(
             host +
-                "api/web/worker/all-check-call-workers?this_month=" +
+                "api/web/worker/all-check-call-workers2?this_month=" +
                 selectedMonth +
                 "&this_year=" +
                 this_year +
@@ -243,7 +243,7 @@ function WorkerCheckCall() {
                                 color="green"
                                 className="p-2 font-bold border border-green-500 rounded-md"
                             >
-                                Gọi Khách
+                                Gọi Khách Ngoài Danh Sách công ty gửi
                             </Typography>
                         ) : params.row.worker_call_check == 1 ? (
                             <Typography
@@ -251,7 +251,7 @@ function WorkerCheckCall() {
                                 color="blue"
                                 className="p-2 font-bold border border-blue-500 rounded-md"
                             >
-                                Gọi Công Ty
+                                Liên hệ khách cty gửi bằng số cty
                             </Typography>
                         ) : (
                             <Typography

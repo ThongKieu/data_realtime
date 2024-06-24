@@ -29,12 +29,12 @@ class QuotationController extends Controller
             'id_phu',
             'real_note',
             'income_total',
-            'bill_imag']
+            'bill_imag','check_by_admin']
             );
-            return response()->json(['data'=>$quote_work_has,'ac'=>2]);
+            return response()->json(['data'=>$quote_work_has,'ac'=>1]);
         }
         else
-            return response()->json(['data'=>$quote,'ac'=>1]);
+            return response()->json(['data'=>$quote,'ac'=>2]);
     }
 
     public function create(Request $re)

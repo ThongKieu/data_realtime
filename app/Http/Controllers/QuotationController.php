@@ -211,17 +211,17 @@ class QuotationController extends Controller
             $quote_image = $seri_imag;
         }
 
-        Quotation::where($quote_id)->update([
-            'id_auth'=>$id_auth,    
-            'quote_date'=>$quote_date,     
-            'quote_info'=>$quote_info,    
-            'quote_total_price'=>$quote_total_price, 
-            'quote_image'=>$quote_image,
-            'quote_note'=>$quote_note,   
-            'quote_cus_info'=>$quote_cus_info,    
+        Quotation::where('id','=',$quote_id)->update([
+            'id_auth'=>$id_auth,
+            'quote_date'=>$quote_date,
+            'quote_info'=>$quote_info,
+            'quote_total_price'=>$quote_total_price,
+            // 'quote_image'=>$quote_image,
+            'quote_note'=>$quote_note,
+            'quote_cus_info'=>$quote_cus_info,
             'quote_user_info'=>$quote_user_info
         ]);
-        
+
 
         WorksAssignment::where('id', '=', $id_work_has)->update(['status_work' => 3]);
 

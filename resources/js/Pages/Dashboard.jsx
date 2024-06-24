@@ -226,7 +226,6 @@ const Dashboard = ({ auth }) => {
             }
             const result = await response.json();
             setDataViewQuote(result);
-            console.log("test----", result);
         } catch (error) {
             setError(error.message);
         }

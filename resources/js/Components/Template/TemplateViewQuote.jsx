@@ -103,13 +103,12 @@ const TemplateAC1 = ({ params, processedDataKS, handleBaoGiaClick }) => {
 };
 const TemplateAC2 = ({ params, dataQuote, handleBaoGiaClick }) => {
     const [resultQuote, setResultQuote] = useState([]);
-
     useEffect(() => {
         if (dataQuote) {
             setResultQuote(dataQuote);
         }
     }, [dataQuote]);
-    const imageQuote = processSeriImages(resultQuote?.quote_image);
+    const imageQuote = processSeriImages(resultQuote[0]?.quote_image);
     const TABLE_HEAD = [
         "STT",
         "Nội Dung",

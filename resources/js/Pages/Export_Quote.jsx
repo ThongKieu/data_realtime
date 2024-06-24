@@ -19,15 +19,20 @@ const Export_Quote = ({ auth }) => {
         { id_unit: "Điểm", unit_quote: "Điểm" },
         { id_unit: "Mối", unit_quote: "Mối" },
     ];
-
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState(null);
     const [changeQuote, setChangeQuote] = useState(dataLocation);
+    const [rows, setRows] = useState([]);
     const [authQuote, setAuthQuote] = useState(auth);
     const { width, height } = useWindowSize(300);
     const [counter, setCounter] = useState(1);
-    const [rows, setRows] = useState([createEmptyRow(1)]);
+    const [totals, setTotals] = useState({
+        totalWithoutVAT: 0,
+        totalVat8: 0,
+        totalVat10: 0,
+        totalWithVAT: 0,
+    });
     const [noteContent, setNoteContent] = useState([]);
     const [newNoteValue, setNewNoteValue] = useState("");
     const [autoIncrementId, setAutoIncrementId] = useState(1);
@@ -106,40 +111,6 @@ const Export_Quote = ({ auth }) => {
         }
     };
 
-    const calculateTotals = (rows) => {
-        let totalWithoutVAT = 0;
-        let totalVat8 = 0;
-        let totalVat10 = 0;
-        let totalWithVAT = 0;
-
-        rows.forEach((row) => {
-            const quality = parseFloat(row.quality) || 0;
-            const unitPrice = parseFloat(row.unitPrice) || 0;
-            const vat = parseFloat(row.vat) || 0;
-            const total = quality * unitPrice;
-
-            totalWithoutVAT += total;
-
-            if (vat === 8) {
-                totalVat8 += total * (vat / 100);
-            } else if (vat === 10) {
-                totalVat10 += total * (vat / 100);
-            }
-
-            totalWithVAT += row.total;
-        });
-
-        return {
-            totalWithoutVAT,
-            totalVat8,
-            totalVat10,
-            totalWithVAT,
-        };
-    };
-
-    const { totalWithoutVAT, totalVat8, totalVat10, totalWithVAT } =
-        calculateTotals(rows);
-
     const handleSubmit = async (quoteID) => {
         const formData = new FormData();
         formData.append("quote_id", quoteID);
@@ -208,53 +179,144 @@ const Export_Quote = ({ auth }) => {
         }
     };
     useEffect(() => {
+        if (dataLocation) {
+            const mappedDataQuote =
+                dataLocation.dataQuote?.map((item) => ({
+                    id: item.id,
+                    id_auth: item.id_auth || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    id_work_has: item.id_work_has || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_cus_info: JSON.parse(item.quote_cus_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_info: JSON.parse(item.quote_info) || "",
+                    quote_date: item.quote_date || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_image: item.quote_image || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_note: JSON.parse(item.quote_note) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_status: item.quote_status || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_total_price: item.quote_total_price || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý
+                    quote_user_info: JSON.parse(item.quote_user_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    vat: item.vat || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý
+                })) || [];
+
+            let parsedCusInfo = null;
+            if (dataLocation.dataQuote || dataLocation.dataQuote == "") {
+                try {
+                    parsedCusInfo = JSON.parse(
+                        dataLocation.dataQuote[0].quote_cus_info
+                    )[0];
+                } catch (error) {
+                    console.error("Error parsing quote_cus_info", error);
+                }
+            }
+
+            setChangeQuote({
+                id: dataLocation.id,
+                name_cus: parsedCusInfo
+                    ? parsedCusInfo.name
+                    : dataLocation?.name_cus || "",
+                phone_cus: parsedCusInfo
+                    ? parsedCusInfo.phone
+                    : dataLocation?.phone_cus || "",
+                street: parsedCusInfo
+                    ? parsedCusInfo.address.split(",")[0].trim()
+                    : dataLocation?.street || "",
+                district: parsedCusInfo
+                    ? parsedCusInfo.address.split(",")[1].trim()
+                    : dataLocation?.district || "",
+                dataQuote: mappedDataQuote,
+            });
+        }
+        setAuthQuote(auth);
+    }, [auth, dataLocation]);
+    console.log("Test", changeQuote);
+    useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
         setDataLocation(data);
         // Sử dụng dữ liệu được truyền tới từ trang dashboard
     }, []);
-    useEffect(() => {
-        setChangeQuote(dataLocation);
-        setAuthQuote(auth);
-    }, [auth, dataLocation]);
 
+    useEffect(() => {
+        // Tính toán tổng giá trị khi rows thay đổi
+        const calculateTotals = (rows) => {
+            let totalWithoutVAT = 0;
+            let totalVat8 = 0;
+            let totalVat10 = 0;
+            let totalWithVAT = 0;
+
+            rows.forEach((row) => {
+                const quality = parseFloat(row.quality) || 0;
+                const unitPrice = parseFloat(row.unitPrice) || 0;
+                const vat = parseFloat(row.vat) || 0;
+                const total = quality * unitPrice;
+
+                totalWithoutVAT += total;
+
+                if (vat === 8) {
+                    totalVat8 += total * (vat / 100);
+                } else if (vat === 10) {
+                    totalVat10 += total * (vat / 100);
+                }
+
+                totalWithVAT += row.total;
+            });
+
+            return {
+                totalWithoutVAT,
+                totalVat8,
+                totalVat10,
+                totalWithVAT,
+            };
+        };
+
+        const newTotals = calculateTotals(rows);
+        setTotals(newTotals);
+    }, [rows]);
     useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
         }
     }, [isEditing]);
+    // Sai luồng VAT trong từng dòng báo giá
     useEffect(() => {
-        if (changeQuote.dataQuote && Array.isArray(changeQuote.dataQuote)) {
-            const allQuoteInfo = changeQuote.dataQuote
-                .map((item) => item?.quote_info)
-                .filter(
-                    (quoteInfo) => quoteInfo && typeof quoteInfo === "string"
-                )
-                .map((quoteInfo) => JSON.parse(quoteInfo))
-                .flat();
-            console.log(allQuoteInfo);
-            console.log(changeQuote.dataQuote);
-            if (allQuoteInfo.length) {
-                setRows(
-                    allQuoteInfo.map((item, index) => ({
-                        stt: index + 1,
-                        content: item.content || "",
-                        unit: item.unit || "",
-                        quality: item.quality || 0,
-                        unitPrice: item.price || 0,
-                        total: 0,
-                        vat: 0,
-                    }))
-                );
-                setCounter(allQuoteInfo.length);
+        const dataQuoteInfo = changeQuote.dataQuote
+            ? changeQuote.dataQuote[0]
+            : null;
+
+        if (
+            dataQuoteInfo &&
+            dataQuoteInfo.quote_info &&
+            dataQuoteInfo.quote_info.length
+        ) {
+            setRows(
+                dataQuoteInfo.quote_info.map((item, index) => ({
+                    stt: index + 1,
+                    content: item.content || "",
+                    unit: item.unit || "",
+                    quality: item.quality || 0,
+                    unitPrice: item.price || 0,
+                    total: 0,
+                    vat: 0,
+                }))
+            );
+            setCounter(dataQuoteInfo.quote_info.length);
+            if (
+                dataQuoteInfo.quote_note &&
+                Array.isArray(dataQuoteInfo.quote_note)
+            ) {
                 setNoteContent(
-                    allQuoteInfo.map((note, index) => ({
+                    dataQuoteInfo.quote_note.map((note, index) => ({
                         id: index,
                         note_content: note.note,
                     }))
                 );
-                setAutoIncrementId(allQuoteInfo.length);
+            } else {
+                setNoteContent([]);
             }
+            setAutoIncrementId(dataQuoteInfo.quote_info.length);
+        } else {
+            setRows([createEmptyRow(1)]);
+            setCounter(0);
+            setNoteContent([]);
+            setAutoIncrementId(0);
         }
     }, [changeQuote]);
     return (
@@ -262,6 +324,9 @@ const Export_Quote = ({ auth }) => {
             <Head title="Báo Giá" />
             <div className="lg:w-[60%] md:w-[90%] m-auto p-1">
                 <div className="p-4 mx-10 border border-black">
+                    <span className="text-red-400">
+                        (*) Bấm vào thông tin khách hàng để chỉnh sửa
+                    </span>
                     <div className="text-center">
                         <h2 className="text-2xl font-bold ">Báo Giá</h2>
                         <i className="flex flex-row justify-center">
@@ -274,7 +339,7 @@ const Export_Quote = ({ auth }) => {
                                     name="vv"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                    className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                 />
                             ) : (
                                 <p
@@ -302,7 +367,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.name_cus || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -323,7 +388,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.street || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -342,7 +407,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.district || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -364,7 +429,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.phone_number || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -387,7 +452,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.email_cus || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -534,7 +599,7 @@ const Export_Quote = ({ auth }) => {
                                                 style={{ width: "100%" }}
                                             />
                                         </td>
-                                        <td className="p-1 border border-gray-300">
+                                        <td className="p-1 border border-red-300">
                                             <input
                                                 name="unitPrice"
                                                 type="number"
@@ -546,7 +611,7 @@ const Export_Quote = ({ auth }) => {
                                                 style={{ width: "100%" }}
                                             />
                                         </td>
-                                        <td className="p-1 text-right border border-gray-300">
+                                        <td className="p-1 text-right border border-blue-300">
                                             {formatCurrencyVND(row.total)}
                                         </td>
                                         <td
@@ -587,7 +652,9 @@ const Export_Quote = ({ auth }) => {
                                         Cộng
                                     </td>
                                     <td className="border border-gray-300 ">
-                                        {formatCurrencyVND(totalWithoutVAT)}
+                                        {formatCurrencyVND(
+                                            totals.totalWithoutVAT
+                                        )}
                                     </td>
                                     <td className="border border-gray-300 "></td>
                                 </tr>
@@ -609,7 +676,9 @@ const Export_Quote = ({ auth }) => {
                                                 VAT 8%
                                             </td>
                                             <td className="border border-gray-300 ">
-                                                {formatCurrencyVND(totalVat8)}
+                                                {formatCurrencyVND(
+                                                    totals.totalVat8
+                                                )}
                                             </td>
                                             <td className="border border-gray-300 "></td>
                                         </tr>
@@ -627,7 +696,9 @@ const Export_Quote = ({ auth }) => {
                                                 VAT 10%
                                             </td>
                                             <td className="border border-gray-300 ">
-                                                {formatCurrencyVND(totalVat10)}
+                                                {formatCurrencyVND(
+                                                    totals.totalVat10
+                                                )}
                                             </td>
                                             <td className="border border-gray-300 "></td>
                                         </tr>
@@ -642,7 +713,7 @@ const Export_Quote = ({ auth }) => {
                                             </td>
                                             <td className="border border-gray-300 ">
                                                 {formatCurrencyVND(
-                                                    totalWithVAT
+                                                    totals.totalWithVAT
                                                 )}
                                             </td>
                                             <td className="border border-gray-300 "></td>

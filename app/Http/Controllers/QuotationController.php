@@ -52,6 +52,15 @@ class QuotationController extends Controller
                 $seri_imag .= 'assets/images/work_assignment/' . $re->id_work_has . '/quote/' . $name . ',';
             }
         }
+        if(isset($re->quote_date))
+        {
+            $quote_date = $re->quote_date;
+        }
+        else
+        {
+            $quote_date = date('Y-m-d');
+        }
+        // dd($ac);
         // tạo thông tin báo giá khảo sát
         //  ac 1 tạo thông tin trực tiếp trên bảng work_assignments, ac 2 tạo thông tin trên bảng quotations, ac 3 trả thông tin cho bảng work
         // dd($seri_imag);
@@ -91,6 +100,7 @@ class QuotationController extends Controller
                 'quote_date' => $re->quote_date,
                 'quote_info' => $re->quote_info, // Trường này dạng JSON
                 'quote_image' => $seri_imag,
+                'quote_date'=>$quote_date,
                 'quote_total_price' => $quote_total_price,
                 'vat' => $re->vat,
             ]);
@@ -178,15 +188,15 @@ class QuotationController extends Controller
             return response()->json(['error' => 'Quotation not found'], 404);
         }
 
-        $quote->id_work_has = $request->id_work_has;
-        $quote->id_auth = $request->auth_id;
-        $quote->quote_date = date('d-m-Y');
-        $quote->quote_info = $request->quote_info; // Dữ liệu này dạng JSON
-        $quote->quote_cus_info = $request->quote_cus_info;
-        $quote->quote_user_info = $request->quote_user_info;
-        $quote->quote_total_price = $request->quote_total_price;
-        $quote->quote_note = $request->quote_note;
-        $quote->vat = $request->vat;
+        $id_work_has = $request->id_work_has;
+        $id_auth = $request->auth_id;
+        $quote_date = date('d-m-Y');
+        $quote_info = $request->quote_info; // Dữ liệu này dạng JSON
+        $quote_cus_info = $request->quote_cus_info;
+        $quote_user_info = $request->quote_user_info;
+        $quote_total_price = $request->quote_total_price;
+        $quote_note = $request->quote_note;
+        $vat = $request->vat;
 
         // Xóa hình ảnh cũ nếu có yêu cầu cập nhật hình ảnh mới
         if ($request->hasFile('image_work')) {
@@ -194,19 +204,29 @@ class QuotationController extends Controller
             $seri_imag = '';
             $images = $request->file('image_work');
             foreach ($images as $image) {
-                $name = $request->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
-                $image->move('assets/images/' . $request->id_work_has . '/quote', $name);
-                $seri_imag .= 'assets/images/' . $request->id_work_has . '/quote/' . $name . ',';
+                $name = $id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
+                $image->move('assets/images/' . $id_work_has . '/quote', $name);
+                $seri_imag .= 'assets/images/' . $id_work_has . '/quote/' . $name . ',';
             }
-            $quote->quote_image = $seri_imag;
+            $quote_image = $seri_imag;
         }
 
-        $quote->save();
+        Quotation::where($quote_id)->update([
+            'id_auth'=>$id_auth,    
+            'quote_date'=>$quote_date,     
+            'quote_info'=>$quote_info,    
+            'quote_total_price'=>$quote_total_price, 
+            'quote_image'=>$quote_image,
+            'quote_note'=>$quote_note,   
+            'quote_cus_info'=>$quote_cus_info,    
+            'quote_user_info'=>$quote_user_info
+        ]);
+        
 
-        WorksAssignment::where('id', '=', $request->id_work_has)->update(['status_work' => 3]);
+        WorksAssignment::where('id', '=', $id_work_has)->update(['status_work' => 3]);
 
-        $his_work = '[{"id_worker": null,"auth_id":"' . $request->auth_id . '","action":"capnhatbaogia","time":"' . date('Y-m-d H:m:s') . '"}]';
-        WorksAssignmentController::insertHisWork($request->id_work_has, $his_work);
+        $his_work = '[{"id_worker": null,"auth_id":"' . $id_auth . '","action":"capnhatbaogia","time":"' . date('Y-m-d H:m:s') . '"}]';
+        WorksAssignmentController::insertHisWork($id_work_has, $his_work);
 
         if ($quote) {
             return response()->json(['success' => true, 'message' => 'Quotation updated successfully'], 200);

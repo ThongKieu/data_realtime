@@ -139,22 +139,33 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
         try {
-            const response = await fetch(
-                host + `api/web/works?dateCheck=${selectedDate}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                    },
-                    mode: "no-cors",
-                    body: formData1,
+            if (
+                formData.work_content != "undefined" ||
+                formData.work_content != " " ||
+                formData.phone_number != "undefined" ||
+                formData.phone_number != " "
+            ) {
+                const response = await fetch(
+                    host + `api/web/works?dateCheck=${selectedDate}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                        },
+                        mode: "no-cors",
+                        body: formData1,
+                    }
+                );
+                if (response.status === 200) {
+                    socketFTB.emit("addWorkTo_Server", formData);
+                    handleOpen();
+                } else if (response.status === 422) {
+                    alert(
+                        `Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`
+                    );
                 }
-            );
-            if (response.status === 200) {
-                socketFTB.emit("addWorkTo_Server", formData);
-                handleOpen();
-            } else if (response.status === 422) {
+            } else {
                 alert(
                     `Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`
                 );
@@ -162,7 +173,7 @@ function FloatingButton() {
         } catch (error) {
             console.log(error);
         } finally {
-            console.log('test thanh cong', formData);
+            console.log("test thanh cong", formData);
             setFormData({
                 member_read: 1,
                 kind_work: 1,

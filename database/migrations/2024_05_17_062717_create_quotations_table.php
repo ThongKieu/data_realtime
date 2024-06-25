@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('quote_note', 1000)->nullable();
             $table->string('quote_cus_info', 1000)->nullable();
             $table->string('quote_user_info', 1000)->nullable();
+            $table->string('quote_work_content', 200)->nullable();
             $table->tinyInteger('vat')->default(0);
             $table->integer('quote_total_price')->default(0);
             $table->tinyInteger('quote_status')->default(0);

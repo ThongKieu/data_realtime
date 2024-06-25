@@ -179,7 +179,7 @@ class QuotationController extends Controller
     }
     public function update(Request $request)
     {
-
+        // dd($request);
         $quote_id = $request->quote_id;
         // dd($quote_id);
         $quote = Quotation::find($quote_id);
@@ -197,6 +197,7 @@ class QuotationController extends Controller
         $quote_total_price = $request->quote_total_price;
         $quote_note = $request->quote_note;
         $vat = $request->vat;
+        $quote_work_content = $request->quote_work_content;
 
         // Xóa hình ảnh cũ nếu có yêu cầu cập nhật hình ảnh mới
         if ($request->hasFile('image_work')) {
@@ -219,7 +220,9 @@ class QuotationController extends Controller
             // 'quote_image'=>$quote_image,
             'quote_note'=>$quote_note,
             'quote_cus_info'=>$quote_cus_info,
-            'quote_user_info'=>$quote_user_info
+            'quote_user_info'=>$quote_user_info,
+            'vat'=>$vat,
+            'quote_work_content'=>$quote_work_content
         ]);
 
 

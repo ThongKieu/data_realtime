@@ -248,7 +248,7 @@ class QuotationController extends Controller
         if ($data == null) {
             $data = ['data' => 'Null'];
         }
-
+        // dd($data);
         $pdf = FacadePdf::loadView('pdf.pdftemplate', array('data' => $data))
             ->setOption(['dpi' => 150, 'defaultFont' => ' Times New Roman, Times, serif'])
             ->setPaper('a4', 'vertical');

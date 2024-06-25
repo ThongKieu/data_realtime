@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@material-tailwind/react";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import {
+    PlusCircleIcon,
+    PencilSquareIcon,
+    TrashIcon,XCircleIcon,ArrowPathIcon
+} from "@heroicons/react/24/outline";
 import { useWindowSize } from "@/Core/Resize";
 import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 const Export_Quote = ({ auth }) => {
-    const [dataLocation, setDataLocation] = useState("");
+    const [dataLocation, setDataLocation] = useState([]);
     const data_unit = [
         { id_unit: "Bộ", unit_quote: "Bộ" },
         { id_unit: "Cái", unit_quote: "Cái" },
@@ -19,20 +23,26 @@ const Export_Quote = ({ auth }) => {
         { id_unit: "Điểm", unit_quote: "Điểm" },
         { id_unit: "Mối", unit_quote: "Mối" },
     ];
-
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState(null);
     const [changeQuote, setChangeQuote] = useState(dataLocation);
+    const [rows, setRows] = useState([]);
     const [authQuote, setAuthQuote] = useState(auth);
-    const { width, height } = useWindowSize(300);
+    const { width, height } = useWindowSize(325);
     const [counter, setCounter] = useState(1);
-    const [rows, setRows] = useState([createEmptyRow(1)]);
+    const [totals, setTotals] = useState({
+        totalWithoutVAT: 0,
+        totalVat8: 0,
+        totalVat10: 0,
+        totalWithVAT: 0,
+    });
     const [noteContent, setNoteContent] = useState([]);
     const [newNoteValue, setNewNoteValue] = useState("");
+    const [editNoteValue, setEditNoteValue] = useState("");
     const [autoIncrementId, setAutoIncrementId] = useState(1);
     const [isVatChecked, setIsVatChecked] = useState(false);
-    function createEmptyRow(counter) {
+    const createEmptyRow = (counter) => {
         return {
             stt: counter,
             content: "",
@@ -42,7 +52,40 @@ const Export_Quote = ({ auth }) => {
             total: 0,
             vat: 0,
         };
-    }
+    };
+    const calculateTotals = (rows) => {
+        let totalWithoutVAT = 0;
+        let totalVat8 = 0;
+        let totalVat10 = 0;
+        let totalWithVAT = 0;
+
+        rows.forEach((row) => {
+            const quality = parseFloat(row.quality) || 0;
+            const unitPrice = parseFloat(row.unitPrice) || 0;
+            const vat = parseFloat(row.vat) || 0;
+            const total = quality * unitPrice; // Total without VAT
+
+            totalWithoutVAT += total;
+
+            if (vat === 8) {
+                totalVat8 += total * (vat / 100);
+            } else if (vat === 10) {
+                totalVat10 += total * (vat / 100);
+            }
+
+            // Calculate total with VAT included
+            const totalWithCurrentVAT = total * (1 + vat / 100);
+            totalWithVAT += totalWithCurrentVAT;
+        });
+
+        return {
+            totalWithoutVAT,
+            totalVat8,
+            totalVat10,
+            totalWithVAT,
+        };
+    };
+
     const handleEdit = (field) => {
         setIsEditing(true);
         setEditingField(field);
@@ -61,15 +104,8 @@ const Export_Quote = ({ auth }) => {
         }));
     };
 
-    const handleVatCheck = () => {
+    const handleCheckboxChange = () => {
         setIsVatChecked(!isVatChecked);
-        if (!isVatChecked) {
-            const updatedRows = rows.map((row) => ({ ...row, vat: 0 }));
-            const { totalWithoutVAT, totalVat8, totalVat10, totalWithVAT } =
-                calculateTotals(updatedRows);
-            setRows(updatedRows);
-            console.log(totalWithoutVAT);
-        }
     };
 
     const handleInputChange = (index, e) => {
@@ -86,8 +122,8 @@ const Export_Quote = ({ auth }) => {
             const total = quality * unitPrice * (1 + vat / 100);
             updatedRows[index].total = total;
         }
-
-        setRows(updatedRows);
+        setRows(updatedRows); // Update the rows state
+        setTotals(calculateTotals(updatedRows)); // Recalculate totals
     };
 
     const handleAddRow = () => {
@@ -106,45 +142,56 @@ const Export_Quote = ({ auth }) => {
         }
     };
 
-    const calculateTotals = (rows) => {
-        let totalWithoutVAT = 0;
-        let totalVat8 = 0;
-        let totalVat10 = 0;
-        let totalWithVAT = 0;
-
-        rows.forEach((row) => {
-            const quality = parseFloat(row.quality) || 0;
-            const unitPrice = parseFloat(row.unitPrice) || 0;
-            const vat = parseFloat(row.vat) || 0;
-            const total = quality * unitPrice;
-
-            totalWithoutVAT += total;
-
-            if (vat === 8) {
-                totalVat8 += total * (vat / 100);
-            } else if (vat === 10) {
-                totalVat10 += total * (vat / 100);
-            }
-
-            totalWithVAT += row.total;
-        });
-
-        return {
-            totalWithoutVAT,
-            totalVat8,
-            totalVat10,
-            totalWithVAT,
-        };
+    const handleDeleteNote = (id) => {
+        setNoteContent((prevNotes) =>
+            prevNotes.filter((note) => note.id !== id)
+        );
     };
 
-    const { totalWithoutVAT, totalVat8, totalVat10, totalWithVAT } =
-        calculateTotals(rows);
+    const handleEditNote = (id) => {
+        const noteToEdit = noteContent.find((note) => note.id === id);
+        setEditNoteValue(noteToEdit.note_content);
+        setIsEditing(id);
+    };
 
+    const handleUpdateNote = () => {
+        setNoteContent((prevNotes) =>
+            prevNotes.map((note) =>
+                note.id === isEditing
+                    ? { ...note, note_content: editNoteValue }
+                    : note
+            )
+        );
+        setEditNoteValue("");
+        setIsEditing(null);
+    };
+
+    const handleCancelEdit = () => {
+        setEditNoteValue("");
+        setIsEditing(null);
+    };
+
+    // const handleAddNote = () => {
+    //     if (newNoteValue.trim() !== "") {
+    //         setNoteContent((prevNotes) => [
+    //             ...prevNotes,
+    //             { id: autoIncrementId, note_content: newNoteValue },
+    //         ]);
+    //         setAutoIncrementId((prevId) => prevId + 1);
+    //         setNewNoteValue("");
+    //     }
+    // };
     const handleSubmit = async (quoteID) => {
         const formData = new FormData();
         formData.append("quote_id", quoteID);
         formData.append("auth_id", authQuote.user.id);
-        formData.append("id_work_has", changeQuote.id_cus);
+        formData.append("quote_work_content", changeQuote.quote_work_content);
+        formData.append(
+            "id_work_has",
+            dataLocation.ac == 2
+                ? changeQuote.dataQuote[0]?.id_work_has
+                : dataLocation.id_cus
+        );
         formData.append(
             "quote_user_info",
             JSON.stringify([
@@ -164,7 +211,7 @@ const Export_Quote = ({ auth }) => {
                     name: changeQuote.name_cus,
                     email_cus: changeQuote.email_cus,
                     address: `${changeQuote.street}, ${changeQuote.district}`,
-                    phone: changeQuote.phone_number,
+                    phone: changeQuote.phone,
                 },
             ])
         );
@@ -183,8 +230,17 @@ const Export_Quote = ({ auth }) => {
             )
         );
 
-        formData.append("vat", isVatChecked ? 1 : 0);
-        formData.append("quote_total_price", totalWithVAT);
+        formData.append(
+            "vat",
+            dataLocation.ac == 2
+                ? !isVatChecked
+                    ? 1
+                    : 0
+                : !isVatChecked
+                ? 0
+                : 1
+        );
+        formData.append("quote_total_price", totals.totalWithVAT);
         formData.append("quote_note", JSON.stringify(noteContent));
 
         const requestOptions = {
@@ -208,53 +264,121 @@ const Export_Quote = ({ auth }) => {
         }
     };
     useEffect(() => {
+        if (dataLocation) {
+            const mappedDataQuote =
+                dataLocation.dataQuote?.map((item) => ({
+                    id: item.id,
+                    id_auth: item.id_auth || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    id_work_has: item.id_work_has || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_cus_info: JSON.parse(item.quote_cus_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_info: JSON.parse(item.quote_info) || "",
+                    quote_date: item.quote_date || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_image: item.quote_image || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_note: JSON.parse(item.quote_note) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_status: item.quote_status || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_total_price: item.quote_total_price || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý
+                    quote_user_info: JSON.parse(item.quote_user_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    vat: item.vat || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý
+                })) || [];
+
+            let parsedCusInfo = null;
+            if (
+                dataLocation.dataQuote &&
+                dataLocation.dataQuote[0] &&
+                dataLocation.dataQuote[0].quote_cus_info
+            ) {
+                try {
+                    parsedCusInfo = JSON.parse(
+                        dataLocation.dataQuote[0].quote_cus_info
+                    )[0];
+                } catch (error) {
+                    console.error("Error parsing quote_cus_info", error);
+                }
+            }
+            console.log("parsedCusInfo", parsedCusInfo);
+            setChangeQuote({
+                id: dataLocation.id,
+                quote_work_content:
+                    dataLocation.dataQuote &&
+                    dataLocation.dataQuote[0] &&
+                    dataLocation.dataQuote[0].quote_work_content != null
+                        ? dataLocation.dataQuote[0].quote_work_content
+                        : "Bảo trì M&E",
+                name_cus: parsedCusInfo
+                    ? parsedCusInfo.name
+                    : dataLocation?.name_cus || "",
+                phone: parsedCusInfo
+                    ? parsedCusInfo.phone
+                    : dataLocation?.phone_number || "",
+                street: parsedCusInfo
+                    ? parsedCusInfo.address.split(",")[0].trim()
+                    : dataLocation?.street || "",
+                district: parsedCusInfo
+                    ? parsedCusInfo.address.split(",")[1].trim()
+                    : dataLocation?.district || "",
+                dataQuote: mappedDataQuote,
+            });
+        }
+        setAuthQuote(auth);
+    }, [auth, dataLocation]);
+    console.log(dataLocation);
+    useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
         setDataLocation(data);
         // Sử dụng dữ liệu được truyền tới từ trang dashboard
     }, []);
-    useEffect(() => {
-        setChangeQuote(dataLocation);
-        setAuthQuote(auth);
-    }, [auth, dataLocation]);
 
+    useEffect(() => {
+        // Tính toán tổng giá trị khi rows thay đổi
+        setTotals(calculateTotals(rows));
+    }, [rows]);
     useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
         }
     }, [isEditing]);
+    // Sai luồng VAT trong từng dòng báo giá
     useEffect(() => {
-        if (changeQuote.dataQuote && Array.isArray(changeQuote.dataQuote)) {
-            const allQuoteInfo = changeQuote.dataQuote
-                .map((item) => item?.quote_info)
-                .filter(
-                    (quoteInfo) => quoteInfo && typeof quoteInfo === "string"
-                )
-                .map((quoteInfo) => JSON.parse(quoteInfo))
-                .flat();
-            console.log(allQuoteInfo);
-            console.log(changeQuote.dataQuote);
-            if (allQuoteInfo.length) {
-                setRows(
-                    allQuoteInfo.map((item, index) => ({
-                        stt: index + 1,
-                        content: item.content || "",
-                        unit: item.unit || "",
-                        quality: item.quality || 0,
-                        unitPrice: item.price || 0,
-                        total: 0,
-                        vat: 0,
-                    }))
-                );
-                setCounter(allQuoteInfo.length);
+        const dataQuoteInfo = changeQuote.dataQuote
+            ? changeQuote.dataQuote[0]
+            : null;
+        if (
+            dataQuoteInfo &&
+            dataQuoteInfo.quote_info &&
+            dataQuoteInfo.quote_info.length
+        ) {
+            setRows(
+                dataQuoteInfo.quote_info.map((item, index) => ({
+                    stt: index + 1,
+                    content: item.content || "",
+                    unit: item.unit || "",
+                    quality: item.quality || 0,
+                    unitPrice: item.price || 0,
+                    total: 0,
+                    vat: item.vat || 0,
+                }))
+            );
+            setCounter(dataQuoteInfo.quote_info.length);
+            if (
+                dataQuoteInfo.quote_note &&
+                Array.isArray(dataQuoteInfo.quote_note)
+            ) {
                 setNoteContent(
-                    allQuoteInfo.map((note, index) => ({
+                    dataQuoteInfo.quote_note.map((note, index) => ({
                         id: index,
-                        note_content: note.note,
+                        note_content: note.note_content,
                     }))
                 );
-                setAutoIncrementId(allQuoteInfo.length);
+            } else {
+                setNoteContent([]);
             }
+            setAutoIncrementId(dataQuoteInfo.quote_info.length);
+        } else {
+            setRows([createEmptyRow(1)]);
+            setCounter(0);
+            setNoteContent([]);
+            setAutoIncrementId(0);
         }
     }, [changeQuote]);
     return (
@@ -262,26 +386,32 @@ const Export_Quote = ({ auth }) => {
             <Head title="Báo Giá" />
             <div className="lg:w-[60%] md:w-[90%] m-auto p-1">
                 <div className="p-4 mx-10 border border-black">
+                    <span className="text-red-400">
+                        (*) Bấm vào thông tin khách hàng để chỉnh sửa
+                    </span>
                     <div className="text-center">
                         <h2 className="text-2xl font-bold ">Báo Giá</h2>
                         <i className="flex flex-row justify-center">
                             (V/v:
-                            {isEditing && editingField === "vv" ? (
+                            {isEditing &&
+                            editingField === "quote_work_content" ? (
                                 <input
                                     ref={inputRef}
-                                    id="vv"
-                                    value={changeQuote.vv || ""}
-                                    name="vv"
+                                    id="quote_work_content"
+                                    value={changeQuote.quote_work_content || ""}
+                                    name="quote_work_content"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                    className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                 />
                             ) : (
                                 <p
-                                    onClick={() => handleEdit("vv")}
+                                    onClick={() =>
+                                        handleEdit("quote_work_content")
+                                    }
                                     className="text-center"
                                 >
-                                    Vận chuyển
+                                    {changeQuote.quote_work_content}
                                 </p>
                             )}
                             )
@@ -302,7 +432,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.name_cus || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -323,7 +453,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.street || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -342,7 +472,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.district || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -355,25 +485,22 @@ const Export_Quote = ({ auth }) => {
                             </div>
                             <div>
                                 <span className="pr-1 ">Số Điện Thoại:</span>
-                                {isEditing &&
-                                editingField === "phone_number" ? (
+                                {isEditing && editingField === "phone" ? (
                                     <input
                                         ref={inputRef}
-                                        id="phone_number"
-                                        name="phone_number"
-                                        value={changeQuote.phone_number || ""}
+                                        id="phone"
+                                        name="phone"
+                                        value={changeQuote.phone || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
                                         className="font-bold text-black"
-                                        onClick={() =>
-                                            handleEdit("phone_number")
-                                        }
+                                        onClick={() => handleEdit("phone")}
                                     >
-                                        {changeQuote.phone_number}
+                                        {changeQuote.phone}
                                     </span>
                                 )}
                             </div>
@@ -387,7 +514,7 @@ const Export_Quote = ({ auth }) => {
                                         value={changeQuote.email_cus || ""}
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        className="text-center bg-white border-none rounded-none outline-none w-[100px]"
+                                        className="p-1 text-center bg-white border border-gray-600 rounded-lg outline-none w-fit"
                                     />
                                 ) : (
                                     <span
@@ -468,109 +595,147 @@ const Export_Quote = ({ auth }) => {
                                         VAT (%){" "}
                                         <input
                                             type="checkbox"
-                                            checked={isVatChecked}
-                                            onChange={handleVatCheck}
+                                            checked={
+                                                changeQuote.dataQuote &&
+                                                changeQuote.dataQuote[0] &&
+                                                changeQuote.dataQuote[0]?.vat ==
+                                                    1
+                                                    ? !isVatChecked == true
+                                                    : !isVatChecked == false
+                                            }
+                                            onChange={() =>
+                                                handleCheckboxChange()
+                                            }
                                         />
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className="hover:bg-gray-100"
-                                    >
-                                        <td className="p-1 text-center border border-gray-300 fit-content">
-                                            {row.stt}
-                                        </td>
-                                        <td className="p-1 border border-gray-300">
-                                            <textarea
-                                                name="content"
-                                                value={row.content}
-                                                onChange={(e) =>
-                                                    handleInputChange(index, e)
-                                                }
-                                                className="w-fit"
-                                                style={{ width: "100%" }}
-                                            />
-                                        </td>
-                                        <td className="p-1 border border-gray-300">
-                                            <select
-                                                name="unit"
-                                                value={row.unit}
-                                                onChange={(e) =>
-                                                    handleInputChange(index, e)
-                                                }
-                                                className="w-fit"
-                                                style={{ width: "100%" }}
-                                            >
-                                                {data_unit.map(
-                                                    (result, index) => {
-                                                        return (
-                                                            <option
-                                                                value={
-                                                                    result.id_unit
-                                                                }
-                                                                key={index}
-                                                            >
-                                                                {
-                                                                    result.unit_quote
-                                                                }
-                                                            </option>
-                                                        );
-                                                    }
-                                                )}
-                                            </select>
-                                        </td>
-                                        <td className="p-1 border border-gray-300">
-                                            <input
-                                                name="quality"
-                                                type="number"
-                                                value={row.quality}
-                                                onChange={(e) =>
-                                                    handleInputChange(index, e)
-                                                }
-                                                className="w-fit"
-                                                style={{ width: "100%" }}
-                                            />
-                                        </td>
-                                        <td className="p-1 border border-gray-300">
-                                            <input
-                                                name="unitPrice"
-                                                type="number"
-                                                value={row.unitPrice}
-                                                onChange={(e) =>
-                                                    handleInputChange(index, e)
-                                                }
-                                                className="w-fit"
-                                                style={{ width: "100%" }}
-                                            />
-                                        </td>
-                                        <td className="p-1 text-right border border-gray-300">
-                                            {formatCurrencyVND(row.total)}
-                                        </td>
-                                        <td
-                                            className={`p-1 border border-gray-300 `}
+                                {rows.map((row, index) => {
+                                    return (
+                                        <tr
+                                            key={index}
+                                            className="text-center hover:bg-gray-100"
                                         >
-                                            <select
-                                                name="vat"
-                                                value={row.vat}
-                                                onChange={(e) =>
-                                                    handleInputChange(index, e)
-                                                }
-                                                className="w-fit"
-                                                style={{ width: "100%" }}
-                                                disabled={!isVatChecked}
+                                            <td className="p-1 text-center border border-gray-300 fit-content">
+                                                {row.stt}
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <textarea
+                                                    name="content"
+                                                    value={row.content}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="rounded-md w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <select
+                                                    name="unit"
+                                                    value={row.unit}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="p-1 rounded-md w-fit"
+                                                    style={{ width: "70%" }}
+                                                >
+                                                    {data_unit.map(
+                                                        (result, index) => {
+                                                            return (
+                                                                <option
+                                                                    value={
+                                                                        result.id_unit
+                                                                    }
+                                                                    key={index}
+                                                                >
+                                                                    {
+                                                                        result.unit_quote
+                                                                    }
+                                                                </option>
+                                                            );
+                                                        }
+                                                    )}
+                                                </select>
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="quality"
+                                                    type="number"
+                                                    value={row.quality}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="p-1 rounded-md w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <input
+                                                    name="unitPrice"
+                                                    type="number"
+                                                    value={row.unitPrice}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="p-1 rounded-md w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
+                                            <td className="p-1 text-right border border-gray-300">
+                                                {formatCurrencyVND(row.total)}
+                                            </td>
+                                            <td
+                                                className={`p-1 border border-gray-300 `}
                                             >
-                                                <option value={0}>
-                                                    chưa VAT
-                                                </option>
-                                                <option value={8}>8%</option>
-                                                <option value={10}>10%</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                <select
+                                                    name="vat"
+                                                    value={row.vat}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="p-1 rounded-md w-fit"
+                                                    style={{ width: "100%" }}
+                                                    disabled={
+                                                        changeQuote.dataQuote &&
+                                                        changeQuote
+                                                            .dataQuote[0] &&
+                                                        changeQuote.dataQuote[0]
+                                                            ?.vat == 1
+                                                            ? isVatChecked
+                                                            : !isVatChecked
+                                                    }
+                                                >
+                                                    <option value={0}>
+                                                        chưa VAT
+                                                    </option>
+                                                    <option value={8}>
+                                                        8%
+                                                    </option>
+                                                    <option value={10}>
+                                                        10%
+                                                    </option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 <tr className="font-bold text-center text-black ">
                                     <td className="relative border border-gray-300 ">
                                         <PlusCircleIcon
@@ -587,17 +752,86 @@ const Export_Quote = ({ auth }) => {
                                         Cộng
                                     </td>
                                     <td className="border border-gray-300 ">
-                                        {formatCurrencyVND(totalWithoutVAT)}
+                                        {formatCurrencyVND(
+                                            totals.totalWithoutVAT
+                                        )}
                                     </td>
                                     <td className="border border-gray-300 "></td>
                                 </tr>
-                                {isVatChecked == false ? (
-                                    ""
-                                ) : (
+                                {changeQuote.dataQuote &&
+                                changeQuote.dataQuote[0] &&
+                                changeQuote.dataQuote[0]?.vat == 1 ? (
+                                    !isVatChecked && (
+                                        <>
+                                            <tr
+                                                className={`font-bold text-center text-black ${
+                                                    totals.totalVat8 == 0
+                                                        ? "hidden"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <td className="border border-gray-300 "></td>
+                                                <td className="border border-gray-300 "></td>
+                                                <td
+                                                    colSpan={3}
+                                                    className="border border-gray-300 "
+                                                >
+                                                    VAT 8%
+                                                </td>
+                                                <td className="border border-gray-300 ">
+                                                    {formatCurrencyVND(
+                                                        totals.totalVat8
+                                                    )}
+                                                </td>
+                                                <td className="border border-gray-300 "></td>
+                                            </tr>
+                                            <tr
+                                                className={`font-bold text-center text-black ${
+                                                    totals.totalVat10 == 0
+                                                        ? "hidden"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <td className="border border-gray-300 "></td>
+                                                <td className="border border-gray-300 "></td>
+                                                <td
+                                                    colSpan={3}
+                                                    className="border border-gray-300 "
+                                                >
+                                                    VAT 10%
+                                                </td>
+                                                <td className="border border-gray-300 ">
+                                                    {formatCurrencyVND(
+                                                        totals.totalVat10
+                                                    )}
+                                                </td>
+                                                <td className="border border-gray-300 "></td>
+                                            </tr>
+                                            <tr className="font-bold text-center text-black">
+                                                <td className="border border-gray-300 "></td>
+                                                <td className="border border-gray-300 "></td>
+                                                <td
+                                                    colSpan={3}
+                                                    className="border border-gray-300 "
+                                                >
+                                                    Tổng Cộng
+                                                </td>
+                                                <td className="border border-gray-300 ">
+                                                    {formatCurrencyVND(
+                                                        totals.totalWithVAT
+                                                    )}
+                                                </td>
+                                                <td className="border border-gray-300 "></td>
+                                            </tr>
+                                        </>
+                                    )
+                                ) : isVatChecked == true ? (
                                     <>
                                         <tr
                                             className={`font-bold text-center text-black ${
-                                                totalVat8 == 0 ? "hidden" : ""
+                                                totals.totalVat8 == 0
+                                                    ? "hidden"
+                                                    : ""
                                             }`}
                                         >
                                             <td className="border border-gray-300 "></td>
@@ -609,13 +843,17 @@ const Export_Quote = ({ auth }) => {
                                                 VAT 8%
                                             </td>
                                             <td className="border border-gray-300 ">
-                                                {formatCurrencyVND(totalVat8)}
+                                                {formatCurrencyVND(
+                                                    totals.totalVat8
+                                                )}
                                             </td>
                                             <td className="border border-gray-300 "></td>
                                         </tr>
                                         <tr
                                             className={`font-bold text-center text-black ${
-                                                totalVat10 == 0 ? "hidden" : ""
+                                                totals.totalVat10 == 0
+                                                    ? "hidden"
+                                                    : ""
                                             }`}
                                         >
                                             <td className="border border-gray-300 "></td>
@@ -627,7 +865,9 @@ const Export_Quote = ({ auth }) => {
                                                 VAT 10%
                                             </td>
                                             <td className="border border-gray-300 ">
-                                                {formatCurrencyVND(totalVat10)}
+                                                {formatCurrencyVND(
+                                                    totals.totalVat10
+                                                )}
                                             </td>
                                             <td className="border border-gray-300 "></td>
                                         </tr>
@@ -642,34 +882,88 @@ const Export_Quote = ({ auth }) => {
                                             </td>
                                             <td className="border border-gray-300 ">
                                                 {formatCurrencyVND(
-                                                    totalWithVAT
+                                                    totals.totalWithVAT
                                                 )}
                                             </td>
                                             <td className="border border-gray-300 "></td>
                                         </tr>
                                     </>
+                                ) : (
+                                    ""
                                 )}
                             </tbody>
                         </table>
                         <div id="note_Quote" className="mt-4">
                             <h2>*Ghi Chú</h2>
                             {noteContent.map((note, index) => (
-                                <p key={index}>
-                                    <strong>{note.id}:</strong>
-                                    {note.note_content}
-                                </p>
+                                <div key={index}>
+                                    {isEditing === note.id ? (
+                                        <div className="flex flex-row items-center">
+                                            <input
+                                                type="text"
+                                                value={editNoteValue}
+                                                onChange={(e) =>
+                                                    setEditNoteValue(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="p-1 pl-2 ml-2 mb-2 w-[80%] bg-white border border-gray-600 rounded-lg outline-none "
+                                            />
+                                            <div className="flex flex-row">
+                                                <ArrowPathIcon
+                                                    onClick={handleUpdateNote}
+                                                    className="w-6 h-6 text-blue-500 cursor-pointer"
+                                                />
+                                                <XCircleIcon
+                                                    onClick={handleCancelEdit}
+                                                    className="w-6 h-6 text-red-500 cursor-pointer"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-row ">
+                                            <div >
+                                                <span>
+                                                    <strong>{note.id}:</strong>
+
+                                                </span>
+                                                <span className="mx-2">{note.note_content}</span>
+                                            </div>
+                                            <div className="flex flex-row">
+                                                <PencilSquareIcon
+                                                    onClick={() =>
+                                                        handleEditNote(note.id)
+                                                    }
+                                                    className="w-6 h-6 text-blue-500 cursor-pointer"
+                                                />
+                                                <TrashIcon
+                                                    onClick={() =>
+                                                        handleDeleteNote(
+                                                            note.id
+                                                        )
+                                                    }
+                                                    className="w-6 h-6 text-red-500 cursor-pointer"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
-                            <input
-                                type="text"
-                                value={newNoteValue}
-                                onChange={(e) =>
-                                    setNewNoteValue(e.target.value)
-                                }
-                                placeholder="Nhập ghi chú mới..."
-                            />
-                            <button onClick={handleAddNote}>
-                                Thêm Ghi Chú
-                            </button>
+                            <div className="flex flex-row items-center">
+                                <input
+                                    type="text"
+                                    value={newNoteValue}
+                                    onChange={(e) =>
+                                        setNewNoteValue(e.target.value)
+                                    }
+                                    placeholder="Nhập ghi chú mới..."
+                                    className="w-[80%] p-1 pl-2 bg-white border border-gray-600 rounded-lg outline-none"
+                                />
+                                <PlusCircleIcon
+                                    onClick={handleAddNote}
+                                    className="w-6 h-6 ml-2 text-green-500 cursor-pointer"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

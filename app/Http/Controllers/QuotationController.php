@@ -28,9 +28,9 @@ class QuotationController extends Controller
                 'income_total',
                 'bill_imag']
             );
-            return response()->json(['data' => $quote_work_has, 'ac' => 2]);
+            return response()->json(['data' => $quote_work_has, 'ac' => 1]);
         } else {
-            return response()->json(['data' => $quote, 'ac' => 1]);
+            return response()->json(['data' => $quote, 'ac' => 2]);
         }
 
     }
@@ -179,7 +179,7 @@ class QuotationController extends Controller
     }
     public function update(Request $request)
     {
-
+        // dd($request);
         $quote_id = $request->quote_id;
         // dd($quote_id);
         $quote = Quotation::find($quote_id);
@@ -197,6 +197,7 @@ class QuotationController extends Controller
         $quote_total_price = $request->quote_total_price;
         $quote_note = $request->quote_note;
         $vat = $request->vat;
+        $quote_work_content = $request->quote_work_content;
 
         // Xóa hình ảnh cũ nếu có yêu cầu cập nhật hình ảnh mới
         if ($request->hasFile('image_work')) {
@@ -211,17 +212,19 @@ class QuotationController extends Controller
             $quote_image = $seri_imag;
         }
 
-        Quotation::where($quote_id)->update([
-            'id_auth'=>$id_auth,    
-            'quote_date'=>$quote_date,     
-            'quote_info'=>$quote_info,    
-            'quote_total_price'=>$quote_total_price, 
-            'quote_image'=>$quote_image,
-            'quote_note'=>$quote_note,   
-            'quote_cus_info'=>$quote_cus_info,    
-            'quote_user_info'=>$quote_user_info
+        Quotation::where('id','=',$quote_id)->update([
+            'id_auth'=>$id_auth,
+            'quote_date'=>$quote_date,
+            'quote_info'=>$quote_info,
+            'quote_total_price'=>$quote_total_price,
+            // 'quote_image'=>$quote_image,
+            'quote_note'=>$quote_note,
+            'quote_cus_info'=>$quote_cus_info,
+            'quote_user_info'=>$quote_user_info,
+            'vat'=>$vat,
+            'quote_work_content'=>$quote_work_content
         ]);
-        
+
 
         WorksAssignment::where('id', '=', $id_work_has)->update(['status_work' => 3]);
 
@@ -245,7 +248,7 @@ class QuotationController extends Controller
         if ($data == null) {
             $data = ['data' => 'Null'];
         }
-
+        // dd($data);
         $pdf = FacadePdf::loadView('pdf.pdftemplate', array('data' => $data))
             ->setOption(['dpi' => 150, 'defaultFont' => ' Times New Roman, Times, serif'])
             ->setPaper('a4', 'vertical');

@@ -118,10 +118,24 @@ function FloatingButton() {
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
     };
-
     //-------------------- add new order ----------------------------
     const handleAddWork = async (e) => {
         e.preventDefault();
+        // Hàm kiểm tra giá trị formData không bị undefined, null hoặc chuỗi rỗng
+        const isFormDataValid = (data) => {
+            return (
+                data.work_content &&
+                data.work_content.trim() !== "" &&
+                data.phone_number &&
+                data.phone_number.trim() !== ""
+            );
+        };
+
+        if (!isFormDataValid(formData)) {
+            alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi!`);
+            return;
+        }
+
         const formData1 = new FormData();
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
@@ -138,6 +152,7 @@ function FloatingButton() {
         formData1.append("name_cus", formData.name_cus);
         formData1.append("street", formData.street);
         formData1.append("member_read", formData.member_read);
+
         try {
             const response = await fetch(
                 host + `api/web/works?dateCheck=${selectedDate}`,
@@ -145,24 +160,24 @@ function FloatingButton() {
                     method: "POST",
                     headers: {
                         Accept: "application/json",
-                        "Content-Type": "application/json",
+                        // "Content-Type": "application/json", // Với FormData, bạn không thiết lập Content-Type, nó tự thêm đúng header.
                     },
                     mode: "no-cors",
                     body: formData1,
                 }
             );
+
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData);
                 handleOpen();
             } else if (response.status === 422) {
-                alert(
-                    `Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${response.errors}`
-                );
+                const responseData = await response.json();
+                alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${responseData.errors}`);
             }
         } catch (error) {
             console.log(error);
         } finally {
-            console.log('test thanh cong', formData);
+            console.log("test thanh cong", formData);
             setFormData({
                 member_read: 1,
                 kind_work: 1,
@@ -172,6 +187,7 @@ function FloatingButton() {
             });
         }
     };
+
 
     // ------------------------ format date -----------------
 
@@ -204,7 +220,7 @@ function FloatingButton() {
                                             ? formatExpires(
                                                   formData.phone_number
                                               )
-                                            : formData.phone_number
+                                            : formData.phone_number || ""
                                     }
                                     id="phone_number"
                                     type="text"
@@ -221,7 +237,7 @@ function FloatingButton() {
                                     id="work_content"
                                     type="text"
                                     name="work_content"
-                                    value={formData.work_content}
+                                    value={formData.work_content || ""}
                                     onChange={handleChange}
                                     required
                                 />
@@ -233,7 +249,7 @@ function FloatingButton() {
                                     id="street"
                                     type="text"
                                     name="street"
-                                    value={formData.street}
+                                    value={formData.street || ""}
                                     onChange={handleChange}
                                 />
                                 {/* <Input label="Quận" className="shadow-none" id="district"
@@ -249,7 +265,8 @@ function FloatingButton() {
                                             <option
                                                 key={index}
                                                 value={
-                                                    optionDistrict.dis_sort_name
+                                                    optionDistrict.dis_sort_name ||
+                                                    ""
                                                 }
                                             >
                                                 {optionDistrict.dis_name}
@@ -266,7 +283,7 @@ function FloatingButton() {
                                     id="work_note"
                                     type="text"
                                     name="work_note"
-                                    value={formData.work_note}
+                                    value={formData.work_note || ""}
                                     onChange={handleChange}
                                 />
                             </div>
@@ -275,7 +292,7 @@ function FloatingButton() {
                                 <Input
                                     type="text"
                                     label="Tên KH "
-                                    value={formData.name_cus}
+                                    value={formData.name_cus || ""}
                                     onChange={handleChange}
                                     id="name_cus"
                                     name="name_cus"
@@ -294,7 +311,7 @@ function FloatingButton() {
                                         className: "min-w-[72px]",
                                     }}
                                     className="shadow-none"
-                                    value={selectedDate}
+                                    value={selectedDate || ""}
                                     onChange={handleDateChange}
                                 />
                             </div>
@@ -307,7 +324,7 @@ function FloatingButton() {
                                                 id={item.code_worker}
                                                 name="kind_work"
                                                 label={item.kind_worker}
-                                                value={item.id}
+                                                value={item.id || ""}
                                                 checked={
                                                     formData.kind_work ===
                                                     item.id

@@ -966,33 +966,37 @@ const KSDialog = ({
             </DialogBody>
             <DialogFooter className="space-x-2">
                 {dataViewQuote && dataViewQuote.ac == 1 ? (
-                     <Button
-                     variant="outlined"
-                     className="px-5 py-2"
-                     color="blue"
-                     onClick={() =>
-                         handleBaoGiaClick(
-                             { ...params, Email:''},
-                             "/export-quote"
-                         )
-                     }
-                 >
-                     Chỉnh sửa báo giá 1
-                 </Button>
+                    <Button
+                        variant="outlined"
+                        className="px-5 py-2"
+                        color="blue"
+                        onClick={() =>
+                            handleBaoGiaClick(
+                                { ...params, Email: "", ac: dataViewQuote?.ac },
+                                "/export-quote"
+                            )
+                        }
+                    >
+                        Chỉnh sửa báo giá 1
+                    </Button>
                 ) : dataViewQuote && dataViewQuote.ac == 2 ? (
                     <Button
-                    variant="outlined"
-                    className="px-5 py-2"
-                    color="blue"
-                    onClick={() =>
-                        handleBaoGiaClick(
-                            { ...params, dataQuote: dataViewQuote?.data },
-                            "/export-quote"
-                        )
-                    }
-                >
-                    Chỉnh sửa báo giá 2
-                </Button>
+                        variant="outlined"
+                        className="px-5 py-2"
+                        color="blue"
+                        onClick={() =>
+                            handleBaoGiaClick(
+                                {
+                                    ...params,
+                                    dataQuote: dataViewQuote?.data,
+                                    ac: dataViewQuote?.ac,
+                                },
+                                "/export-quote"
+                            )
+                        }
+                    >
+                        Chỉnh sửa báo giá 2
+                    </Button>
                 ) : (
                     <p>Loading...</p>
                 )}

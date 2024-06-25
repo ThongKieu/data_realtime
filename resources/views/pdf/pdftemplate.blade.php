@@ -70,23 +70,22 @@
         font-weight: 700;
         text-align: right;
     }
-    .w-4
-    {
+
+    .w-4 {
         width: 400px;
     }
-    .w-1
-    {
+
+    .w-1 {
         width: 80px;
     }
-    .w-1-5
-    {
+
+    .w-1-5 {
         width: 140px;
     }
-    .w-2
-    {
+
+    .w-2 {
         width: 180px;
     }
-    
 </style>
 
 <body>
@@ -121,9 +120,7 @@
                         @foreach (json_decode($quote->quote_cus_info) as $customer)
                             <p><b>Người liên hệ: {{ $customer->name ? $customer->name : 'Quý Khách Hàng' }}</b><br>
                                 Địa chỉ: {{ $customer->address ? $customer->address : '-' }}<br>
-                                Email: @isset($customer->email)
-                               {{ $customer->email}}
-                                @endisset <br>
+                                Email: {{ $customer->email ? $customer->email : '-' }}<br>
                                 Điện thoại: {{ $customer->phone ? $customer->phone : '-' }}<br>
                             </p>
                         @endforeach
@@ -132,7 +129,7 @@
 
                         @foreach (json_decode($quote->quote_user_info) as $user)
                             <p><b>Từ: {{ $user->name ? $user->name : 'Công Ty Thợ Việt' }}</b><br>
-                                Chức vụ : {{ $user->potision ? $user->potision : 'NV Kinh Doanh' }}<br>
+                                Chức vụ : <br>
                                 Email: lienhe@thoviet.com.vn<br>
                                 ĐT : 18008122 - {{ $user->phone ? $user->phone : '0915.269.839' }}<br>
                             </p>
@@ -167,9 +164,16 @@
                         @php
                             $price = 0;
                             $total_price=0; // Khởi tạo giá trị ban đầu
-                            $vat_t = 0;
                         @endphp
                         @foreach (json_decode($quote->quote_info) as $quote_i)
+                            @php
+                                $price += $quote_i->total; // Thêm giá của mục hiện tại vào tổng
+                                $total_price += $price;
+                                $price_r =$quote_i->price * $quote_i->quality;
+                                $vat_r =$quote_i->vat*$price_r;
+                                $vat_t =  $vat_r;
+
+                            @endphp
                             <tr>
                                 @php
                                     $price_r = $quote_i->price* $quote_i->quality;
@@ -179,34 +183,34 @@
                                 <td class="td-c-m w-4">{{ $quote_i->content }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->unit }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->quality }}</td>
-                                <td class="td-c-e2 w-1-5">{{ number_format($quote_i->price, 0) }}</td>
-                                <td class=" td-c-e2 w-1-5">{{ number_format($price_r, 0) }}</td>
-                                <td class=" td-c-e w-1-5" > </td> <!-- để lấp cột cuối -->
+                                <td class="td-c-e2 w-1-5">{{ number_format($quote_i->price, 2) }}</td>
+                                <td class=" td-c-e2 w-1-5">{{ number_format($quote_i->price, 2) }}</td>
+                                <td class=" td-c-e w-1-5" >{{ $quote_i->note }}</td> <!-- để lấp cột cuối -->
                             </tr>
                             @php
                                 $price += $quote_i->total; // Thêm giá của mục hiện tại vào tổng
-                                $vat_t +=  $vat_r;
+
                                 $total_price +=$price;
                             @endphp
                         @endforeach
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Cộng</td>
-                            <td colspan="2" class="td-c-e">{{number_format($price, 0)}}</td>
+                            <td colspan="2" class="td-c-e">{{ number_format($price, 0) }}</td>
                             <td></td>
                         </tr>
                         @if ($quote->vat == 1)
                             <tr>
                                 <td colspan="2"></td>
                                 <td colspan="2" class="td-c-m">Thuế GTGT</td>
-                                <td colspan="2" class="td-c-e">{{number_format($vat_r, 0) }}</td>
+                                <td colspan="2" class="td-c-e">{{ $quote->vat }}</td>
                                 <td></td>
                             </tr>
                         @endif
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="2" class="td-c-m">Tổng Cộng</td>
-                            <td colspan="2" class="td-c-e">{{number_format($total_price, 0)}}</td>
+                            <td colspan="2" class="td-c-e">{{ number_format($total_price, 0) }}</td>
                             <td></td>
                         </tr>
                     </tbody>

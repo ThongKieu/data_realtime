@@ -17,7 +17,7 @@ class QuotationController extends Controller
     {
         $id = $request->id_work_has;
 
-        $quote = Quotation::where('id_work_has', '=', $id)->get();
+        $quote = Quotation::where('id_work_has', '=', $id)->value(['id_work_has', 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status','quote_image','quote_note','quote_cus_info','quote_user_info']);
         //TH1 : Không có báo giá trường trong bảng báo giá
         if (count($quote) == 0) {
             // Thợ khảo sát báo giá báo cáo bằng hình chụp, tổng giá tiền

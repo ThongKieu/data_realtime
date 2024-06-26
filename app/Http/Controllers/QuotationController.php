@@ -28,9 +28,9 @@ class QuotationController extends Controller
                 'income_total',
                 'bill_imag']
             );
-            return response()->json(['data' => $quote_work_has, 'ac' => 1]);
+            return response()->json(['data' => $quote_work_has, 'ac' => 2]);
         } else {
-            return response()->json(['data' => $quote, 'ac' => 2]);
+            return response()->json(['data' => $quote, 'ac' => 1]);
         }
 
     }

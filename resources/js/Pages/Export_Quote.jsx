@@ -170,17 +170,6 @@ const Export_Quote = ({ auth }) => {
         setEditNoteValue("");
         setIsEditing(null);
     };
-
-    // const handleAddNote = () => {
-    //     if (newNoteValue.trim() !== "") {
-    //         setNoteContent((prevNotes) => [
-    //             ...prevNotes,
-    //             { id: autoIncrementId, note_content: newNoteValue },
-    //         ]);
-    //         setAutoIncrementId((prevId) => prevId + 1);
-    //         setNewNoteValue("");
-    //     }
-    // };
     const handleSubmit = async (quoteID) => {
         const formData = new FormData();
         formData.append("quote_id", quoteID);
@@ -226,6 +215,7 @@ const Export_Quote = ({ auth }) => {
                     price: row.unitPrice,
                     total: row.total,
                     vat: row.vat,
+                    note:''
                 }))
             )
         );

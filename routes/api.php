@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
  */
 Route::prefix('web')->group(function () {
 
-
     Route::post('/insertLocation', 'App\Http\Controllers\TestLocationController@insertLocation');
     Route::post('/getLocation', 'App\Http\Controllers\TestLocationController@getLocation');
 
@@ -146,15 +145,14 @@ Route::prefix('web')->group(function () {
     });
     Route::post('/ig', 'App\Http\Controllers\ImageCustomController@optimizeImage');
 
-    Route::prefix('quotation')->group(function()
-    {
-        Route::get('insert','App\Http\Controllers\QuotationController@getByWorkHas');
+    Route::prefix('quotation')->group(function () {
+        Route::get('insert', 'App\Http\Controllers\QuotationController@getByWorkHas');
 
-        Route::post('insert','App\Http\Controllers\QuotationController@create');
-        Route::post('insert-admin','App\Http\Controllers\QuotationController@adminQuote');
-        Route::post('update_quote','App\Http\Controllers\QuotationController@update');
+        Route::post('insert', 'App\Http\Controllers\QuotationController@create');
+        Route::post('insert-admin', 'App\Http\Controllers\QuotationController@adminQuote');
+        Route::post('update_quote', 'App\Http\Controllers\QuotationController@update');
     }
-);
+    );
 
 })->withoutMiddleware("throttle:api")
     ->middleware(
@@ -209,7 +207,7 @@ Route::prefix('app')->group(function () {
         Route::post('check-active', 'App\Http\Controllers\Api\Mobile\WorkersController@checkActiveWorker');
 
         // fcm
-        Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sentNewWorkToWorker');
+        Route::post('send-fcm', 'App\Http\Controllers\Api\Mobile\WorkersController@sendFCM');
 
         // user
         Route::post('login', 'App\Http\Controllers\AccountionWorkerController@login');
@@ -231,7 +229,7 @@ Route::prefix('app')->group(function () {
         Route::post('info-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@infoWorkerToApp');
         Route::post('update-worker', 'App\Http\Controllers\Api\Mobile\WorkersController@updateInfoWorkerToApp');
         // Check in Check Out
-        Route::post('check-in-out','App\Http\Controllers\Api\WorksAssignmentController@checkInOut');
+        Route::post('check-in-out', 'App\Http\Controllers\Api\WorksAssignmentController@checkInOut');
 
     });
     // Customer

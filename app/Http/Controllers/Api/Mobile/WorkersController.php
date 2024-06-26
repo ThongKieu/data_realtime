@@ -11,6 +11,7 @@ use App\Models\Work;
 use App\Models\Worker;
 use App\Models\WorksAssignment;
 use Carbon\Carbon;
+use Google\Client as GoogleClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -143,10 +144,10 @@ class WorkersController extends Controller
             case 'phone_change_worker':
                 Worker::where('id', '=', $re->id)->update(['phone_ct' => $re->phone_ct]);
                 return response()->json(['data' => 'Change Phone']);
-                // Thong them doan nay
-                case 'phone_change_worker_daily_sales':
-                    Worker::where('id', '=', $re->id)->update(['worker_daily_sales' => $re->worker_daily_sales]);
-                    return response()->json(['data' => 'Change worker_daily_sales']);
+            // Thong them doan nay
+            case 'phone_change_worker_daily_sales':
+                Worker::where('id', '=', $re->id)->update(['worker_daily_sales' => $re->worker_daily_sales]);
+                return response()->json(['data' => 'Change worker_daily_sales']);
             default:
                 return response()->json(['data' => 'Lỗi cập nhật']);
         }
@@ -157,57 +158,62 @@ class WorkersController extends Controller
         $token_fcm = DB::table('accountion_workers')->where('id_worker', '=', $id)->value('FCM_token');
         return $token_fcm;
     }
-    // sen to app noti push
-    public function sentNewWorkToWorker(Request $request)
+    // Send FCM
+    public function sendFCM(Request $request)
     {
-        $info_noti = 'Có Lịch Mới';
-        // $token_fcm = $request->fcmCode;
-        $token_fcm = WorkersController::getTokenFCM($request->idWorker);
-        // $token_fcm = 'fQ2iDcPATViekk78eM5VXG:APA91bH7AKykxHmoEMc9KCBvNHyy_RQISCPwUzZ0vv7H9baf2257iAxFaSS0GXQmy-Ir99X99zPcx-NFLMvZnOgEh0XBSIDQlz5WRLFods9xhvwN3p5Xm5E3xIsOEi6HyOq_a_l4HbrH';
 
-        if ($token_fcm != null) {
-            $server_key = 'AAAAzktash8:APA91bH2SrLRRWV9l7sstzc5hHgepzLUX7iDtl4gqAx-jEYb8mYb7Gz7e-XsxVpTL6dVj4-3-BemdR-JE56fo1XDcwY-f5zjaA2JtH-5E-7YlKfpzNVpAl9ngpnw8VPCUOSXxu1v8V13';
-            $h = array(
-                "title" => "Công ty Thợ Việt",
-                "body" => $info_noti,
-                "sound" => "default",
-                "android_channel_id" => "thovietworker",
+        $fcm_token = WorkersController::getTokenFCM($request->idWorker);
 
-            );
-            $data = array(
-                "to" => $token_fcm,
-                "notification" => $h,
-                "priority" => "high",
-            );
-            $url = 'https://fcm.googleapis.com/fcm/send';
-            $encodeData = json_encode($data);
-            $headers = [
-                'Authorization:key=' . $server_key,
-                'Content-Type: application/json',
-            ];
-            // dd($encodeData);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-            // Disabling SSL Certificate support temporarly
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $encodeData);
-            // Execute post
-            $result = curl_exec($ch);
-            // dd($result);
-            if ($result === false) {
-                die('Curl failed: ' . curl_error($ch));
-            }
-            // Close connection
-            curl_close($ch);
-            // FCM response
-            return 'Send FCM OK';
+        $title = "Thợ Việt";
+        $description = "Có lịch mới, gọi khách nha !!";
+
+        $credentialsFilePath = "json/appthoviet-93570f1992e9.json"; // in local
+        // $credentialsFilePath = Http::get(asset('json/file.json')); // in server
+        $client = new GoogleClient();
+        $client->setAuthConfig($credentialsFilePath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->refreshTokenWithAssertion();
+        $token = $client->getAccessToken();
+
+        $access_token = $token['access_token'];
+
+        $headers = [
+            "Authorization: Bearer $access_token",
+            'Content-Type: application/json; charset=UTF-8',
+        ];
+
+        $data = [
+            "message" => [
+                "token" => $fcm_token,
+                "notification" => [
+                    "title" => $title,
+                    "body" => $description,
+                ],
+            ],
+        ];
+        $payload = json_encode($data);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/appthoviet/messages:send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            return response()->json([
+                'message' => 'Error: ' . $err,
+            ], 500);
         } else {
-            return 'FCM Token Null';
+            return response()->json([
+                'message' => 'Success: Notification has been sent !!',
+                'response' => json_decode($response, true),
+            ]);
         }
 
     }
@@ -344,26 +350,27 @@ class WorkersController extends Controller
     public function infoWorkerToApp(Request $request)
     {
         // Yêu cầu cung cấp ID Thợ
-        $info_worker = Worker::where('id','=',$request->id)->get(['worker_full_name','worker_code', 'worker_phone_personal', 'worker_phone_company', 'worker_avatar',  'worker_daily_sales','worker_daily_o_t_by_hour'  ]);
+        $info_worker = Worker::where('id', '=', $request->id)->get(['worker_full_name', 'worker_code', 'worker_phone_personal', 'worker_phone_company', 'worker_avatar', 'worker_daily_sales', 'worker_daily_o_t_by_hour']);
 
-        if($info_worker)
-        {
+        if ($info_worker) {
             return response()->json($info_worker);
-        }
-        else
+        } else {
             return 'Chek Info Sent';
-    }
-    public function updateInfoWorkerToApp(Request $request) {
+        }
 
-        $update_info = Worker::where('id','=',$request->id)->update([
-            'worker_full_name'=>$request->worker_full_name,'worker_phone_personal'=> $request->worker_phone_personal
+    }
+    public function updateInfoWorkerToApp(Request $request)
+    {
+
+        $update_info = Worker::where('id', '=', $request->id)->update([
+            'worker_full_name' => $request->worker_full_name, 'worker_phone_personal' => $request->worker_phone_personal,
         ]);
 
-        if($update_info)
-        {
+        if ($update_info) {
             return response()->json($update_info);
-        }
-        else
+        } else {
             return 'Chek Info Sent';
+        }
+
     }
 }

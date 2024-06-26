@@ -113,7 +113,7 @@
                         @if (isset($quote->quote_work_content) && $quote->quote_work_content != null)
                             {{ $quote->quote_work_content }}
                         @else
-                         Bảo trì M & E 
+                         Bảo trì M & E
                         @endif
                     @endforeach
                 )
@@ -122,17 +122,17 @@
         </section>
         <section style="position: relative; margin-top: -10px">
             <div>
-              
+
                 @foreach ($data['quote_info'] as $quote)
                     <div class="info-quote" style="width: 500px;">
                         @foreach (json_decode($quote->quote_cus_info) as $customer)
                             <p><b>Người liên hệ: {{ $customer->name ? $customer->name : 'Quý Khách Hàng' }}</b><br>
                                 Địa chỉ: {{ $customer->address ? $customer->address : '-' }}<br>
-                                Email: 
+                                Email:
                                 @if (isset( $customer->email) &&  $customer->email != null)
                                 {{  $customer->email }}
                                     @else
-                                    
+
                                     @endif
                                 <br>
                                 Điện thoại: {{ $customer->phone ? $customer->phone : '-' }}<br>
@@ -175,7 +175,7 @@
                             <th style="padding:0 10px;">Số lượng</th>
                             <th style="padding:0 10px;">Đơn giá</th>
                             <th style="padding:0 10px;">Thành tiền</th>
-                            
+
                             <th style="padding:0 10px;">Ghi Chú</th>
                         </tr>
                     </thead>
@@ -183,12 +183,12 @@
                         @php
                             $price = 0;
                             $total_price = 0;
-                            $vat_t = 0; 
+                            $vat_t = 0;
                             $id = 0;// Khởi tạo giá trị ban đầu
                         @endphp
                         @foreach (json_decode($quote->quote_info) as $quote_i)
                             @php
-                                
+
                                  // Thêm giá của mục hiện tại vào tổng
                                 $price_r = $quote_i->price * $quote_i->quality;
                                 $vat_r = ($quote_i->vat * $price_r)/100;
@@ -198,17 +198,17 @@
                                 $id+=1;
                             @endphp
                             <tr>
-                              
+
                                 <td class="td-c-m">{{$id}}</td>
                                 <td class="td-l w-4">{{ $quote_i->content }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->unit }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->quality }}</td>
                                 <td class="td-c w-1-5">{{ number_format($quote_i->price, 0) }}</td>
                                 <td class="td-c w-1-5">{{ number_format($price_r, 0) }}</td>
-                                
+
                                 <td class=" td-c-e w-1-5">{{ $quote_i->note }}</td> <!-- để lấp cột cuối -->
                             </tr>
-                           
+
                         @endforeach
                         <tr>
                             <td colspan="2"></td>
@@ -226,7 +226,7 @@
                         @endif
                         <tr>
                             <td colspan="2"></td>
-                            <td colspan="2" class="td-c-m">Tổng Cộng</td>
+                            <td colspan="2" class="td-c-m">Tổng</td>
                             <td colspan="2" class="td-c-e">{{ number_format($total_price, 0) }}</td>
                             <td></td>
                         </tr>
@@ -239,9 +239,9 @@
                         <b>* Ghi chú:</b>
                     </li>
                     @if ($quote->vat == 1)
-                        <li> Đơn giá đã bao gồm VAT</li>  
+                        <li> Đơn giá đã bao gồm VAT</li>
                     @else
-                        <li> Đơn giá chưa bao gồm VAT</li>  
+                        <li> Đơn giá chưa bao gồm VAT</li>
                     @endif
 
                     @foreach (json_decode($quote->quote_note) as $note)

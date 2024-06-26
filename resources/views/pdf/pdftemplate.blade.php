@@ -70,6 +70,9 @@
         font-weight: 700;
         text-align: right;
     }
+    .td-l{
+        text-align: left;
+    }
 
     .w-4 {
         width: 400px;
@@ -99,7 +102,7 @@
                     font-style: bold;">CÔNG
                         TY TNHH DỊCH VỤ KỸ
                         THUẬT THỢ VIỆT</span><br>ĐC: 25/6 Phùng Văn Cung, Phường 2, Quận Phú Nhuận., TP. HCM<br>Tel:
-                    028.36202538 - 0903532938; Website: www.thoviet.com.vn</p>
+                    <a href="tel:18008122">18008122</a> - 0903532938; Website: www.thoviet.com.vn</p>
             </div>
         </section>
         <section class="headerTitle">
@@ -125,7 +128,13 @@
                         @foreach (json_decode($quote->quote_cus_info) as $customer)
                             <p><b>Người liên hệ: {{ $customer->name ? $customer->name : 'Quý Khách Hàng' }}</b><br>
                                 Địa chỉ: {{ $customer->address ? $customer->address : '-' }}<br>
-                                Email: {{ $customer->email ? $customer->email : '-' }}<br>
+                                Email: 
+                                @if (isset( $customer->email) &&  $customer->email != null)
+                                {{  $customer->email }}
+                                    @else
+                                    
+                                    @endif
+                                <br>
                                 Điện thoại: {{ $customer->phone ? $customer->phone : '-' }}<br>
                             </p>
                         @endforeach
@@ -134,7 +143,11 @@
 
                         @foreach (json_decode($quote->quote_user_info) as $user)
                             <p><b>Từ: {{ $user->name ? $user->name : 'Công Ty Thợ Việt' }}</b><br>
-                                Chức vụ : <br>
+                                Chức vụ :   @if (isset( $user->position) &&  $user->position != null)
+                                {{  $user->position }}
+                                    @else
+                                    NV Kinh Doanh
+                                    @endif<br>
                                 Email: lienhe@thoviet.com.vn<br>
                                 ĐT : 18008122 - {{ $user->phone ? $user->phone : '0915.269.839' }}<br>
                             </p>
@@ -162,32 +175,37 @@
                             <th style="padding:0 10px;">Số lượng</th>
                             <th style="padding:0 10px;">Đơn giá</th>
                             <th style="padding:0 10px;">Thành tiền</th>
+                            
                             <th style="padding:0 10px;">Ghi Chú</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $price = 0;
-                            $total_price = 0; // Khởi tạo giá trị ban đầu
+                            $total_price = 0;
+                            $vat_t = 0; 
+                            $id = 0;// Khởi tạo giá trị ban đầu
                         @endphp
                         @foreach (json_decode($quote->quote_info) as $quote_i)
                             @php
-                                $price += $quote_i->total; // Thêm giá của mục hiện tại vào tổng
-                              
+                                
+                                 // Thêm giá của mục hiện tại vào tổng
                                 $price_r = $quote_i->price * $quote_i->quality;
-                                $vat_r = $quote_i->vat * $price_r;
-                                $vat_t = $vat_r/ 100;
-                                $total_price += $price + $vat_t;
-
+                                $vat_r = ($quote_i->vat * $price_r)/100;
+                                $vat_t += $vat_r;
+                                $price += $price_r;
+                                $total_price = $price + $vat_t;
+                                $id+=1;
                             @endphp
                             <tr>
                               
-                                <td class="td-c-m">1</td>
-                                <td class="td-c-m w-4">{{ $quote_i->content }}</td>
+                                <td class="td-c-m">{{$id}}</td>
+                                <td class="td-l w-4">{{ $quote_i->content }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->unit }}</td>
                                 <td class="td-c-m w-1">{{ $quote_i->quality }}</td>
-                                <td class="td-c-e2 w-1-5">{{ number_format($quote_i->price, 0) }}</td>
-                                <td class=" td-c-e2 w-1-5">{{ number_format($price_r, 0) }}</td>
+                                <td class="td-c w-1-5">{{ number_format($quote_i->price, 0) }}</td>
+                                <td class="td-c w-1-5">{{ number_format($price_r, 0) }}</td>
+                                
                                 <td class=" td-c-e w-1-5">{{ $quote_i->note }}</td> <!-- để lấp cột cuối -->
                             </tr>
                            
@@ -220,6 +238,11 @@
                     <li style="list-style: none; padding:0px">
                         <b>* Ghi chú:</b>
                     </li>
+                    @if ($quote->vat == 1)
+                        <li> Đơn giá đã bao gồm VAT</li>  
+                    @else
+                        <li> Đơn giá chưa bao gồm VAT</li>  
+                    @endif
 
                     @foreach (json_decode($quote->quote_note) as $note)
                         <li>

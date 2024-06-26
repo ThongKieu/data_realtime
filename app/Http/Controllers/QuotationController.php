@@ -239,7 +239,7 @@ class QuotationController extends Controller
     }
     public function generatePDF(Request $re)
     {
-        $quote = Quotation::where('id', '=', $re->id_quote)->get();
+        $quote = Quotation::where('id', '=', 1)->get();
         $data = [
                 'date' => date('m/d/Y'),
                 'quote_info' => json_decode($quote)

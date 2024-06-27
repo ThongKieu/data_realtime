@@ -972,7 +972,7 @@ const KSDialog = ({
                         color="blue"
                         onClick={() =>
                             handleBaoGiaClick(
-                                { ...params, Email: "", ac: dataViewQuote?.ac },
+                                { ...params, Email: ""},
                                 "/export-quote"
                             )
                         }
@@ -985,14 +985,7 @@ const KSDialog = ({
                         className="px-5 py-2"
                         color="blue"
                         onClick={() =>
-                            handleBaoGiaClick(
-                                {
-                                    ...params,
-                                    dataQuote: dataViewQuote?.data,
-                                    ac: dataViewQuote?.ac,
-                                },
-                                "/export-quote"
-                            )
+                            handleBaoGiaClick({...params}, "/export-quote")
                         }
                     >
                         Chỉnh sửa báo giá 2

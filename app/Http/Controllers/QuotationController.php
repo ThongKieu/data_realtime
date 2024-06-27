@@ -69,7 +69,6 @@ class QuotationController extends Controller
             // Cần hình ảnh chứng minh bg  hoặc nhập số tiền + phương thức bg
             // Điền thông tin lịch sử
             $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
-
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // cập nhật dữ liệu cho bảng thợ đã làm
             if ($quote_total_price > 0) {
@@ -86,6 +85,7 @@ class QuotationController extends Controller
             // Yêu cầu có id_work_has, auth_id (mobile = 0), quote_date, quote_info,seri_imag, quote_total_price, vat(mobile = 0), id_worker
             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành, hình ảnh báo giá
             // cập nhật lịch sử
+            dd($re);
             if (isset($re->auth_id)) {
                 $his_work = '[{"id_auth": ' . $re->auth_id . ',"id_worker":"null","action":"baogiaad","time":"' . $time . '"}]';
             } else {
@@ -239,7 +239,7 @@ class QuotationController extends Controller
     }
     public function generatePDF(Request $re)
     {
-        $quote = Quotation::where('id', '=', 1)->get();
+        $quote = Quotation::where('id', '=', $re->id_quote)->get();
         $data = [
                 'date' => date('m/d/Y'),
                 'quote_info' => json_decode($quote)

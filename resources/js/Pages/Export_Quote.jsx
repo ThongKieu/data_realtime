@@ -18,11 +18,12 @@ const Export_Quote = ({ auth }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [dataLocation, setDataLocation] = useState([]);
+    const [dataQuote, setDataQuote] = useState([]);
     const data_unit = [
         { id_unit: "Bộ", unit_quote: "Bộ" },
         { id_unit: "Cái", unit_quote: "Cái" },
         { id_unit: "Cặp", unit_quote: "Cặp" },
-        { id_unit: "M2", unit_quote: "M2" },
+        { id_unit: "m2", unit_quote: "m2" },
         { id_unit: "M", unit_quote: "Mét" },
         { id_unit: "Kg", unit_quote: "Kg" },
         { id_unit: "Gói", unit_quote: "Gói" },
@@ -49,6 +50,18 @@ const Export_Quote = ({ auth }) => {
     const [editNoteValue, setEditNoteValue] = useState("");
     const [autoIncrementId, setAutoIncrementId] = useState(1);
     const [isVatChecked, setIsVatChecked] = useState(false);
+    const getDataQuotation = async (id) => {
+        const response = await fetch(
+            `api/web/quotation/insert?id_work_has=${id}`
+        );
+        if (response.ok) {
+            const result = await response.json();
+            setDataQuote(result);
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    };
+
     const createEmptyRow = (counter) => {
         return {
             stt: counter,
@@ -115,7 +128,22 @@ const Export_Quote = ({ auth }) => {
     const handleCheckboxChange = () => {
         setIsVatChecked(!isVatChecked);
     };
-
+    const deleteRowById = (idToDelete) => {
+        setRows((prevRows) => {
+            const updatedRows = prevRows.filter(
+                (row) => row.stt !== idToDelete
+            );
+            // Cập nhật lại stt cho các dòng còn lại
+            return updatedRows.map((row, index) => ({
+                ...row,
+                stt: index + 1,
+            }));
+        });
+    };
+    const handleAddRow = () => {
+        setRows((prevRows) => [...prevRows, createEmptyRow(counter + 1)]);
+        setCounter((prevCounter) => prevCounter + 1);
+    };
     const handleInputChange = (index, e) => {
         const { name, value } = e.target;
         const updatedRows = [...rows];
@@ -134,16 +162,9 @@ const Export_Quote = ({ auth }) => {
         setTotals(calculateTotals(updatedRows)); // Recalculate totals
     };
 
-    const deleteRowById = (idToDelete) => {
-        setRows((prevRows) => prevRows.filter((row) => row.stt !== idToDelete));
+    const handleDeleteRow = (idDel) => {
+        deleteRowById(idDel);
     };
-    const handleAddRow = () => {
-        setRows((prevRows) => [...prevRows, createEmptyRow(counter + 1)]);
-        setCounter((prevCounter) => prevCounter + 1);
-    };
-    const handleDeleteRow = (idDel)=>{
-        deleteRowById(idDel)
-    }
     const handleAddNote = () => {
         if (newNoteValue.trim() !== "") {
             setNoteContent((prevNotes) => [
@@ -154,7 +175,6 @@ const Export_Quote = ({ auth }) => {
             setNewNoteValue("");
         }
     };
-
     const handleDeleteNote = (id) => {
         setNoteContent((prevNotes) =>
             prevNotes.filter((note) => note.id !== id)
@@ -187,15 +207,27 @@ const Export_Quote = ({ auth }) => {
         setIsSubmitting(true);
         setTimeout(async () => {
             const formData = new FormData();
+            formData.append("ac", dataQuote.ac);
             formData.append("quote_id", quoteID);
             formData.append("auth_id", authQuote.user.id);
+            formData.append(
+                "vat",
+                dataQuote.ac == 2
+                    ? !isVatChecked
+                        ? 1
+                        : 0
+                    : !isVatChecked
+                    ? 0
+                    : 1
+            );
+            formData.append("quote_total_price", totals.totalWithVAT);
             formData.append(
                 "quote_work_content",
                 changeQuote.quote_work_content
             );
             formData.append(
                 "id_work_has",
-                dataLocation.ac == 2
+                dataQuote.ac == 2
                     ? changeQuote.dataQuote[0]?.id_work_has
                     : dataLocation.id_cus
             );
@@ -233,22 +265,10 @@ const Export_Quote = ({ auth }) => {
                         price: row.unitPrice,
                         total: row.total,
                         vat: row.vat,
-                        note: "",
+                        note: row.note,
                     }))
                 )
             );
-
-            formData.append(
-                "vat",
-                dataLocation.ac == 2
-                    ? !isVatChecked
-                        ? 1
-                        : 0
-                    : !isVatChecked
-                    ? 0
-                    : 1
-            );
-            formData.append("quote_total_price", totals.totalWithVAT);
             formData.append("quote_note", JSON.stringify(noteContent));
 
             const requestOptions = {
@@ -278,14 +298,23 @@ const Export_Quote = ({ auth }) => {
         }, 1500);
     };
     useEffect(() => {
-        if (dataLocation) {
+        const queryParams = new URLSearchParams(window.location.search);
+        const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
+        setDataLocation(data);
+        // Sử dụng dữ liệu được truyền tới từ trang dashboard
+    }, [window.location.search]);
+    useEffect(() => {
+        getDataQuotation(dataLocation.id);
+    }, [dataLocation]);
+    useEffect(() => {
+        if (dataQuote.ac == 2) {
             const mappedDataQuote =
-                dataLocation.dataQuote?.map((item) => ({
+                dataQuote.data?.map((item) => ({
                     id: item.id,
                     id_auth: item.id_auth || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
                     id_work_has: item.id_work_has || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
-                    quote_cus_info: JSON.parse(item.quote_cus_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
-                    quote_info: JSON.parse(item.quote_info) || "",
+                    quote_cus_info: item ? JSON.parse(item.quote_cus_info) : "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
+                    quote_info: item ? JSON.parse(item.quote_info) : "",
                     quote_date: item.quote_date || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
                     quote_image: item.quote_image || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
                     quote_note: JSON.parse(item.quote_note) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
@@ -294,29 +323,27 @@ const Export_Quote = ({ auth }) => {
                     quote_user_info: JSON.parse(item.quote_user_info) || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý  id: item.id,
                     vat: item.vat || "", // Ví dụ: Chỉnh sửa thuộc tính tùy ý
                 })) || [];
-
             let parsedCusInfo = null;
             if (
-                dataLocation.dataQuote &&
-                dataLocation.dataQuote[0] &&
-                dataLocation.dataQuote[0].quote_cus_info
+                dataQuote.data &&
+                dataQuote.data[0] &&
+                dataQuote.data[0].quote_cus_info
             ) {
                 try {
                     parsedCusInfo = JSON.parse(
-                        dataLocation.dataQuote[0].quote_cus_info
+                        dataQuote.data[0].quote_cus_info
                     )[0];
                 } catch (error) {
                     console.error("Error parsing quote_cus_info", error);
                 }
             }
-            console.log("parsedCusInfo", parsedCusInfo);
             setChangeQuote({
                 id: dataLocation.id,
                 quote_work_content:
-                    dataLocation.dataQuote &&
-                    dataLocation.dataQuote[0] &&
-                    dataLocation.dataQuote[0].quote_work_content != null
-                        ? dataLocation.dataQuote[0].quote_work_content
+                    dataQuote.data &&
+                    dataQuote.data[0] &&
+                    dataQuote.data[0].quote_work_content != null
+                        ? dataQuote.data[0].quote_work_content
                         : "Bảo trì M&E",
                 name_cus: parsedCusInfo
                     ? parsedCusInfo.name
@@ -332,16 +359,12 @@ const Export_Quote = ({ auth }) => {
                     : dataLocation?.district || "",
                 dataQuote: mappedDataQuote,
             });
+        } else if (dataQuote.ac == 1) {
+            setChangeQuote(dataLocation);
         }
-        setAuthQuote(auth);
-    }, [auth, dataLocation]);
-    useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
-        setDataLocation(data);
-        // Sử dụng dữ liệu được truyền tới từ trang dashboard
-    }, []);
 
+        setAuthQuote(auth);
+    }, [auth, dataQuote]);
     useEffect(() => {
         // Tính toán tổng giá trị khi rows thay đổi
         setTotals(calculateTotals(rows));
@@ -395,6 +418,7 @@ const Export_Quote = ({ auth }) => {
             setAutoIncrementId(0);
         }
     }, [changeQuote]);
+    console.log(dataLocation.id);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Báo Giá" />
@@ -425,9 +449,15 @@ const Export_Quote = ({ auth }) => {
                                         ? "animate-spin text-red-500"
                                         : "text-green-500"
                                 } w-7 h-7 cursor-pointer`}
-                                onClick={() =>
-                                    handleSubmit(changeQuote.dataQuote[0]?.id)
-                                }
+                                onClick={() => {
+                                    if (dataQuote.ac == 2) {
+                                        handleSubmit(
+                                            changeQuote.dataQuote[0]?.id
+                                        );
+                                    } else if (dataQuote.ac == 1) {
+                                        handleSubmit(dataLocation.id);
+                                    }
+                                }}
                             />
                         </div>
                     </div>
@@ -657,23 +687,22 @@ const Export_Quote = ({ auth }) => {
                             </thead>
                             <tbody>
                                 {rows.map((row, index) => {
-                                    index += 1;
-                                    console.log(index);
                                     return (
                                         <tr
                                             key={index}
                                             className="relative text-center hover:bg-gray-100"
                                         >
                                             <td className="p-1 text-center border border-gray-300 fit-content">
-                                                {index}
-
+                                                {row.stt}
                                                 <MinusCircleIcon
                                                     className={`absolute w-6 h-6 cursor-pointer left-[18px] bottom-[-10px] text-blue-gray-700 z-auto  ${
                                                         row.stt <= 1
                                                             ? "hidden"
                                                             : ""
                                                     }`}
-                                                    onClick={()=>handleDeleteRow(row.stt)}
+                                                    onClick={() =>
+                                                        handleDeleteRow(index)
+                                                    }
                                                 />
                                                 <PlusCircleIcon
                                                     className={`absolute w-6 h-6 cursor-pointer left-[0px] bottom-[-10px] text-blue-gray-700 z-auto`}
@@ -811,16 +840,7 @@ const Export_Quote = ({ auth }) => {
                                     );
                                 })}
                                 <tr className="font-bold text-center text-black ">
-                                    <td className="border border-gray-300 ">
-                                        {/* <MinusCircleIcon
-                                            className="absolute w-6 h-6 cursor-pointer right-[18px] bottom-[15px] text-blue-gray-700 z-auto"
-                                            onClick={handleAddRow}
-                                        />
-                                        <PlusCircleIcon
-                                            className="absolute w-6 h-6 cursor-pointer right-[0px] bottom-[15px] text-blue-gray-700 z-auto"
-                                            onClick={handleAddRow}
-                                        /> */}
-                                    </td>
+                                    <td className="border border-gray-300 "></td>
 
                                     <td className="border border-gray-300 "></td>
                                     <td

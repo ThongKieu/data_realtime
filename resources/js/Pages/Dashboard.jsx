@@ -212,7 +212,6 @@ const Dashboard = ({ auth }) => {
 
     const handleGetDataQuote = async (id) => {
         const uri = `api/web/quotation/insert?id_work_has=${id}`;
-        console.log(id);
         try {
             const response = await fetch(uri, {
                 method: "GET", // Hoặc 'POST' nếu cần gửi dữ liệu

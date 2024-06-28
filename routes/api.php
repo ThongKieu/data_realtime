@@ -146,9 +146,8 @@ Route::prefix('web')->group(function () {
     Route::post('/ig', 'App\Http\Controllers\ImageCustomController@optimizeImage');
 
     Route::prefix('quotation')->group(function () {
-        Route::get('insert', 'App\Http\Controllers\QuotationController@getByWorkHas');
-
-        Route::post('insert', 'App\Http\Controllers\QuotationController@create');
+        Route::get('insert', 'App\Http\Controllers\QuotationController@getByWorkHas'); // get Data
+        Route::post('insert', 'App\Http\Controllers\QuotationController@create'); //post data
         Route::post('insert-admin', 'App\Http\Controllers\QuotationController@adminQuote');
         Route::post('update_quote', 'App\Http\Controllers\QuotationController@update');
     }

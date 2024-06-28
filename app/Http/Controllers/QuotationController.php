@@ -68,8 +68,7 @@ class QuotationController extends Controller
             //Báo giá nhanh ( có giá ít gửi luôn cho khách - Chụp hình hoặc k chụp hình)
             // Cần hình ảnh chứng minh bg  hoặc nhập số tiền + phương thức bg
             // Điền thông tin lịch sử
-            $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
-
+            $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"BaoGia","time":"' . $time . '"}]';
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // cập nhật dữ liệu cho bảng thợ đã làm
             if ($quote_total_price > 0) {
@@ -87,9 +86,9 @@ class QuotationController extends Controller
             // Gửi số khối lượng báo giá để tạo bảng ; nội dung, đơn vị tính, khối lượng, giá thành, thành tiền, bảo hành, hình ảnh báo giá
             // cập nhật lịch sử
             if (isset($re->auth_id)) {
-                $his_work = '[{"id_auth": ' . $re->auth_id . ',"id_worker":"null","action":"baogiaad","time":"' . $time . '"}]';
+                $his_work = '[{"id_auth": ' . $re->auth_id . ',"id_worker":"null","action":"BaoGia","time":"' . $time . '"}]';
             } else {
-                $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"baogia","time":"' . $time . '"}]';
+                $his_work = '[{"id_auth": null,"id_worker":"' . $re->id_worker . '","action":"BaoGia","time":"' . $time . '"}]';
             }
             WorksAssignmentController::insertHisWork($re->id_work_has, $his_work);
             // Thêm dữ liệu vào bảng Báo giá
@@ -118,7 +117,7 @@ class QuotationController extends Controller
             // Lấy thông tin note
             $note = Worker::where('id', '=', $re->id_worker)->value('worker_full_name');
             // $note = Work::where('id', '=', $re->id_cus)->update(['status_cus'=>0]);
-            $note .= ' - Đã KS';
+            $note .= ' - Đã KS' .$re->work_note;
             // cập nhật thông tin bảng
             WorksAssignment::where('id', '=', $re->id_work_has)->update(['status_work' => 4]);
             $new = Work::where('id', '=', $re->id_cus)->update(['image_work_path' => $seri_imag, 'work_note' => $note, 'status_cus' => 0]);
@@ -239,7 +238,7 @@ class QuotationController extends Controller
     }
     public function generatePDF(Request $re)
     {
-        $quote = Quotation::where('id', '=', 1)->get();
+        $quote = Quotation::where('id', '=', $re->id_quote)->get();
         $data = [
                 'date' => date('m/d/Y'),
                 'quote_info' => json_decode($quote)

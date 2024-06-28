@@ -3,13 +3,20 @@ import { Button } from "@material-tailwind/react";
 import {
     PlusCircleIcon,
     PencilSquareIcon,
-    TrashIcon,XCircleIcon,ArrowPathIcon
+    TrashIcon,
+    XCircleIcon,
+    ArrowPathIcon,
+    PrinterIcon,
+    MinusCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useWindowSize } from "@/Core/Resize";
 import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { host } from "@/Utils/UrlApi";
 const Export_Quote = ({ auth }) => {
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [dataLocation, setDataLocation] = useState([]);
     const data_unit = [
         { id_unit: "Bộ", unit_quote: "Bộ" },
@@ -51,6 +58,7 @@ const Export_Quote = ({ auth }) => {
             unitPrice: 0,
             total: 0,
             vat: 0,
+            note: "",
         };
     };
     const calculateTotals = (rows) => {
@@ -126,11 +134,16 @@ const Export_Quote = ({ auth }) => {
         setTotals(calculateTotals(updatedRows)); // Recalculate totals
     };
 
+    const deleteRowById = (idToDelete) => {
+        setRows((prevRows) => prevRows.filter((row) => row.stt !== idToDelete));
+    };
     const handleAddRow = () => {
         setRows((prevRows) => [...prevRows, createEmptyRow(counter + 1)]);
         setCounter((prevCounter) => prevCounter + 1);
     };
-
+    const handleDeleteRow = (idDel)=>{
+        deleteRowById(idDel)
+    }
     const handleAddNote = () => {
         if (newNoteValue.trim() !== "") {
             setNoteContent((prevNotes) => [
@@ -170,98 +183,99 @@ const Export_Quote = ({ auth }) => {
         setEditNoteValue("");
         setIsEditing(null);
     };
-
-    // const handleAddNote = () => {
-    //     if (newNoteValue.trim() !== "") {
-    //         setNoteContent((prevNotes) => [
-    //             ...prevNotes,
-    //             { id: autoIncrementId, note_content: newNoteValue },
-    //         ]);
-    //         setAutoIncrementId((prevId) => prevId + 1);
-    //         setNewNoteValue("");
-    //     }
-    // };
     const handleSubmit = async (quoteID) => {
-        const formData = new FormData();
-        formData.append("quote_id", quoteID);
-        formData.append("auth_id", authQuote.user.id);
-        formData.append("quote_work_content", changeQuote.quote_work_content);
-        formData.append(
-            "id_work_has",
-            dataLocation.ac == 2
-                ? changeQuote.dataQuote[0]?.id_work_has
-                : dataLocation.id_cus
-        );
-        formData.append(
-            "quote_user_info",
-            JSON.stringify([
-                {
-                    name: authQuote.user.name,
-                    email: "lienhe@thoviet.com.vn",
-                    position: authQuote.user.position,
-                    phone: `1800 8122 - ${authQuote.user.phone}`,
-                },
-            ])
-        );
-
-        formData.append(
-            "quote_cus_info",
-            JSON.stringify([
-                {
-                    name: changeQuote.name_cus,
-                    email_cus: changeQuote.email_cus,
-                    address: `${changeQuote.street}, ${changeQuote.district}`,
-                    phone: changeQuote.phone,
-                },
-            ])
-        );
-
-        formData.append(
-            "quote_info",
-            JSON.stringify(
-                rows.map((row) => ({
-                    content: row.content,
-                    unit: row.unit,
-                    quality: row.quality,
-                    price: row.unitPrice,
-                    total: row.total,
-                    vat: row.vat,
-                }))
-            )
-        );
-
-        formData.append(
-            "vat",
-            dataLocation.ac == 2
-                ? !isVatChecked
-                    ? 1
-                    : 0
-                : !isVatChecked
-                ? 0
-                : 1
-        );
-        formData.append("quote_total_price", totals.totalWithVAT);
-        formData.append("quote_note", JSON.stringify(noteContent));
-
-        const requestOptions = {
-            method: "POST",
-            body: formData,
-            redirect: "follow",
-        };
-
-        try {
-            const response = await fetch(
-                "api/web/quotation/update_quote",
-                requestOptions
+        setIsSubmitting(true);
+        setTimeout(async () => {
+            const formData = new FormData();
+            formData.append("quote_id", quoteID);
+            formData.append("auth_id", authQuote.user.id);
+            formData.append(
+                "quote_work_content",
+                changeQuote.quote_work_content
             );
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
+            formData.append(
+                "id_work_has",
+                dataLocation.ac == 2
+                    ? changeQuote.dataQuote[0]?.id_work_has
+                    : dataLocation.id_cus
+            );
+            formData.append(
+                "quote_user_info",
+                JSON.stringify([
+                    {
+                        name: authQuote.user.name,
+                        email: "lienhe@thoviet.com.vn",
+                        position: authQuote.user.position,
+                        phone: `1800 8122 - ${authQuote.user.phone}`,
+                    },
+                ])
+            );
+
+            formData.append(
+                "quote_cus_info",
+                JSON.stringify([
+                    {
+                        name: changeQuote.name_cus,
+                        email_cus: changeQuote.email_cus,
+                        address: `${changeQuote.street}, ${changeQuote.district}`,
+                        phone: changeQuote.phone,
+                    },
+                ])
+            );
+
+            formData.append(
+                "quote_info",
+                JSON.stringify(
+                    rows.map((row) => ({
+                        content: row.content,
+                        unit: row.unit,
+                        quality: row.quality,
+                        price: row.unitPrice,
+                        total: row.total,
+                        vat: row.vat,
+                        note: "",
+                    }))
+                )
+            );
+
+            formData.append(
+                "vat",
+                dataLocation.ac == 2
+                    ? !isVatChecked
+                        ? 1
+                        : 0
+                    : !isVatChecked
+                    ? 0
+                    : 1
+            );
+            formData.append("quote_total_price", totals.totalWithVAT);
+            formData.append("quote_note", JSON.stringify(noteContent));
+
+            const requestOptions = {
+                method: "POST",
+                body: formData,
+                redirect: "follow",
+            };
+
+            try {
+                const response = await fetch(
+                    "api/web/quotation/update_quote",
+                    requestOptions
+                );
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const result = await response.text();
+                const jsonData = JSON.parse(result);
+                if (jsonData.success == true) {
+                    setIsSubmitted(true);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                setIsSubmitting(false);
             }
-            const result = await response.text();
-            // handleSentKSWeb(); // call this function to handle after successful submission
-        } catch (error) {
-            console.error("Error:", error);
-        }
+        }, 1500);
     };
     useEffect(() => {
         if (dataLocation) {
@@ -321,7 +335,6 @@ const Export_Quote = ({ auth }) => {
         }
         setAuthQuote(auth);
     }, [auth, dataLocation]);
-    console.log(dataLocation);
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const data = JSON.parse(decodeURIComponent(queryParams.get("data")));
@@ -357,6 +370,7 @@ const Export_Quote = ({ auth }) => {
                     unitPrice: item.price || 0,
                     total: 0,
                     vat: item.vat || 0,
+                    note: "",
                 }))
             );
             setCounter(dataQuoteInfo.quote_info.length);
@@ -386,9 +400,37 @@ const Export_Quote = ({ auth }) => {
             <Head title="Báo Giá" />
             <div className="lg:w-[60%] md:w-[90%] m-auto p-1">
                 <div className="p-4 mx-10 border border-black">
-                    <span className="text-red-400">
-                        (*) Bấm vào thông tin khách hàng để chỉnh sửa
-                    </span>
+                    <div className="flex flex-row items-center justify-between">
+                        <div className="text-red-400">
+                            (*) Bấm vào thông tin khách hàng để chỉnh sửa
+                        </div>
+                        <div className="flex flex-row items-center justify-between">
+                            {isSubmitted && (
+                                <PrinterIcon
+                                    className={`${
+                                        isSubmitting
+                                            ? "text-red-500"
+                                            : "text-green-500"
+                                    } w-7 h-7 cursor-pointer`}
+                                    onClick={() =>
+                                        window.open(
+                                            `${host}generate-pdf?id_quote=${changeQuote.dataQuote[0]?.id}`
+                                        )
+                                    }
+                                />
+                            )}
+                            <ArrowPathIcon
+                                className={`${
+                                    isSubmitting
+                                        ? "animate-spin text-red-500"
+                                        : "text-green-500"
+                                } w-7 h-7 cursor-pointer`}
+                                onClick={() =>
+                                    handleSubmit(changeQuote.dataQuote[0]?.id)
+                                }
+                            />
+                        </div>
+                    </div>
                     <div className="text-center">
                         <h2 className="text-2xl font-bold ">Báo Giá</h2>
                         <i className="flex flex-row justify-center">
@@ -608,17 +650,35 @@ const Export_Quote = ({ auth }) => {
                                             }
                                         />
                                     </th>
+                                    <th className="w-32 px-1 py-2 text-gray-800 border border-gray-300">
+                                        Ghi Chú
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {rows.map((row, index) => {
+                                    index += 1;
+                                    console.log(index);
                                     return (
                                         <tr
                                             key={index}
-                                            className="text-center hover:bg-gray-100"
+                                            className="relative text-center hover:bg-gray-100"
                                         >
                                             <td className="p-1 text-center border border-gray-300 fit-content">
-                                                {row.stt}
+                                                {index}
+
+                                                <MinusCircleIcon
+                                                    className={`absolute w-6 h-6 cursor-pointer left-[18px] bottom-[-10px] text-blue-gray-700 z-auto  ${
+                                                        row.stt <= 1
+                                                            ? "hidden"
+                                                            : ""
+                                                    }`}
+                                                    onClick={()=>handleDeleteRow(row.stt)}
+                                                />
+                                                <PlusCircleIcon
+                                                    className={`absolute w-6 h-6 cursor-pointer left-[0px] bottom-[-10px] text-blue-gray-700 z-auto`}
+                                                    onClick={handleAddRow}
+                                                />
                                             </td>
                                             <td className="p-1 border border-gray-300">
                                                 <textarea
@@ -733,15 +793,33 @@ const Export_Quote = ({ auth }) => {
                                                     </option>
                                                 </select>
                                             </td>
+                                            <td className="p-1 border border-gray-300">
+                                                <textarea
+                                                    name="note"
+                                                    value={row.note}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="rounded-md w-fit"
+                                                    style={{ width: "100%" }}
+                                                />
+                                            </td>
                                         </tr>
                                     );
                                 })}
                                 <tr className="font-bold text-center text-black ">
-                                    <td className="relative border border-gray-300 ">
-                                        <PlusCircleIcon
+                                    <td className="border border-gray-300 ">
+                                        {/* <MinusCircleIcon
                                             className="absolute w-6 h-6 cursor-pointer right-[18px] bottom-[15px] text-blue-gray-700 z-auto"
                                             onClick={handleAddRow}
                                         />
+                                        <PlusCircleIcon
+                                            className="absolute w-6 h-6 cursor-pointer right-[0px] bottom-[15px] text-blue-gray-700 z-auto"
+                                            onClick={handleAddRow}
+                                        /> */}
                                     </td>
 
                                     <td className="border border-gray-300 "></td>
@@ -922,12 +1000,13 @@ const Export_Quote = ({ auth }) => {
                                         </div>
                                     ) : (
                                         <div className="flex flex-row ">
-                                            <div >
+                                            <div>
                                                 <span>
                                                     <strong>{note.id}:</strong>
-
                                                 </span>
-                                                <span className="mx-2">{note.note_content}</span>
+                                                <span className="mx-2">
+                                                    {note.note_content}
+                                                </span>
                                             </div>
                                             <div className="flex flex-row">
                                                 <PencilSquareIcon
@@ -967,14 +1046,6 @@ const Export_Quote = ({ auth }) => {
                         </div>
                     </div>
                 </div>
-                <Button
-                    className="mt-5 mr-10 float-end"
-                    variant="gradient"
-                    color="red"
-                    onClick={() => handleSubmit(changeQuote.dataQuote[0]?.id)}
-                >
-                    Xác nhận
-                </Button>
             </div>
         </AuthenticatedLayout>
     );

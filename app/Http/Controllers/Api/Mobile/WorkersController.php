@@ -188,9 +188,24 @@ class WorkersController extends Controller
                 "notification" => [
                     "title" => $title,
                     "body" => $description,
+
+                ],
+                "android" => [
+                    "notification" => [
+                        "channel_id" => "thovietworker",
+                        "sound" => "notification",
+                    ],
+                ],
+                "apns" => [
+                    "payload" => [
+                        "aps" => [
+                            "sound" => "notification.mp3",
+                        ],
+                    ],
                 ],
             ],
         ];
+
         $payload = json_encode($data);
 
         $ch = curl_init();

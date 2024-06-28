@@ -973,11 +973,11 @@ const KSDialog = ({
                         onClick={() =>
                             handleBaoGiaClick(
                                 { ...params, Email: ""},
-                                "/export-quote"
+                                "/export-quote-update"
                             )
                         }
                     >
-                        Chỉnh sửa báo giá 1
+                        Tạo Báo Giá
                     </Button>
                 ) : dataViewQuote && dataViewQuote.ac == 2 ? (
                     <Button
@@ -985,7 +985,7 @@ const KSDialog = ({
                         className="px-5 py-2"
                         color="blue"
                         onClick={() =>
-                            handleBaoGiaClick({...params}, "/export-quote")
+                            handleBaoGiaClick({...params}, "/export-quote-update")
                         }
                     >
                         Chỉnh sửa báo giá 2

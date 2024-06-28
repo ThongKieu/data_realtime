@@ -14,7 +14,7 @@ import { formatCurrencyVND } from "@/Components/ColumnRightDialog";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { host } from "@/Utils/UrlApi";
-const Export_Quote = ({ auth }) => {
+const Export_Quote_Create = ({ auth }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [dataLocation, setDataLocation] = useState([]);
@@ -34,7 +34,10 @@ const Export_Quote = ({ auth }) => {
     const inputRef = useRef();
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState(null);
-    const [changeQuote, setChangeQuote] = useState(dataLocation);
+    const [changeQuote, setChangeQuote] = useState({
+        ...dataLocation,
+        quote_work_content: "",
+    });
     const [rows, setRows] = useState([]);
     const [authQuote, setAuthQuote] = useState(auth);
     const { width, height } = useWindowSize(325);
@@ -203,11 +206,103 @@ const Export_Quote = ({ auth }) => {
         setEditNoteValue("");
         setIsEditing(null);
     };
-    const handleSubmit = async (quoteID) => {
+    const handleUpdateAC2 = async (quoteID) => {
         setIsSubmitting(true);
         setTimeout(async () => {
             const formData = new FormData();
-            formData.append("ac", dataQuote.ac);
+            formData.append("quote_id", quoteID);
+            formData.append("auth_id", authQuote.user.id);
+            formData.append(
+                "vat",
+                dataQuote.ac == 2
+                    ? !isVatChecked
+                        ? 1
+                        : 0
+                    : !isVatChecked
+                    ? 0
+                    : 1
+            );
+            formData.append("quote_total_price", totals.totalWithVAT);
+            formData.append(
+                "quote_work_content",
+                changeQuote.quote_work_content
+            );
+            formData.append(
+                "id_work_has",
+                dataQuote.ac == 2
+                    ? changeQuote.dataQuote[0]?.id_work_has
+                    : dataLocation.id_cus
+            );
+            formData.append(
+                "quote_user_info",
+                JSON.stringify([
+                    {
+                        name: authQuote.user.name,
+                        email: "lienhe@thoviet.com.vn",
+                        position: authQuote.user.position,
+                        phone: `1800 8122 - ${authQuote.user.phone}`,
+                    },
+                ])
+            );
+
+            formData.append(
+                "quote_cus_info",
+                JSON.stringify([
+                    {
+                        name: changeQuote.name_cus,
+                        email_cus: changeQuote.email_cus,
+                        address: `${changeQuote.street}, ${changeQuote.district}`,
+                        phone: changeQuote.phone,
+                    },
+                ])
+            );
+
+            formData.append(
+                "quote_info",
+                JSON.stringify(
+                    rows.map((row) => ({
+                        content: row.content,
+                        unit: row.unit,
+                        quality: row.quality,
+                        price: row.unitPrice,
+                        total: row.total,
+                        vat: row.vat,
+                        note: row.note,
+                    }))
+                )
+            );
+            formData.append("quote_note", JSON.stringify(noteContent));
+
+            const requestOptions = {
+                method: "POST",
+                body: formData,
+                redirect: "follow",
+            };
+
+            try {
+                const response = await fetch(
+                    "api/web/quotation/update_quote",
+                    requestOptions
+                );
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const result = await response.text();
+                const jsonData = JSON.parse(result);
+                if (jsonData.success == true) {
+                    setIsSubmitted(true);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                setIsSubmitting(false);
+            }
+        }, 1500);
+    };
+    const handleCreateAC1 = async (quoteID) => {
+        setIsSubmitting(true);
+        setTimeout(async () => {
+            const formData = new FormData();
             formData.append("quote_id", quoteID);
             formData.append("auth_id", authQuote.user.id);
             formData.append(
@@ -418,7 +513,6 @@ const Export_Quote = ({ auth }) => {
             setAutoIncrementId(0);
         }
     }, [changeQuote]);
-    console.log(dataLocation.id);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Báo Giá" />
@@ -451,11 +545,11 @@ const Export_Quote = ({ auth }) => {
                                 } w-7 h-7 cursor-pointer`}
                                 onClick={() => {
                                     if (dataQuote.ac == 2) {
-                                        handleSubmit(
+                                        handleUpdateAC2(
                                             changeQuote.dataQuote[0]?.id
                                         );
                                     } else if (dataQuote.ac == 1) {
-                                        handleSubmit(dataLocation.id);
+                                        handleSubmitAC1(dataLocation.id);
                                     }
                                 }}
                             />
@@ -1071,4 +1165,4 @@ const Export_Quote = ({ auth }) => {
     );
 };
 
-export default Export_Quote;
+export default Export_Quote_Create;

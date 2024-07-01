@@ -96,7 +96,6 @@ class QuotationController extends Controller
             $new = new Quotation([
                 'id_work_has' => $re->id_work_has,
                 'id_auth' => $re->auth_id,
-                'quote_date' => $re->quote_date,
                 'quote_info' => $re->quote_info, // Trường này dạng JSON
                 'quote_image' => $seri_imag,
                 'quote_date'=>$quote_date,

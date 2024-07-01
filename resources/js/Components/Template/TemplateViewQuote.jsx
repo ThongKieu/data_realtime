@@ -117,6 +117,7 @@ const TemplateAC2 = ({ params, dataQuote, handleBaoGiaClick }) => {
         "Giá",
         "Thành Tiền",
         "Ghi Chú",
+        "VAT",
     ];
     return (
         <>
@@ -183,6 +184,25 @@ const TemplateAC2 = ({ params, dataQuote, handleBaoGiaClick }) => {
                                         const quoteInfoItem = JSON.parse(
                                             item.quote_info
                                         );
+                                        const totalWithoutVAT =
+                                            quoteInfoItem.reduce(
+                                                (acc, quoteItem) =>
+                                                    acc +
+                                                    quoteItem.price *
+                                                        quoteItem.quality,
+                                                0
+                                            );
+                                        const totalVAT = quoteInfoItem.reduce(
+                                            (acc, quoteItem) =>
+                                                acc +
+                                                (quoteItem.price *
+                                                    quoteItem.quality *
+                                                    (quoteItem.vat || 0)) /
+                                                    100,
+                                            0
+                                        );
+                                        const totalWithVAT =
+                                            totalWithoutVAT + totalVAT;
                                         return (
                                             <React.Fragment key={index}>
                                                 {Array.isArray(quoteInfoItem) &&
@@ -288,10 +308,83 @@ const TemplateAC2 = ({ params, dataQuote, handleBaoGiaClick }) => {
                                                                             }
                                                                         </p>
                                                                     </td>
+                                                                    <td
+                                                                        className={`${classes} w-1/7`}
+                                                                    >
+                                                                        <p
+                                                                            variant="small"
+                                                                            color="blue-gray"
+                                                                        >
+                                                                            {
+                                                                                quoteItem.vat
+                                                                            }%
+                                                                        </p>
+                                                                    </td>
                                                                 </tr>
                                                             );
                                                         }
                                                     )}
+                                                <tr className="text-white rounded bg-blue-gray-300">
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <p>Tổng chưa VAT:</p>
+                                                    </td>
+                                                    <td colSpan="7">
+                                                        {/* Hiển thị tổng giá trị không VAT */}
+
+                                                        {formatCurrencyVND(
+                                                            totalWithoutVAT
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                                {item.vat > 0 && (
+                                                    <React.Fragment>
+                                                        <tr className="text-white bg-blue-gray-300 ">
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>
+                                                                <p>Tổng VAT:</p>
+                                                            </td>
+                                                            <td colSpan="7">
+                                                                {totalVAT >
+                                                                    0 && (
+                                                                    <p>
+                                                                        {formatCurrencyVND(
+                                                                            totalVAT
+                                                                        )}
+                                                                    </p>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                        <tr className="text-white bg-blue-gray-300 ">
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+
+                                                            <td></td>
+                                                            <td>
+                                                                <p>
+                                                                    {" "}
+                                                                    Tổng cộng:
+                                                                </p>
+                                                            </td>
+                                                            <td colSpan="7">
+                                                                {/* Hiển thị tổng giá trị sau khi tính VAT */}
+                                                                <p>
+                                                                    {" "}
+                                                                    {formatCurrencyVND(
+                                                                        totalWithVAT
+                                                                    )}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </React.Fragment>
+                                                )}
                                             </React.Fragment>
                                         );
                                     })}

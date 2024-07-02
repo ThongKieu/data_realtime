@@ -2053,39 +2053,6 @@ const Dashboard = ({ auth }) => {
                                                         />
                                                     </Tooltip>
                                                 </MenuItem>
-                                                <MenuItem className="p-1 w-fit">
-                                                    <Tooltip
-                                                        content="Khảo Sát"
-                                                        position="bottom" // Đặt vị trí của Tooltip ở trên (các giá trị khác có thể là 'bottom', 'left', 'right', ...)
-                                                        arrowSize={10} // Đặt kích thước mũi tên của Tooltip
-                                                        padding={10} // Đặt khoảng cách giữa nội dung và mép của Tooltip
-                                                        distance={10} // Đặt khoảng cách giữa Tooltip và phần tử mục tiêu
-                                                        tagName="div" // Đặt loại thẻ sẽ được sử dụng cho Tooltip (mặc định là 'span')
-                                                        className="custom-tooltip" // Đặt class cho Tooltip để tùy chỉnh kiểu dáng
-                                                        contentStyle={{
-                                                            backgroundColor:
-                                                                "red",
-                                                            color: "white",
-                                                        }}
-                                                        animate={{
-                                                            mount: {
-                                                                scale: 1,
-                                                                y: 0,
-                                                            },
-                                                            unmount: {
-                                                                scale: 0,
-                                                                y: 25,
-                                                            },
-                                                        }}
-                                                    >
-                                                        <TicketIcon
-                                                            className="w-8 h-8 p-1 text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white"
-                                                            onClick={() => {
-                                                                handleBaoGiaClick();
-                                                            }}
-                                                        />
-                                                    </Tooltip>
-                                                </MenuItem>
                                                 <MenuItem className="p-0 w-fit">
                                                     <Tooltip
                                                         content="Lịch Sử"

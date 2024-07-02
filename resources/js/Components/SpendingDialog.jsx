@@ -160,6 +160,7 @@ const SpendingDialog = ({
                                                     type="file"
                                                     accept=".jpg, .jpeg, .png"
                                                     onChange={
+
                                                         handleFileChangePt
                                                     }
                                                     multiple

@@ -17,7 +17,7 @@ class QuotationController extends Controller
     {
         $id = $request->id_work_has;
 
-        $quote = Quotation::where('id_work_has', '=', $id)->value(['id_work_has', 'id_auth', 'quote_date', 'quote_info','quote_total_price','quote_status','quote_image','quote_note','quote_cus_info','quote_user_info']);
+        $quote = Quotation::where('id_work_has', '=', $id)->get();
         //TH1 : Không có báo giá trường trong bảng báo giá
         if (count($quote) == 0) {
             // Thợ khảo sát báo giá báo cáo bằng hình chụp, tổng giá tiền
@@ -28,9 +28,9 @@ class QuotationController extends Controller
                 'income_total',
                 'bill_imag']
             );
-            return response()->json(['data' => $quote_work_has, 'ac' => 2]);
+            return response()->json(['data' => $quote_work_has, 'ac' => 1]);
         } else {
-            return response()->json(['data' => $quote, 'ac' => 1]);
+            return response()->json(['data' => $quote, 'ac' => 2]);
         }
 
     }
@@ -45,7 +45,6 @@ class QuotationController extends Controller
         $seri_imag = '';
         if ($re->hasFile('image_work')) {
             $images = $re->file('image_work');
-
             foreach ($images as $image) {
                 $name = $re->id_work_has . '-' . time() . rand(10, 100) . '.' . $image->getClientOriginalExtension();
                 $image->move('assets/images/work_assignment/' . $re->id_work_has . '/quote', $name);
@@ -102,6 +101,7 @@ class QuotationController extends Controller
                 'quote_total_price' => $quote_total_price,
                 'vat' => $re->vat,
             ]);
+            // dd($new);
             $new->save();
             WorksAssignment::where('id', '=', $re->id_work_has)->update([
                 'status_work' => 3,

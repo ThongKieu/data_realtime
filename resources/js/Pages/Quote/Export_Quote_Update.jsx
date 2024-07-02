@@ -211,6 +211,7 @@ const Export_Quote = ({ auth }) => {
         setEditNoteValue("");
         setIsEditing(null);
     };
+    console.log(dataQuote.ac);
     const handleUpdate = async (quoteID) => {
         setIsSubmitting(true);
         setTimeout(async () => {
@@ -271,7 +272,13 @@ const Export_Quote = ({ auth }) => {
                         quality: row.quality,
                         price: row.unitPrice,
                         total: row.total,
-                        vat: row.vat,
+                        vat:  dataQuote.ac == 2
+                        ? !isVatChecked
+                            ? row.vat
+                            : 0
+                        : !isVatChecked
+                        ? 0
+                        : row.vat,
                         note: row.note,
                     }))
                 )

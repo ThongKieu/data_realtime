@@ -141,8 +141,7 @@ class WorksAssignmentController extends Controller
         return 'OK';
     }
     public function returnWorkFromAssignment(Request $request)
-    {
-        //
+    { //
         if ($request->id == null || $request->id_cus == null || $request->worker_name == null || $request->real_note == null) {
             return -1;
         } else {
@@ -665,8 +664,8 @@ class WorksAssignmentController extends Controller
 
             if (is_array($his_on_table)) {
                 $new_entry = json_decode($his_work, true); // Decode the new JSON object into a PHP array
+                // dd($new_entry);
                 $his_on_table = array_merge($his_on_table, $new_entry); // Append the new object to the existing array
-
                 $updated_json = json_encode($his_on_table); // Encode the updated array back into a JSON array
                 $up_his = WorksAssignment::where('id', '=', $id_work_has)->update(['his_work' => $updated_json]);
             }

@@ -9,6 +9,7 @@ import {
     Input,
     Typography,
     Card,
+    Checkbox,
 } from "@material-tailwind/react";
 import {
     XMarkIcon,
@@ -65,16 +66,19 @@ const ThoDialog = ({
                 />
             </div>
             <DialogBody divider>
-                <Select
-                    closeMenuOnSelect={true}
-                    value={selectPhanTho}
-                    options={infoWorkerDashboard}
-                    onChange={(selectedValue) =>
-                        handleSelectChange(selectedValue)
-                    }
-                    isMulti
-                    className="border-none shadow-none"
-                />
+                <Card className="flex flex-row justify-between p-2 border border-green-500">
+                    <Select
+                        closeMenuOnSelect={true}
+                        value={selectPhanTho}
+                        options={infoWorkerDashboard}
+                        onChange={(selectedValue) =>
+                            handleSelectChange(selectedValue)
+                        }
+                        isMulti
+                        className="w-full border-none shadow-none"
+                    />
+                    <Checkbox label="Văn Phòng Xử Lý" />
+                </Card>
             </DialogBody>
             <DialogFooter className="space-x-2">
                 <Button
@@ -972,7 +976,7 @@ const KSDialog = ({
                         color="blue"
                         onClick={() =>
                             handleBaoGiaClick(
-                                { ...params, Email: ""},
+                                { ...params, Email: "" },
                                 "/export-quote-update"
                             )
                         }
@@ -985,7 +989,10 @@ const KSDialog = ({
                         className="px-5 py-2"
                         color="blue"
                         onClick={() =>
-                            handleBaoGiaClick({...params}, "/export-quote-update")
+                            handleBaoGiaClick(
+                                { ...params },
+                                "/export-quote-update"
+                            )
                         }
                     >
                         Chỉnh sửa báo giá 2
@@ -1175,13 +1182,40 @@ const ViewTotalDialog = ({
     const processedDataVT = processSeriImages(params.bill_imag);
     const processedDataPT = processSeriImages(params.seri_imag);
     const TABLE_HEAD = ["STT", "Thời Gian", "Nội Dung"];
-
+    console.log(params);
     const { width, height } = useWindowSize(300);
+    const TABLE_HEAD_Work = [
+        "STT",
+        "Nội Dung",
+        "ĐVT",
+        "Số Lượng",
+        "Đơn Giá",
+        "Chi",
+        "Thu",
+        "Bảo Hành",
+    ];
+
+    const TABLE_ROWS_Work = [
+        {
+            content: params.work_content,
+            unit: "Cái",
+            quality: "1",
+            price: "0",
+            spending_total: params.spending_total,
+            income_total: params.income_total,
+            warranty: "KBH",
+        },
+    ];
+    const [openPT, setOpenPT] = React.useState(false);
+    const [openVT, setOpenVT] = React.useState(false);
+    const handleOpenPT = () => setOpenPT(!openPT);
+    const handleOpenVT = () => setOpenVT(!openVT);
     return (
         <Dialog
             open={openViewTotal}
             handler={handleOpenViewTotal}
             className="bg-none"
+            size="xl"
         >
             <DialogHeader className="justify-between ">
                 <h3 className="block p-3 font-sans antialiased font-bold leading-normal text-center text-black uppercase border-b r">
@@ -1203,97 +1237,192 @@ const ViewTotalDialog = ({
                 />
             </DialogHeader>
             <DialogBody
-                className={`overflow-y-auto h-full`}
+                className={`overflow-scroll overflow-x-hidden h-full p-1`}
                 style={{ height: `${height}px` }}
             >
-                <div className="relative flex flex-col w-full p-8 text-black shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-black-900 to-white-800 shadow-black-900/20 ">
-                    <div className="relative pb-8 m-0 mb-8 overflow-hidden text-center bg-transparent border-b rounded-none shadow-none text-black-700 bg-clip-border border-black/10">
-                        <div className="flex justify-between gap-1 mt-6 font-sans antialiased font-normal tracking-normal text-black">
-                            <div className="flex flex-col text-center">
-                                <span className="pr-1 mt-2 text-2xl underline">
-                                    Chi
-                                </span>
-                                <span className="text-2xl ">
+                <div className="relative flex flex-col w-full p-2 text-black border border-green-500 shadow-md bg-clip-border rounded-xl bg-gradient-to-tr from-black-900 to-white-800 shadow-black-900/20 ">
+                    <Card className="grid items-center justify-between grid-cols-2 gap-2 p-2 border border-green-500">
+                        <Card className="w-full p-2 ">
+                            <div className="flex flex-row items-center justify-between pb-1">
+                                <p>
+                                    <b>Chi: </b>
                                     {formatCurrencyVND(params.spending_total)}
-                                </span>
+                                </p>
+                                <Button
+                                    className="p-2 ml-2"
+                                    variant="outlined"
+                                    color="green"
+                                    onClick={handleOpenVT}
+                                >
+                                    Xem Hình Phiếu Chi
+                                </Button>
                             </div>
-                            <div className="flex flex-col text-center ">
-                                <span className="pr-1 mt-2 text-2xl underline">
-                                    Thu
-                                </span>
-                                <span className="text-2xl">
+                            <div className="flex flex-row items-center justify-between">
+                                <p>
+                                    <b>Thu: </b>
                                     {formatCurrencyVND(params.income_total)}
-                                </span>
+                                </p>
+                                <Button
+                                    className="p-2 ml-2"
+                                    variant="outlined"
+                                    color="green"
+                                    onClick={handleOpenPT}
+                                >
+                                    Xem Hình Phiếu Thu
+                                </Button>
                             </div>
-                            <div className="flex flex-col text-center ">
-                                <span className="pr-1 mt-2 text-2xl underline">
-                                    Lợi Nhuận
-                                </span>
-                                <span className="text-2xl">
-                                    {formatCurrencyVND(LoiNhuan)}
-                                </span>
-                            </div>
-                        </div>
-                        <p
-                            className={`${
-                                LoiNhuan > 0
-                                    ? "text-green-500"
-                                    : LoiNhuan == 0
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                            }`}
+                        </Card>
+                        <Card
+                            id="info_cus"
+                            className="flex flex-row justify-between w-full p-2 border"
                         >
-                            {LoiNhuan > 0
-                                ? "Chưa Lỗ Được Đâu"
-                                : LoiNhuan == 0
-                                ? "Huề rồi"
-                                : "Lỗ Banh Xát"}
-                        </p>
-                    </div>
-                    <div className="p-0">
-                        <div className="grid grid-cols-2 gap-1">
-                            <ul className="flex flex-col gap-4">
-                                {ContentData.map((item) => {
-                                    return (
-                                        <li
-                                            key={item.id}
-                                            className="flex items-center gap-2"
+                            <div>
+                                <p>
+                                    <b>Địa Chỉ: </b> {params.street},{" "}
+                                    {params.district}
+                                </p>
+                                <p>
+                                    <b>Số điện thoại: </b> {params.phone_number}
+                                </p>
+                                <p>
+                                    <b>Họ Và Tên: </b>
+                                    {params.name_cus
+                                        ? params.name_cus
+                                        : "Quý Khách Hàng"}
+                                </p>
+                            </div>
+                            <p className="p-2 py-0 font-bold text-red-500 border-2 border-red-500 rounded-lg h-fit w-fit">
+                                Số HĐ: {params.seri_number}
+                            </p>
+                        </Card>
+                    </Card>
+                    <Card className="w-full h-full mt-2 overflow-scroll border border-green-500">
+                        <table className="w-full text-left table-auto min-w-max">
+                            <thead>
+                                <tr>
+                                    {TABLE_HEAD_Work.map((head) => (
+                                        <th
+                                            key={head}
+                                            className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                                         >
-                                            <span className="p-1 border rounded-full border-white/20 bg-white/20">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={2}
-                                                    stroke="currentColor"
-                                                    className="w-3 h-3"
+                                            <Typography
+                                                variant="small"
+                                                color="blue-gray"
+                                                className="font-normal leading-none opacity-70"
+                                            >
+                                                {head}
+                                            </Typography>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {TABLE_ROWS_Work.map((item, index) => {
+                                    const isLast =
+                                        index === TABLE_ROWS_Work.length - 1;
+                                    const classes = isLast
+                                        ? "p-4"
+                                        : "p-4 border-b border-blue-gray-50";
+
+                                    return (
+                                        <tr key={index}>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M4.5 12.75l6 6 9-13.5"
-                                                    />
-                                                </svg>
-                                            </span>
-                                            <span className="underline">
-                                                {item.label}
-                                            </span>
-                                            <p className="block font-sans text-base antialiased font-normal leading-relaxed text-inherit">
-                                                {item.TextContent}
-                                            </p>
-                                        </li>
+                                                    {index}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.content}
+                                                </Typography>
+                                            </td>{" "}
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.unit}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-normal"
+                                                >
+                                                    {item.quality}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.price}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.spending_total}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.income_total}
+                                                </Typography>
+                                            </td>
+                                            <td className={classes}>
+                                                <Typography
+                                                    as="a"
+                                                    href="#"
+                                                    variant="small"
+                                                    color="blue-gray"
+                                                    className="font-medium"
+                                                >
+                                                    {item.warranty}
+                                                </Typography>
+                                            </td>
+                                        </tr>
                                     );
                                 })}
-                            </ul>
-                            <div className="flex flex-col items-center justify-center">
-                                <p>Hình Vật Tư:</p>
+                            </tbody>
+                        </table>
+                    </Card>
+                    <Dialog open={openVT} handler={handleOpenVT}>
+                        <DialogHeader>Hình Ảnh Vật Tư</DialogHeader>
+                        <DialogBody divider>
+                            <Card className="flex flex-row p-2">
                                 {params.bill_imag == null ||
                                 processedDataVT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
                                 ) : (
-                                    <>
+                                    <div className="flex flex-row gap-2">
                                         {Array.isArray(processedDataVT) &&
                                             processedDataVT.map(
                                                 (item, index) => (
@@ -1305,17 +1434,33 @@ const ViewTotalDialog = ({
                                                     />
                                                 )
                                             )}
-                                    </>
+                                    </div>
                                 )}
+                            </Card>
+                        </DialogBody>
+                        <DialogFooter>
+                            <Button
+                                variant="outlined"
+                                color="red"
+                                onClick={handleOpenVT}
+                                className="mr-1"
+                            >
+                                <span>Thoát</span>
+                            </Button>
 
-                                <p>Phiếu Thu:</p>
+                        </DialogFooter>
+                    </Dialog>
+                    <Dialog open={openPT} handler={handleOpenPT}>
+                        <DialogHeader>Hình Ảnh Phiếu Thu</DialogHeader>
+                        <DialogBody divider>
+                            <Card className="flex flex-row p-2">
                                 {params.seri_imag == null ||
                                 processedDataPT == false ? (
                                     <p className="flex items-center justify-center w-32 h-32 border border-green-500">
                                         Not Image
                                     </p>
                                 ) : (
-                                    <>
+                                    <div className="flex flex-row gap-2">
                                         {Array.isArray(processedDataPT) &&
                                             processedDataPT.map(
                                                 (item, index) => (
@@ -1327,10 +1472,24 @@ const ViewTotalDialog = ({
                                                     />
                                                 )
                                             )}
-                                    </>
+                                    </div>
                                 )}
-                            </div>
-                        </div>
+                            </Card>
+                        </DialogBody>
+                        <DialogFooter>
+                            <Button
+                                variant="outlined"
+                                color="red"
+                                onClick={handleOpenPT}
+                                className="mr-1"
+                            >
+                                <span>Thoát</span>
+                            </Button>
+
+                        </DialogFooter>
+                    </Dialog>
+                    <div className="p-0">
+
                         <div
                             className={`${
                                 params.warranty == "KBH" ? "hidden" : "block"

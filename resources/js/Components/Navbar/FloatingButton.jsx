@@ -131,11 +131,6 @@ function FloatingButton() {
             );
         };
 
-        if (!isFormDataValid(formData)) {
-            alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi!`);
-            return;
-        }
-
         const formData1 = new FormData();
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append("image_work_path[]", selectedFiles[i]);
@@ -170,7 +165,7 @@ function FloatingButton() {
             if (response.status === 200) {
                 socketFTB.emit("addWorkTo_Server", formData);
                 handleOpen();
-            } else if (response.status === 422) {
+            } else if (!isFormDataValid(formData)) {
                 const responseData = await response.json();
                 alert(`Quên nhập thông tin khách hàng rồi kìa mấy má ơi! ${responseData.errors}`);
             }

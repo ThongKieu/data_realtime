@@ -58,6 +58,7 @@ class QuotationController extends Controller
         else
         {
             $quote_date = date('Y-m-d');
+
         }
         // dd($ac);
         // tạo thông tin báo giá khảo sát

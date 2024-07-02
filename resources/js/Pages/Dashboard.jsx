@@ -91,7 +91,6 @@ const Dashboard = ({ auth }) => {
     const socket = useSocket();
     const { setSharedData } = useContext(AppContext);
     const [disabledStates, setDisabledStates] = useState({});
-
     useEffect(() => {
         fetchInfoWorker(selectedDate);
         fetchDateCheck(selectedDate);

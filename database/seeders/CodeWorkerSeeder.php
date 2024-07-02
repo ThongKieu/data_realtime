@@ -62,5 +62,12 @@ class CodeWorkerSeeder extends Seeder
             'status_code_worker' => '1'
 
         ],);
+        CodeWorkerKind::insert([
+            'code_worker' => 'VP',
+            'kind_worker' => 'Văn Phòng',
+            'descript_code_worker' => 'Văn phòng làm báo giá, thu mua thiết bị, linh kiện, cho thuê đồ nghề,...',
+            'status_code_worker' => '1'
+
+        ],);
     }
 }

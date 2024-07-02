@@ -350,7 +350,7 @@ class WorkersController extends Controller
             ->leftJoin('works', 'works.id', '=', 'works_assignments.id_cus')
             ->leftJoin('workers', 'workers.id', '=', 'works_assignments.id_worker')
             ->where('works_assignments.id_worker', '=', $id)
-            ->where('works_assignments.status_work', '!=', '5')
+            ->whereIn('works_assignments.status_work', [2, 3])
             ->orderByDesc('works_assignments.id')
             ->limit(100)
             ->get(['works_assignments.id', 'works_assignments.id_cus', 'works.name_cus', 'works.work_content', 'works.date_book', 'works.street', 'works.district', 'works.phone_number', 'works_assignments.income_total', 'works_assignments.spending_total', 'works_assignments.status_work']);

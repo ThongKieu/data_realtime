@@ -157,7 +157,7 @@ class AccountionWorkerController extends Controller
             if ($a == $key) {
                 return 1; // đăng nhập lại trên thiết bị
             } else {
-                AccountionWorker::where('acc_worker', '=', $id)->update(['active' => 0]);
+                AccountionWorker::where('acc_worker', '=', $id)->update(['active' => 2]);
                 return 2; // Đăng nhập bằng 1 thiết bị khác - Vui lòng thông báo admin để mở khóa thiết bị mới của bạn
             }
         } else {
